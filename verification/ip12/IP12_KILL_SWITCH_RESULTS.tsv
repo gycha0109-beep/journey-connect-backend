@@ -1,0 +1,8 @@
+case	expected	result
+default	killed	PASS
+missing_or_invalid_binding	not_activatable	PASS
+enabled_false	dispatch_zero	PASS
+kill_true	dispatch_zero	PASS
+kill_precedence	before_identity_and_executor	PASS
+post_kill_new_work	zero	PASS
+remote_dynamic_switch	not_implemented	NOT_APPLICABLE

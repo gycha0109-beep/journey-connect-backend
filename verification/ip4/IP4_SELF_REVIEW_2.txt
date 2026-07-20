@@ -1,0 +1,13 @@
+Review 2: implementation quality, determinism, security
+Found 10 / fixed 10 / deferred 0
+- stage-correct rejected item counts
+- typed request-context validation failure
+- totalElements/item count consistency
+- overflow-safe totalPages/offset
+- domain-separated unavailable fingerprint instead of zero hash
+- fractional JSON integer rejection
+- success result requires request/page/evidence
+- mapped item entityRef/type/source cross-field invariants
+- evidence version/fingerprint/warning strict validation
+- page metadata direct-construction invariants
+All affected tests and baseline hashes re-run.

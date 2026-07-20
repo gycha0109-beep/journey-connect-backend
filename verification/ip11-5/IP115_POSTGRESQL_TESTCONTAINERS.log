@@ -1,0 +1,2 @@
+STATUS: NOT EXECUTED — USER-DIRECTED SKIP
+Migrations 27 and 28 have static validation only. PostgreSQL 15/Testcontainers replay is external attestation pending.

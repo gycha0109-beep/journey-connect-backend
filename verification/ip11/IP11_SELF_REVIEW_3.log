@@ -1,0 +1,6 @@
+Self Review 3 — Security, Privacy, Go/No-Go
+1. Stable query hash dictionary risk -> approval-required; raw/normalized query prohibited.
+2. Internal cohort identity risk -> raw IDs prohibited, allowlist authority required, effective cohort 0%.
+3. Conditional design could accidentally produce GO -> owner/source/security/observability/attestation blockers force NO_GO.
+4. Garbled path names could break Windows packaging -> 10 documentation paths normalized with content SHA proof.
+Result: 4 findings, 4 remediated.

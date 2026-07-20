@@ -1,0 +1,4 @@
+DEFAULT: DisabledSearchShadowKillSwitch + EmptyProductionShadowCohortSelector + productionDefault(0 bps) + provisional policy + no-op metric/evidence. No executor/provider/runtime.
+TECHNICAL TEST ONLY: profile search-shadow-technical-test + exact explicit-allow=true + not prod/production -> JDBC projection reader/rebuild service/provider/runtime/bounded executor/test mutable switch/hashed internal cohort/memory sinks/gate.
+PROD/PRODUCTION CONFLICT: technical capability condition false; default killed graph only.
+STATUS: STATIC EVIDENCE; SPRING CONTEXT NOT EXECUTED.

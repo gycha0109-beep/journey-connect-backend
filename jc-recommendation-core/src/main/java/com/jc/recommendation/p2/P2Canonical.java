@@ -1,0 +1,3 @@
+package com.jc.recommendation.p2;
+import java.nio.charset.StandardCharsets;import java.security.MessageDigest;import java.security.NoSuchAlgorithmException;import java.util.List;
+final class P2Canonical { private P2Canonical(){} static String sha256(List<String> parts){try{MessageDigest d=MessageDigest.getInstance("SHA-256");for(String p:parts){byte[] b=p.getBytes(StandardCharsets.UTF_8);d.update(Integer.toString(b.length).getBytes(StandardCharsets.US_ASCII));d.update((byte)':');d.update(b);d.update((byte)'|');}return java.util.HexFormat.of().formatHex(d.digest());}catch(NoSuchAlgorithmException e){throw new IllegalStateException(e);}} static String bits(double v){return Long.toUnsignedString(Double.doubleToRawLongBits(v),16);} }

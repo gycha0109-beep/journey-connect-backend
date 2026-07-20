@@ -1,0 +1,3 @@
+DIRECT JAVA CONTRACT RUN: PASS
+Scenarios: starts killed; zero side effect; technical fixture enable; one async dispatch; legacy identity preserved; kill; subsequent dispatch killed; subsequent task/provider/runtime/comparison-equivalent side effect zero; repeated kill safe; malformed/control failure fail-closed; bounded executor shutdown.
+Production Operations drill: NOT EXECUTED / OPEN_BLOCKER.

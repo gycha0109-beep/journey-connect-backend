@@ -1,0 +1,10 @@
+{
+  "scenario": "unknown-mode",
+  "mode": "unknown",
+  "activeProfile": null,
+  "explicitAllow": true,
+  "sampleBasisPoints": 10000,
+  "executorStatus": "completed",
+  "circuitState": "closed",
+  "expectedStatus": "disabled"
+}

@@ -1,0 +1,4 @@
+Gradle 8.14.5 final attestation: NOT EXECUTED — USER-DIRECTED SKIP
+Reason: user explicitly directed Gradle and container-based tests to be omitted after prior wrapper DNS failure.
+Prior attempt evidence: IP10_GRADLE_EXECUTION.log (UnknownHostException: services.gradle.org).
+This is not PASS.

@@ -1,0 +1,15 @@
+jc-search-runtime/src/test/java/com/jc/intelligence/runtime/search/SearchRuntimeContractTest.java
+jc-search-runtime/src/test/resources/search-runtime/eligibility-filter.json
+jc-search-runtime/src/test/resources/search-runtime/empty-result.json
+jc-search-runtime/src/test/resources/search-runtime/korean-unicode.json
+jc-search-runtime/src/test/resources/search-runtime/last-page.json
+jc-search-runtime/src/test/resources/search-runtime/max-boundary.json
+jc-search-runtime/src/test/resources/search-runtime/mixed-entity-types.json
+jc-search-runtime/src/test/resources/search-runtime/ranking-fallback.json
+jc-search-runtime/src/test/resources/search-runtime/reranking-change.json
+jc-search-runtime/src/test/resources/search-runtime/retrieval-failed.json
+jc-search-runtime/src/test/resources/search-runtime/retrieval-unavailable.json
+jc-search-runtime/src/test/resources/search-runtime/same-score.json
+jc-search-runtime/src/test/resources/search-runtime/single-candidate.json
+jc-search-runtime/src/test/resources/search-runtime/valid-multiple.json
+jc-search-runtime/src/test/resources/search-runtime/visibility-unavailable.json

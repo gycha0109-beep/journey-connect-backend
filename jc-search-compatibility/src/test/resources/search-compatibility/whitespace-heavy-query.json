@@ -1,0 +1,62 @@
+{
+  "name": "whitespace-heavy-query",
+  "request": {
+    "keyword": "  seoul\t  cafe\n",
+    "region": null,
+    "page": 0,
+    "size": 20,
+    "sortOrders": [],
+    "unsupportedParameters": {}
+  },
+  "page": {
+    "items": [
+      {
+        "id": 1,
+        "title": "Seoul Walk",
+        "regionCode": "KR-11",
+        "regionName": "서울",
+        "coverImageUrl": "https://img.example.com/cover.jpg",
+        "viewCount": 101,
+        "likeCount": 11,
+        "bookmarkCount": 6,
+        "author": {
+          "id": 1001,
+          "nickname": "user1",
+          "profileImageUrl": "https://img.example.com/u.jpg"
+        },
+        "createdAt": "2026-07-19T10:00:00Z"
+      },
+      {
+        "id": 2,
+        "title": "Busan Night",
+        "regionCode": "KR-11",
+        "regionName": "서울",
+        "coverImageUrl": "https://img.example.com/cover.jpg",
+        "viewCount": 102,
+        "likeCount": 12,
+        "bookmarkCount": 7,
+        "author": {
+          "id": 1002,
+          "nickname": "user2",
+          "profileImageUrl": "https://img.example.com/u.jpg"
+        },
+        "createdAt": "2026-07-19T10:00:00Z"
+      }
+    ],
+    "page": 0,
+    "size": 20,
+    "totalElements": 2,
+    "totalPages": 1,
+    "last": true
+  },
+  "context": {
+    "requestId": "request:legacy-explore-001",
+    "correlationId": "correlation:legacy-explore-001",
+    "sessionRef": null,
+    "referenceTime": "2026-07-19T12:00:00Z",
+    "mappedAt": "2026-07-19T12:00:01Z",
+    "producerBuildId": "ip4-build-001"
+  },
+  "expectedStatus": "success",
+  "expectedFailureCode": null
+}

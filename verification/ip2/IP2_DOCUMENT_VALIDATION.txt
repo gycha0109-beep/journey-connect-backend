@@ -1,0 +1,167 @@
+- PASS | Required document: IP-2-SEARCH-CONTRACT-FOUNDATION.md
+- PASS | Required document: SEARCH-DOMAIN-CONTRACT-V1.md
+- PASS | Required document: SEARCH-QUERY-AND-NORMALIZATION-V1.md
+- PASS | Required document: SEARCH-RETRIEVAL-FILTERING-AND-RANKING-V1.md
+- PASS | Required document: SEARCH-PAGINATION-AND-CURSOR-V1.md
+- PASS | Required document: SEARCH-EXPOSURE-CONTRACT-V1.md
+- PASS | Required document: SEARCH-REPLAY-FAILURE-AND-EVIDENCE-V1.md
+- PASS | Required document: IP-2-HANDOFF.md
+- PASS | Required document: README.md
+- PASS | Single H1: IP-2-SEARCH-CONTRACT-FOUNDATION.md
+- PASS | Balanced code fences: IP-2-SEARCH-CONTRACT-FOUNDATION.md
+- PASS | Final newline: IP-2-SEARCH-CONTRACT-FOUNDATION.md
+- PASS | Local link: IP-2-SEARCH-CONTRACT-FOUNDATION.md -> IP-2-HANDOFF.md
+- PASS | Local link: IP-2-SEARCH-CONTRACT-FOUNDATION.md -> IP-2-SEARCH-CONTRACT-FOUNDATION.md
+- PASS | Local link: IP-2-SEARCH-CONTRACT-FOUNDATION.md -> SEARCH-DOMAIN-CONTRACT-V1.md
+- PASS | Local link: IP-2-SEARCH-CONTRACT-FOUNDATION.md -> SEARCH-QUERY-AND-NORMALIZATION-V1.md
+- PASS | Local link: IP-2-SEARCH-CONTRACT-FOUNDATION.md -> SEARCH-RETRIEVAL-FILTERING-AND-RANKING-V1.md
+- PASS | Local link: IP-2-SEARCH-CONTRACT-FOUNDATION.md -> SEARCH-PAGINATION-AND-CURSOR-V1.md
+- PASS | Local link: IP-2-SEARCH-CONTRACT-FOUNDATION.md -> SEARCH-EXPOSURE-CONTRACT-V1.md
+- PASS | Local link: IP-2-SEARCH-CONTRACT-FOUNDATION.md -> SEARCH-REPLAY-FAILURE-AND-EVIDENCE-V1.md
+- PASS | Local link: IP-2-SEARCH-CONTRACT-FOUNDATION.md -> IP-2-HANDOFF.md
+- PASS | Local link: IP-2-SEARCH-CONTRACT-FOUNDATION.md -> IP-2-HANDOFF.md
+- PASS | Single H1: SEARCH-DOMAIN-CONTRACT-V1.md
+- PASS | Balanced code fences: SEARCH-DOMAIN-CONTRACT-V1.md
+- PASS | Final newline: SEARCH-DOMAIN-CONTRACT-V1.md
+- PASS | Single H1: SEARCH-QUERY-AND-NORMALIZATION-V1.md
+- PASS | Balanced code fences: SEARCH-QUERY-AND-NORMALIZATION-V1.md
+- PASS | Final newline: SEARCH-QUERY-AND-NORMALIZATION-V1.md
+- PASS | Single H1: SEARCH-RETRIEVAL-FILTERING-AND-RANKING-V1.md
+- PASS | Balanced code fences: SEARCH-RETRIEVAL-FILTERING-AND-RANKING-V1.md
+- PASS | Final newline: SEARCH-RETRIEVAL-FILTERING-AND-RANKING-V1.md
+- PASS | Single H1: SEARCH-PAGINATION-AND-CURSOR-V1.md
+- PASS | Balanced code fences: SEARCH-PAGINATION-AND-CURSOR-V1.md
+- PASS | Final newline: SEARCH-PAGINATION-AND-CURSOR-V1.md
+- PASS | Single H1: SEARCH-EXPOSURE-CONTRACT-V1.md
+- PASS | Balanced code fences: SEARCH-EXPOSURE-CONTRACT-V1.md
+- PASS | Final newline: SEARCH-EXPOSURE-CONTRACT-V1.md
+- PASS | Single H1: SEARCH-REPLAY-FAILURE-AND-EVIDENCE-V1.md
+- PASS | Balanced code fences: SEARCH-REPLAY-FAILURE-AND-EVIDENCE-V1.md
+- PASS | Final newline: SEARCH-REPLAY-FAILURE-AND-EVIDENCE-V1.md
+- PASS | Single H1: IP-2-HANDOFF.md
+- PASS | Balanced code fences: IP-2-HANDOFF.md
+- PASS | Final newline: IP-2-HANDOFF.md
+- PASS | Single H1: README.md
+- PASS | Balanced code fences: README.md
+- PASS | Final newline: README.md
+- PASS | Local link: README.md -> IP-0-INTELLIGENCE-PLATFORM-CONTRACT-FOUNDATION.md
+- PASS | Local link: README.md -> INTELLIGENCE-PLATFORM-ARCHITECTURE-V1.md
+- PASS | Local link: README.md -> INTELLIGENCE-COMMON-CONTRACTS-V1.md
+- PASS | Local link: README.md -> INTELLIGENCE-DOMAIN-CONTRACTS-V1.md
+- PASS | Local link: README.md -> IP-0-P2-COMPATIBILITY-AND-DP0-INTEGRATION.md
+- PASS | Local link: README.md -> IP-1-COMMON-CONTRACT-TYPES-VALIDATION-AND-RECOMMENDATION-ADAPTER.md
+- PASS | Local link: README.md -> IP-1-HANDOFF.md
+- PASS | Local link: README.md -> IP-2-SEARCH-CONTRACT-FOUNDATION.md
+- PASS | Local link: README.md -> SEARCH-DOMAIN-CONTRACT-V1.md
+- PASS | Local link: README.md -> SEARCH-QUERY-AND-NORMALIZATION-V1.md
+- PASS | Local link: README.md -> SEARCH-RETRIEVAL-FILTERING-AND-RANKING-V1.md
+- PASS | Local link: README.md -> SEARCH-PAGINATION-AND-CURSOR-V1.md
+- PASS | Local link: README.md -> SEARCH-EXPOSURE-CONTRACT-V1.md
+- PASS | Local link: README.md -> SEARCH-REPLAY-FAILURE-AND-EVIDENCE-V1.md
+- PASS | Local link: README.md -> IP-2-HANDOFF.md
+- PASS | Contract ID declared: IP-2-SEARCH-CONTRACT-FOUNDATION.md -> jc-search-contract-foundation-v1
+- PASS | Contract ID format: jc-search-contract-foundation-v1
+- PASS | Contract ID declared: SEARCH-DOMAIN-CONTRACT-V1.md -> search-domain-contract-v1
+- PASS | Contract ID format: search-domain-contract-v1
+- PASS | Contract ID declared: SEARCH-QUERY-AND-NORMALIZATION-V1.md -> search-query-normalization-v1
+- PASS | Contract ID format: search-query-normalization-v1
+- PASS | Contract ID declared: SEARCH-RETRIEVAL-FILTERING-AND-RANKING-V1.md -> search-retrieval-ranking-v1
+- PASS | Contract ID format: search-retrieval-ranking-v1
+- PASS | Contract ID declared: SEARCH-PAGINATION-AND-CURSOR-V1.md -> search-pagination-cursor-v1
+- PASS | Contract ID format: search-pagination-cursor-v1
+- PASS | Contract ID declared: SEARCH-EXPOSURE-CONTRACT-V1.md -> search-exposure-v1
+- PASS | Contract ID format: search-exposure-v1
+- PASS | Contract ID declared: SEARCH-REPLAY-FAILURE-AND-EVIDENCE-V1.md -> search-replay-evidence-v1
+- PASS | Contract ID format: search-replay-evidence-v1
+- PASS | Contract ID declared: IP-2-HANDOFF.md -> ip-2-handoff-v1
+- PASS | Contract ID format: ip-2-handoff-v1
+- PASS | IP-2 primary contract IDs unique
+- PASS | Exposure registry present in latest System Contract: search_exposure_v1
+- PASS | Exposure source separated in Search contract: search_exposure_v1
+- PASS | Exposure registry present in latest System Contract: recommendation_general_exposure_v1
+- PASS | Exposure source separated in Search contract: recommendation_general_exposure_v1
+- PASS | Exposure registry present in latest System Contract: recommendation_behavior_impression_v1
+- PASS | Exposure source separated in Search contract: recommendation_behavior_impression_v1
+- PASS | Exposure registry present in latest System Contract: recommendation_p2_experiment_exposure_v1
+- PASS | Exposure source separated in Search contract: recommendation_p2_experiment_exposure_v1
+- PASS | SC-1 reserved search_exposure_v1
+- PASS | Search exposure persistence explicitly not implemented
+- PASS | P2 metric authority protected
+- PASS | Wire enum lowercase_snake_case: recommendation
+- PASS | Wire enum lowercase_snake_case: search
+- PASS | Wire enum lowercase_snake_case: content_analysis
+- PASS | Wire enum lowercase_snake_case: trip_planning
+- PASS | Wire enum lowercase_snake_case: succeeded
+- PASS | Wire enum lowercase_snake_case: fallback
+- PASS | Wire enum lowercase_snake_case: failed
+- PASS | Wire enum lowercase_snake_case: text_query
+- PASS | Wire enum lowercase_snake_case: browse
+- PASS | Wire enum lowercase_snake_case: post
+- PASS | Wire enum lowercase_snake_case: region
+- PASS | Wire enum lowercase_snake_case: tag
+- PASS | Wire enum lowercase_snake_case: place
+- PASS | Wire enum lowercase_snake_case: user
+- PASS | Wire enum lowercase_snake_case: crew
+- PASS | Wire enum lowercase_snake_case: all
+- PASS | Wire enum lowercase_snake_case: global_search
+- PASS | Wire enum lowercase_snake_case: explore
+- PASS | Wire enum lowercase_snake_case: region_search
+- PASS | Wire enum lowercase_snake_case: tag_search
+- PASS | Wire enum lowercase_snake_case: place_search
+- PASS | Wire enum lowercase_snake_case: user_search
+- PASS | Wire enum lowercase_snake_case: crew_search
+- PASS | Wire enum lowercase_snake_case: invalid_request
+- PASS | Wire enum lowercase_snake_case: unsupported_filter
+- PASS | Wire enum lowercase_snake_case: retrieval_unavailable
+- PASS | Wire enum lowercase_snake_case: provider_unavailable
+- PASS | Wire enum lowercase_snake_case: ranking_failed
+- PASS | Wire enum lowercase_snake_case: snapshot_failed
+- PASS | Wire enum lowercase_snake_case: cursor_invalid
+- PASS | Wire enum lowercase_snake_case: cursor_expired
+- PASS | Wire enum lowercase_snake_case: cursor_mismatch
+- PASS | Wire enum lowercase_snake_case: visibility_dependency_unavailable
+- PASS | Wire enum lowercase_snake_case: insufficient_candidates
+- PASS | Wire enum lowercase_snake_case: no_results
+- PASS | Wire enum lowercase_snake_case: exact_replay
+- PASS | Wire enum lowercase_snake_case: semantic_replay
+- PASS | Wire enum lowercase_snake_case: evidence_replay
+- PASS | Explore controller exists
+- PASS | Explore repository exists
+- PASS | Explore latest ordering exists
+- PASS | Region keyword endpoint exists
+- PASS | Region keyword repository exists
+- PASS | Recommendation storage supports search behavior wire
+- PASS | Protected source 320/320 exact match
+- PASS | Canonical SQL exact: 01_initial_schema.sql
+- PASS | Canonical SQL exact: 02_seed.sql
+- PASS | Canonical SQL exact: 03_smoke_test.sql
+- PASS | Canonical SQL exact: 04_admin_support.sql
+- PASS | Canonical SQL exact: 05_security_roles.sql
+- PASS | Canonical SQL exact: 06_security_smoke_test.sql
+- PASS | Canonical SQL exact: 07_recommendation_storage.sql
+- PASS | Canonical SQL exact: 08_recommendation_security_roles.sql
+- PASS | Canonical SQL exact: 09_recommendation_smoke_test.sql
+- PASS | Canonical SQL exact: 10_backend_runtime.sql
+- PASS | Canonical SQL exact: 11_backend_runtime_security_roles.sql
+- PASS | Canonical SQL exact: 12_backend_runtime_smoke_test.sql
+- PASS | Canonical SQL exact: 13_backend_role_routing.sql
+- PASS | Canonical SQL exact: 14_backend_role_routing_smoke_test.sql
+- PASS | Canonical SQL exact: 15_backend_role_runtime_fix.sql
+- PASS | Canonical SQL exact: 16_backend_role_runtime_fix_smoke_test.sql
+- PASS | Canonical SQL exact: 17_recommendation_run_exploration_partition_fix.sql
+- PASS | Canonical SQL exact: 18_recommendation_run_exploration_partition_fix_smoke_test.sql
+- PASS | Canonical SQL exact: 19_recommendation_replay_audit.sql
+- PASS | Canonical SQL exact: 20_recommendation_replay_audit_smoke_test.sql
+- PASS | Canonical SQL exact: 21_recommendation_behavior_runtime.sql
+- PASS | Canonical SQL exact: 22_recommendation_behavior_runtime_smoke_test.sql
+- PASS | Canonical SQL exact: 23_recommendation_p1_profile_policy.sql
+- PASS | Canonical SQL exact: 24_recommendation_p1_profile_policy_smoke_test.sql
+- PASS | Canonical SQL exact: 25_recommendation_p2_evaluation_release.sql
+- PASS | Canonical SQL exact: 26_recommendation_p2_evaluation_release_smoke_test.sql
+- PASS | Production Java/Kotlin/resources/build and canonical DB unchanged
+- PASS | No new SQL files
+
+Total checks: 162
+PASS: 162
+FAIL: 0
+Final: PASS

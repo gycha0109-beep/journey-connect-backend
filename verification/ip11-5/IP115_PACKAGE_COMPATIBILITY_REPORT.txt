@@ -1,0 +1,19 @@
+IP-11.5 PACKAGE COMPATIBILITY REPORT
+Top-level folder: JC-IP-11-5-Tech-Final
+Top-level folder length: 21
+Pre-manifest file count: 1771
+Maximum internal path length: 177
+Paths over 220: 0
+Paths over 240: 0
+Non-ASCII paths: 0
+Mojibake/#U/replacement paths: 0
+ZIP slip paths: 0
+Absolute paths: 0
+Duplicate/case-insensitive collisions: 0
+Windows reserved names: 0
+Trailing dot/space names: 0
+Embedded ZIP files: 0
+Build/cache directories excluded: build, .gradle, .idea, out, node_modules, __pycache__
+Windows Explorer extraction: NOT EXECUTED — Linux environment
+7-Zip extraction: NOT EXECUTED — 7z unavailable
+Windows verification script: verification/ip11-5/VERIFY_WINDOWS_EXPLORER_AND_7ZIP.ps1

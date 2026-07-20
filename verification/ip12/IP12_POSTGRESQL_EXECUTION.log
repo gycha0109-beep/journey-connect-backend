@@ -1,0 +1,4 @@
+STATUS=NOT_EXECUTED
+REASON=Docker, PostgreSQL and psql unavailable in current environment
+BASELINE_IP11_9=SQL 01..28 attested PASS by supplied package evidence
+IP12_SQL_DELTA=NONE

@@ -1,0 +1,2 @@
+FAIL_ENVIRONMENT
+reason=Gradle 8.14.5 distribution DNS failure: services.gradle.org UnknownHostException

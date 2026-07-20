@@ -1,0 +1,88 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.5/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :clean
+> Task :jc-recommendation-core:clean
+> Task :checkKotlinGradlePluginConfigurationErrors
+> Task :jc-recommendation-core:compileJava
+> Task :processResources
+> Task :processTestResources
+> Task :jc-recommendation-core:processResources NO-SOURCE
+> Task :jc-recommendation-core:classes
+> Task :jc-recommendation-core:jar
+> Task :jc-recommendation-core:compileTestJava
+> Task :jc-recommendation-core:processTestResources
+> Task :jc-recommendation-core:testClasses
+
+> Task :jc-recommendation-core:coreFoundationContractTest
+Java recommendation core foundation contract: PASS
+
+> Task :jc-recommendation-core:coreWave1ContractTest
+Java recommendation core Wave 1 contract: PASS
+
+> Task :jc-recommendation-core:coreWave2ScoringContractTest
+Java recommendation core Wave 2 scoring contract: PASS
+
+> Task :jc-recommendation-core:coreWave3ExplorationContractTest
+Java recommendation core Wave 3 exploration contract: PASS
+
+> Task :jc-recommendation-core:coreWave3RankingDiversityContractTest
+Java recommendation core Wave 3 ranking/diversity contract: PASS
+
+> Task :jc-recommendation-core:coreWave4RankingIntegrationContractTest
+Java recommendation core Wave 4 ranking integration contract: PASS
+
+> Task :jc-recommendation-core:coreWave5ExposureContractTest
+Java recommendation core Wave 5 exposure contract: PASS
+
+> Task :jc-recommendation-core:coreWave6AttributionContractTest
+Java recommendation core Wave 6 behavior and attribution contract: PASS
+
+> Task :jc-recommendation-core:coreWave7OfflineEvaluationContractTest
+Java recommendation core Wave 7 offline evaluation contract: PASS
+
+> Task :jc-recommendation-core:javaCoreGoldenFixtureContractTest
+Java recommendation core committed golden fixtures: PASS
+
+> Task :jc-recommendation-core:javaCoreIsolationContractTest
+Java recommendation core framework isolation: PASS
+
+> Task :jc-recommendation-core:test
+> Task :jc-recommendation-core:check
+> Task :compileKotlin
+
+> Task :compileJava
+Note: /mnt/data/Journey-Connect-P0-8-Final-Validation-Batch16/jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationCanonicalPayload.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :classes
+> Task :compileTestKotlin NO-SOURCE
+> Task :compileTestJava
+> Task :testClasses
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+> Task :test
+
+2026-07-18T16:21:38.747Z  INFO 19229 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T16:21:38.748Z  INFO 19229 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Shutdown initiated...
+2026-07-18T16:21:38.753Z  INFO 19229 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Shutdown completed.
+2026-07-18T16:21:38.812Z  INFO 19229 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T16:21:38.813Z  INFO 19229 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-7 - Shutdown initiated...
+2026-07-18T16:21:38.819Z  INFO 19229 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-7 - Shutdown completed.
+2026-07-18T16:21:38.821Z  INFO 19229 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T16:21:38.822Z  INFO 19229 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-8 - Shutdown initiated...
+2026-07-18T16:21:38.828Z  INFO 19229 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-8 - Shutdown completed.
+2026-07-18T16:21:38.830Z  INFO 19229 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T16:21:38.912Z  INFO 19229 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-9 - Shutdown initiated...
+2026-07-18T16:21:38.918Z  INFO 19229 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-9 - Shutdown completed.
+
+> Task :p0Verification
+
+[Incubating] Problems report is available at: file:///mnt/data/Journey-Connect-P0-8-Final-Validation-Batch16/jc-backend/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.5/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 1m 11s
+26 actionable tasks: 26 executed

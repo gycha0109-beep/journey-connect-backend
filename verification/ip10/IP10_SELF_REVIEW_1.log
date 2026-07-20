@@ -1,0 +1,7 @@
+IP-10 SELF REVIEW 1 — STRUCTURE / AUTHORITY
+1. FOUND: default disabled and active stage configuration could become order-sensitive and create two bridge beans.
+   FIXED: DisabledSearchShadowActivationCondition excludes the default bean for a valid explicit test/stage graph.
+2. FOUND: malformed property conversion could escape activation probing.
+   FIXED: activationAllowed catches RuntimeException and fails closed.
+3. VERIFIED: Controller unchanged from IP-9; legacy response remains sole authority; active provider never consumes legacy response items.
+RESULT: 2 fixed, 0 held.

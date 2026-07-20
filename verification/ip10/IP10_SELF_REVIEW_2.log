@@ -1,0 +1,7 @@
+IP-10 SELF REVIEW 2 — FAILURE / CONCURRENCY / TEST
+1. VERIFIED: outer dispatch and runtime execution queues are bounded; no common ForkJoinPool or unbounded queue.
+2. VERIFIED: request thread performs bounded submit only and does not join runtime completion.
+3. VERIFIED: sample zero gives zero executor/runtime/log invocations.
+4. VERIFIED: provider exception, queue full, executor shutdown, runtime timeout and cancellation are isolated.
+5. ADDED: invalid boolean property context test and single active bridge graph checks.
+RESULT: 1 test hardening, 0 held.

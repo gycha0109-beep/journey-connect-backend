@@ -1,0 +1,59 @@
+name: Recommendation P0 Database CI
+
+on:
+  pull_request:
+    paths:
+      - "database/journey-connect-db-v1.9/**"
+      - "database/journey-connect-db-v2.0/**"
+      - "database/journey-connect-db-v2.1/**"
+      - "jc-backend/src/main/**"
+      - "jc-backend/src/test/**"
+      - "jc-backend/build.gradle.kts"
+      - ".github/workflows/recommendation-p0-db-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: recommendation-p0-db-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  canonical-database:
+    name: Java/Testcontainers PostgreSQL ${{ matrix.postgres }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    strategy:
+      fail-fast: false
+      matrix:
+        postgres: ["15", "18"]
+
+    defaults:
+      run:
+        working-directory: jc-backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Grant execute permission for Gradle Wrapper
+        run: chmod +x ./gradlew
+
+      - name: Run Java source and SQL integrity gates
+        run: ./gradlew p0Verification --stacktrace --no-daemon
+
+      - name: Run canonical PostgreSQL integration suite
+        env:
+          JC_TEST_POSTGRES_IMAGE: postgres:${{ matrix.postgres }}-alpine
+        run: ./gradlew test --stacktrace --no-daemon

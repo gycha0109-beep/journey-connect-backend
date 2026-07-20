@@ -1,0 +1,9 @@
+Review 1: contract and architecture
+Found 8 / fixed 8 / deferred 0
+- isolated module and mirror read model
+- no fake SearchRequest/SearchRun/SearchCursor/exposure authority
+- payload visibility/eligibility not promoted
+- duplicate/missing item fail-fast
+- non-empty Pageable sort fail-closed
+- fact-only explanation
+- no runtime bean/framework dependency

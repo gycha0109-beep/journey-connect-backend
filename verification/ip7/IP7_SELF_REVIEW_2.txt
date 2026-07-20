@@ -1,0 +1,9 @@
+IP-7 Self Review 2 — Receipt Invariants, Observability, Boundary
+found=4
+fixed=4
+held=0
+1. Receipt allowed inconsistent status/field combinations -> added status-specific constructor invariants.
+2. Structured record omitted warning codes -> added immutable deterministic warning code list.
+3. Actual IP-6 unavailable-input path was not exercised from IP-7 -> added real SearchShadowIntegrationBoundary contract scenario.
+4. Page metadata preservation was represented only by item lists -> added paged legacy response identity/deep-equality/order/metadata scenario.
+revalidation=IP7 1700 PASS; IP6 972; IP5 850; IP4 584; IP3 425; IP1 739

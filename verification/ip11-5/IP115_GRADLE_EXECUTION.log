@@ -1,0 +1,3 @@
+STATUS: NOT EXECUTED — USER-DIRECTED SKIP
+Reason: The user previously explicitly directed Gradle verification to be skipped because the environment cannot complete it.
+No Gradle task is claimed PASS.

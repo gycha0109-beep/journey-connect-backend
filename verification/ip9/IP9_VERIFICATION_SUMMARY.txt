@@ -1,0 +1,49 @@
+Journey Connect IP-9 verification summary
+
+stage=IP-9 Controlled Backend Hook Implementation & Disabled-Mode Closure
+final_state=IMPLEMENTATION_COMPLETE / EXTERNAL_ATTESTATION_PENDING
+production_activation=PROHIBITED / NOT_CONFIGURED
+legacy_response_authority=MAINTAINED
+
+DIRECT REGRESSION
+- Java 21 compile -Xlint:all -Werror: PASS for IP-1/IP-3..IP-8 and Recommendation pure modules
+- IP-1 common: 739 PASS
+- IP-3 Search domain: 425 PASS
+- IP-4 compatibility: 584 PASS
+- IP-5 runtime: 850 PASS
+- IP-6 integration: 972 PASS
+- IP-7 wiring: 1700 PASS
+- IP-8 readiness: 2560 PASS
+- Recommendation Foundation/Wave1..7: PASS
+- Recommendation Golden/Isolation: PASS
+- P1 Core: 17 PASS
+- P2 Core: 23 PASS
+- backend-local bridge stub compile: PASS
+- backend-local bridge behavior: 6 PASS
+- static verification: 584 PASS
+
+GRADLE / BACKEND
+- Gradle 8.14.5 wrapper execution: FAILED before Gradle startup
+- reason: UnknownHostException services.gradle.org
+- task discovery: NOT_EXECUTED
+- ip9ControlledBackendHookRegression: NOT_EXECUTED
+- backend test/check: NOT_EXECUTED
+- P0/P1/P2 Gradle verification: NOT_EXECUTED
+- Spring/MVC/JUnit/Testcontainers/PostgreSQL: NOT_EXECUTED
+
+PROTECTION
+- prior Recommendation/SQL protected manifest: 320/320 exact PASS
+- canonical SQL 01..26: 26/26 exact PASS
+- PostController: APPROVED_DELTA
+- PostService/JourneyPostRepository/PostDtos/SecurityConfig/resources: EXACT
+- production shadow config: NONE
+- DB migration/new SQL/index: NONE
+- Recommendation production source: UNCHANGED
+
+EXTERNAL ATTESTATION REQUIRED
+- Gradle task graph discovery
+- IP-9 JUnit tests
+- unified IP-9/IP-8 regression tasks
+- full backend Spring tests
+- P0/P1/P2 and check
+- Docker/Testcontainers or external PostgreSQL 15 path

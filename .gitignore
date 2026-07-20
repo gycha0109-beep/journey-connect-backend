@@ -1,0 +1,81 @@
+# ==========================================
+# 🔐 Security & Configuration (보안 및 설정 파일)
+# ==========================================
+# 백엔드 핵심 설정 파일 및 프론트 환경변수 제외
+application.yml
+application.properties
+application-*.yml
+application-*.properties
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ==========================================
+# ☕ Backend (Spring Boot / Java / Gradle)
+# ==========================================
+# 빌드 결과물
+**/build/
+**/out/
+
+# Gradle 관련 파일
+.gradle/
+/build/
+
+# 저장소/라이브러리 캐시
+.gradletasknamecache
+
+# ==========================================
+# 💻 Frontend (React / Node / Vite 등)
+# ==========================================
+# 의존성 라이브러리 폴더 (용량이 매우 크므로 절대 올리면 안 됨)
+**/node_modules/
+/node_modules/
+
+# 프론트엔드 빌드 결과물
+**/dist/
+**/build/
+.pnpm-debug.log*
+
+# ==========================================
+# 🛠️ IDE & Tools (개발 도구 설정 파일)
+# ==========================================
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse
+.metadata/
+.classpath
+.project
+.settings/
+*.launch
+
+# Visual Studio Code
+.vscode/
+!.vscode/extensions.json
+.history/
+
+# DBeaver / Postman 로컬 캐시 및 파일
+.dbeaver/
+*-connection.json
+
+# ==========================================
+# 🍏 🪟 OS Generated Files (운영체제 생성 파일)
+# ==========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Ehthumbs.db
+Desktop.ini
+
+# Local verification outputs
+.verification/

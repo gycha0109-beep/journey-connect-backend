@@ -1,0 +1,10 @@
+{
+  "scenario": "retrieval_unavailable",
+  "rawQuery": "서울",
+  "pageSize": 20,
+  "maximumCandidateCount": 10,
+  "retrievalStatus": "unavailable",
+  "rankingStatus": "success",
+  "reverseReranking": false,
+  "candidates": []
+}

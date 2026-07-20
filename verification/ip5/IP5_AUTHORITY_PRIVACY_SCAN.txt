@@ -1,0 +1,7 @@
+IP-5 authority and privacy scan
+19:        return new SearchRuntimeAuthorityV1("foundation_only", false, false, false, false);
+privacy_forbidden_field_scan=PASS
+/mnt/data/ip5_work/Journey-Connect-IP-4-Existing-Search-Read-Adapter-Compatibility-Final/jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/pagination/SearchTestCursorV1.java:12:        if (!"test_only_unsigned".equals(authority) || productionAuthoritative) {
+/mnt/data/ip5_work/Journey-Connect-IP-4-Existing-Search-Read-Adapter-Compatibility-Final/jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/pagination/SearchTestCursorV1.java:13:            throw new IllegalArgumentException("IP-5 cursors must remain test_only_unsigned and non-authoritative");
+/mnt/data/ip5_work/Journey-Connect-IP-4-Existing-Search-Read-Adapter-Compatibility-Final/jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/pagination/SearchRuntimePageProjector.java:32:                new SearchTestCursorV1(cursor, "test_only_unsigned", false));
+authority_result=PASS

@@ -1,0 +1,6 @@
+manifest_files=1677
+match=1677
+fail=0
+excluded_self=verification/ip11/IP11_PACKAGE_FILE_MANIFEST_SHA256.txt
+excluded_result=verification/ip11/IP11_PACKAGE_MANIFEST_RESULT.txt
+result=PASS

@@ -1,0 +1,14 @@
+endpoint=GET /api/v1/explore
+controller=jc-backend/src/main/java/com/jc/backend/post/PostController.java#explore
+service=jc-backend/src/main/java/com/jc/backend/post/PostService.java#explore
+repository=jc-backend/src/main/java/com/jc/backend/post/JourneyPostRepository.java#explore
+request=keyword, region, Spring Pageable(default size 20)
+authentication=anonymous/public; no authentication principal consumed by explore method
+predicate=status PUBLISHED; visibility PUBLIC; moderation VISIBLE; author active
+keyword=case-insensitive substring over title/content/region local/ko/en
+region=case-insensitive exact match over slug/local/ko/en
+order=publishedAt DESC, id DESC
+pagination=offset Page/PageResponse(page,size,totalElements,totalPages,last)
+response=PageResponse<PostDtos.Summary>
+transaction=read path through service/repository; no IP-7 hook inserted
+hook_decision=production Controller/Service protected; independent adapter/wiring capability sufficient for IP-7

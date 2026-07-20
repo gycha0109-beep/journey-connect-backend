@@ -1,0 +1,6 @@
+Self Review 2 — Technical and Operational Realism
+1. Synthetic catalog risk -> explicitly rejected as production authority.
+2. IP-10 test values risk -> production budgets marked provisional and effective execution zero.
+3. Proposed observability risk -> only actual SLF4J/memory-only marked present; metrics/dashboard/tracing remain blockers.
+4. Runbook lacked executable timing -> provisional targets and current/future path split added.
+Result: 4 findings, 4 remediated.

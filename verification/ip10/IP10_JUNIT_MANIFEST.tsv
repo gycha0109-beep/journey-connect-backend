@@ -1,0 +1,7 @@
+class	test_methods	execution
+jc-backend/src/test/java/com/jc/backend/search/shadow/stage/StageExploreSearchShadowActivationIntegrationTest.java	2	NOT_EXECUTED
+jc-backend/src/test/java/com/jc/backend/search/shadow/stage/StageExploreSearchShadowFailureIsolationTest.java	2	NOT_EXECUTED
+jc-backend/src/test/java/com/jc/backend/search/shadow/stage/StageSearchRuntimeInputProviderTest.java	2	NOT_EXECUTED
+jc-backend/src/test/java/com/jc/backend/search/shadow/stage/StageSearchShadowConfigurationTest.java	4	NOT_EXECUTED
+jc-backend/src/test/java/com/jc/backend/search/shadow/stage/StageSearchShadowExecutorTest.java	2	NOT_EXECUTED
+jc-backend/src/test/java/com/jc/backend/verification/IP10TestStageShadowStaticTest.java	4	NOT_EXECUTED

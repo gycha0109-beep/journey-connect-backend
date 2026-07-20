@@ -1,0 +1,7 @@
+IP-11 external attestation status
+
+Gradle 8.14.5: NOT EXECUTED — USER-DIRECTED SKIP
+IP-9/IP-10 JUnit/Spring: NOT EXECUTED — USER-DIRECTED SKIP
+Docker/Testcontainers/PostgreSQL 15: NOT EXECUTED — USER-DIRECTED SKIP
+Prior direct assertions are not substituted for external attestation.
+Current eligible state: GOVERNANCE_DOCUMENTED / CONTROL_BLOCKERS_OPEN

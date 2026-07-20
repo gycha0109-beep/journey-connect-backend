@@ -1,0 +1,5 @@
+Self Review 1 — Responsibility and Approval
+1. Activation and rollback authority initially too close -> separated Product/Operations joint Go, Operations rollback judgment, Release execution.
+2. Role labels could hide missing people -> named assignee register uses UNASSIGNED / OPEN_BLOCKER.
+3. Approval cancellation/expiry absent -> 30-day and source/incident reversal rules added.
+Result: 3 findings, 3 remediated.

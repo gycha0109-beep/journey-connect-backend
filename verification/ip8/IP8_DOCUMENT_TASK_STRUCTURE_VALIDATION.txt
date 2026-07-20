@@ -1,0 +1,154 @@
+PASS	gradlew exists
+PASS	gradlew.bat exists
+PASS	wrapper jar exists
+PASS	wrapper Gradle 8.14.5
+PASS	gradlew executable
+PASS	settings includes jc-recommendation-core
+PASS	jc-recommendation-core build exists
+PASS	jc-recommendation-core Java 21
+PASS	jc-recommendation-core strict javac
+PASS	settings includes jc-intelligence-contracts
+PASS	jc-intelligence-contracts build exists
+PASS	jc-intelligence-contracts Java 21
+PASS	jc-intelligence-contracts strict javac
+PASS	settings includes jc-search-contracts
+PASS	jc-search-contracts build exists
+PASS	jc-search-contracts Java 21
+PASS	jc-search-contracts strict javac
+PASS	settings includes jc-search-compatibility
+PASS	jc-search-compatibility build exists
+PASS	jc-search-compatibility Java 21
+PASS	jc-search-compatibility strict javac
+PASS	settings includes jc-search-runtime
+PASS	jc-search-runtime build exists
+PASS	jc-search-runtime Java 21
+PASS	jc-search-runtime strict javac
+PASS	settings includes jc-search-integration
+PASS	jc-search-integration build exists
+PASS	jc-search-integration Java 21
+PASS	jc-search-integration strict javac
+PASS	settings includes jc-search-shadow-wiring
+PASS	jc-search-shadow-wiring build exists
+PASS	jc-search-shadow-wiring Java 21
+PASS	jc-search-shadow-wiring strict javac
+PASS	settings includes jc-search-readiness
+PASS	jc-search-readiness build exists
+PASS	jc-search-readiness Java 21
+PASS	jc-search-readiness strict javac
+PASS	unified task declared
+PASS	unified task depends :jc-intelligence-contracts:intelligenceContractTest
+PASS	unified task depends :jc-search-contracts:searchDomainContractTest
+PASS	unified task depends :jc-search-compatibility:searchCompatibilityContractTest
+PASS	unified task depends :jc-search-runtime:searchRuntimeContractTest
+PASS	unified task depends :jc-search-integration:searchIntegrationContractTest
+PASS	unified task depends :jc-search-shadow-wiring:searchShadowWiringContractTest
+PASS	unified task depends :jc-search-readiness:searchReadinessRegressionContractTest
+PASS	unified task depends :jc-recommendation-core:coreFoundationContractTest
+PASS	unified task depends :jc-recommendation-core:coreWave1ContractTest
+PASS	unified task depends :jc-recommendation-core:coreWave2ScoringContractTest
+PASS	unified task depends :jc-recommendation-core:coreWave3RankingDiversityContractTest
+PASS	unified task depends :jc-recommendation-core:coreWave3ExplorationContractTest
+PASS	unified task depends :jc-recommendation-core:coreWave4RankingIntegrationContractTest
+PASS	unified task depends :jc-recommendation-core:coreWave5ExposureContractTest
+PASS	unified task depends :jc-recommendation-core:coreWave6AttributionContractTest
+PASS	unified task depends :jc-recommendation-core:coreWave7OfflineEvaluationContractTest
+PASS	unified task depends :jc-recommendation-core:javaCoreGoldenFixtureContractTest
+PASS	unified task depends :jc-recommendation-core:javaCoreIsolationContractTest
+PASS	unified task depends :jc-recommendation-core:p1CoreContractTest
+PASS	unified task depends :jc-recommendation-core:p2CoreContractTest
+PASS	unified task no ignoreFailures
+PASS	unified task no Exec wrapper
+PASS	task dependency list unique
+PASS	jc-recommendation-core does not depend on root closure
+PASS	jc-intelligence-contracts does not depend on root closure
+PASS	jc-search-contracts does not depend on root closure
+PASS	jc-search-compatibility does not depend on root closure
+PASS	jc-search-runtime does not depend on root closure
+PASS	jc-search-integration does not depend on root closure
+PASS	jc-search-shadow-wiring does not depend on root closure
+PASS	jc-search-readiness does not depend on root closure
+PASS	readiness depends only shadow wiring
+PASS	readiness build excludes jc-backend
+PASS	readiness build excludes jc-recommendation-core
+PASS	readiness build excludes spring
+PASS	readiness build excludes jpa
+PASS	readiness build excludes database driver
+PASS	new module excludes backend package
+PASS	new module excludes recommendation package
+PASS	new module excludes Spring
+PASS	new module excludes JPA
+PASS	new module excludes JDBC
+PASS	new module excludes common ForkJoinPool
+PASS	new module excludes unmanaged thread
+PASS	no Spring auto activation annotations
+PASS	production config excludes search.shadow.mode
+PASS	production config excludes search-shadow-test
+PASS	production config excludes sample-basis-points
+PASS	production config excludes shadow_candidate
+PASS	IP-8 fixture count 8	8
+PASS	fixture JSON valid 01-default-disabled.json
+PASS	fixture JSON valid 02-missing-config-disabled.json
+PASS	fixture JSON valid 03-invalid-config-safe.json
+PASS	fixture JSON valid 04-proposal-incomplete.json
+PASS	fixture JSON valid 05-architecture-change-hold.json
+PASS	fixture JSON valid 06-owner-decisions-hold.json
+PASS	fixture JSON valid 07-disabled-equivalence-pass.json
+PASS	fixture JSON valid 08-all-prerequisites-resolved.json
+PASS	doc exists IP-8-SEARCH-SHADOW-ACTIVATION-READINESS-AND-REGRESSION-CLOSURE.md
+PASS	doc exists IP-8-CONTROLLED-HOOK-CHANGE-PROPOSAL.md
+PASS	doc exists IP-8-ACTIVATION-PREREQUISITE-MATRIX.md
+PASS	doc exists IP-8-ROLLBACK-KILL-SWITCH-AND-OBSERVABILITY-CONTRACT.md
+PASS	doc exists IP-8-HANDOFF.md
+PASS	Intelligence Markdown relative links valid
+PASS	IP-8 contract ID count 7	['search-shadow-activation-readiness-v1', 'search-shadow-activation-prerequisite-matrix-v1', 'search-shadow-execution-budget-v1', 'search-shadow-kill-switch-v1', 'search-shadow-rollback-v1', 'search-shadow-observability-retention-v1', 'ip-8-search-regression-closure-v1']
+PASS	IP-8 contract IDs unique
+PASS	IP-8 contract IDs lowercase-kebab-version
+PASS	IP-8 contract IDs do not collide with existing Java definitions	[]
+PASS	wire value lowercase_snake_case SearchShadowReadinessDecision.java:ready_for_controlled_hook_proposal
+PASS	wire value lowercase_snake_case SearchShadowReadinessDecision.java:hold_for_architecture_change
+PASS	wire value lowercase_snake_case SearchShadowReadinessDecision.java:hold_for_owner_decisions
+PASS	wire value lowercase_snake_case SearchShadowReadinessDecision.java:not_ready
+PASS	wire value lowercase_snake_case SearchPrerequisiteStatus.java:partially_resolved
+PASS	wire value lowercase_snake_case SearchPrerequisiteStatus.java:not_required_for_shadow
+PASS	wire value lowercase_snake_case SearchPrerequisiteRequirement.java:required_for_controlled_hook_proposal
+PASS	wire value lowercase_snake_case SearchPrerequisiteRequirement.java:required_before_activation
+PASS	wire value lowercase_snake_case SearchPrerequisiteRequirement.java:required_before_cutover
+PASS	wire value lowercase_snake_case SearchPrerequisiteRequirement.java:not_required_for_disabled_regression
+PASS	wire value lowercase_snake_case SearchActivationPrerequisiteMatrixV1.java:architecture_change_required
+PASS	wire value lowercase_snake_case SearchBudgetKey.java:max_concurrency
+PASS	wire value lowercase_snake_case SearchBudgetKey.java:queue_capacity
+PASS	wire value lowercase_snake_case SearchBudgetKey.java:task_timeout
+PASS	wire value lowercase_snake_case SearchBudgetKey.java:end_to_end_shadow_budget
+PASS	wire value lowercase_snake_case SearchBudgetKey.java:executor_rejection_policy
+PASS	wire value lowercase_snake_case SearchBudgetKey.java:queue_full_policy
+PASS	wire value lowercase_snake_case SearchBudgetKey.java:late_result_policy
+PASS	wire value lowercase_snake_case SearchBudgetKey.java:cancellation_policy
+PASS	wire value lowercase_snake_case SearchBudgetKey.java:circuit_open_policy
+PASS	wire value lowercase_snake_case SearchBudgetKey.java:hook_dispatch_overhead
+PASS	wire value lowercase_snake_case SearchBudgetKey.java:executor_submission_overhead
+PASS	wire value lowercase_snake_case SearchBudgetKey.java:queue_wait
+PASS	wire value lowercase_snake_case SearchBudgetKey.java:runtime_duration
+PASS	wire value lowercase_snake_case SearchBudgetKey.java:comparison_duration
+PASS	wire value lowercase_snake_case SearchBudgetKey.java:logging_duration
+PASS	wire value lowercase_snake_case SearchBudgetKey.java:total_shadow_duration
+PASS	wire value lowercase_snake_case SearchKillSwitchKey.java:global_disabled
+PASS	wire value lowercase_snake_case SearchKillSwitchKey.java:profile_disabled
+PASS	wire value lowercase_snake_case SearchKillSwitchKey.java:sample_rate_zero
+PASS	wire value lowercase_snake_case SearchKillSwitchKey.java:circuit_open
+PASS	wire value lowercase_snake_case SearchKillSwitchKey.java:executor_unavailable
+PASS	wire value lowercase_snake_case SearchRollbackLevel.java:level_0_sample_zero
+PASS	wire value lowercase_snake_case SearchRollbackLevel.java:level_1_mode_disabled
+PASS	wire value lowercase_snake_case SearchRollbackLevel.java:level_2_no_op_bean
+PASS	wire value lowercase_snake_case SearchRollbackLevel.java:level_3_remove_hook_call
+PASS	wire value lowercase_snake_case SearchRollbackLevel.java:level_4_remove_module_dependency
+PASS	wire value lowercase_snake_case SearchDisabledModeEquivalenceVerifier.java:response_identity_changed
+PASS	wire value lowercase_snake_case SearchDisabledModeEquivalenceVerifier.java:response_value_changed
+PASS	wire value lowercase_snake_case SearchDisabledModeEquivalenceVerifier.java:executor_submitted
+PASS	wire value lowercase_snake_case SearchDisabledModeEquivalenceVerifier.java:runtime_invoked
+PASS	wire value lowercase_snake_case SearchDisabledModeEquivalenceVerifier.java:comparison_invoked
+PASS	wire value lowercase_snake_case SearchDisabledModeEquivalenceVerifier.java:logging_invoked
+PASS	wire value lowercase_snake_case SearchDisabledModeEquivalenceVerifier.java:item_order_changed
+PASS	wire value lowercase_snake_case SearchDisabledModeEquivalenceVerifier.java:pagination_changed
+PASS	wire value lowercase_snake_case SearchDisabledModeEquivalenceVerifier.java:exception_semantics_changed
+PASS	wire value lowercase_snake_case SearchDisabledModeEquivalenceVerifier.java:serialization_changed
+PASS	no generated binaries in project tree

@@ -1,0 +1,7 @@
+check	result
+PostService_explore_call_once_source	PASS
+same_legacy_object_return_source	PASS
+Search_output_not_response_source	PASS
+direct_actual_runtime_legacy_identity	PASS
+direct_body_pagination_unchanged	PASS
+Spring_MVC_status_content_type_serialization	NOT_EXECUTED

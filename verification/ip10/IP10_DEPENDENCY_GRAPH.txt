@@ -1,0 +1,5 @@
+backend_root=jc-backend
+registered_modules=jc-intelligence-contracts,jc-search-contracts,jc-search-compatibility,jc-search-runtime,jc-search-integration,jc-search-shadow-wiring,jc-search-readiness,jc-recommendation-core
+backend_dependency=jc-search-shadow-wiring
+transitive=jc-search-integration,jc-search-runtime,jc-search-contracts,jc-search-compatibility,jc-intelligence-contracts
+reverse_backend_dependency=NONE

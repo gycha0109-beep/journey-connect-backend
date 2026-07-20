@@ -1,0 +1,8 @@
+{
+  "scenario": "disabled_equivalence_pass",
+  "proposalReady": true,
+  "unresolvedActivationCount": 22,
+  "expectedProposalDecision": "ready_for_controlled_hook_proposal",
+  "expectedActivationDecision": "hold_for_owner_decisions",
+  "disabledEquivalenceExpected": true
+}

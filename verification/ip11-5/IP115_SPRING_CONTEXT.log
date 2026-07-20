@@ -1,0 +1,2 @@
+STATUS: NOT EXECUTED — USER-DIRECTED SKIP
+Source-level JUnit/ApplicationContextRunner tests were added, but Spring/JUnit execution is not claimed.

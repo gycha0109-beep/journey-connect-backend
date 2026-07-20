@@ -1,0 +1,17 @@
+endpoint=GET /api/v1/explore
+controller=PostController.explore(keyword, region, Pageable)
+service=PostService.explore
+repository=JourneyPostRepository.explore
+transaction=APP read-only (PostService class boundary)
+request=optional keyword, optional region, Pageable; default size 20
+keyword=blank-to-null; lower-case substring over title/content/region name fields
+region=normalized exact case-insensitive match over slug/local/ko/en
+visibility=PUBLISHED + PUBLIC + VISIBLE moderation + active author
+ordering=publishedAt DESC, id DESC
+pagination=Spring offset Page
+response=ApiResponse<PageResponse<PostDtos.Summary>>
+authentication=permitAll; no principal input in explore method
+runtime_evidence=none
+search_cursor=none
+search_exposure=none
+result=LEGACY_READ_PATH_NOT_SEARCH_RUNTIME

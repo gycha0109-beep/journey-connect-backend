@@ -1,0 +1,5 @@
+ARCHITECTURE REVIEW
+1. Fixed IP-8 SQL-count contract to protect exact 01..26 while allowing 27+ additive migrations.
+2. Added explicit STALE result instead of ambiguous EMPTY.
+3. Kept projection writer outside PostService transaction; no trigger/broad refactor.
+Result: findings remediated; external DB attestation remains.

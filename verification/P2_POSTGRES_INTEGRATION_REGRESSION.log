@@ -1,0 +1,55 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.5/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :checkKotlinGradlePluginConfigurationErrors
+> Task :jc-recommendation-core:compileJava
+> Task :compileKotlin
+
+> Task :compileJava
+Note: /mnt/data/p2work/Journey-Connect-P1-Final-Validation-Batch17/jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationCanonicalPayload.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :processResources
+> Task :classes
+> Task :compileTestKotlin NO-SOURCE
+> Task :compileTestJava
+> Task :processTestResources
+> Task :testClasses
+> Task :jc-recommendation-core:processResources NO-SOURCE
+> Task :jc-recommendation-core:classes
+> Task :jc-recommendation-core:jar
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+2026-07-18T21:43:20.799Z  INFO 9520 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T21:43:20.801Z  INFO 9520 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-07-18T21:43:20.805Z  INFO 9520 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+> Task :p1PreferenceIntegration
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+2026-07-18T21:43:34.590Z  INFO 9674 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T21:43:34.593Z  INFO 9674 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-07-18T21:43:34.598Z  INFO 9674 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+> Task :p1BehaviorProfileIntegration
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+2026-07-18T21:43:47.927Z  INFO 9841 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T21:43:47.930Z  INFO 9841 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-07-18T21:43:47.934Z  INFO 9841 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+> Task :p1ShadowIntegration
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+2026-07-18T21:44:00.156Z  INFO 9982 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T21:44:00.159Z  INFO 9982 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-07-18T21:44:00.164Z  INFO 9982 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+> Task :p1CanaryIntegration
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+2026-07-18T21:44:13.197Z  INFO 10127 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T21:44:13.201Z  INFO 10127 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-07-18T21:44:13.206Z  INFO 10127 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+> Task :p2EvaluationIntegration
+
+[Incubating] Problems report is available at: file:///mnt/data/p2work/Journey-Connect-P1-Final-Validation-Batch17/jc-backend/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.5/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 1m 34s
+13 actionable tasks: 13 executed

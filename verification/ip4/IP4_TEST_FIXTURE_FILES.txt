@@ -1,0 +1,17 @@
+java/com/jc/intelligence/compat/search/explore/LegacyExploreCompatibilityContractTest.java
+resources/search-compatibility/duplicate-item-reference.json
+resources/search-compatibility/empty-query-first-page.json
+resources/search-compatibility/empty-result.json
+resources/search-compatibility/hidden-deleted-excluded-legacy-response.json
+resources/search-compatibility/invalid-page.json
+resources/search-compatibility/keyword-query-first-page.json
+resources/search-compatibility/keyword-query-later-page.json
+resources/search-compatibility/legacy-response-field-missing.json
+resources/search-compatibility/maximum-page-size.json
+resources/search-compatibility/mixed-case-latin-query.json
+resources/search-compatibility/multiple-items-same-created-at.json
+resources/search-compatibility/null-optional-field.json
+resources/search-compatibility/unicode-korean-query.json
+resources/search-compatibility/unsupported-filter.json
+resources/search-compatibility/unsupported-sort.json
+resources/search-compatibility/whitespace-heavy-query.json

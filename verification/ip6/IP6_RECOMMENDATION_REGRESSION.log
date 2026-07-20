@@ -1,0 +1,26 @@
+--- com.jc.recommendation.foundation.CoreFoundationContractTest ---
+Java recommendation core foundation contract: PASS
+--- com.jc.recommendation.foundation.CoreWave1ContractTest ---
+Java recommendation core Wave 1 contract: PASS
+--- com.jc.recommendation.foundation.CoreWave2ScoringContractTest ---
+Java recommendation core Wave 2 scoring contract: PASS
+--- com.jc.recommendation.foundation.CoreWave3RankingDiversityContractTest ---
+Java recommendation core Wave 3 ranking/diversity contract: PASS
+--- com.jc.recommendation.foundation.CoreWave3ExplorationContractTest ---
+Java recommendation core Wave 3 exploration contract: PASS
+--- com.jc.recommendation.foundation.CoreWave4RankingIntegrationContractTest ---
+Java recommendation core Wave 4 ranking integration contract: PASS
+--- com.jc.recommendation.foundation.CoreWave5ExposureContractTest ---
+Java recommendation core Wave 5 exposure contract: PASS
+--- com.jc.recommendation.foundation.CoreWave6AttributionContractTest ---
+Java recommendation core Wave 6 behavior and attribution contract: PASS
+--- com.jc.recommendation.foundation.CoreWave7OfflineEvaluationContractTest ---
+Java recommendation core Wave 7 offline evaluation contract: PASS
+--- com.jc.recommendation.foundation.JavaCoreGoldenFixtureContractTest ---
+Java recommendation core committed golden fixtures: PASS
+--- com.jc.recommendation.foundation.JavaCoreIsolationContractTest ---
+Java recommendation core framework isolation: PASS
+--- com.jc.recommendation.p1.P1CoreContractTest ---
+P1 core contract: PASS (17 scenarios)
+--- com.jc.recommendation.p2.P2CoreContractTest ---
+P2 core contract: PASS (23 scenarios)

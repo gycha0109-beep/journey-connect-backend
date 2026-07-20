@@ -1,0 +1,11 @@
+decision_id	topic	status	owner	blocker	required_closure
+IP11-DEC-001	Activation Owner	OPEN_BLOCKER	Product Owner / Operations Approver / Release Operator	all named assignees unassigned	named primary/backup and audit path
+IP11-DEC-002	Rollback Owner	OPEN_BLOCKER	Operations Approver / Release Operator	named owner and SLA absent	primary/backup, SLA, incident recorder
+IP11-DEC-003	Kill-switch Owner	OPEN_BLOCKER	Operations	remote/dynamic switch and owner absent	propagation SLA and audit
+IP11-DEC-004	Runtime Input Source	OPEN_BLOCKER	Search/Intelligence + source owner TBD	source owner, writer, schema unresolved	visibility/tombstone/replay lineage
+IP11-DEC-005	Executor Budget	OPEN_BLOCKER	Backend + Operations	load measurement and owner absent	metrics, alert and rollback thresholds
+IP11-DEC-007	Retention	OPEN_BLOCKER	Data/Privacy	destination, period and owner absent	ACL, deletion, encryption, audit
+IP11-DEC-008	Security/Privacy	OPEN_BLOCKER	Security/Privacy Approver	named approver and acceptance absent	all unresolved findings closed
+IP11-DEC-009	Observability	OPEN_BLOCKER	Operations	destination/dashboard/alert owner absent	metrics, dashboard, alert and retention
+IP11-DEC-011	Emergency Disable	OPEN_BLOCKER	Operations	actual path, owner and drill absent	propagation and verification evidence
+IP11-DEC-012	External Attestation	DEFERRED	Independent Verifier	not executed and verifier unassigned	JUnit XML, DB route, command logs, signature

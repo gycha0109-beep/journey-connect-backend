@@ -1,0 +1,12 @@
+Journey Connect P1 Independent Recheck
+======================================
+P1 core contract: 17/17 PASS
+Java core Wave 5-7: PASS
+Golden fixture: PASS
+Framework isolation: PASS
+P1 contract verification: PASS
+P0 verification: PASS
+P1 PostgreSQL integrations: 4/4 PASS
+PostgreSQL canonical SQL 01..24: 24/24 PASS
+Source changes during recheck: none
+Final status: P1 CLOSED

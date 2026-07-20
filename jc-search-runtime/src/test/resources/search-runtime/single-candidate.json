@@ -1,0 +1,19 @@
+{
+  "scenario": "single_candidate",
+  "rawQuery": "제주",
+  "pageSize": 20,
+  "maximumCandidateCount": 10,
+  "retrievalStatus": "success",
+  "rankingStatus": "success",
+  "reverseReranking": false,
+  "candidates": [
+    {
+      "entityRef": "post:1",
+      "sourceRank": 1,
+      "rankingScore": 0.9,
+      "orderingKey": "a",
+      "eligibilityDecision": "allow",
+      "visibilityDecision": "allow"
+    }
+  ]
+}

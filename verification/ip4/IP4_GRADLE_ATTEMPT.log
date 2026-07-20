@@ -1,0 +1,8 @@
+Command:
+./gradlew :jc-search-compatibility:searchCompatibilityContractTest :jc-search-contracts:searchDomainContractTest :jc-intelligence-contracts:intelligenceContractTest --stacktrace
+
+Result:
+FAILED before Gradle distribution installation.
+java.net.UnknownHostException: services.gradle.org
+
+No Gradle task is reported PASS from this attempt.

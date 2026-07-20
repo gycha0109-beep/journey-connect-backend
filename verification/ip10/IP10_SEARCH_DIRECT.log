@@ -1,0 +1,15 @@
+[run] com.jc.intelligence.contract.IntelligenceContractsContractTest
+IP-1 intelligence contract checks passed: 739
+[run] com.jc.intelligence.contract.search.SearchDomainContractsContractTest
+Search Domain contract assertions PASS: 425
+[run] com.jc.intelligence.compat.search.explore.LegacyExploreCompatibilityContractTest
+Search compatibility contract assertions PASS: 584
+[run] com.jc.intelligence.runtime.search.SearchRuntimeContractTest
+IP-5 Search runtime foundation assertions: 850 PASS
+[run] com.jc.intelligence.integration.search.SearchIntegrationContractTest
+IP-6 Search integration boundary assertions: 972 PASS
+[run] com.jc.intelligence.wiring.search.SearchShadowWiringContractTest
+IP-7 Search shadow wiring assertions: 1700 PASS
+[run] com.jc.intelligence.readiness.search.SearchShadowReadinessContractTest
+IP-8 Search shadow readiness/regression assertions: 2560 PASS
+SEARCH_DIRECT_REGRESSION=PASS

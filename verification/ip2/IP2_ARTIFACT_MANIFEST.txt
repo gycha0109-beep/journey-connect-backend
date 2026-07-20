@@ -1,0 +1,36 @@
+Journey Connect IP-2 Artifact Manifest
+
+Stage: IP-2 Search Contract Foundation
+Status: COMPLETE / CONTRACT_ONLY
+Search production implementation: NOT STARTED
+Search exposure persistence: NOT IMPLEMENTED
+DB/SQL: UNCHANGED
+
+Created documents:
+- docs/platform/intelligence/IP-2-SEARCH-CONTRACT-FOUNDATION.md
+- docs/platform/intelligence/SEARCH-DOMAIN-CONTRACT-V1.md
+- docs/platform/intelligence/SEARCH-QUERY-AND-NORMALIZATION-V1.md
+- docs/platform/intelligence/SEARCH-RETRIEVAL-FILTERING-AND-RANKING-V1.md
+- docs/platform/intelligence/SEARCH-PAGINATION-AND-CURSOR-V1.md
+- docs/platform/intelligence/SEARCH-EXPOSURE-CONTRACT-V1.md
+- docs/platform/intelligence/SEARCH-REPLAY-FAILURE-AND-EVIDENCE-V1.md
+- docs/platform/intelligence/IP-2-HANDOFF.md
+
+Modified documents:
+- docs/platform/intelligence/README.md
+- docs/contracts/JOURNEY_CONNECT_SYSTEM_CONTRACT_V1.md (latest provided SC-1 aligned copy)
+- docs/contracts/JOURNEY_CONNECT_TRACK_GOVERNANCE_V1.md (latest provided SC-1 aligned copy)
+
+Added baseline references:
+- docs/contracts/SC-1-SYSTEM-CONTRACT-P2-BASELINE-ALIGNMENT.md
+- docs/platform/data/DP-0-DATA-PLATFORM-CONTRACT-FOUNDATION.md
+- docs/platform/data/DP-0-P2-BASELINE-ALIGNMENT.md
+
+Verification:
+- IP2_DOCUMENT_VALIDATION.txt: PASS 162/162
+- IP2_PROTECTED_BASELINE_RESULT.txt: PASS 320/320
+- IP2_SQL_01_26_RESULT.txt: PASS 26/26
+- IP2_PRODUCTION_AND_BUILD_DIFF.txt: NO DIFFERENCE
+- IP2_NEW_SQL_FILES.txt: NONE
+- Self review 1: 4 found / 4 fixed / 0 deferred
+- Self review 2: 5 found / 5 fixed / 0 deferred

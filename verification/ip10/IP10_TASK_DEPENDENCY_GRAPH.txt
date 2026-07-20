@@ -1,0 +1,28 @@
+tasks.register<Test>("ip10TestStageShadowActivationRegression") {
+    group = "verification"
+    description = "Runs IP-10 test/stage active Search shadow wiring, bounded execution, and production-guard tests."
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    dependsOn(tasks.testClasses)
+    useJUnitPlatform()
+    filter {
+        includeTestsMatching("com.jc.backend.search.shadow.stage.*")
+        includeTestsMatching("com.jc.backend.verification.IP10TestStageShadowStaticTest")
+    }
+}
+
+/** IP-9 external attestation plus IP-10 test/stage activation and complete backend verification closure. */
+tasks.register("ip10CombinedExternalRegressionClosure") {
+    group = "verification"
+    description = "Runs IP-9/IP-10 Search closure, backend test/check, and P0/P1/P2 verification without ignoring failures."
+    dependsOn(
+        "ip9ControlledBackendHookRegression",
+        "ip10TestStageShadowActivationRegression",
+        "p0Verification",
+        "p1Verification",
+        "p2Verification",
+        "check",
+    )
+}
+
+

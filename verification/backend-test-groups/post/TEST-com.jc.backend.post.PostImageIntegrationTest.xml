@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.jc.backend.post.PostImageIntegrationTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-07-18T20:11:23.654Z" hostname="d063fc686b07" time="0.174">
+  <properties/>
+  <testcase name="postStoresOrderedImagesAndUsesFirstImageAsCover()" classname="com.jc.backend.post.PostImageIntegrationTest" time="0.174"/>
+  <system-out><![CDATA[2026-07-18T20:11:23.647Z  INFO 34257 --- [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.jc.backend.post.PostImageIntegrationTest]: PostImageIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-07-18T20:11:23.649Z  INFO 34257 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.jc.backend.JcBackendApplication for test class com.jc.backend.post.PostImageIntegrationTest
+2026-07-18T20:11:23.760Z  INFO 34257 --- [    Test worker] i.StatisticalLoggingSessionEventListener : Session Metrics {
+    677828 nanoseconds spent acquiring 1 JDBC connections;
+    0 nanoseconds spent releasing 0 JDBC connections;
+    0 nanoseconds spent preparing 0 JDBC statements;
+    0 nanoseconds spent executing 0 JDBC statements;
+    0 nanoseconds spent executing 0 JDBC batches;
+    0 nanoseconds spent performing 0 L2C puts;
+    0 nanoseconds spent performing 0 L2C hits;
+    0 nanoseconds spent performing 0 L2C misses;
+    0 nanoseconds spent executing 0 flushes (flushing a total of 0 entities and 0 collections);
+    0 nanoseconds spent executing 0 pre-partial-flushes;
+    0 nanoseconds spent executing 0 partial-flushes (flushing a total of 0 entities and 0 collections)
+}
+2026-07-18T20:11:23.828Z  INFO 34257 --- [    Test worker] i.StatisticalLoggingSessionEventListener : Session Metrics {
+    804617 nanoseconds spent acquiring 1 JDBC connections;
+    0 nanoseconds spent releasing 0 JDBC connections;
+    631153 nanoseconds spent preparing 15 JDBC statements;
+    9987939 nanoseconds spent executing 15 JDBC statements;
+    0 nanoseconds spent executing 0 JDBC batches;
+    0 nanoseconds spent performing 0 L2C puts;
+    0 nanoseconds spent performing 0 L2C hits;
+    0 nanoseconds spent performing 0 L2C misses;
+    0 nanoseconds spent executing 0 flushes (flushing a total of 0 entities and 0 collections);
+    3994535 nanoseconds spent executing 11 pre-partial-flushes;
+    4455757 nanoseconds spent executing 11 partial-flushes (flushing a total of 48 entities and 48 collections)
+}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

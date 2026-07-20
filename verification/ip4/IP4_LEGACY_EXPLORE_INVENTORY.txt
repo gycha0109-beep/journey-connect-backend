@@ -1,0 +1,13 @@
+Endpoint: GET /api/v1/explore
+Security: permitAll; no Jwt argument and no personalization
+Parameters: optional keyword, optional region, Pageable; default size 20
+Keyword normalization: blank->null, otherwise trim
+Region normalization: blank->null, otherwise trim + Locale.ROOT lowercase
+Repository predicates: PUBLISHED, PUBLIC, moderation VISIBLE, active author
+Keyword fields: title, content, region local/ko/en names; case-insensitive substring
+Region fields: slug/local/ko/en names; case-insensitive equality
+Order: publishedAt DESC, id DESC
+Response: PageResponse<PostDtos.Summary>; zero-based offset/page metadata
+Summary timestamp: createdAt (not repository ordering publishedAt)
+SearchRun/snapshot/cursor/exposure/ranking policy/retrieval score: absent
+Dedicated explore integration/fixture: absent

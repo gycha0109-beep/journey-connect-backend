@@ -1,0 +1,30 @@
+REVIEW 2 - IMPLEMENTATION, REGRESSION, SECURITY
+Mutable collection constructors:
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/identity/IdentitySchemeId.java:12:        this.wireValue = wireValue;
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/authority/FeatureAuthorityClass.java:15:        this.wireValue = wireValue;
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/authority/ExposureSourceId.java:14:        this.wireValue = wireValue;
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/authority/ExposureSourceStatus.java:13:        this.wireValue = wireValue;
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/replay/ReplayClass.java:13:        this.wireValue = wireValue;
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/run/IntelligenceRunType.java:14:        this.wireValue = wireValue;
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/run/IntelligenceRunStatus.java:13:        this.wireValue = wireValue;
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/snapshot/SnapshotRole.java:14:        this.wireValue = wireValue;
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/snapshot/PrivacyClass.java:14:        this.wireValue = wireValue;
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/snapshot/OrderingSemantics.java:13:        this.wireValue = wireValue;
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/feature/FeatureValueType.java:15:        this.wireValue = wireValue;
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/explanation/ExplanationAudience.java:14:        this.wireValue = wireValue;
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/inference/ModelType.java:14:        this.wireValue = wireValue;
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/inference/SafetyResult.java:13:        this.wireValue = wireValue;
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/inference/InferenceStatus.java:13:        this.wireValue = wireValue;
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/compatibility/CompatibilityClassification.java:14:        this.wireValue = wireValue;
+Enum ordinal usage:
+Default timezone/locale hazards:
+Sensitive tokens in fixtures:
+Canonical hashing implementation in IP-1 (must be absent):
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/validation/ContractChecks.java:89:                    field + " must be lowercase SHA-256 hexadecimal");
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/snapshot/IntelligenceInputSnapshotV1.java:51:        contentHash = ContractChecks.requireHash(contentHash, "contentHash");
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/snapshot/IntelligenceCandidateSnapshotV1.java:45:        contentHash = ContractChecks.requireHash(contentHash, "contentHash");
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-intelligence-contracts/src/main/java/com/jc/intelligence/contract/v1/snapshot/IntelligenceOutputSnapshotV1.java:52:        contentHash = ContractChecks.requireHash(contentHash, "contentHash");
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-backend/src/main/java/com/jc/backend/intelligence/compat/recommendation/RecommendationP1ProfileCompatibilityAdapterV1.java:53:                throw new IllegalArgumentException("profileFingerprint must be lowercase SHA-256");
+/mnt/data/ip1_work/Journey-Connect-P2-Final-Validation-Batch18/jc-backend/src/main/java/com/jc/backend/intelligence/compat/recommendation/RecommendationP2ExperimentExposureCompatibilityAdapterV1.java:48:                throw new IllegalArgumentException("exposureFingerprint must be lowercase SHA-256");
+Existing test expectation changes in protected recommendation tests:
+No git metadata in extracted package; protected hash comparison used instead.

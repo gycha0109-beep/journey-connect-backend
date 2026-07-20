@@ -1,0 +1,16 @@
+gate	status	evidence	owner	blocker	required_action
+production property wiring	IMPLEMENTED	IP-12 properties/configuration	Backend Owner	new-source Spring attestation	run verifyIp12SpringWiring
+maximum production sampling 10 BPS	IMPLEMENTED	validator/direct boundary 0..10	Project Owner/Backend Owner	none in source	preserve
+sampling 11+ rejected	IMPLEMENTED	direct 11/50/100/max rejection	Backend Owner	Spring binding attestation	run Gradle gate
+kill-switch property path	IMPLEMENTED_WITH_CONDITIONS	property-backed switch and prod resources	Project Owner/Backend Owner	restart drill not executed	run deployment-equivalent drill
+actual allowlist	PENDING	production resources empty	Project Owner	no account hashes	provide approved hashes
+Micrometer binding	IMPLEMENTED / ATTESTATION_PENDING	adapter and actuator dependency	Backend Owner	Gradle/Spring unavailable	run SimpleMeterRegistry and context tests
+structured logging	IMPLEMENTED	bounded startup/decision/completion logs	Backend Owner	runtime log inspection pending	run Spring drill
+legacy response exact	DIRECT_PASS / SPRING_PENDING	actual Search Runtime direct drill preserves identity	Backend Owner	MVC/Gradle pending	run controller regression
+resource budget	DIRECT_PASS	1/2 threads queue8 200/300ms 100 candidates	Backend Owner	Spring lifecycle pending	run resource and context gates
+external IP-12 attestation	OPEN_BLOCKER	Gradle DNS failure/no local distribution	Independent verifier	JUnit/Spring not executed	run exact ZIP in attested environment
+PostgreSQL SQL 01..28	BASELINE_ATTESTED / IP12_SQL_UNCHANGED	IP-11.9 PASS and IP-12 SHA exact	DB verifier	optional exact-source rerun	confirm according to release gate
+production shadow	DISABLED	enabled=false kill=true sample=0 empty list	Project Owner	none	preserve
+actual cohort	EMPTY / 0%	no hashes in resources	Project Owner	account values pending	preserve until IP-12.5
+Search cutover	NOT_STARTED	Controller remains legacy authority	Backend/Search	none	preserve
+traffic Go/No-Go	NO_GO_FOR_TRAFFIC	attestation and account inputs pending	Project Owner	mandatory gates open	do not activate

@@ -1,0 +1,19 @@
+P0-8 FINAL VALIDATION SUMMARY
+
+Environment
+- Java: 21.0.10
+- Gradle: 8.14.5 (user-provided archive)
+- PostgreSQL: 15.18 Debian (user-provided bookworm rootfs)
+
+Commands
+- clean :test :p0Verification :jc-recommendation-core:check --offline --no-daemon
+- psql -v ON_ERROR_STOP=1, canonical SQL 01 through 22 in lexical order
+
+Results
+- Backend JUnit: 64/64 PASS
+- P0 verification: 11/11 PASS
+- Java Core contract executables: 11/11 PASS
+- PostgreSQL canonical SQL: 22/22 PASS
+- Recommendation core baseline files: 240/240 SHA-256 exact
+- DB v2.4 SQL 01-20 to DB v2.5 and canonical: exact
+- Failures/errors/skips: 0/0/0

@@ -1,0 +1,13 @@
+{
+  "contractVersion": "intelligence-candidate-snapshot-v1",
+  "snapshotId": "snapshot-candidate-0001",
+  "schemaVersion": "recommendation-candidate-view-v1",
+  "candidateRefs": [
+    "post:123",
+    "post:456"
+  ],
+  "orderingSemantics": "ordered",
+  "domainExtensionRef": "recommendation_partition:ranked-terminal-v1",
+  "contentHash": "2222222222222222222222222222222222222222222222222222222222222222",
+  "producerBuildId": "batch18-build-abc123"
+}

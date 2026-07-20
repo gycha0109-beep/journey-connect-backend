@@ -1,0 +1,15 @@
+document IP-5-SEARCH-RUNTIME-FOUNDATION.md: PASS
+document IP-5-HANDOFF.md: PASS
+document README.md: PASS
+relative_links: PASS
+contract_id search-runtime-foundation-v1: PASS declarations=1
+contract_id ip-5-handoff-v1: PASS declarations=1
+new_contract_id_format: PASS
+wire_lowercase_snake_case: PASS
+handoff contains Search Runtime Foundation: PASS
+handoff contains Search Persistence: PASS
+handoff contains Search Exposure Persistence: PASS
+handoff contains Production Cursor Authority: PASS
+handoff contains Legacy /api/v1/explore Behavior: PASS
+result=PASS
+errors=0

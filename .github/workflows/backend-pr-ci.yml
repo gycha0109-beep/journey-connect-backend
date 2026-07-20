@@ -1,0 +1,52 @@
+name: Backend PR CI
+
+on:
+  pull_request:
+    paths:
+      - "jc-backend/**"
+      - "jc-recommendation-core/**"
+      - "database/journey-connect-db-v2.1/**"
+      - ".github/workflows/backend-pr-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-pr-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  canonical-postgres-tests:
+    name: Java / canonical PostgreSQL 15
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    defaults:
+      run:
+        working-directory: jc-backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Grant execute permission for Gradle Wrapper
+        run: chmod +x ./gradlew
+
+      - name: Run Java static and architecture gates
+        run: ./gradlew p0Verification --stacktrace --no-daemon
+
+      - name: Run backend and PostgreSQL integration tests
+        run: ./gradlew clean test --stacktrace --no-daemon
+
+      - name: Run Java recommendation-core verification
+        run: ./gradlew :jc-recommendation-core:check --stacktrace --no-daemon

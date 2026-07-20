@@ -1,0 +1,7 @@
+PASS
+Activation owner: Project Owner
+Rollback owner: Backend Owner
+Kill-switch owner: Project Owner
+Backup owner: Team Lead Youngtak
+Security/Privacy co-approval: Project Owner + Team Lead Youngtak
+Unknown legal names/accounts/contacts: NOT INVENTED

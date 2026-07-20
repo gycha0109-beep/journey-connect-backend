@@ -1,0 +1,23 @@
+Journey Connect IP-9 backend regression status
+
+Java 21: AVAILABLE
+Gradle Wrapper: PRESENT, configured for 8.14.5
+Gradle distribution install: FAILED
+Failure: java.net.UnknownHostException: services.gradle.org
+
+NOT EXECUTED:
+- Gradle task discovery (tasks --all)
+- ip9BackendHookContractTest
+- ip9ControlledBackendHookRegression
+- ip8SearchRegressionClosure through Gradle
+- ip1CompatibilityContractTest through Gradle
+- backend test
+- p0Verification
+- p1Verification
+- p2Verification
+- check
+- Spring ApplicationContext/JUnit/MVC suite
+- Docker/Testcontainers/PostgreSQL backend integration
+
+These entries are NOT PASS. External attestation is required.
+Direct dependency-free and stub bridge verification is recorded separately in IP9_DIRECT_VERIFICATION.log.

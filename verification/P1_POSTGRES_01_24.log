@@ -1,0 +1,893 @@
+===== 01_initial_schema.sql =====
+BEGIN
+CREATE FUNCTION
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE TRIGGER
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TABLE
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE TABLE
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TABLE
+CREATE TRIGGER
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+CREATE TRIGGER
+CREATE INDEX
+CREATE INDEX
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+CREATE INDEX
+CREATE FUNCTION
+COMMIT
+===== 02_seed.sql =====
+BEGIN
+INSERT 0 6
+INSERT 0 4
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+COMMIT
+===== 03_smoke_test.sql =====
+BEGIN
+DO
+ROLLBACK
+===== 04_admin_support.sql =====
+BEGIN
+ALTER TABLE
+ALTER TABLE
+CREATE FUNCTION
+CREATE TRIGGER
+ALTER TABLE
+DROP INDEX
+DROP INDEX
+DROP INDEX
+DROP INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+CREATE TABLE
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE TABLE
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+COMMIT
+===== 05_security_roles.sql =====
+BEGIN
+DO
+DO
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/05_security_roles.sql:53: WARNING:  role "jc_admin" is not a member of role "jc_app"
+REVOKE ROLE
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/05_security_roles.sql:54: WARNING:  role "jc_app" is not a member of role "jc_admin"
+REVOKE ROLE
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/05_security_roles.sql:55: WARNING:  role "jc_app" is not a member of role "jc_auth"
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/05_security_roles.sql:55: WARNING:  role "jc_admin" is not a member of role "jc_auth"
+REVOKE ROLE
+DO
+GRANT ROLE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+GRANT
+GRANT
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+REVOKE
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/05_security_roles.sql:381: NOTICE:  trigger "posts_prevent_hidden_content_mutation" for relation "public.posts" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+CREATE FUNCTION
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/05_security_roles.sql:405: NOTICE:  trigger "comments_prevent_moderated_content_mutation" for relation "public.comments" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+CREATE FUNCTION
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/05_security_roles.sql:456: NOTICE:  trigger "post_images_prevent_hidden_mutation_before" for relation "public.post_images" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/05_security_roles.sql:460: NOTICE:  trigger "post_images_prevent_hidden_mutation_after_delete" for relation "public.post_images" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/05_security_roles.sql:465: NOTICE:  trigger "post_places_prevent_hidden_mutation_before" for relation "public.post_places" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/05_security_roles.sql:469: NOTICE:  trigger "post_places_prevent_hidden_mutation_after_delete" for relation "public.post_places" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/05_security_roles.sql:474: NOTICE:  trigger "post_tags_prevent_hidden_mutation_before" for relation "public.post_tags" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/05_security_roles.sql:478: NOTICE:  trigger "post_tags_prevent_hidden_mutation_after_delete" for relation "public.post_tags" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+CREATE FUNCTION
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/05_security_roles.sql:496: NOTICE:  trigger "admin_actions_prevent_mutation" for relation "public.admin_actions" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+DROP TRIGGER
+CREATE TRIGGER
+CREATE FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+REVOKE
+REVOKE
+REVOKE
+REVOKE ROLE
+COMMIT
+===== 06_security_smoke_test.sql =====
+BEGIN
+DO
+INSERT 0 4
+SET
+ set_config 
+------------
+ 
+(1 row)
+
+DO
+RESET
+SET
+ set_config 
+------------
+ 4
+(1 row)
+
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+UPDATE 1
+SET CONSTRAINTS
+SET CONSTRAINTS
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+UPDATE 1
+SET CONSTRAINTS
+SET CONSTRAINTS
+DO
+DO
+INSERT 0 1
+DO
+RESET
+SET
+ set_config 
+------------
+ 5
+(1 row)
+
+ submit_report 
+---------------
+             1
+(1 row)
+
+ submit_report 
+---------------
+             2
+(1 row)
+
+DO
+RESET
+SET
+ set_config 
+------------
+ 4
+(1 row)
+
+UPDATE 1
+RESET
+DO
+SET
+ set_config 
+------------
+ 3
+(1 row)
+
+DO
+ admin_hide_post 
+-----------------
+ 
+(1 row)
+
+DO
+RESET
+SET
+ set_config 
+------------
+ 4
+(1 row)
+
+DO
+RESET
+DO
+SET
+ set_config 
+------------
+ 2
+(1 row)
+
+ admin_change_user_role 
+------------------------
+ 
+(1 row)
+
+ admin_change_user_role 
+------------------------
+ 
+(1 row)
+
+ set_config 
+------------
+ 3
+(1 row)
+
+ admin_restore_post 
+--------------------
+ 
+(1 row)
+
+ admin_delete_comment 
+----------------------
+ 
+(1 row)
+
+RESET
+SET
+ set_config 
+------------
+ 4
+(1 row)
+
+DO
+RESET
+SET
+ set_config 
+------------
+ 3
+(1 row)
+
+ admin_restore_comment 
+-----------------------
+ 
+(1 row)
+
+RESET
+SET
+ set_config 
+------------
+ 4
+(1 row)
+
+UPDATE 1
+UPDATE 1
+RESET
+SET CONSTRAINTS
+SET CONSTRAINTS
+SET
+ set_config 
+------------
+ 3
+(1 row)
+
+ admin_hide_post 
+-----------------
+ 
+(1 row)
+
+ admin_delete_comment 
+----------------------
+ 
+(1 row)
+
+RESET
+SET
+ set_config 
+------------
+ 4
+(1 row)
+
+DO
+RESET
+SET
+ set_config 
+------------
+ 3
+(1 row)
+
+ admin_restore_post 
+--------------------
+ 
+(1 row)
+
+ admin_restore_comment 
+-----------------------
+ 
+(1 row)
+
+RESET
+SET
+ set_config 
+------------
+ 4
+(1 row)
+
+INSERT 0 1
+INSERT 0 1
+UPDATE 1
+SET CONSTRAINTS
+SET CONSTRAINTS
+ set_config 
+------------
+ 5
+(1 row)
+
+ submit_report 
+---------------
+             3
+(1 row)
+
+ set_config 
+------------
+ 4
+(1 row)
+
+UPDATE 1
+RESET
+SET CONSTRAINTS
+SET CONSTRAINTS
+ALTER TABLE
+UPDATE 1
+ALTER TABLE
+ set_config 
+------------
+ 6
+(1 row)
+
+ purge_expired_deleted_posts 
+-----------------------------
+                           0
+(1 row)
+
+DO
+SET
+ set_config 
+------------
+ 3
+(1 row)
+
+ admin_start_report_review 
+---------------------------
+ 
+(1 row)
+
+ admin_finish_report 
+---------------------
+ 
+(1 row)
+
+RESET
+ purge_expired_deleted_posts 
+-----------------------------
+                           1
+(1 row)
+
+DO
+ROLLBACK
+===== 07_recommendation_storage.sql =====
+BEGIN
+CREATE EXTENSION
+DO
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TABLE
+CREATE INDEX
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+COMMIT
+===== 08_recommendation_security_roles.sql =====
+BEGIN
+DO
+DO
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/08_recommendation_security_roles.sql:38: WARNING:  role "jc_recommendation" is not a member of role "jc_app"
+REVOKE ROLE
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/08_recommendation_security_roles.sql:39: WARNING:  role "jc_recommendation" is not a member of role "jc_auth"
+REVOKE ROLE
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/08_recommendation_security_roles.sql:40: WARNING:  role "jc_recommendation" is not a member of role "jc_admin"
+REVOKE ROLE
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/08_recommendation_security_roles.sql:41: WARNING:  role "jc_app" is not a member of role "jc_recommendation"
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/08_recommendation_security_roles.sql:41: WARNING:  role "jc_auth" is not a member of role "jc_recommendation"
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/08_recommendation_security_roles.sql:41: WARNING:  role "jc_admin" is not a member of role "jc_recommendation"
+psql:/mnt/data/p1finalwork/database/journey-connect-db-v2.6/08_recommendation_security_roles.sql:41: WARNING:  role "jc_security_owner" is not a member of role "jc_recommendation"
+REVOKE ROLE
+DO
+GRANT ROLE
+GRANT
+GRANT
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+REVOKE
+REVOKE
+GRANT
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+REVOKE
+REVOKE ROLE
+COMMIT
+===== 09_recommendation_smoke_test.sql =====
+BEGIN
+DO
+SET
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+SET CONSTRAINTS
+SET CONSTRAINTS
+DO
+RESET
+DO
+SET
+DO
+RESET
+SET
+DO
+RESET
+SET
+DO
+RESET
+ROLLBACK
+===== 10_backend_runtime.sql =====
+BEGIN
+ALTER TABLE
+CREATE INDEX
+INSERT 0 1
+CREATE INDEX
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE TRIGGER
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE TRIGGER
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+COMMIT
+===== 11_backend_runtime_security_roles.sql =====
+BEGIN
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+REVOKE
+REVOKE
+REVOKE
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+REVOKE
+COMMIT
+===== 12_backend_runtime_smoke_test.sql =====
+BEGIN
+DO
+ROLLBACK
+===== 13_backend_role_routing.sql =====
+BEGIN
+GRANT
+GRANT
+REVOKE
+REVOKE
+REVOKE
+REVOKE
+COMMIT
+===== 14_backend_role_routing_smoke_test.sql =====
+BEGIN
+DO
+ROLLBACK
+===== 15_backend_role_runtime_fix.sql =====
+BEGIN
+GRANT
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+REVOKE
+COMMIT
+===== 16_backend_role_runtime_fix_smoke_test.sql =====
+BEGIN
+DO
+SET
+DO
+SET CONSTRAINTS
+RESET
+DO
+ROLLBACK
+===== 17_recommendation_run_exploration_partition_fix.sql =====
+BEGIN
+ALTER TABLE
+ALTER TABLE
+COMMIT
+===== 18_recommendation_run_exploration_partition_fix_smoke_test.sql =====
+BEGIN
+DO
+ROLLBACK
+===== 19_recommendation_replay_audit.sql =====
+BEGIN
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE TRIGGER
+REVOKE
+GRANT
+GRANT
+REVOKE
+REVOKE
+COMMIT
+===== 20_recommendation_replay_audit_smoke_test.sql =====
+BEGIN
+DO
+ROLLBACK
+===== 21_recommendation_behavior_runtime.sql =====
+BEGIN
+ALTER TABLE
+ALTER TABLE
+CREATE FUNCTION
+CREATE FUNCTION
+ALTER FUNCTION
+ALTER FUNCTION
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+REVOKE
+GRANT
+COMMIT
+===== 22_recommendation_behavior_runtime_smoke_test.sql =====
+BEGIN
+DO
+SET
+ set_config 
+------------
+ 11
+(1 row)
+
+DO
+RESET
+DO
+ROLLBACK
+===== 23_recommendation_p1_profile_policy.sql =====
+BEGIN
+INSERT 0 7
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+ALTER FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+REVOKE
+REVOKE
+REVOKE
+GRANT
+GRANT
+GRANT
+COMMIT
+===== 24_recommendation_p1_profile_policy_smoke_test.sql =====
+BEGIN
+DO
+DO
+DO
+SAVEPOINT
+DO
+ROLLBACK
+SAVEPOINT
+DO
+ROLLBACK
+ROLLBACK
+SQL_01_24_PASS

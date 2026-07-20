@@ -1,0 +1,5 @@
+Windows Explorer/Shell extraction: NOT EXECUTED — Linux container does not provide Windows Shell.Application.
+7-Zip extraction: NOT EXECUTED — 7z/7zz/7za is not installed in the execution container.
+Alternative extraction verification executed in this environment: Info-ZIP unzip, Python zipfile, Java jar.
+Windows verification automation is provided as VERIFY_WINDOWS_EXPLORER_AND_7ZIP.ps1.
+This status is not a PASS claim for Windows Explorer or 7-Zip.

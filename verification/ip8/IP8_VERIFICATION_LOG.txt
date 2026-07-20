@@ -1,0 +1,80 @@
+Journey Connect IP-8 Verification Log
+=====================================
+Stage: IP-8 Search Shadow Activation Readiness & Regression Closure
+
+FINAL STATUS
+- IP-8: COMPLETE
+- Primary readiness: READY_FOR_CONTROLLED_HOOK_PROPOSAL
+- Production activation: HOLD_FOR_OWNER_DECISIONS
+- Production hook insertion: NONE
+- Legacy /api/v1/explore behavior: UNCHANGED
+
+DIRECT VERIFICATION
+- Java 21 main/test compile with -Xlint:all -Werror: PASS
+- IP-8 readiness/regression: 2560 PASS
+- IP-7 wiring: 1700 PASS
+- IP-6 integration: 972 PASS
+- IP-5 runtime: 850 PASS
+- IP-4 compatibility: 584 PASS
+- IP-3 Search contracts: 425 PASS
+- IP-1 common contracts: 739 PASS
+- Recommendation Foundation/Wave1..7: PASS
+- Recommendation Golden/Isolation: PASS
+- P1 Core: 17 PASS
+- P2 Core: 23 PASS
+- fixtures: 8/8 JSON PASS
+
+GRADLE/BACKEND STATUS
+- Gradle wrapper present: PASS
+- Gradle wrapper version: 8.14.5
+- gradlew executable / gradlew.bat / wrapper jar/properties: PASS
+- actual wrapper attempts: EXECUTED
+- wrapper distribution: FAILED (UnknownHostException services.gradle.org)
+- Gradle configuration/task graph runtime: NOT_EXECUTED
+- ip8SearchRegressionClosure via Gradle: NOT_EXECUTED
+- Backend Spring tests: NOT_EXECUTED
+- Testcontainers/PostgreSQL tests: NOT_EXECUTED
+- Gradle/backend PASS claimed: NO
+
+STATIC GRADLE READINESS
+- settings includes all modules: PASS
+- project dependency paths: PASS
+- Java 21 toolchains: PASS
+- dedicated contract task declarations: PASS
+- ip8SearchRegressionClosure required dependencies: PASS
+- ignoreFailures absent: PASS
+- external Exec failure swallowing absent: PASS
+- static circular dependency scan: PASS
+- valid root backend task paths documented: PASS
+
+DISABLED-MODE EQUIVALENCE
+- executor submissions: 0 PASS
+- runtime/input/comparison invocations: 0 PASS
+- comparison log writes: 0 PASS
+- response identity/deep equality/order/page metadata: PASS
+- exception/serialization semantics contract: PASS
+
+AUTHORITY
+- responseAuthority: legacy
+- persistenceAuthority: false
+- exposureAuthority: false
+- releaseGateAuthority: false
+- productionCursorAuthority: false
+- productionActivationAuthority: false
+
+PROTECTION
+- protected source: 320/320 exact PASS
+- canonical SQL 01..26: 26/26 exact PASS
+- Controller/Service/Repository/DTO/JPQL/SecurityConfig: exact PASS
+- production application config: unchanged PASS
+- recommendation source/P2 evidence/exposure/metric definitions: exact PASS
+- DB migration/new SQL/index: NONE PASS
+
+SELF REVIEW
+- Review 1: 4 found / 4 fixed / 0 held
+- Review 2: 4 found / 4 fixed / 0 held
+
+EXTERNAL ATTESTATION REQUIRED
+- Gradle ip8SearchRegressionClosure PASS
+- Backend Spring/Testcontainers full PASS
+- owner/budget/retention approvals

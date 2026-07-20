@@ -1,0 +1,40 @@
+Starting a Gradle Daemon, 14 stopped Daemons could not be reused, use --status for details
+> Task :checkKotlinGradlePluginConfigurationErrors
+> Task :jc-recommendation-core:compileJava UP-TO-DATE
+> Task :compileKotlin UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :compileTestKotlin NO-SOURCE
+> Task :compileTestJava UP-TO-DATE
+> Task :processTestResources UP-TO-DATE
+> Task :testClasses UP-TO-DATE
+> Task :jc-recommendation-core:processResources NO-SOURCE
+> Task :jc-recommendation-core:classes UP-TO-DATE
+> Task :jc-recommendation-core:jar UP-TO-DATE
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+> Task :test
+
+2026-07-18T20:12:41.902Z  INFO 34838 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T20:12:41.907Z  INFO 34838 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-07-18T20:12:41.913Z  INFO 34838 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-07-18T20:12:41.917Z  INFO 34838 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T20:12:41.918Z  INFO 34838 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown initiated...
+2026-07-18T20:12:41.923Z  INFO 34838 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown completed.
+2026-07-18T20:12:41.928Z  INFO 34838 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T20:12:41.929Z  INFO 34838 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown initiated...
+2026-07-18T20:12:42.008Z  INFO 34838 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown completed.
+2026-07-18T20:12:42.011Z  INFO 34838 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T20:12:42.013Z  INFO 34838 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown initiated...
+2026-07-18T20:12:42.107Z  INFO 34838 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown completed.
+
+[Incubating] Problems report is available at: file:///mnt/data/p1finalwork/jc-backend/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.5/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 50s
+9 actionable tasks: 2 executed, 7 up-to-date

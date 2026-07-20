@@ -1,0 +1,12 @@
+IP-2 Self Review 1 — Contract and Architecture Consistency
+
+Found: 4
+Fixed: 4
+Deferred: 0
+
+1. Common IntelligenceRunV1 has no candidateSnapshotRef. Fixed by retaining candidateSnapshotRef and search-specific versions in SearchRun/domain extension rather than modifying IP-1.
+2. Reserved search_exposure_v1 could be misread as active authority. Fixed by explicit RESERVED/PERSISTENCE NOT IMPLEMENTED activation gate.
+3. Existing recommendation behavior SEARCH enum could be misread as public Search logging. Fixed by documenting persistence capability versus absent public producer.
+4. Legacy /explore Page offset could be mistaken for Search V1 cursor. Fixed by explicit legacy compatibility separation and snapshot-bound V1 decision.
+
+Revalidation: document terms, owner, source authority and common mapping PASS.

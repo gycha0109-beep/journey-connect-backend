@@ -1,0 +1,4 @@
+backend_protected_total=9
+backend_protected_match=9
+backend_protected_fail=0
+result=PASS

@@ -1,0 +1,14 @@
+IP-9 Self Review 2 — regression and operational failures
+
+1. FOUND: hook failure test was masked by page metadata mismatch and never reached the failing hook.
+   FIXED: matching page fixture and invocation counter now prove the hook exception path executes and is contained.
+2. FOUND: temporary compiled classes could remain in final package.
+   FIXED: direct runner now compiles under /tmp and cleans on exit; prior class directories removed.
+3. VERIFIED: jc-backend is the Gradle root. External commands use test/p0Verification/p1Verification/p2Verification/check, not :jc-backend:test.
+4. VERIFIED: no active production bean, property, profile, executor, input provider, logger, persistence, exposure, release gate, or cursor authority was added.
+
+Post-fix verification:
+- direct Search/Recommendation regression PASS
+- bridge direct assertions 6 PASS
+- protected and SQL hash PASS
+- Gradle/backend remains NOT_EXECUTED, not PASS

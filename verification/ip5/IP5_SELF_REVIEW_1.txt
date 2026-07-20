@@ -1,0 +1,29 @@
+IP-5 Self Review 1 — Contract, Architecture, Authority, Immutability
+found=9
+fixed=9
+held=0
+
+1. Failure results could carry fake run/snapshot/page references.
+   Fix: failure result shape forbids snapshot/page/SearchRun/IntelligenceRun/fallback authority.
+2. SUCCESS/NO_RESULTS/FALLBACK status was not fully cross-validated against result shape.
+   Fix: constructor-level status/result invariant added.
+3. Reranker could replace candidate facts while preserving entityRef.
+   Fix: exact RetrievalCandidateV1 equality required against eligible source candidate.
+4. exact_replay could be over-declared for external provider candidates.
+   Fix: exact replay eligibility rejects external provider retrieval source.
+5. Snapshot builtAt/referenceTime/start/completion relation needed stronger checks.
+   Fix: time range binding strengthened.
+6. Runtime page could contain more items than requested page size.
+   Fix: page size invariant added.
+7. Runtime result/evidence/SearchRun/IntelligenceRun output refs could drift.
+   Fix: cross-binding invariants added.
+8. Fixture constructors allowed avoidable inconsistent values.
+   Fix: fixture builder/record validation strengthened; invalid cases require explicit test-only path.
+9. Runtime entry point was only a concrete class.
+   Fix: SearchRuntime interface added; DefaultSearchRuntime remains dependency-injected pure Java.
+
+Revalidation:
+- IP-5 runtime contract test PASS
+- IP-4 compatibility regression PASS
+- IP-3 Search contract regression PASS
+- IP-1 common contract regression PASS

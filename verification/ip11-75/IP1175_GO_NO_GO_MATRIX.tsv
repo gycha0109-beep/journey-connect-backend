@@ -1,0 +1,21 @@
+gate	status	evidence	owner	blocker	required_action
+activation role assigned	APPROVED_WITH_CONDITIONS	Project Owner assigned	Project Owner	operational account/contact and external attestation	preserve conditional approval
+rollback role assigned	APPROVED_WITH_CONDITIONS	Backend Owner assigned	Backend Owner	measured SLA/contact and production drill	define operational details
+kill-switch role assigned	APPROVED_WITH_CONDITIONS	Project Owner primary; Team Lead Youngtak backup	Project Owner	remote/dynamic path and production drill	validate actual path
+authoritative input approved	PARTIALLY_RESOLVED	projection/writer/provider implemented	Search/System Coordination	SQL 27/28 and Operations authority external attestation	execute PostgreSQL/authority verification
+production guard verified	PARTIALLY_RESOLVED	direct/static technical controls	Backend Owner	Spring profile external attestation	run Spring contexts
+resource budget approved for pilot	APPROVED_WITH_CONDITIONS	1/2 threads; queue 8; 200/300ms; 100 candidates	Project Owner/Backend Owner	load evidence; code provisional sample capability broader than 10 BPS	attest and enforce 10 BPS ceiling in IP-12
+sampling ceiling approved	APPROVED_WITH_CONDITIONS	current 0 BPS; pilot max 10 BPS	Project Owner	IP-12 and explicit enable not present	keep 0 until gates close
+retention policy approved	POLICY_APPROVED / IMPLEMENTATION_PENDING	14-day aggregate; 30-day error summary; raw data prohibited	Project Owner/Backend Owner	writer/TTL/cleanup not implemented	implement only when persistence is approved
+privacy/security policy approved	APPROVED_WITH_CONDITIONS	minimization and content exclusions approved	Project Owner + Team Lead Youngtak	external production review and persistence re-review	complete external review
+observability instrumentation approved	APPROVED_WITH_CONDITIONS	Spring structured logs + Micrometer target approved	Backend Owner/Project Owner	Micrometer binding/manual check procedure not externally verified	verify binding and manual checks
+external dashboard ready	DEFERRED	none claimed	Project Owner	dashboard platform absent	optional later integration
+automated alerting ready	DEFERRED	none claimed	Project Owner	channel/threshold/on-call open	define before broader rollout
+controlled cohort policy approved	POLICY_APPROVED / ALLOWLIST_PENDING	Phase A internal-only	Project Owner	actual account IDs absent; actual cohort empty 0%	provide account allowlist
+emergency disable responsibility assigned	APPROVED_WITH_CONDITIONS	owners assigned; technical drill exists	Project Owner/Backend Owner	actual production path and drill absent	run production-equivalent drill
+external attestation complete	OPEN_BLOCKER	NOT EXECUTED — USER-DIRECTED SKIP	Independent Verifier/System Coordination	Gradle/Spring/PostgreSQL not executed	execute exact-SHA suite
+legacy response exact	PARTIALLY_RESOLVED	direct/static evidence	Backend Owner	Spring/MVC external attestation pending	run external regression
+Search cutover disabled	APPROVED	source/config inventory	Backend/Search	none	preserve
+production shadow disabled	APPROVED	effective sample 0 and empty cohort	Project Owner/Backend Owner	none	preserve
+persistence disabled	APPROVED	production evidence sink no-op	Search/Data	none	preserve
+exposure/release authority absent	APPROVED	no writer/release gate	Search/Reliability	none	preserve

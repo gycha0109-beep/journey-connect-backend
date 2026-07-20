@@ -1,0 +1,30 @@
+IP-9 Gradle task graph static validation
+status=PASS_STATIC_ONLY
+runtime_task_discovery=NOT_EXECUTED
+reason=Gradle 8.14.5 distribution DNS failure
+
+root_project=jc-backend
+new_test_task=ip9BackendHookContractTest
+new_unified_task=ip9ControlledBackendHookRegression
+
+dependency graph:
+ip9ControlledBackendHookRegression
+  -> ip8SearchRegressionClosure
+  -> ip1CompatibilityContractTest
+  -> ip9BackendHookContractTest
+
+ip9BackendHookContractTest
+  -> testClasses
+  -> JUnit Platform filtered IP-9 classes
+
+checks:
+- task names are unique in build.gradle.kts
+- no self dependency
+- no dependency back from IP-8/IP-1 to IP-9
+- no ignoreFailures/isIgnoreFailures
+- no external Exec failure swallowing
+- group=verification and descriptions present
+
+External verifier must confirm with:
+./gradlew --no-daemon --stacktrace tasks --all
+./gradlew --no-daemon --stacktrace ip9ControlledBackendHookRegression

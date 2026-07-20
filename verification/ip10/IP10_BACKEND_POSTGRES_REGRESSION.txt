@@ -1,0 +1,5 @@
+Backend Spring/JUnit regression: NOT EXECUTED — USER-DIRECTED SKIP
+Docker/Testcontainers/PostgreSQL 15 regression: NOT EXECUTED — USER-DIRECTED SKIP
+IP-9 external attestation: PENDING
+IP-10 external attestation: PENDING
+This is not PASS.

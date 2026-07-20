@@ -1,0 +1,1 @@
+protected_source=320/320 exact

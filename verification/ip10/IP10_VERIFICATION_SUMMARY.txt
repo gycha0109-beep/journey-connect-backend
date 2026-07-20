@@ -1,0 +1,11 @@
+IP-9 final status: IMPLEMENTATION_COMPLETE / EXTERNAL_ATTESTATION_PENDING
+IP-10 final status: IMPLEMENTATION_COMPLETE / EXTERNAL_ATTESTATION_PENDING
+Production shadow: DISABLED
+Legacy response authority: MAINTAINED
+Direct Java/Search/Recommendation/IP-10 regression: PASS
+IP-10 direct assertions: 36 PASS
+Gradle/JUnit/Spring: NOT EXECUTED — USER-DIRECTED SKIP
+Docker/Testcontainers/PostgreSQL: NOT EXECUTED — USER-DIRECTED SKIP
+Protected source: 320/320 exact
+Canonical SQL: 26/26 exact
+IP-11: HOLD

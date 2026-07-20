@@ -1,0 +1,8 @@
+IP-9 JUnit summary
+planned_classes=4
+executed_classes=0
+passed_classes=0
+failed_classes=0
+not_executed_classes=4
+status=NOT_EXECUTED
+reason=Gradle 8.14.5 distribution download failed with UnknownHostException: services.gradle.org

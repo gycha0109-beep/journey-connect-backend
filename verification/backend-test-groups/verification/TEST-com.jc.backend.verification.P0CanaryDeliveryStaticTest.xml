@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.jc.backend.verification.P0CanaryDeliveryStaticTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-07-18T20:05:10.357Z" hostname="d063fc686b07" time="0.003">
+  <properties/>
+  <testcase name="canaryDeliveryIsSignedReadinessGatedExposureTrackedAndLiveRemainsBlocked()" classname="com.jc.backend.verification.P0CanaryDeliveryStaticTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

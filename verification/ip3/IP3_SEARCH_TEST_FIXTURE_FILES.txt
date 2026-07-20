@@ -1,0 +1,9 @@
+test/java/com/jc/intelligence/contract/search/SearchDomainContractsContractTest.java
+test/resources/search/retrieval-candidate-v1-valid.json
+test/resources/search/search-cursor-v1-valid.json
+test/resources/search/search-failure-v1-valid.json
+test/resources/search/search-fallback-v1-valid.json
+test/resources/search/search-query-v1-normalized.json
+test/resources/search/search-request-v1-invalid.json
+test/resources/search/search-request-v1-valid.json
+test/resources/search/search-run-v1-valid.json

@@ -1,0 +1,6 @@
+required_docs=17
+missing_docs=0
+relative_link_errors=0
+new_contract_declaration_errors=0
+wire_errors=0
+result=PASS

@@ -1,0 +1,62 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.5/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :checkKotlinGradlePluginConfigurationErrors
+> Task :jc-recommendation-core:compileJava
+> Task :compileKotlin
+
+> Task :compileJava
+Note: /mnt/data/p2work/Journey-Connect-P1-Final-Validation-Batch17/jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationCanonicalPayload.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :processResources
+> Task :classes
+> Task :compileTestKotlin NO-SOURCE
+> Task :compileTestJava
+> Task :processTestResources
+> Task :testClasses
+> Task :jc-recommendation-core:processResources NO-SOURCE
+> Task :jc-recommendation-core:classes
+> Task :jc-recommendation-core:jar
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+> Task :test
+
+2026-07-18T21:46:26.348Z  INFO 10773 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T21:46:26.349Z  INFO 10773 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Shutdown initiated...
+2026-07-18T21:46:26.354Z  INFO 10773 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Shutdown completed.
+2026-07-18T21:46:26.358Z  INFO 10773 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T21:46:26.358Z  INFO 10773 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-7 - Shutdown initiated...
+2026-07-18T21:46:26.363Z  INFO 10773 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-7 - Shutdown completed.
+2026-07-18T21:46:26.365Z  INFO 10773 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T21:46:26.367Z  INFO 10773 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-8 - Shutdown initiated...
+2026-07-18T21:46:26.373Z  INFO 10773 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-8 - Shutdown completed.
+2026-07-18T21:46:26.380Z  INFO 10773 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T21:46:26.461Z  INFO 10773 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-9 - Shutdown initiated...
+2026-07-18T21:46:26.466Z  INFO 10773 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-9 - Shutdown completed.
+2026-07-18T21:46:26.471Z  INFO 10773 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T21:46:26.472Z  INFO 10773 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-10 - Shutdown initiated...
+2026-07-18T21:46:26.563Z  INFO 10773 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-10 - Shutdown completed.
+2026-07-18T21:46:26.572Z  INFO 10773 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T21:46:26.676Z  INFO 10773 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-11 - Shutdown initiated...
+2026-07-18T21:46:26.774Z  INFO 10773 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-11 - Shutdown completed.
+2026-07-18T21:46:26.874Z  INFO 10773 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T21:46:26.874Z  INFO 10773 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-12 - Shutdown initiated...
+2026-07-18T21:46:26.961Z  INFO 10773 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-12 - Shutdown completed.
+2026-07-18T21:46:26.962Z  INFO 10773 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-18T21:46:26.963Z  INFO 10773 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-13 - Shutdown initiated...
+2026-07-18T21:46:27.166Z  INFO 10773 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-13 - Shutdown completed.
+
+> Task :jc-recommendation-core:compileTestJava
+> Task :jc-recommendation-core:processTestResources
+> Task :jc-recommendation-core:testClasses
+> Task :jc-recommendation-core:test
+
+[Incubating] Problems report is available at: file:///mnt/data/p2work/Journey-Connect-P1-Final-Validation-Batch17/jc-backend/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.5/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 1m 15s
+12 actionable tasks: 12 executed

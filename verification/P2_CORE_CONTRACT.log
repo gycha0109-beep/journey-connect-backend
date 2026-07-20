@@ -1,0 +1,14 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.5/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :compileJava
+> Task :processResources NO-SOURCE
+> Task :classes
+> Task :compileTestJava
+> Task :processTestResources
+> Task :testClasses
+
+> Task :p2CoreContractTest
+P2 core contract: PASS (22 scenarios)
+
+BUILD SUCCESSFUL in 15s
+4 actionable tasks: 4 executed

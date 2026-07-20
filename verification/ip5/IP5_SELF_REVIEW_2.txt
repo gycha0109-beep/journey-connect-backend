@@ -1,0 +1,33 @@
+IP-5 Self Review 2 — Failure Classification, Input Binding, Regression
+found=10
+fixed=10
+held=0
+
+1. Candidate-filter exception could be classified as generic retrieval failure.
+   Fix: FILTERING_FAILED mapping.
+2. Eligibility-port exception could be classified as generic retrieval failure.
+   Fix: ELIGIBILITY_DEPENDENCY_UNAVAILABLE/typed dependency mapping.
+3. Visibility-port exception could be classified as generic retrieval failure.
+   Fix: VISIBILITY_DEPENDENCY_UNAVAILABLE/typed dependency mapping.
+4. Returned candidate retrieval source was not cross-bound to request allowed sources.
+   Fix: exact allowed-source validation.
+5. Returned candidate strategy version was not cross-bound to execution strategy version.
+   Fix: strategy version equality validation.
+6. Candidate retrievedAt after execution completion was not rejected.
+   Fix: temporal binding validation.
+7. Fixture candidates lacked the same source/version/time rigor as runtime candidates.
+   Fix: fixture candidate validation strengthened.
+8. SearchRun and IntelligenceRun output snapshot refs needed explicit result binding checks.
+   Fix: output reference equality invariant.
+9. External-provider exact replay rejection lacked a direct regression.
+   Fix: dedicated assertion added.
+10. Filter/eligibility/visibility exception paths lacked direct assertions.
+    Fix: dedicated typed-failure tests added.
+
+Revalidation:
+- IP-5 runtime: 850 assertions PASS
+- IP-4 compatibility: 584 assertions PASS
+- IP-3 Search contract: 425 assertions PASS
+- IP-1 common contract: 739 assertions PASS
+- protected source: 320/320 exact match
+- canonical SQL: 26/26 exact match

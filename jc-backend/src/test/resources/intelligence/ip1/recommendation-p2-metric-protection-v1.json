@@ -1,0 +1,30 @@
+{
+  "metricDefinitionVersion": "recommendation-metrics-v1",
+  "datasetSchemaVersion": "recommendation-evaluation-dataset-v1",
+  "evaluationPolicyVersion": "recommendation-evaluation-policy-v1",
+  "engagementRate": {
+    "exposureSource": "recommendation_p2_experiment_exposure_v1",
+    "attributionWindowDays": 7,
+    "includedEvents": [
+      "click",
+      "like",
+      "save",
+      "share"
+    ],
+    "excludedEvents": [
+      "view",
+      "impression",
+      "hide",
+      "report"
+    ],
+    "unit": "exposed_eligible_subject",
+    "dedupe": "experimentId+experimentVersion+subjectRef"
+  },
+  "fallbackRate": {
+    "numerator": "bound_exposed_distinct_run_status_fallback",
+    "denominator": "bound_exposed_distinct_run",
+    "runStatus": "fallback",
+    "unit": "run"
+  },
+  "sourceAggregationAllowed": false
+}

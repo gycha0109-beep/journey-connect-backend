@@ -1,0 +1,62 @@
+{
+  "name": "multiple-items-same-created-at",
+  "request": {
+    "keyword": null,
+    "region": null,
+    "page": 0,
+    "size": 20,
+    "sortOrders": [],
+    "unsupportedParameters": {}
+  },
+  "page": {
+    "items": [
+      {
+        "id": 9,
+        "title": "Higher ID",
+        "regionCode": "KR-11",
+        "regionName": "서울",
+        "coverImageUrl": "https://img.example.com/cover.jpg",
+        "viewCount": 109,
+        "likeCount": 19,
+        "bookmarkCount": 14,
+        "author": {
+          "id": 1009,
+          "nickname": "user9",
+          "profileImageUrl": "https://img.example.com/u.jpg"
+        },
+        "createdAt": "2026-07-19T09:00:00Z"
+      },
+      {
+        "id": 8,
+        "title": "Lower ID",
+        "regionCode": "KR-11",
+        "regionName": "서울",
+        "coverImageUrl": "https://img.example.com/cover.jpg",
+        "viewCount": 108,
+        "likeCount": 18,
+        "bookmarkCount": 13,
+        "author": {
+          "id": 1008,
+          "nickname": "user8",
+          "profileImageUrl": "https://img.example.com/u.jpg"
+        },
+        "createdAt": "2026-07-19T09:00:00Z"
+      }
+    ],
+    "page": 0,
+    "size": 20,
+    "totalElements": 2,
+    "totalPages": 1,
+    "last": true
+  },
+  "context": {
+    "requestId": "request:legacy-explore-001",
+    "correlationId": "correlation:legacy-explore-001",
+    "sessionRef": null,
+    "referenceTime": "2026-07-19T12:00:00Z",
+    "mappedAt": "2026-07-19T12:00:01Z",
+    "producerBuildId": "ip4-build-001"
+  },
+  "expectedStatus": "success",
+  "expectedFailureCode": null
+}

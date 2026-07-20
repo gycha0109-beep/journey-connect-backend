@@ -1,0 +1,14 @@
+IP-6 authority and privacy scan
+/mnt/data/ip6_work/Journey-Connect-IP-5-Search-Runtime-Foundation-Final/jc-search-integration/src/main/java/com/jc/intelligence/integration/search/v1/SearchShadowAuthorityV1.java:4:        String responseAuthority,
+/mnt/data/ip6_work/Journey-Connect-IP-5-Search-Runtime-Foundation-Final/jc-search-integration/src/main/java/com/jc/intelligence/integration/search/v1/SearchShadowAuthorityV1.java:5:        boolean responseModified,
+/mnt/data/ip6_work/Journey-Connect-IP-5-Search-Runtime-Foundation-Final/jc-search-integration/src/main/java/com/jc/intelligence/integration/search/v1/SearchShadowAuthorityV1.java:6:        boolean persistenceAuthority,
+/mnt/data/ip6_work/Journey-Connect-IP-5-Search-Runtime-Foundation-Final/jc-search-integration/src/main/java/com/jc/intelligence/integration/search/v1/SearchShadowAuthorityV1.java:7:        boolean exposureAuthority,
+/mnt/data/ip6_work/Journey-Connect-IP-5-Search-Runtime-Foundation-Final/jc-search-integration/src/main/java/com/jc/intelligence/integration/search/v1/SearchShadowAuthorityV1.java:8:        boolean releaseGateAuthority,
+/mnt/data/ip6_work/Journey-Connect-IP-5-Search-Runtime-Foundation-Final/jc-search-integration/src/main/java/com/jc/intelligence/integration/search/v1/SearchShadowAuthorityV1.java:9:        boolean metricAuthority,
+/mnt/data/ip6_work/Journey-Connect-IP-5-Search-Runtime-Foundation-Final/jc-search-integration/src/main/java/com/jc/intelligence/integration/search/v1/SearchShadowAuthorityV1.java:10:        boolean productionCursorAuthority,
+/mnt/data/ip6_work/Journey-Connect-IP-5-Search-Runtime-Foundation-Final/jc-search-integration/src/main/java/com/jc/intelligence/integration/search/v1/SearchShadowAuthorityV1.java:13:        if (!"legacy".equals(responseAuthority)) {
+/mnt/data/ip6_work/Journey-Connect-IP-5-Search-Runtime-Foundation-Final/jc-search-integration/src/main/java/com/jc/intelligence/integration/search/v1/SearchShadowAuthorityV1.java:14:            throw new IllegalArgumentException("responseAuthority must be legacy");
+/mnt/data/ip6_work/Journey-Connect-IP-5-Search-Runtime-Foundation-Final/jc-search-integration/src/main/java/com/jc/intelligence/integration/search/v1/SearchShadowAuthorityV1.java:16:        if (responseModified || persistenceAuthority || exposureAuthority || releaseGateAuthority
+/mnt/data/ip6_work/Journey-Connect-IP-5-Search-Runtime-Foundation-Final/jc-search-integration/src/main/java/com/jc/intelligence/integration/search/v1/SearchShadowAuthorityV1.java:17:                || metricAuthority || productionCursorAuthority || apiCutoverAuthority) {
+raw_query_field_count=
+result=PASS

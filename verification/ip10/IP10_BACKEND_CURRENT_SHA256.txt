@@ -1,0 +1,9 @@
+3d2afa500a4b602da1d8fb431aed3b788bce0b733882bd19750321502763363f  jc-backend/src/main/java/com/jc/backend/post/PostController.java
+c24f287bf8dd579bfcc4ef85079d1f6a2784c630ba23394c78129f1b99fa7878  jc-backend/src/main/java/com/jc/backend/post/PostService.java
+a1aac5943d55b048c307b09d8541aa6b106b79fcc026b10254977427be0cc995  jc-backend/src/main/java/com/jc/backend/post/PostDtos.java
+ff4973b36d81e0bed467d424c1888c40b24628e179e5197e33ad7fa6aba75411  jc-backend/src/main/java/com/jc/backend/post/JourneyPostRepository.java
+3ff0374ffed9013dd149c6f786d8db4810cff76d0328fc12d82780abd03b882f  jc-backend/src/main/kotlin/com/jc/backend/config/SecurityConfig.kt
+3f9215c6489133a8b838aaef97290bb3921e4323bff776d3b882edbefc6dd014  jc-backend/src/main/resources/application.yml.sample
+bf112b7f2cbc3aadbcfe879323c4e4f13666e533ac18c64e7ff680da8118513f  jc-backend/src/test/resources/application.yml
+2ecbaaba1d83aa6cfd3fac93533fdb591df1863d0a75d95b51d281477264d041  jc-backend/build.gradle.kts
+bf236c23c43095a995ba474b638eff4ec2de9fec27001b08f8e3c7bf4f4bbb4f  jc-backend/src/main/java/com/jc/backend/search/shadow/SearchShadowBackendConfiguration.java

@@ -1,0 +1,35 @@
+{
+  "scenario": "eligibility_filter",
+  "rawQuery": "서울",
+  "pageSize": 20,
+  "maximumCandidateCount": 10,
+  "retrievalStatus": "success",
+  "rankingStatus": "success",
+  "reverseReranking": false,
+  "candidates": [
+    {
+      "entityRef": "post:1",
+      "sourceRank": 1,
+      "rankingScore": 0.9,
+      "orderingKey": "a",
+      "eligibilityDecision": "allow",
+      "visibilityDecision": "allow"
+    },
+    {
+      "entityRef": "post:2",
+      "sourceRank": 2,
+      "rankingScore": 0.8,
+      "orderingKey": "b",
+      "eligibilityDecision": "deny",
+      "visibilityDecision": "allow"
+    },
+    {
+      "entityRef": "post:3",
+      "sourceRank": 3,
+      "rankingScore": 0.8,
+      "orderingKey": "a",
+      "eligibilityDecision": "unknown",
+      "visibilityDecision": "allow"
+    }
+  ]
+}

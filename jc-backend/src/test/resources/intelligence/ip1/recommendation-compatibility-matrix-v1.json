@@ -1,0 +1,85 @@
+{
+  "contractVersion": "recommendation-compatibility-matrix-v1",
+  "entries": [
+    {
+      "sourceObject": "recommendation_run",
+      "classification": "adapter_compatible",
+      "commonContractOrMeaning": "intelligence-run-v1"
+    },
+    {
+      "sourceObject": "ranking_input_v1",
+      "classification": "adapter_compatible",
+      "commonContractOrMeaning": "intelligence-input-snapshot-v1"
+    },
+    {
+      "sourceObject": "diversity_metadata_v1",
+      "classification": "adapter_compatible",
+      "commonContractOrMeaning": "candidate snapshot dependency"
+    },
+    {
+      "sourceObject": "exploration_metadata_v1",
+      "classification": "adapter_compatible",
+      "commonContractOrMeaning": "candidate snapshot dependency"
+    },
+    {
+      "sourceObject": "ranking_result_v1",
+      "classification": "adapter_compatible",
+      "commonContractOrMeaning": "intelligence-output-snapshot-v1"
+    },
+    {
+      "sourceObject": "exposure_event_v1",
+      "classification": "adapter_compatible",
+      "commonContractOrMeaning": "exposure evidence snapshot role"
+    },
+    {
+      "sourceObject": "candidate_terminal_partition",
+      "classification": "intentionally_domain_specific",
+      "commonContractOrMeaning": "recommendation candidate extension"
+    },
+    {
+      "sourceObject": "recommendation_exposure_event",
+      "classification": "intentionally_domain_specific",
+      "commonContractOrMeaning": "recommendation_general_exposure_v1"
+    },
+    {
+      "sourceObject": "recommendation_behavior_event",
+      "classification": "intentionally_domain_specific",
+      "commonContractOrMeaning": "recommendation behavior fact"
+    },
+    {
+      "sourceObject": "recommendation_p1_profile_snapshot",
+      "classification": "adapter_compatible",
+      "commonContractOrMeaning": "profile/feature evidence reference"
+    },
+    {
+      "sourceObject": "recommendation_p1_policy_assignment",
+      "classification": "intentionally_domain_specific",
+      "commonContractOrMeaning": "P1 policy evidence"
+    },
+    {
+      "sourceObject": "recommendation_p1_comparison",
+      "classification": "intentionally_domain_specific",
+      "commonContractOrMeaning": "P1 comparison evidence"
+    },
+    {
+      "sourceObject": "recommendation_p2_experiment_assignment",
+      "classification": "adapter_compatible",
+      "commonContractOrMeaning": "Reliability assignment reference"
+    },
+    {
+      "sourceObject": "recommendation_p2_experiment_exposure",
+      "classification": "exact_compatible",
+      "commonContractOrMeaning": "recommendation_p2_experiment_exposure_v1"
+    },
+    {
+      "sourceObject": "recommendation_p2_dataset_evaluation_gates",
+      "classification": "intentionally_domain_specific",
+      "commonContractOrMeaning": "Reliability evidence"
+    },
+    {
+      "sourceObject": "recommendation_p0_numeric_post_id",
+      "classification": "future_version_migration_required",
+      "commonContractOrMeaning": "entityRef=post:<id>"
+    }
+  ]
+}

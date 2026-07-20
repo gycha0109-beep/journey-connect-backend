@@ -1,0 +1,128 @@
+IP-5 FINAL VERIFICATION LOG
+===========================
+generated_at_utc=2026-07-19T14:43:18Z
+
+[ip1 main] javac --release 21 -encoding UTF-8 -Xlint:all -Werror
+sources=60
+result=PASS
+[ip3 main] javac --release 21 -encoding UTF-8 -Xlint:all -Werror
+sources=41
+result=PASS
+[ip4 main] javac --release 21 -encoding UTF-8 -Xlint:all -Werror
+sources=29
+result=PASS
+[ip5 main] javac --release 21 -encoding UTF-8 -Xlint:all -Werror
+sources=41
+result=PASS
+[ip1 test] javac --release 21 -encoding UTF-8 -Xlint:all -Werror
+sources=1
+result=PASS
+[ip3 test] javac --release 21 -encoding UTF-8 -Xlint:all -Werror
+sources=1
+result=PASS
+[ip4 test] javac --release 21 -encoding UTF-8 -Xlint:all -Werror
+sources=1
+result=PASS
+[ip5 test] javac --release 21 -encoding UTF-8 -Xlint:all -Werror
+sources=1
+result=PASS
+
+--- IP5_RUNTIME_CONTRACT_TEST.log ---
+IP-5 Search runtime foundation assertions: 850 PASS
+
+--- IP5_IP4_COMPATIBILITY_REGRESSION.log ---
+Search compatibility contract assertions PASS: 584
+
+--- IP5_IP3_SEARCH_REGRESSION.log ---
+Search Domain contract assertions PASS: 425
+
+--- IP5_IP1_COMMON_REGRESSION.log ---
+IP-1 intelligence contract checks passed: 739
+
+--- Gradle result ---
+exit_code=1
+result=BLOCKED_BEFORE_TASK_EXECUTION
+cause=services.gradle.org DNS resolution failure while downloading Gradle distribution
+gradle_pass_declared=false
+
+--- Protected source ---
+expected=320
+current=320
+missing=0
+diff=0
+result=PASS
+
+--- SQL ---
+expected=26
+current=26
+missing=0
+diff=0
+result=PASS
+
+--- Forbidden dependencies ---
+IP-5 forbidden dependency and production wiring scan
+main_java_files=41
+forbidden_import_or_annotation_matches=0
+runtime_build_dependencies:
+15:    api(project(":jc-search-contracts"))
+result=PASS
+
+--- Authority/privacy ---
+IP-5 authority and privacy scan
+19:        return new SearchRuntimeAuthorityV1("foundation_only", false, false, false, false);
+privacy_forbidden_field_scan=PASS
+/mnt/data/ip5_work/Journey-Connect-IP-4-Existing-Search-Read-Adapter-Compatibility-Final/jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/pagination/SearchTestCursorV1.java:12:        if (!"test_only_unsigned".equals(authority) || productionAuthoritative) {
+/mnt/data/ip5_work/Journey-Connect-IP-4-Existing-Search-Read-Adapter-Compatibility-Final/jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/pagination/SearchTestCursorV1.java:13:            throw new IllegalArgumentException("IP-5 cursors must remain test_only_unsigned and non-authoritative");
+/mnt/data/ip5_work/Journey-Connect-IP-4-Existing-Search-Read-Adapter-Compatibility-Final/jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/pagination/SearchRuntimePageProjector.java:32:                new SearchTestCursorV1(cursor, "test_only_unsigned", false));
+authority_result=PASS
+
+--- Document validation ---
+document IP-5-SEARCH-RUNTIME-FOUNDATION.md: PASS
+document IP-5-HANDOFF.md: PASS
+document README.md: PASS
+relative_links: PASS
+contract_id search-runtime-foundation-v1: PASS declarations=1
+contract_id ip-5-handoff-v1: PASS declarations=1
+new_contract_id_format: PASS
+wire_lowercase_snake_case: PASS
+handoff contains Search Runtime Foundation: PASS
+handoff contains Search Persistence: PASS
+handoff contains Search Exposure Persistence: PASS
+handoff contains Production Cursor Authority: PASS
+handoff contains Legacy /api/v1/explore Behavior: PASS
+result=PASS
+errors=0
+
+--- Recommendation regression summary ---
+[recommendation main] javac --release 21 -encoding UTF-8 -Xlint:all -Werror
+sources=240
+main_compile=PASS
+[recommendation test] javac --release 21 -encoding UTF-8 -Xlint:all -Werror
+sources=24
+test_compile=PASS
+--- com.jc.recommendation.foundation.CoreFoundationContractTest ---
+Java recommendation core foundation contract: PASS
+--- com.jc.recommendation.foundation.CoreWave1ContractTest ---
+Java recommendation core Wave 1 contract: PASS
+--- com.jc.recommendation.foundation.CoreWave2ScoringContractTest ---
+Java recommendation core Wave 2 scoring contract: PASS
+--- com.jc.recommendation.foundation.CoreWave3RankingDiversityContractTest ---
+Java recommendation core Wave 3 ranking/diversity contract: PASS
+--- com.jc.recommendation.foundation.CoreWave3ExplorationContractTest ---
+Java recommendation core Wave 3 exploration contract: PASS
+--- com.jc.recommendation.foundation.CoreWave4RankingIntegrationContractTest ---
+Java recommendation core Wave 4 ranking integration contract: PASS
+--- com.jc.recommendation.foundation.CoreWave5ExposureContractTest ---
+Java recommendation core Wave 5 exposure contract: PASS
+--- com.jc.recommendation.foundation.CoreWave6AttributionContractTest ---
+Java recommendation core Wave 6 behavior and attribution contract: PASS
+--- com.jc.recommendation.foundation.CoreWave7OfflineEvaluationContractTest ---
+Java recommendation core Wave 7 offline evaluation contract: PASS
+--- com.jc.recommendation.foundation.JavaCoreGoldenFixtureContractTest ---
+Java recommendation core committed golden fixtures: PASS
+--- com.jc.recommendation.foundation.JavaCoreIsolationContractTest ---
+Java recommendation core framework isolation: PASS
+--- com.jc.recommendation.p1.P1CoreContractTest ---
+P1 core contract: PASS (17 scenarios)
+--- com.jc.recommendation.p2.P2CoreContractTest ---
+P2 core contract: PASS (23 scenarios)

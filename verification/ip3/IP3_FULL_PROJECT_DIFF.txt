@@ -1,0 +1,5 @@
+Only in /mnt/data/ip3_work/Journey-Connect-IP-2-Search-Contract-Foundation/docs/platform/intelligence: IP-3-HANDOFF.md
+Only in /mnt/data/ip3_work/Journey-Connect-IP-2-Search-Contract-Foundation/docs/platform/intelligence: IP-3-SEARCH-DOMAIN-TYPES-AND-VALIDATION.md
+Files /tmp/ip2-pristine-final/Journey-Connect-IP-2-Search-Contract-Foundation/docs/platform/intelligence/README.md and /mnt/data/ip3_work/Journey-Connect-IP-2-Search-Contract-Foundation/docs/platform/intelligence/README.md differ
+Files /tmp/ip2-pristine-final/Journey-Connect-IP-2-Search-Contract-Foundation/jc-backend/settings.gradle.kts and /mnt/data/ip3_work/Journey-Connect-IP-2-Search-Contract-Foundation/jc-backend/settings.gradle.kts differ
+Only in /mnt/data/ip3_work/Journey-Connect-IP-2-Search-Contract-Foundation: jc-search-contracts

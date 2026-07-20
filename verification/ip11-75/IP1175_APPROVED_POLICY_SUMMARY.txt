@@ -1,0 +1,14 @@
+IP-11=GOVERNANCE_DECISIONS_APPROVED_WITH_CONDITIONS
+IP-11.5=TECHNICAL_CONTROLS_IMPLEMENTED / EXTERNAL_ATTESTATION_PENDING
+IP-11.75=GOVERNANCE_APPROVAL_CLOSURE_COMPLETE / EXTERNAL_ATTESTATION_PENDING
+production_shadow=DISABLED
+effective_sampling=0 BPS
+pilot_ceiling=10 BPS
+actual_cohort=empty / 0%
+retention_aggregate=14 days
+retention_error_summary=30 days
+raw_query=PROHIBITED
+raw_identity=PROHIBITED
+observability=Spring Boot structured logs + Micrometer metrics APPROVED TARGET
+go_no_go=NO_GO
+IP-12=HOLD_FOR_EXTERNAL_ATTESTATION_AND_OPERATIONAL_INPUTS

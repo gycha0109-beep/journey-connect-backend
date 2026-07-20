@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.jc.backend.recommendation.RecommendationPersistenceIntegrationTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-07-18T20:12:23.776Z" hostname="d063fc686b07" time="0.524">
+  <properties/>
+  <testcase name="persistsExplorationCandidateInsideFinalRankedPartition()" classname="com.jc.backend.recommendation.RecommendationPersistenceIntegrationTest" time="0.199"/>
+  <testcase name="canonicalSnapshotsRunExposureAndBehaviorRoundTrip()" classname="com.jc.backend.recommendation.RecommendationPersistenceIntegrationTest" time="0.276"/>
+  <testcase name="rejectsDuplicateRunCandidateSourceIdsBeforeDatabaseWrite()" classname="com.jc.backend.recommendation.RecommendationPersistenceIntegrationTest" time="0.047"/>
+  <system-out><![CDATA[2026-07-18T20:12:23.767Z  INFO 34838 --- [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.jc.backend.recommendation.RecommendationPersistenceIntegrationTest]: RecommendationPersistenceIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-07-18T20:12:23.771Z  INFO 34838 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.jc.backend.JcBackendApplication for test class com.jc.backend.recommendation.RecommendationPersistenceIntegrationTest
+2026-07-18T20:12:23.816Z  INFO 34838 --- [    Test worker] i.StatisticalLoggingSessionEventListener : Session Metrics {
+    835484 nanoseconds spent acquiring 1 JDBC connections;
+    0 nanoseconds spent releasing 0 JDBC connections;
+    0 nanoseconds spent preparing 0 JDBC statements;
+    0 nanoseconds spent executing 0 JDBC statements;
+    0 nanoseconds spent executing 0 JDBC batches;
+    0 nanoseconds spent performing 0 L2C puts;
+    0 nanoseconds spent performing 0 L2C hits;
+    0 nanoseconds spent performing 0 L2C misses;
+    0 nanoseconds spent executing 0 flushes (flushing a total of 0 entities and 0 collections);
+    0 nanoseconds spent executing 0 pre-partial-flushes;
+    0 nanoseconds spent executing 0 partial-flushes (flushing a total of 0 entities and 0 collections)
+}
+2026-07-18T20:12:23.974Z  INFO 34838 --- [    Test worker] i.StatisticalLoggingSessionEventListener : Session Metrics {
+    27796 nanoseconds spent acquiring 1 JDBC connections;
+    0 nanoseconds spent releasing 0 JDBC connections;
+    470696 nanoseconds spent preparing 8 JDBC statements;
+    11149188 nanoseconds spent executing 8 JDBC statements;
+    0 nanoseconds spent executing 0 JDBC batches;
+    0 nanoseconds spent performing 0 L2C puts;
+    0 nanoseconds spent performing 0 L2C hits;
+    0 nanoseconds spent performing 0 L2C misses;
+    3549221 nanoseconds spent executing 2 flushes (flushing a total of 13 entities and 6 collections);
+    75833 nanoseconds spent executing 1 pre-partial-flushes;
+    101581 nanoseconds spent executing 1 partial-flushes (flushing a total of 1 entities and 1 collections)
+}
+2026-07-18T20:12:24.131Z  INFO 34838 --- [    Test worker] i.StatisticalLoggingSessionEventListener : Session Metrics {
+    13039 nanoseconds spent acquiring 1 JDBC connections;
+    0 nanoseconds spent releasing 0 JDBC connections;
+    0 nanoseconds spent preparing 0 JDBC statements;
+    0 nanoseconds spent executing 0 JDBC statements;
+    0 nanoseconds spent executing 0 JDBC batches;
+    0 nanoseconds spent performing 0 L2C puts;
+    0 nanoseconds spent performing 0 L2C hits;
+    0 nanoseconds spent performing 0 L2C misses;
+    0 nanoseconds spent executing 0 flushes (flushing a total of 0 entities and 0 collections);
+    0 nanoseconds spent executing 0 pre-partial-flushes;
+    0 nanoseconds spent executing 0 partial-flushes (flushing a total of 0 entities and 0 collections)
+}
+2026-07-18T20:12:24.252Z  INFO 34838 --- [    Test worker] i.StatisticalLoggingSessionEventListener : Session Metrics {
+    21887 nanoseconds spent acquiring 1 JDBC connections;
+    0 nanoseconds spent releasing 0 JDBC connections;
+    222562 nanoseconds spent preparing 5 JDBC statements;
+    5754389 nanoseconds spent executing 5 JDBC statements;
+    0 nanoseconds spent executing 0 JDBC batches;
+    0 nanoseconds spent performing 0 L2C puts;
+    0 nanoseconds spent performing 0 L2C hits;
+    0 nanoseconds spent performing 0 L2C misses;
+    1258846 nanoseconds spent executing 1 flushes (flushing a total of 5 entities and 2 collections);
+    71306 nanoseconds spent executing 1 pre-partial-flushes;
+    146134 nanoseconds spent executing 1 partial-flushes (flushing a total of 1 entities and 1 collections)
+}
+2026-07-18T20:12:24.290Z  INFO 34838 --- [    Test worker] i.StatisticalLoggingSessionEventListener : Session Metrics {
+    9795 nanoseconds spent acquiring 1 JDBC connections;
+    0 nanoseconds spent releasing 0 JDBC connections;
+    0 nanoseconds spent preparing 0 JDBC statements;
+    0 nanoseconds spent executing 0 JDBC statements;
+    0 nanoseconds spent executing 0 JDBC batches;
+    0 nanoseconds spent performing 0 L2C puts;
+    0 nanoseconds spent performing 0 L2C hits;
+    0 nanoseconds spent performing 0 L2C misses;
+    0 nanoseconds spent executing 0 flushes (flushing a total of 0 entities and 0 collections);
+    0 nanoseconds spent executing 0 pre-partial-flushes;
+    0 nanoseconds spent executing 0 partial-flushes (flushing a total of 0 entities and 0 collections)
+}
+2026-07-18T20:12:24.299Z  INFO 34838 --- [    Test worker] i.StatisticalLoggingSessionEventListener : Session Metrics {
+    17193 nanoseconds spent acquiring 1 JDBC connections;
+    0 nanoseconds spent releasing 0 JDBC connections;
+    0 nanoseconds spent preparing 0 JDBC statements;
+    0 nanoseconds spent executing 0 JDBC statements;
+    0 nanoseconds spent executing 0 JDBC batches;
+    0 nanoseconds spent performing 0 L2C puts;
+    0 nanoseconds spent performing 0 L2C hits;
+    0 nanoseconds spent performing 0 L2C misses;
+    0 nanoseconds spent executing 0 flushes (flushing a total of 0 entities and 0 collections);
+    0 nanoseconds spent executing 0 pre-partial-flushes;
+    0 nanoseconds spent executing 0 partial-flushes (flushing a total of 0 entities and 0 collections)
+}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

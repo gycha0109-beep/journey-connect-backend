@@ -1,0 +1,10 @@
+Only in /mnt/data/ip8_work/Journey-Connect-IP-8-Search-Shadow-Activation-Readiness-Regression-Closure-Final/docs/platform/intelligence: IP-8-ACTIVATION-PREREQUISITE-MATRIX.md
+Only in /mnt/data/ip8_work/Journey-Connect-IP-8-Search-Shadow-Activation-Readiness-Regression-Closure-Final/docs/platform/intelligence: IP-8-CONTROLLED-HOOK-CHANGE-PROPOSAL.md
+Only in /mnt/data/ip8_work/Journey-Connect-IP-8-Search-Shadow-Activation-Readiness-Regression-Closure-Final/docs/platform/intelligence: IP-8-HANDOFF.md
+Only in /mnt/data/ip8_work/Journey-Connect-IP-8-Search-Shadow-Activation-Readiness-Regression-Closure-Final/docs/platform/intelligence: IP-8-ROLLBACK-KILL-SWITCH-AND-OBSERVABILITY-CONTRACT.md
+Only in /mnt/data/ip8_work/Journey-Connect-IP-8-Search-Shadow-Activation-Readiness-Regression-Closure-Final/docs/platform/intelligence: IP-8-SEARCH-SHADOW-ACTIVATION-READINESS-AND-REGRESSION-CLOSURE.md
+Files /mnt/data/ip8_baseline_extract/Journey-Connect-IP-7-Search-Shadow-Wiring-Controlled-Comparison-Final/docs/platform/intelligence/README.md and /mnt/data/ip8_work/Journey-Connect-IP-8-Search-Shadow-Activation-Readiness-Regression-Closure-Final/docs/platform/intelligence/README.md differ
+Files /mnt/data/ip8_baseline_extract/Journey-Connect-IP-7-Search-Shadow-Wiring-Controlled-Comparison-Final/jc-backend/build.gradle.kts and /mnt/data/ip8_work/Journey-Connect-IP-8-Search-Shadow-Activation-Readiness-Regression-Closure-Final/jc-backend/build.gradle.kts differ
+Files /mnt/data/ip8_baseline_extract/Journey-Connect-IP-7-Search-Shadow-Wiring-Controlled-Comparison-Final/jc-backend/settings.gradle.kts and /mnt/data/ip8_work/Journey-Connect-IP-8-Search-Shadow-Activation-Readiness-Regression-Closure-Final/jc-backend/settings.gradle.kts differ
+Only in /mnt/data/ip8_work/Journey-Connect-IP-8-Search-Shadow-Activation-Readiness-Regression-Closure-Final: jc-search-readiness
+Only in /mnt/data/ip8_work/Journey-Connect-IP-8-Search-Shadow-Activation-Readiness-Regression-Closure-Final/verification: ip8

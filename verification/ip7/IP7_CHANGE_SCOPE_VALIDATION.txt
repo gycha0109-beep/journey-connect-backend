@@ -1,0 +1,9 @@
+Allowed changes only:
+- new jc-search-shadow-wiring module
+- jc-backend/settings.gradle.kts module registration
+- docs/platform/intelligence README and IP-7 docs
+- verification/ip7 evidence
+Controller/Service/Repository/DTO/JPQL/SecurityConfig/application config changes: NONE
+DB/SQL/index changes: NONE
+Recommendation changes: NONE
+result=PASS

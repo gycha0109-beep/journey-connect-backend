@@ -1,0 +1,12 @@
+433ce10ccae1bac6fe961c153cee534e82d174c6c8aa6e2aa4df00013045fd5a  jc-backend/src/main/java/com/jc/backend/post/PostController.java
+c24f287bf8dd579bfcc4ef85079d1f6a2784c630ba23394c78129f1b99fa7878  jc-backend/src/main/java/com/jc/backend/post/PostService.java
+ff4973b36d81e0bed467d424c1888c40b24628e179e5197e33ad7fa6aba75411  jc-backend/src/main/java/com/jc/backend/post/JourneyPostRepository.java
+a1aac5943d55b048c307b09d8541aa6b106b79fcc026b10254977427be0cc995  jc-backend/src/main/java/com/jc/backend/post/PostDtos.java
+3ff0374ffed9013dd149c6f786d8db4810cff76d0328fc12d82780abd03b882f  jc-backend/src/main/kotlin/com/jc/backend/config/SecurityConfig.kt
+3f9215c6489133a8b838aaef97290bb3921e4323bff776d3b882edbefc6dd014  jc-backend/src/main/resources/application.yml.sample
+70a34cc89f99fcaa7ee85a995827ee42c2c35d996c4be52e738ff80063b9ba76  jc-backend/src/main/resources/db/README.md
+418f100220ac134f7b0f877c262039cfaf688e515c2feae12de78119073303a2  jc-backend/src/main/resources/db/migration-legacy/V1__baseline_schema.sql
+953253ab18a76501b051f788f55b5cd368a63b9cc8528746e4b3361115867bca  jc-backend/src/main/resources/db/migration-legacy/V2__p2_domain_extensions.sql
+a27686860ddd61b155b6ba2554bedb84df625a75255ed33cb17ed4042d637a2a  jc-backend/src/main/resources/db/migration-v1_8/README.md
+74fa8ee22bb2365e3ae59f8800cd72f90ecf5f0a624ff9a209b0248e53f327aa  jc-backend/src/main/resources/db/migration-v1_8/V7__recommendation_storage.sql
+aafef1e779a2b56ccf0b6e1fce98ee31c4d48435cd8b6fd46f06088137e05822  jc-backend/src/main/resources/db/migration-v1_8/V8__recommendation_security_roles.sql

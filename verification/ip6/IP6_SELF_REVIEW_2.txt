@@ -1,0 +1,13 @@
+IP-6 Self Review 2 — failure isolation, privacy and activation safety
+findings=8
+fixed=8
+held=0
+1. Authority flags needed cross-field validation -> constructor forces all production authorities false and legacy authority true.
+2. Unknown activation wire value needed safe behavior -> maps to disabled and never auto-enables.
+3. not_comparable dimensions could be mistaken for runtime failure -> separate codes/status/severity.
+4. top-K denominator zero could produce NaN -> finite zero-denominator rule.
+5. Evidence privacy surface needed a static scan -> no raw query/response/token/private payload fields.
+6. Mismatch order needed canonical tie-breaks -> stable severity/code/entity/position ordering.
+7. Timeout needed supplied deadline isolation -> deterministic deadline outcome without production thread/executor.
+8. Missing runtime provider could accidentally execute -> default unavailable provider and no execution.
+revalidation=PASS (IP-6 972, IP-5 850, IP-4 584, IP-3 425, IP-1 739)

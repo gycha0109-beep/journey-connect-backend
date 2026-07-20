@@ -1,0 +1,22 @@
+IP-8 Backend Spring/Testcontainers Regression
+status=NOT_EXECUTED
+reason=Gradle 8.14.5 wrapper distribution unavailable in current environment
+failure=java.net.UnknownHostException: services.gradle.org
+reached_gradle_configuration=false
+reached_test_task=false
+reached_testcontainers=false
+backend_pass_claimed=false
+
+External execution prerequisites:
+- Java 21
+- Gradle wrapper 8.14.5 distribution and dependency/plugin access or populated caches
+- Docker/Testcontainers with postgres:15-alpine, or approved PostgreSQL 15 via JC_TEST_DB_URL/USERNAME/PASSWORD
+- run from jc-backend
+
+Commands:
+./gradlew --offline tasks --all
+./gradlew --offline ip8SearchRegressionClosure
+./gradlew --offline :test
+./gradlew --offline :p0Verification :p1Verification :p2Verification
+./gradlew --offline :ip1CompatibilityContractTest
+./gradlew --offline check

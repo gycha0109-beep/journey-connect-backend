@@ -1,0 +1,1 @@
+{"scenario":"mixed_entity_types","mode":"shadow_enabled","runtimeInputStatus":"available","runtimeStatus":"success","topK":4,"timeout":false,"legacyEntityRefs":["post:1","region:KR-11","tag:healing"],"runtimeEntityRefs":["post:1","tag:healing","region:KR-11"]}

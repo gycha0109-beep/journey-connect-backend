@@ -1,0 +1,8 @@
+baseline_root=/mnt/data/ip6_baseline_fresh/Journey-Connect-IP-5-Search-Runtime-Foundation-Final
+Full project changed paths (excluding verification/ip6 generated evidence):
+Only in docs/platform/intelligence: IP-6-HANDOFF.md
+Only in docs/platform/intelligence: IP-6-SEARCH-RUNTIME-INTEGRATION-BOUNDARY.md
+Files docs/platform/intelligence/README.md and docs/platform/intelligence/README.md differ
+Files jc-backend/settings.gradle.kts and jc-backend/settings.gradle.kts differ
+Only in /mnt/data/ip6_work/Journey-Connect-IP-5-Search-Runtime-Foundation-Final: jc-search-integration
+Only in verification: ip6

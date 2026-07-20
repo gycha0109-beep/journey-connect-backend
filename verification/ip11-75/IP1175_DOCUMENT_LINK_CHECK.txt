@@ -1,0 +1,2 @@
+PASS	markdown_links
+SUMMARY	checks=50	pass=50	fail=0

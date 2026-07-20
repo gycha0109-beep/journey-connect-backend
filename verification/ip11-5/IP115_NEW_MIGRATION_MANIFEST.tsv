@@ -1,0 +1,3 @@
+path	sha256	status
+database/journey-connect-db-v2.7/27_search_document_projection.sql	0e99bff4803909f85404bd9fbb83b09dd259f190093cd633fbda8518e35ce3ec	STATIC_ONLY_DB_NOT_EXECUTED
+database/journey-connect-db-v2.7/28_search_document_projection_smoke_test.sql	8db01e52ddcdae6907b8200013dbaa533203cbab9494b6a16888b7c1badb3f3b	STATIC_ONLY_DB_NOT_EXECUTED

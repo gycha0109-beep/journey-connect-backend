@@ -1,0 +1,7 @@
+SECURITY/INDEPENDENT REVIEW
+- No active production bridge, production config enable, Search response cutover or exposure writer.
+- Default killed, empty cohort, effective production sample 0.
+- Evidence schema and metric tags prohibit raw query/user/session/JWT/post/document identity.
+- Private/deleted/moderation/unknown/missing Operations authority fail closed.
+- Previous contract results were re-executed.
+Result: technical source checks pass; Security/Privacy and external attestation remain open.

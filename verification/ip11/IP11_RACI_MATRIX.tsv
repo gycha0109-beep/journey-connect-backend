@@ -1,0 +1,13 @@
+activity	project_owner	backend_owner	team_lead_youngtak	security_privacy_approver	accountable_count	mandatory_co_approval	open_operational_detail
+Production activation approval	A	C	C	C	1	Security/Privacy conditions + external attestation	actual production account/contact
+Production activation execution	A	R	I	I	1	none	release operator/account procedure
+Rollback decision	A	R	C	I	1	none	measured SLA/contact channel
+Kill-switch execution	A	R	Backup	I	1	none	remote/dynamic path and production drill
+Sampling change	A	R	C	C	1	Project Owner + Security/Privacy for >0	external attestation and allowlist
+Cohort change	A	R	C	C	1	Project Owner + Team Lead Youngtak	actual account IDs
+Resource budget change	A	R	C	I	1	none	load evidence
+Privacy policy change	A	C	C	R	1	Project Owner + Team Lead Youngtak	external production review
+Retention change	A	R	C	C	1	Project Owner + Team Lead Youngtak	storage implementation
+Evidence access	A/R	R	I	C	1	none	access account mapping
+Incident investigation	A	R	C	C	1	none	incident channel
+Reactivation approval	A	R	C	C	1	Security/Privacy conditions + external attestation	production drill and allowlist

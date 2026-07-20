@@ -1,0 +1,21 @@
+P2 BASELINE INTEGRITY
+verified_at=2026-07-18T21:44:54Z
+--- Java core pre-P2 source ---
+PASS
+--- Java core pre-P2 tests ---
+PASS
+--- Canonical P1 DB v2.6 ---
+PASS
+--- P0/P1 reports ---
+PASS
+--- Intentional P2 integration changes ---
+jc-recommendation-core/build.gradle.kts
+jc-backend/build.gradle.kts
+jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationP1RuntimeService.java
+jc-backend/src/main/java/com/jc/backend/recommendation/config/RecommendationP2Properties.java
+jc-backend/src/main/java/com/jc/backend/recommendation/p2/*
+jc-backend/src/test/java/com/jc/backend/CanonicalPostgresInitializer.java
+jc-backend/src/test/java/com/jc/backend/CanonicalSqlBootstrapperTest.java
+jc-backend/src/test/java/com/jc/backend/CanonicalPostgresCleanup.java
+database/journey-connect-db-v2.7/*
+P2 tests and reports

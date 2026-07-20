@@ -1,0 +1,163 @@
+Journey Connect IP-9 Gradle execution log
+UTC 2026-07-20T01:07:55Z
+=== java -version ===
+openjdk version "21.0.10" 2026-01-20
+OpenJDK Runtime Environment (build 21.0.10+7-Debian-1deb13u1)
+OpenJDK 64-Bit Server VM (build 21.0.10+7-Debian-1deb13u1, mixed mode, sharing)
+exit=0
+=== wrapper inventory ===
+-rw-rw-rw- 1 root root 43764 Jul 16 01:53 gradle/wrapper/gradle-wrapper.jar
+-rw-rw-rw- 1 root root   260 Jul 16 01:53 gradle/wrapper/gradle-wrapper.properties
+-rwxrwxrwx 1 root root  8733 Jul 16 01:53 gradlew
+-rwxrwxrwx 1 root root  2937 Jul 16 01:53 gradlew.bat
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.14.5-bin.zip
+networkTimeout=10000
+validateDistributionUrl=true
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+=== ./gradlew --no-daemon --stacktrace --version ===
+Downloading https://services.gradle.org/distributions/gradle-8.14.5-bin.zip
+
+Exception in thread "main" java.net.UnknownHostException: services.gradle.org
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:567)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at java.base/sun.security.ssl.SSLSocketImpl.connect(SSLSocketImpl.java:304)
+	at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+	at java.base/sun.net.www.protocol.https.HttpsClient.<init>(HttpsClient.java:264)
+	at java.base/sun.net.www.protocol.https.HttpsClient.New(HttpsClient.java:377)
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.getNewHttpClient(AbstractDelegateHttpsURLConnection.java:193)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1257)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1143)
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.connect(AbstractDelegateHttpsURLConnection.java:179)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1705)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1629)
+	at java.base/sun.net.www.protocol.https.HttpsURLConnectionImpl.getInputStream(HttpsURLConnectionImpl.java:223)
+	at org.gradle.wrapper.Install.forceFetch(SourceFile:2)
+	at org.gradle.wrapper.Install$1.call(SourceFile:8)
+	at org.gradle.wrapper.GradleWrapperMain.main(SourceFile:67)
+exit=1
+=== ./gradlew --no-daemon --stacktrace tasks --all ===
+Downloading https://services.gradle.org/distributions/gradle-8.14.5-bin.zip
+
+Exception in thread "main" java.net.UnknownHostException: services.gradle.org
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:567)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at java.base/sun.security.ssl.SSLSocketImpl.connect(SSLSocketImpl.java:304)
+	at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+	at java.base/sun.net.www.protocol.https.HttpsClient.<init>(HttpsClient.java:264)
+	at java.base/sun.net.www.protocol.https.HttpsClient.New(HttpsClient.java:377)
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.getNewHttpClient(AbstractDelegateHttpsURLConnection.java:193)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1257)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1143)
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.connect(AbstractDelegateHttpsURLConnection.java:179)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1705)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1629)
+	at java.base/sun.net.www.protocol.https.HttpsURLConnectionImpl.getInputStream(HttpsURLConnectionImpl.java:223)
+	at org.gradle.wrapper.Install.forceFetch(SourceFile:2)
+	at org.gradle.wrapper.Install$1.call(SourceFile:8)
+	at org.gradle.wrapper.GradleWrapperMain.main(SourceFile:67)
+exit=1
+=== ./gradlew --no-daemon --stacktrace ip9ControlledBackendHookRegression ===
+Downloading https://services.gradle.org/distributions/gradle-8.14.5-bin.zip
+
+Exception in thread "main" java.net.UnknownHostException: services.gradle.org
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:567)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at java.base/sun.security.ssl.SSLSocketImpl.connect(SSLSocketImpl.java:304)
+	at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+	at java.base/sun.net.www.protocol.https.HttpsClient.<init>(HttpsClient.java:264)
+	at java.base/sun.net.www.protocol.https.HttpsClient.New(HttpsClient.java:377)
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.getNewHttpClient(AbstractDelegateHttpsURLConnection.java:193)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1257)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1143)
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.connect(AbstractDelegateHttpsURLConnection.java:179)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1705)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1629)
+	at java.base/sun.net.www.protocol.https.HttpsURLConnectionImpl.getInputStream(HttpsURLConnectionImpl.java:223)
+	at org.gradle.wrapper.Install.forceFetch(SourceFile:2)
+	at org.gradle.wrapper.Install$1.call(SourceFile:8)
+	at org.gradle.wrapper.GradleWrapperMain.main(SourceFile:67)
+exit=1
+=== ./gradlew --no-daemon --stacktrace test ===
+Downloading https://services.gradle.org/distributions/gradle-8.14.5-bin.zip
+
+Exception in thread "main" java.net.UnknownHostException: services.gradle.org
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:567)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at java.base/sun.security.ssl.SSLSocketImpl.connect(SSLSocketImpl.java:304)
+	at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+	at java.base/sun.net.www.protocol.https.HttpsClient.<init>(HttpsClient.java:264)
+	at java.base/sun.net.www.protocol.https.HttpsClient.New(HttpsClient.java:377)
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.getNewHttpClient(AbstractDelegateHttpsURLConnection.java:193)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1257)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1143)
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.connect(AbstractDelegateHttpsURLConnection.java:179)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1705)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1629)
+	at java.base/sun.net.www.protocol.https.HttpsURLConnectionImpl.getInputStream(HttpsURLConnectionImpl.java:223)
+	at org.gradle.wrapper.Install.forceFetch(SourceFile:2)
+	at org.gradle.wrapper.Install$1.call(SourceFile:8)
+	at org.gradle.wrapper.GradleWrapperMain.main(SourceFile:67)
+exit=1
+=== ./gradlew --no-daemon --stacktrace p0Verification p1Verification p2Verification ===
+Downloading https://services.gradle.org/distributions/gradle-8.14.5-bin.zip
+
+Exception in thread "main" java.net.UnknownHostException: services.gradle.org
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:567)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at java.base/sun.security.ssl.SSLSocketImpl.connect(SSLSocketImpl.java:304)
+	at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+	at java.base/sun.net.www.protocol.https.HttpsClient.<init>(HttpsClient.java:264)
+	at java.base/sun.net.www.protocol.https.HttpsClient.New(HttpsClient.java:377)
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.getNewHttpClient(AbstractDelegateHttpsURLConnection.java:193)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1257)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1143)
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.connect(AbstractDelegateHttpsURLConnection.java:179)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1705)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1629)
+	at java.base/sun.net.www.protocol.https.HttpsURLConnectionImpl.getInputStream(HttpsURLConnectionImpl.java:223)
+	at org.gradle.wrapper.Install.forceFetch(SourceFile:2)
+	at org.gradle.wrapper.Install$1.call(SourceFile:8)
+	at org.gradle.wrapper.GradleWrapperMain.main(SourceFile:67)
+exit=1
+=== ./gradlew --no-daemon --stacktrace check ===
+Downloading https://services.gradle.org/distributions/gradle-8.14.5-bin.zip
+
+Exception in thread "main" java.net.UnknownHostException: services.gradle.org
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:567)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at java.base/sun.security.ssl.SSLSocketImpl.connect(SSLSocketImpl.java:304)
+	at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+	at java.base/sun.net.www.protocol.https.HttpsClient.<init>(HttpsClient.java:264)
+	at java.base/sun.net.www.protocol.https.HttpsClient.New(HttpsClient.java:377)
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.getNewHttpClient(AbstractDelegateHttpsURLConnection.java:193)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1257)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1143)
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.connect(AbstractDelegateHttpsURLConnection.java:179)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1705)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1629)
+	at java.base/sun.net.www.protocol.https.HttpsURLConnectionImpl.getInputStream(HttpsURLConnectionImpl.java:223)
+	at org.gradle.wrapper.Install.forceFetch(SourceFile:2)
+	at org.gradle.wrapper.Install$1.call(SourceFile:8)
+	at org.gradle.wrapper.GradleWrapperMain.main(SourceFile:67)
+exit=1

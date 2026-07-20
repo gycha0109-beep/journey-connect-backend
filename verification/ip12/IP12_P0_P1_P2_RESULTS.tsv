@@ -1,0 +1,6 @@
+suite	result
+Recommendation_Foundation_Wave1_to_7	DIRECT_PASS
+Recommendation_Golden_Isolation	DIRECT_PASS
+P1_Core	17_SCENARIOS_PASS
+P2_Core	23_SCENARIOS_PASS
+Backend_P0_P1_P2_Gradle	NOT_EXECUTED

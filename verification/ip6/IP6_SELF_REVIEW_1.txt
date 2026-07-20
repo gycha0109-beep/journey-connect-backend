@@ -1,0 +1,15 @@
+IP-6 Self Review 1 — authority and deterministic comparison
+findings=10
+fixed=10
+held=0
+1. Runtime input fingerprint originally bound only partial metadata -> bound the complete execution request.
+2. Comparison ID collision risk across correlations/reference times -> bound correlationId and referenceTime.
+3. Raw result count and unique entity count could be conflated when duplicates exist -> separated raw count, unique set and duplicate count.
+4. Invalid runtime input lacked an explicit mismatch -> added runtime_input_invalid.
+5. Unavailable runtime input evidence could erase legacy count -> preserved legacy raw item count.
+6. Activation mode and decision reason were implicit -> added immutable activation decision.
+7. Unsupported legacy sort was not directly protected -> added explicit unsupported-sort comparison case.
+8. Duplicate runtime result needed independent classification -> added deterministic duplicate runtime validation.
+9. Response item equality alone did not protect page envelope -> added page metadata/object pass-through checks.
+10. Comparison evidence lacked an explicit contract ID -> added search-shadow-comparison-evidence-v1.
+revalidation=PASS (IP-6/IP-5/IP-4/IP-3/IP-1)

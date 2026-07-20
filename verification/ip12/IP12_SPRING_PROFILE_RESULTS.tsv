@@ -1,0 +1,10 @@
+profile	declared_expectation	execution_result
+default	disabled_bridge	NOT_EXECUTED
+test	no_accidental_production_graph	NOT_EXECUTED
+stage	existing_stage_graph_preserved	NOT_EXECUTED
+prod_default	production_graph_effective_disabled	NOT_EXECUTED
+prod_fixture	conditional_internal_only	NOT_EXECUTED
+prod_11_bps	startup_failure	NOT_EXECUTED
+prod_empty_cohort	dispatch_zero	NOT_EXECUTED
+prod_kill_true	dispatch_zero	NOT_EXECUTED
+static_condition_scan	all_expected_conditions_present	PASS

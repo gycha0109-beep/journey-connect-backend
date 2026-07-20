@@ -1,0 +1,724 @@
+IP-11 actual source inventory
+Generated: 2026-07-20
+
+[PostController explore boundary]
+70-        return ApiResponse.ok(postService.feed(pageable));
+71-    }
+72-
+73-    @GetMapping("/explore")
+74:    ApiResponse<PageResponse<PostDtos.Summary>> explore(
+75-            @RequestParam(required = false) String keyword,
+76-            @RequestParam(required = false) String region,
+77-            @PageableDefault(size = 20) Pageable pageable) {
+78-        PageResponse<PostDtos.Summary> legacyResponse = postService.explore(keyword, region, pageable);
+79-        exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);
+80-        return ApiResponse.ok(legacyResponse);
+81-    }
+82-
+83-    @GetMapping("/posts/{postId}")
+84-    ApiResponse<PostDtos.Detail> detail(
+85-            @PathVariable Long postId,
+86-            @AuthenticationPrincipal Jwt token) {
+
+[Default disabled configuration]
+package com.jc.backend.search.shadow;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Conditional;
+
+/**
+ * Production-equivalent configuration. It deliberately exposes only the disabled no-op bridge.
+ * No property, profile, executor, runtime input provider, or active Search hook is bound here.
+ */
+@Configuration(proxyBeanMethods = false)
+public class SearchShadowBackendConfiguration {
+    @Bean
+    @Conditional(DisabledSearchShadowActivationCondition.class)
+    @ConditionalOnMissingBean(ExploreSearchShadowBridge.class)
+    ExploreSearchShadowBridge exploreSearchShadowBridge() {
+        return new DisabledExploreSearchShadowBridge();
+    }
+}
+
+[Disabled condition]
+package com.jc.backend.search.shadow;
+
+import com.jc.backend.search.shadow.stage.StageSearchShadowProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.type.AnnotatedTypeMetadata;
+
+/** Ensures the disabled bridge is omitted only for an explicitly valid test/stage activation graph. */
+public final class DisabledSearchShadowActivationCondition extends SpringBootCondition {
+    @Override
+    public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+        return StageSearchShadowProperties.activationAllowed(context.getEnvironment())
+                ? ConditionOutcome.noMatch("explicit test/stage Search shadow activation")
+                : ConditionOutcome.match("Search shadow remains disabled");
+    }
+}
+
+[Stage activation condition]
+package com.jc.backend.search.shadow.stage;
+
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.type.AnnotatedTypeMetadata;
+
+/** Fail-closed condition for explicitly opted-in test/stage profiles. */
+public final class StageSearchShadowActivationCondition extends SpringBootCondition {
+    @Override
+    public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+        return StageSearchShadowProperties.activationAllowed(context.getEnvironment())
+                ? ConditionOutcome.match("approved test/stage Search shadow activation")
+                : ConditionOutcome.noMatch("Search shadow remains disabled");
+    }
+}
+
+[Stage configuration]
+package com.jc.backend.search.shadow.stage;
+
+import com.jc.backend.common.PageResponse;
+import com.jc.backend.post.PostDtos;
+import com.jc.backend.search.shadow.DefaultExploreSearchShadowBridge;
+import com.jc.backend.search.shadow.DefaultExploreShadowHookRequestFactory;
+import com.jc.backend.search.shadow.ExploreSearchShadowBridge;
+import com.jc.backend.search.shadow.ExploreShadowHookRequestFactory;
+import com.jc.backend.search.shadow.ExploreShadowRequestContextProvider;
+import com.jc.intelligence.contract.v1.version.PolicyVersion;
+import com.jc.intelligence.contract.v1.version.ProducerBuildId;
+import com.jc.intelligence.integration.search.v1.SearchShadowIntegrationBoundary;
+import com.jc.intelligence.integration.search.v1.SearchShadowIntegrationPort;
+import com.jc.intelligence.integration.search.v1.SearchShadowMode;
+import com.jc.intelligence.integration.search.v1.SearchShadowPolicyV1;
+import com.jc.intelligence.runtime.search.v1.DefaultSearchRuntime;
+import com.jc.intelligence.runtime.search.v1.SearchRuntime;
+import com.jc.intelligence.runtime.search.v1.fixture.PassThroughSearchCandidateFilter;
+import com.jc.intelligence.runtime.search.v1.port.SearchDependencyDecision;
+import com.jc.intelligence.runtime.search.v1.ranking.NoOpSearchRerankingPort;
+import com.jc.intelligence.wiring.search.v1.FixedSearchShadowCircuitBreaker;
+import com.jc.intelligence.wiring.search.v1.SearchShadowCircuitBreaker;
+import com.jc.intelligence.wiring.search.v1.SearchShadowCircuitState;
+import com.jc.intelligence.wiring.search.v1.SearchShadowComparisonLogPort;
+import com.jc.intelligence.wiring.search.v1.SearchShadowHook;
+import com.jc.intelligence.wiring.search.v1.SearchShadowWiringConfigV1;
+import java.time.Clock;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+
+/** Explicit test/stage assembly. It is absent from default and production-equivalent contexts. */
+@Configuration(proxyBeanMethods = false)
+@Conditional(StageSearchShadowActivationCondition.class)
+public class StageSearchShadowConfiguration {
+    @Bean StageSearchShadowProperties stageSearchShadowProperties(Environment environment) {
+        StageSearchShadowProperties properties = StageSearchShadowProperties.from(environment);
+        if (properties == null) throw new IllegalStateException("stage Search shadow activation condition drift");
+        return properties;
+    }
+
+    @Bean SearchShadowWiringConfigV1 stageSearchShadowWiringConfig(StageSearchShadowProperties properties) {
+        return properties.wiringConfig();
+    }
+
+    @Bean InMemoryStageSearchCatalog inMemoryStageSearchCatalog() {
+        return new InMemoryStageSearchCatalog();
+    }
+
+    @Bean SearchRuntime stageSearchRuntime(InMemoryStageSearchCatalog catalog) {
+        return new DefaultSearchRuntime(catalog, new PassThroughSearchCandidateFilter(),
+                (request, candidate) -> SearchDependencyDecision.ALLOW,
+                (request, candidate) -> SearchDependencyDecision.ALLOW,
+                catalog, new NoOpSearchRerankingPort());
+    }
+
+    @Bean(destroyMethod = "close") StageBoundedSearchShadowExecutionPort stageSearchShadowExecutionPort(
+            StageSearchShadowProperties properties) {
+        return new StageBoundedSearchShadowExecutionPort(properties.maxConcurrency(), properties.queueCapacity());
+    }
+
+    @Bean SearchShadowIntegrationPort<PageResponse<PostDtos.Summary>> stageSearchShadowIntegrationPort(
+            StageSearchShadowProperties properties,
+            SearchRuntime stageSearchRuntime,
+            StageBoundedSearchShadowExecutionPort stageSearchShadowExecutionPort) {
+        SearchShadowPolicyV1 policy = new SearchShadowPolicyV1(SearchShadowMode.TEST_ONLY,
+                new PolicyVersion("search-shadow-policy-v1"),
+                new PolicyVersion("search-shadow-comparison-policy-v1"), properties.timeout(), properties.topK(),
+                new ProducerBuildId("ip10-test-stage-shadow"));
+        return new SearchShadowIntegrationBoundary<>(policy, stageSearchRuntime, stageSearchShadowExecutionPort);
+    }
+
+    @Bean StageExploreSearchRuntimeInputProviderFactory stageExploreSearchRuntimeInputProviderFactory(
+            InMemoryStageSearchCatalog catalog) {
+        return new DefaultStageExploreSearchRuntimeInputProviderFactory(Math.max(100, catalog.size()));
+    }
+
+    @Bean(destroyMethod = "close") StageSearchShadowTaskExecutor stageSearchShadowTaskExecutor(
+            StageSearchShadowProperties properties) {
+        return new StageSearchShadowTaskExecutor(properties.maxConcurrency(), properties.queueCapacity());
+    }
+
+    @Bean InMemoryStageSearchShadowComparisonLogPort inMemoryStageSearchShadowComparisonLogPort() {
+        return new InMemoryStageSearchShadowComparisonLogPort(1_000);
+    }
+
+
+    @Bean SearchShadowCircuitBreaker stageSearchShadowCircuitBreaker() {
+        return new FixedSearchShadowCircuitBreaker(SearchShadowCircuitState.CLOSED, false);
+    }
+
+    @Bean SearchShadowHook<PageResponse<PostDtos.Summary>> stageExploreSearchShadowHook(
+            SearchShadowWiringConfigV1 config,
+            StageSearchShadowTaskExecutor taskExecutor,
+            SearchShadowCircuitBreaker circuitBreaker,
+            SearchShadowIntegrationPort<PageResponse<PostDtos.Summary>> integrationPort,
+            StageExploreSearchRuntimeInputProviderFactory providerFactory,
+            SearchShadowComparisonLogPort logPort) {
+        return new StageExploreSearchShadowHook(config, taskExecutor, circuitBreaker, integrationPort,
+                providerFactory, logPort);
+    }
+
+    @Bean ExploreShadowRequestContextProvider stageExploreShadowRequestContextProvider() {
+        return new StageExploreShadowRequestContextProvider(Clock.systemUTC());
+    }
+
+    @Bean ExploreShadowHookRequestFactory stageExploreShadowHookRequestFactory(
+            ExploreShadowRequestContextProvider contextProvider) {
+        return new DefaultExploreShadowHookRequestFactory(contextProvider);
+    }
+
+    @Bean ExploreSearchShadowBridge stageExploreSearchShadowBridge(
+            ExploreShadowHookRequestFactory requestFactory,
+            SearchShadowHook<PageResponse<PostDtos.Summary>> stageExploreSearchShadowHook) {
+        return new DefaultExploreSearchShadowBridge(requestFactory, stageExploreSearchShadowHook);
+    }
+}
+
+[Stage properties]
+package com.jc.backend.search.shadow.stage;
+
+import com.jc.intelligence.contract.v1.version.PolicyVersion;
+import com.jc.intelligence.contract.v1.version.ProducerBuildId;
+import com.jc.intelligence.wiring.search.v1.SearchShadowWiringConfigV1;
+import com.jc.intelligence.wiring.search.v1.SearchShadowWiringMode;
+import java.time.Duration;
+import java.util.Arrays;
+import org.springframework.core.env.Environment;
+
+/** Validated test/stage-only settings. No production resource supplies these properties. */
+public record StageSearchShadowProperties(
+        SearchShadowWiringMode mode,
+        boolean explicitAllow,
+        int sampleBasisPoints,
+        Duration timeout,
+        int queueCapacity,
+        int maxConcurrency,
+        int topK,
+        String activeProfile) {
+    public static final String PREFIX = "search.shadow.stage.";
+    public static final int DEFAULT_SAMPLE_BASIS_POINTS = 0;
+    public static final int DEFAULT_TIMEOUT_MILLIS = 200;
+    public static final int DEFAULT_QUEUE_CAPACITY = 8;
+    public static final int DEFAULT_MAX_CONCURRENCY = 2;
+    public static final int DEFAULT_TOP_K = 10;
+
+    public StageSearchShadowProperties {
+        if (mode == null) throw new IllegalArgumentException("mode is required");
+        if (sampleBasisPoints < 0 || sampleBasisPoints > 10_000) {
+            throw new IllegalArgumentException("sampleBasisPoints must be 0..10000");
+        }
+        if (timeout == null || timeout.isZero() || timeout.isNegative() || timeout.compareTo(Duration.ofSeconds(5)) > 0) {
+            throw new IllegalArgumentException("test/stage timeout must be greater than zero and at most five seconds");
+        }
+        if (queueCapacity < 1 || queueCapacity > 128) {
+            throw new IllegalArgumentException("test/stage queueCapacity must be 1..128");
+        }
+        if (maxConcurrency < 1 || maxConcurrency > 16) {
+            throw new IllegalArgumentException("test/stage maxConcurrency must be 1..16");
+        }
+        if (topK < 1 || topK > 100) throw new IllegalArgumentException("topK must be 1..100");
+        if (!SearchShadowWiringConfigV1.TEST_PROFILE.equals(activeProfile)
+                && !SearchShadowWiringConfigV1.STAGE_PROFILE.equals(activeProfile)) {
+            throw new IllegalArgumentException("activeProfile must be an approved test/stage profile");
+        }
+        if (mode != SearchShadowWiringMode.TEST_ONLY) {
+            throw new IllegalArgumentException("test/stage activation requires test_only mode");
+        }
+        if (!explicitAllow) throw new IllegalArgumentException("explicitAllow must be true for active wiring");
+    }
+
+    public static boolean activationAllowed(Environment environment) {
+        try {
+            return from(environment) != null;
+        } catch (RuntimeException exception) {
+            return false;
+        }
+    }
+
+    public static StageSearchShadowProperties from(Environment environment) {
+        if (environment == null) throw new IllegalArgumentException("environment is required");
+        var profiles = Arrays.asList(environment.getActiveProfiles());
+        if (profiles.contains("prod") || profiles.contains("production")) return null;
+        String activeProfile = profiles.contains(SearchShadowWiringConfigV1.TEST_PROFILE)
+                ? SearchShadowWiringConfigV1.TEST_PROFILE
+                : profiles.contains(SearchShadowWiringConfigV1.STAGE_PROFILE)
+                        ? SearchShadowWiringConfigV1.STAGE_PROFILE : null;
+        if (activeProfile == null) return null;
+        SearchShadowWiringMode mode = SearchShadowWiringMode.parseOrDisabled(
+                environment.getProperty(PREFIX + "mode", "disabled"));
+        boolean allow = Boolean.TRUE.equals(environment.getProperty(PREFIX + "explicit-allow", Boolean.class, false));
+        if (mode != SearchShadowWiringMode.TEST_ONLY || !allow) return null;
+        int sample = integer(environment, "sample-basis-points", DEFAULT_SAMPLE_BASIS_POINTS);
+        int timeoutMillis = integer(environment, "timeout-millis", DEFAULT_TIMEOUT_MILLIS);
+        int queue = integer(environment, "queue-capacity", DEFAULT_QUEUE_CAPACITY);
+        int concurrency = integer(environment, "max-concurrency", DEFAULT_MAX_CONCURRENCY);
+        int topK = integer(environment, "top-k", DEFAULT_TOP_K);
+        return new StageSearchShadowProperties(mode, true, sample, Duration.ofMillis(timeoutMillis),
+                queue, concurrency, topK, activeProfile);
+    }
+
+    private static int integer(Environment environment, String name, int defaultValue) {
+        String raw = environment.getProperty(PREFIX + name);
+        if (raw == null || raw.isBlank()) return defaultValue;
+        if (!raw.equals(raw.trim())) throw new IllegalArgumentException(name + " must be trimmed");
+        try {
+            return Integer.parseInt(raw);
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException(name + " must be an integer", exception);
+        }
+    }
+
+    public SearchShadowWiringConfigV1 wiringConfig() {
+        return new SearchShadowWiringConfigV1(mode, activeProfile, explicitAllow, sampleBasisPoints, timeout,
+                queueCapacity, maxConcurrency, new PolicyVersion("search-shadow-sampling-policy-v1"),
+                new ProducerBuildId("ip10-test-stage-shadow"));
+    }
+}
+
+[Stage runtime input provider]
+package com.jc.backend.search.shadow.stage;
+
+import com.jc.intelligence.compat.search.explore.v1.LegacyExploreRequestView;
+import com.jc.intelligence.contract.v1.identity.RunRef;
+import com.jc.intelligence.contract.v1.search.RetrievalSource;
+import com.jc.intelligence.contract.v1.search.SearchContractIds;
+import com.jc.intelligence.contract.v1.search.SearchEntityScope;
+import com.jc.intelligence.contract.v1.search.SearchFilterSource;
+import com.jc.intelligence.contract.v1.search.SearchFilterType;
+import com.jc.intelligence.contract.v1.search.SearchQueryMode;
+import com.jc.intelligence.contract.v1.search.SearchSortType;
+import com.jc.intelligence.contract.v1.search.SearchSurface;
+import com.jc.intelligence.contract.v1.search.query.SearchContextV1;
+import com.jc.intelligence.contract.v1.search.query.SearchFilterV1;
+import com.jc.intelligence.contract.v1.search.query.SearchPageRequestV1;
+import com.jc.intelligence.contract.v1.search.query.SearchQueryCanonicalizerV1;
+import com.jc.intelligence.contract.v1.search.query.SearchRequestV1;
+import com.jc.intelligence.contract.v1.search.query.SearchSortV1;
+import com.jc.intelligence.contract.v1.version.FeatureDefinitionVersion;
+import com.jc.intelligence.contract.v1.version.PolicyVersion;
+import com.jc.intelligence.contract.v1.version.ProducerBuildId;
+import com.jc.intelligence.contract.v1.version.SchemaVersion;
+import com.jc.intelligence.integration.search.v1.SearchShadowContextV1;
+import com.jc.intelligence.integration.search.v1.SearchShadowFingerprintV1;
+import com.jc.intelligence.integration.search.v1.SearchShadowRuntimeInputProvider;
+import com.jc.intelligence.integration.search.v1.SearchShadowRuntimeInputResultV1;
+import com.jc.intelligence.runtime.search.v1.SearchRuntimeExecutionRequestV1;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+/** Creates deterministic Search Runtime input from the legacy request only, never from the legacy response. */
+public final class DefaultStageExploreSearchRuntimeInputProviderFactory
+        implements StageExploreSearchRuntimeInputProviderFactory {
+    private static final SchemaVersion RETRIEVAL_VERSION = new SchemaVersion("search-retrieval-stage-catalog-v1");
+    private static final PolicyVersion RANKING_POLICY = new PolicyVersion("search-ranking-stage-fixture-v1");
+    private static final ProducerBuildId BUILD = new ProducerBuildId("ip10-test-stage-shadow");
+    private final int maximumCandidateCount;
+
+    public DefaultStageExploreSearchRuntimeInputProviderFactory(int maximumCandidateCount) {
+        if (maximumCandidateCount < 1 || maximumCandidateCount > 1000) {
+            throw new IllegalArgumentException("maximumCandidateCount must be 1..1000");
+        }
+        this.maximumCandidateCount = maximumCandidateCount;
+    }
+
+    @Override public SearchShadowRuntimeInputProvider create(
+            LegacyExploreRequestView legacyRequest,
+            SearchShadowContextV1 shadowContext) {
+        if (legacyRequest == null || shadowContext == null) throw new IllegalArgumentException("request/context are required");
+        return ignored -> build(legacyRequest, shadowContext);
+    }
+
+    private SearchShadowRuntimeInputResultV1 build(
+            LegacyExploreRequestView legacyRequest,
+            SearchShadowContextV1 shadowContext) {
+        if (legacyRequest.page() == null || legacyRequest.size() == null || legacyRequest.page() < 0
+                || legacyRequest.size() < 1 || legacyRequest.size() > 100) {
+            return SearchShadowRuntimeInputResultV1.invalid("legacy_page_invalid");
+        }
+        if (legacyRequest.page() != 0) return SearchShadowRuntimeInputResultV1.unsupported("legacy_offset_page_unsupported");
+        if (!legacyRequest.sortOrders().isEmpty()) return SearchShadowRuntimeInputResultV1.unsupported("legacy_sort_unsupported");
+        if (!legacyRequest.unsupportedParameters().isEmpty()) {
+            return SearchShadowRuntimeInputResultV1.unsupported("legacy_filter_unsupported");
+        }
+        String rawQuery = blankToNull(legacyRequest.keyword());
+        SearchQueryMode queryMode = rawQuery == null ? SearchQueryMode.BROWSE : SearchQueryMode.TEXT_QUERY;
+        final var query = SearchQueryCanonicalizerV1.canonicalize(queryMode, rawQuery, "ko", "ko-KR");
+        List<SearchFilterV1> filters = new ArrayList<>();
+        String region = blankToNull(legacyRequest.region());
+        if (region != null) {
+            filters.add(new SearchFilterV1(SearchFilterType.REGION, List.of(region), SearchFilterSource.USER_SELECTED,
+                    new SchemaVersion("search-filter-v1")));
+        }
+        SearchRequestV1 request = new SearchRequestV1(SearchContractIds.SEARCH_DOMAIN,
+                safeId("request", shadowContext.correlationId()), shadowContext.correlationId(), query,
+                new SearchContextV1(null, shadowContext.sessionRef(), SearchSurface.EXPLORE, SearchEntityScope.POST,
+                        shadowContext.referenceTime(), "ko", "ko-KR", null, null), filters,
+                new SearchSortV1(SearchSortType.RELEVANCE, RANKING_POLICY),
+                SearchPageRequestV1.firstPage(legacyRequest.size()), new SchemaVersion("search-request-v1"),
+                query.normalizationVersion(), RANKING_POLICY,
+                new FeatureDefinitionVersion("search-feature-stage-fixture-v1"));
+        Instant startedAt = shadowContext.referenceTime();
+        SearchRuntimeExecutionRequestV1 execution = new SearchRuntimeExecutionRequestV1(request,
+                new RunRef(safeId("run", shadowContext.correlationId())),
+                new SchemaVersion("search-runtime-foundation-v1"), RETRIEVAL_VERSION,
+                List.of(RetrievalSource.DATABASE_POST), new PolicyVersion("search-fallback-stage-fixture-v1"),
+                BUILD, startedAt, startedAt.plusMillis(1), maximumCandidateCount, true);
+        return SearchShadowRuntimeInputResultV1.available(execution, SearchShadowFingerprintV1.runtimeInput(execution));
+    }
+
+    private static String blankToNull(String value) {
+        if (value == null || value.isBlank()) return null;
+        return value;
+    }
+
+    private static String safeId(String prefix, String material) {
+        String hash = SearchShadowFingerprintV1.sha256(material.toLowerCase(Locale.ROOT));
+        return prefix + ":ip10-" + hash.substring(0, 24);
+    }
+}
+
+[Stage in-memory catalog]
+package com.jc.backend.search.shadow.stage;
+
+import com.jc.intelligence.contract.v1.identity.EntityRef;
+import com.jc.intelligence.contract.v1.identity.SnapshotRef;
+import com.jc.intelligence.contract.v1.search.RetrievalSource;
+import com.jc.intelligence.contract.v1.search.SearchContractIds;
+import com.jc.intelligence.contract.v1.search.SearchEligibilityState;
+import com.jc.intelligence.contract.v1.search.SearchEntityType;
+import com.jc.intelligence.contract.v1.search.SearchFilterType;
+import com.jc.intelligence.contract.v1.search.SearchVisibilityState;
+import com.jc.intelligence.contract.v1.search.retrieval.RetrievalCandidateV1;
+import com.jc.intelligence.contract.v1.search.retrieval.RetrievalRequestV1;
+import com.jc.intelligence.runtime.search.v1.port.SearchRetrievalPort;
+import com.jc.intelligence.runtime.search.v1.port.SearchRetrievalResultV1;
+import com.jc.intelligence.runtime.search.v1.ranking.SearchRankedCandidateV1;
+import com.jc.intelligence.runtime.search.v1.ranking.SearchRankingPort;
+import com.jc.intelligence.runtime.search.v1.ranking.SearchRankingRequestV1;
+import com.jc.intelligence.runtime.search.v1.ranking.SearchRankingResultV1;
+import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicLong;
+
+/** Deterministic synthetic catalog used only by test/stage shadow validation. */
+public final class InMemoryStageSearchCatalog implements SearchRetrievalPort, SearchRankingPort {
+    private static final SnapshotRef SNAPSHOT = new SnapshotRef("snapshot:ip10-stage-catalog-v1");
+    private final List<StageSearchCatalogEntry> entries;
+    private final AtomicLong retrievalInvocations = new AtomicLong();
+    private final AtomicLong rankingInvocations = new AtomicLong();
+
+    public InMemoryStageSearchCatalog() {
+        this(List.of(
+                new StageSearchCatalogEntry("stage-post-001", "서울 골목 여행", List.of("서울", "골목", "여행"),
+                        List.of("서울", "kr-11"), 0.95d, "a-stage-post-001"),
+                new StageSearchCatalogEntry("stage-post-002", "부산 바다 산책", List.of("부산", "바다", "산책"),
+                        List.of("부산", "kr-26"), 0.90d, "b-stage-post-002"),
+                new StageSearchCatalogEntry("stage-post-003", "제주 카페 기록", List.of("제주", "카페", "기록"),
+                        List.of("제주", "kr-50"), 0.85d, "c-stage-post-003"),
+                new StageSearchCatalogEntry("stage-post-004", "서울 야경 코스", List.of("서울", "야경", "코스"),
+                        List.of("서울", "kr-11"), 0.80d, "d-stage-post-004")));
+    }
+
+    InMemoryStageSearchCatalog(List<StageSearchCatalogEntry> entries) {
+        this.entries = List.copyOf(entries);
+    }
+
+    @Override public SearchRetrievalResultV1 retrieve(RetrievalRequestV1 request) {
+        if (request == null) throw new IllegalArgumentException("request is required");
+        retrievalInvocations.incrementAndGet();
+        String normalizedQuery = request.query().normalizedQuery();
+        List<String> queryTokens = normalizedQuery == null ? List.of() : List.of(normalizedQuery.split(" "));
+        List<String> regionValues = request.filters().stream()
+                .filter(filter -> filter.filterType() == SearchFilterType.REGION)
+                .flatMap(filter -> filter.values().stream())
+                .map(InMemoryStageSearchCatalog::normalize)
+                .toList();
+        ArrayList<RetrievalCandidateV1> candidates = new ArrayList<>();
+        int rank = 1;
+        for (StageSearchCatalogEntry entry : entries) {
+            if (!matchesQuery(entry, queryTokens) || !matchesRegion(entry, regionValues)) continue;
+            EntityRef ref = new EntityRef("post:" + entry.sourceId());
+            candidates.add(new RetrievalCandidateV1(SearchContractIds.SEARCH_RETRIEVAL_RANKING, ref,
+                    SearchEntityType.POST, entry.sourceId(), RetrievalSource.DATABASE_POST, entry.rankingScore(),
+                    rank++, request.referenceTime(), SNAPSHOT, SearchEligibilityState.UNKNOWN,
+                    SearchVisibilityState.UNKNOWN, null, request.retrievalStrategyVersion()));
+            if (candidates.size() >= request.maximumCandidateCount()) break;
+        }
+        return SearchRetrievalResultV1.success(candidates);
+    }
+
+    @Override public SearchRankingResultV1 rank(SearchRankingRequestV1 request) {
+        if (request == null) throw new IllegalArgumentException("request is required");
+        rankingInvocations.incrementAndGet();
+        ArrayList<SearchRankedCandidateV1> ranked = new ArrayList<>();
+        for (RetrievalCandidateV1 candidate : request.candidates()) {
+            StageSearchCatalogEntry entry = entries.stream()
+                    .filter(value -> value.sourceId().equals(candidate.sourceId()))
+                    .findFirst().orElseThrow(() -> new IllegalArgumentException("candidate is not in stage catalog"));
+            ranked.add(new SearchRankedCandidateV1(candidate, entry.rankingScore(), entry.orderingKey()));
+        }
+        return SearchRankingResultV1.success(ranked);
+    }
+
+    public long retrievalInvocationCount() { return retrievalInvocations.get(); }
+    public long rankingInvocationCount() { return rankingInvocations.get(); }
+    public int size() { return entries.size(); }
+
+    private static boolean matchesQuery(StageSearchCatalogEntry entry, List<String> queryTokens) {
+        if (queryTokens.isEmpty()) return true;
+        String material = normalize(entry.title() + " " + String.join(" ", entry.queryTerms()));
+        return queryTokens.stream().allMatch(material::contains);
+    }
+
+    private static boolean matchesRegion(StageSearchCatalogEntry entry, List<String> regions) {
+        if (regions.isEmpty()) return true;
+        List<String> entryRegions = entry.regionTerms().stream().map(InMemoryStageSearchCatalog::normalize).toList();
+        return regions.stream().anyMatch(entryRegions::contains);
+    }
+
+    private static String normalize(String value) {
+        return Normalizer.normalize(value, Normalizer.Form.NFKC).trim().replaceAll("\\s+", " ")
+                .toLowerCase(Locale.ROOT);
+    }
+}
+
+[Stage task executor]
+package com.jc.backend.search.shadow.stage;
+
+import java.time.Duration;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+/** Bounded daemon executor used only by an explicitly active test/stage context. */
+public final class StageSearchShadowTaskExecutor implements AutoCloseable {
+    private final ThreadPoolExecutor executor;
+    private final int queueCapacity;
+    private final int maxConcurrency;
+    private final AtomicLong accepted = new AtomicLong();
+    private final AtomicLong completed = new AtomicLong();
+    private final AtomicLong failed = new AtomicLong();
+
+    public StageSearchShadowTaskExecutor(int maxConcurrency, int queueCapacity) {
+        if (maxConcurrency < 1 || maxConcurrency > 16) throw new IllegalArgumentException("maxConcurrency must be 1..16");
+        if (queueCapacity < 1 || queueCapacity > 128) throw new IllegalArgumentException("queueCapacity must be 1..128");
+        this.queueCapacity = queueCapacity;
+        this.maxConcurrency = maxConcurrency;
+        this.executor = new ThreadPoolExecutor(maxConcurrency, maxConcurrency, 0L, TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<>(queueCapacity), namedDaemonFactory("jc-search-shadow-stage-dispatch-"),
+                new ThreadPoolExecutor.AbortPolicy());
+        this.executor.prestartAllCoreThreads();
+    }
+
+    public StageSearchShadowSubmissionResult submit(Runnable task) {
+        if (task == null) throw new IllegalArgumentException("task is required");
+        if (executor.isShutdown()) {
+            return new StageSearchShadowSubmissionResult(StageSearchShadowSubmissionStatus.EXECUTOR_UNAVAILABLE,
+                    "executor_unavailable");
+        }
+        try {
+            executor.execute(() -> {
+                try {
+                    task.run();
+                    completed.incrementAndGet();
+                } catch (RuntimeException exception) {
+                    failed.incrementAndGet();
+                }
+            });
+            accepted.incrementAndGet();
+            return new StageSearchShadowSubmissionResult(StageSearchShadowSubmissionStatus.ACCEPTED, "submitted");
+        } catch (RejectedExecutionException exception) {
+            if (executor.isShutdown()) {
+                return new StageSearchShadowSubmissionResult(StageSearchShadowSubmissionStatus.EXECUTOR_UNAVAILABLE,
+                        "executor_unavailable");
+            }
+            if (executor.getQueue().remainingCapacity() == 0) {
+                return new StageSearchShadowSubmissionResult(StageSearchShadowSubmissionStatus.QUEUE_FULL, "queue_full");
+            }
+            return new StageSearchShadowSubmissionResult(StageSearchShadowSubmissionStatus.REJECTED, "rejected");
+        }
+    }
+
+    public boolean available() { return !executor.isShutdown(); }
+    public int queueCapacity() { return queueCapacity; }
+    public int maxConcurrency() { return maxConcurrency; }
+    public long acceptedCount() { return accepted.get(); }
+    public long completedCount() { return completed.get(); }
+    public long failedCount() { return failed.get(); }
+    public int queuedTaskCount() { return executor.getQueue().size(); }
+    public int activeTaskCount() { return executor.getActiveCount(); }
+
+    public boolean awaitIdle(Duration timeout) {
+        if (timeout == null || timeout.isNegative()) throw new IllegalArgumentException("timeout must be nonnegative");
+        long deadline = System.nanoTime() + timeout.toNanos();
+        while (System.nanoTime() <= deadline) {
+            if (activeTaskCount() == 0 && queuedTaskCount() == 0 && completed.get() + failed.get() >= accepted.get()) {
+                return true;
+            }
+            try {
+                Thread.sleep(2L);
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @Override public void close() {
+        executor.shutdownNow();
+        try {
+            executor.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private static ThreadFactory namedDaemonFactory(String prefix) {
+        AtomicInteger sequence = new AtomicInteger();
+        return task -> {
+            Thread thread = new Thread(task, prefix + sequence.incrementAndGet());
+            thread.setDaemon(true);
+            thread.setUncaughtExceptionHandler((ignored, exception) -> { });
+            return thread;
+        };
+    }
+}
+
+[Evidence recorder]
+package com.jc.backend.search.shadow.stage;
+
+import com.jc.intelligence.wiring.search.v1.SearchShadowComparisonLogPort;
+import com.jc.intelligence.wiring.search.v1.SearchShadowComparisonLogResultV1;
+import com.jc.intelligence.wiring.search.v1.SearchShadowLogStatus;
+import com.jc.intelligence.wiring.search.v1.SearchShadowStructuredRecordV1;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.atomic.AtomicLong;
+
+/** Bounded memory-only stage recorder. It is neither persistence nor exposure evidence. */
+public final class InMemoryStageSearchShadowComparisonLogPort implements SearchShadowComparisonLogPort {
+    private final int capacity;
+    private final ConcurrentLinkedDeque<SearchShadowStructuredRecordV1> records = new ConcurrentLinkedDeque<>();
+    private final AtomicLong attempts = new AtomicLong();
+
+    public InMemoryStageSearchShadowComparisonLogPort(int capacity) {
+        if (capacity < 1 || capacity > 10_000) throw new IllegalArgumentException("capacity must be 1..10000");
+        this.capacity = capacity;
+    }
+
+    @Override public boolean available() { return true; }
+
+    @Override public SearchShadowComparisonLogResultV1 log(SearchShadowStructuredRecordV1 record) {
+        if (record == null) throw new IllegalArgumentException("record is required");
+        attempts.incrementAndGet();
+        records.addLast(record);
+        while (records.size() > capacity) records.pollFirst();
+        return new SearchShadowComparisonLogResultV1(SearchShadowLogStatus.ACCEPTED, "in_memory_only");
+    }
+
+    public List<SearchShadowStructuredRecordV1> records() {
+        return List.copyOf(new ArrayList<>(records));
+    }
+
+    public long attemptCount() { return attempts.get(); }
+    public void clear() { records.clear(); }
+}
+
+[Build task excerpts]
+206-    )
+207-}
+208-
+209-
+210-/** IP-9 controlled backend hook and disabled-mode contract tests. */
+211:tasks.register<Test>("ip9BackendHookContractTest") {
+212-    group = "verification"
+213-    description = "Runs IP-9 controlled explore hook, disabled wiring, and failure-isolation tests."
+214-    testClassesDirs = sourceSets["test"].output.classesDirs
+215-    classpath = sourceSets["test"].runtimeClasspath
+216-    dependsOn(tasks.testClasses)
+217-    useJUnitPlatform()
+218-    filter {
+219-        includeTestsMatching("com.jc.backend.post.PostControllerSearchShadowHookTest")
+220-        includeTestsMatching("com.jc.backend.search.shadow.ExploreSearchShadowBridgeContractTest")
+221-        includeTestsMatching("com.jc.backend.search.shadow.SearchShadowBackendConfigurationTest")
+222-        includeTestsMatching("com.jc.backend.verification.IP9ControlledBackendHookStaticTest")
+223-    }
+224-}
+225-
+226:tasks.register("ip9ControlledBackendHookRegression") {
+227-    group = "verification"
+228-    description = "Runs IP-8 Search closure, IP-1 backend compatibility, and IP-9 controlled backend hook regression."
+229-    dependsOn(
+230-        "ip8SearchRegressionClosure",
+231-        "ip1CompatibilityContractTest",
+232:        "ip9BackendHookContractTest",
+233-    )
+234-}
+235-
+236-/** IP-10 explicit test/stage Search shadow activation tests. */
+237:tasks.register<Test>("ip10TestStageShadowActivationRegression") {
+238-    group = "verification"
+239-    description = "Runs IP-10 test/stage active Search shadow wiring, bounded execution, and production-guard tests."
+240-    testClassesDirs = sourceSets["test"].output.classesDirs
+241-    classpath = sourceSets["test"].runtimeClasspath
+242-    dependsOn(tasks.testClasses)
+243-    useJUnitPlatform()
+244-    filter {
+245-        includeTestsMatching("com.jc.backend.search.shadow.stage.*")
+246-        includeTestsMatching("com.jc.backend.verification.IP10TestStageShadowStaticTest")
+247-    }
+248-}
+249-
+250-/** IP-9 external attestation plus IP-10 test/stage activation and complete backend verification closure. */
+251:tasks.register("ip10CombinedExternalRegressionClosure") {
+252-    group = "verification"
+253-    description = "Runs IP-9/IP-10 Search closure, backend test/check, and P0/P1/P2 verification without ignoring failures."
+254-    dependsOn(
+255:        "ip9ControlledBackendHookRegression",
+256:        "ip10TestStageShadowActivationRegression",
+257-        "p0Verification",
+258-        "p1Verification",
+259-        "p2Verification",
+260-        "check",
+261-    )
+262-}
+263-
+
+[Production resource property scan]
+
+[Observability dependency scan]

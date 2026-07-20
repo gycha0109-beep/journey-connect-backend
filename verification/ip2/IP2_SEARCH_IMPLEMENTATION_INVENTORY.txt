@@ -1,0 +1,15 @@
+IP-2 Search Implementation Inventory Evidence
+
+- PASS | Explore controller exists | jc-backend/src/main/java/com/jc/backend/post/PostController.java | token=@GetMapping("/explore")
+- PASS | Explore repository exists | jc-backend/src/main/java/com/jc/backend/post/JourneyPostRepository.java | token=Page<JourneyPost> explore
+- PASS | Explore latest ordering exists | jc-backend/src/main/java/com/jc/backend/post/JourneyPostRepository.java | token=order by p.publishedAt desc, p.id desc
+- PASS | Region keyword endpoint exists | jc-backend/src/main/java/com/jc/backend/region/RegionController.java | token=@RequestParam(required = false) String keyword
+- PASS | Region keyword repository exists | jc-backend/src/main/java/com/jc/backend/region/RegionRepository.java | token=searchActive
+- PASS | Recommendation storage supports search behavior wire | jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationBehaviorStore.java | token=SEARCH("search")
+
+Current-state judgement:
+- /api/v1/explore: legacy JPQL/offset browse, not Search Intelligence runtime
+- region keyword lookup: independent lookup, not integrated search
+- user/tag/place/crew integrated text search: not found
+- SearchRun/snapshot/cursor/exposure persistence: not found
+- search_exposure_v1: reserved registry ID only

@@ -1,0 +1,10 @@
+Review: implementation quality, compatibility, security
+Found: 5
+Fixed: 5
+Deferred: 0
+- allowed UUID-compatible opaque request/session IDs
+- added Unicode control and code-point whitespace filter validation
+- retained immutable insertion order for explanation attributes
+- added RetrievalRequest, UUID, and control-character boundary tests
+- corrected Search module fixture/source fallback paths after module isolation
+Revalidation: PASS

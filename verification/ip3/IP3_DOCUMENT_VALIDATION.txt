@@ -1,0 +1,3 @@
+checks=50
+result=PASS
+ip3_contract_ids=jc-search-domain-types-validation-v1,ip-3-handoff-v1

@@ -1,0 +1,12 @@
+[ip1 test] javac --release 21 -encoding UTF-8 -Xlint:all -Werror
+sources=1
+result=PASS
+[ip3 test] javac --release 21 -encoding UTF-8 -Xlint:all -Werror
+sources=1
+result=PASS
+[ip4 test] javac --release 21 -encoding UTF-8 -Xlint:all -Werror
+sources=1
+result=PASS
+[ip5 test] javac --release 21 -encoding UTF-8 -Xlint:all -Werror
+sources=1
+result=PASS

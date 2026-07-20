@@ -1,0 +1,4 @@
+exit_code=1
+result=BLOCKED_BEFORE_TASK_EXECUTION
+cause=services.gradle.org DNS resolution failure while downloading Gradle distribution
+gradle_pass_declared=false

@@ -1,0 +1,13 @@
+IP-2 Self Review 2 — Stability, Privacy and Scope
+
+Found: 5
+Fixed: 5
+Deferred: 0
+
+1. Visibility mutation could cause unstable page refill. Fixed with omit-without-backfill and original rank window preservation.
+2. Raw query could leak through observability. Fixed by raw-query log prohibition and privacy-safe fingerprint/bucket guidance.
+3. no_results could be conflated with system failure. Fixed as succeeded empty output with outcome reason.
+4. Korean chosung/morphology/typo correction risked implied implementation. Fixed as V1 non-required/not implemented.
+5. Filter candidate typo contained a leading space before tag. Fixed to canonical wire value tag.
+
+Revalidation: links, IDs, wire values, scope exclusions and protected hashes PASS.

@@ -1,0 +1,51 @@
+PASS	decision_count_12	12
+PASS	decision_unique
+PASS	owners_nonempty
+PASS	raci_count_12	12
+PASS	raci_one_accountable
+PASS	gng_count_20	20
+PASS	token_14일
+PASS	token_30일
+PASS	token_0 BPS
+PASS	token_10 BPS
+PASS	token_Production shadow: DISABLED
+PASS	token_Search cutover: NOT STARTED
+PASS	token_NO_GO
+PASS	token_EXTERNAL_ATTESTATION_PENDING
+PASS	prohibition_Raw query
+PASS	prohibition_raw identity
+PASS	doc_IP-11-75-GOVERNANCE-DECISION-CLOSURE.md
+PASS	doc_IP-11-75-APPROVED-OWNER-RACI-AND-AUTHORITY.md
+PASS	doc_IP-11-75-RETENTION-PRIVACY-AND-ACCESS-POLICY.md
+PASS	doc_IP-11-75-RESOURCE-SAMPLING-AND-COHORT-APPROVAL.md
+PASS	doc_IP-11-75-OBSERVABILITY-AND-OPERATIONAL-READINESS.md
+PASS	doc_IP-11-75-GO-NO-GO-RECLASSIFICATION.md
+PASS	doc_IP-11-75-VERIFICATION-AND-SELF-REVIEW.md
+PASS	doc_IP-11-75-HANDOFF.md
+PASS	markdown_links
+PASS	production_source_no_change	709
+PASS	production_config_no_change	7
+PASS	gradle_build_no_change	15
+PASS	sql_01_28_no_change	28
+PASS	sql_01_26_exact	26
+PASS	sql_27_28_exact	2
+PASS	protected_source_exact	320
+PASS	source_only_diff_zero	0
+PASS	policy_retention_aggregate=14 days
+PASS	policy_retention_error_summary=30 days
+PASS	policy_effective_sampling=0 BPS
+PASS	policy_pilot_ceiling=10 BPS
+PASS	policy_actual_cohort=empty / 0%
+PASS	policy_production_shadow=DISABLED
+PASS	resource_core=1
+PASS	resource_max=2
+PASS	resource_queue=8
+PASS	resource_runtime=200ms
+PASS	resource_hard<=300ms
+PASS	resource_candidates=100
+PASS	resource_current_sample=0bps
+PASS	resource_pilot_ceiling=10bps
+PASS	current_sample_zero
+PASS	actual_cohort_empty
+PASS	no_go
+SUMMARY	checks=50	pass=50	fail=0

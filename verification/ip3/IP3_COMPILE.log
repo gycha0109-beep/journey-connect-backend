@@ -1,0 +1,8 @@
+$ javac --release 21 -Xlint:all -Werror [common main]
+COMMON_MAIN_COMPILE=PASS
+$ javac --release 21 -Xlint:all -Werror [common test]
+COMMON_TEST_COMPILE=PASS
+$ javac --release 21 -Xlint:all -Werror [search main]
+SEARCH_MAIN_COMPILE=PASS
+$ javac --release 21 -Xlint:all -Werror [search test]
+SEARCH_TEST_COMPILE=PASS

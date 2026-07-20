@@ -1,0 +1,8 @@
+IP-12=IMPLEMENTATION_COMPLETE / EXTERNAL_ATTESTATION_PENDING
+Production shadow=DISABLED
+Effective sampling=0 BPS
+Approved maximum=10 BPS
+Actual cohort=empty / 0%
+Search cutover=NOT STARTED
+Go/No-Go=NO_GO_FOR_TRAFFIC
+Next=exact-source Gradle/Spring attestation + actual account hashes + explicit IP-12.5 decision

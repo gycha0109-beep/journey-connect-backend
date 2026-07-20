@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.jc.backend.recommendation.application.RecommendationCursorCodecTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-07-18T20:12:31.417Z" hostname="d063fc686b07" time="0.087">
+  <properties/>
+  <testcase name="signedCursorBindsRunOffsetUserAndSession()" classname="com.jc.backend.recommendation.application.RecommendationCursorCodecTest" time="0.087"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

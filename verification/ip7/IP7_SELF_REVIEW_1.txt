@@ -1,0 +1,8 @@
+IP-7 Self Review 1 — Authority, Status, Executor
+found=3
+fixed=3
+held=0
+1. Wiring authority did not explicitly encode legacy response authority -> changed to responseAuthority=legacy and responseModified=false.
+2. Executor abstraction did not expose finite queue/concurrency bounds -> added queueCapacity/maxConcurrency contract and activation capacity gate.
+3. IP-6 input/failure states could collapse to completed -> added exact status propagation including unavailable/unsupported/invalid/timeout/failure/cancelled.
+revalidation=IP7 1691 PASS at review checkpoint

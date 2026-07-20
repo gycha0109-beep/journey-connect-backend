@@ -1,0 +1,2 @@
+[IP-7 main] Java 21 -Xlint:all -Werror
+main_compile=PASS

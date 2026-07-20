@@ -1,0 +1,4 @@
+count=28
+canonical_01_26=EXACT_AGAINST_LOCAL_BASELINE
+sql_27_28=UNCHANGED_BY_IP12
+local_postgresql=NOT_EXECUTED

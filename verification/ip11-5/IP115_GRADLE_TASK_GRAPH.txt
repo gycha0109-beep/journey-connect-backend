@@ -1,0 +1,14 @@
+ip115ProjectionAndEligibilityContractTest
+  -> testClasses
+  -> :jc-search-production-controls:productionShadowTechnicalContractTest
+ip115KillSwitchAndCohortRegression
+  -> testClasses
+ip115ProductionShadowTechnicalReadinessRegression
+  -> ip9ControlledBackendHookRegression
+  -> ip10TestStageShadowActivationRegression
+  -> ip115ProjectionAndEligibilityContractTest
+  -> ip115KillSwitchAndCohortRegression
+ip115CombinedExternalAttestation
+  -> ip115ProductionShadowTechnicalReadinessRegression
+  -> p0Verification / p1Verification / p2Verification / check
+STATUS: STATIC GRAPH ONLY; GRADLE NOT EXECUTED

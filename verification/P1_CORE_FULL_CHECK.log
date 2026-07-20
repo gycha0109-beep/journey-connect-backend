@@ -1,0 +1,57 @@
+Starting a Gradle Daemon, 4 stopped Daemons could not be reused, use --status for details
+> Task :jc-recommendation-core:compileJava UP-TO-DATE
+> Task :jc-recommendation-core:processResources NO-SOURCE
+> Task :jc-recommendation-core:classes UP-TO-DATE
+> Task :jc-recommendation-core:compileTestJava UP-TO-DATE
+> Task :jc-recommendation-core:processTestResources UP-TO-DATE
+> Task :jc-recommendation-core:testClasses UP-TO-DATE
+
+> Task :jc-recommendation-core:coreFoundationContractTest
+Java recommendation core foundation contract: PASS
+
+> Task :jc-recommendation-core:coreWave1ContractTest
+Java recommendation core Wave 1 contract: PASS
+
+> Task :jc-recommendation-core:coreWave2ScoringContractTest
+Java recommendation core Wave 2 scoring contract: PASS
+
+> Task :jc-recommendation-core:coreWave3ExplorationContractTest
+Java recommendation core Wave 3 exploration contract: PASS
+
+> Task :jc-recommendation-core:coreWave3RankingDiversityContractTest
+Java recommendation core Wave 3 ranking/diversity contract: PASS
+
+> Task :jc-recommendation-core:coreWave4RankingIntegrationContractTest
+Java recommendation core Wave 4 ranking integration contract: PASS
+
+> Task :jc-recommendation-core:coreWave5ExposureContractTest
+Java recommendation core Wave 5 exposure contract: PASS
+
+> Task :jc-recommendation-core:coreWave6AttributionContractTest
+Java recommendation core Wave 6 behavior and attribution contract: PASS
+
+> Task :jc-recommendation-core:coreWave7OfflineEvaluationContractTest
+Java recommendation core Wave 7 offline evaluation contract: PASS
+
+> Task :jc-recommendation-core:javaCoreGoldenFixtureContractTest
+Java recommendation core committed golden fixtures: PASS
+
+> Task :jc-recommendation-core:javaCoreIsolationContractTest
+Java recommendation core framework isolation: PASS
+
+> Task :jc-recommendation-core:p1CoreContractTest
+P1 core contract: PASS (17 scenarios)
+
+> Task :jc-recommendation-core:test
+> Task :jc-recommendation-core:check
+
+[Incubating] Problems report is available at: file:///mnt/data/p1finalwork/jc-backend/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.5/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 15s
+16 actionable tasks: 13 executed, 3 up-to-date

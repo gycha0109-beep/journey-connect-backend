@@ -1,0 +1,57 @@
+{
+  "contractVersion": "search-domain-contract-v1",
+  "requestId": "request:search-001",
+  "correlationId": "correlation:search-001",
+  "query": {
+    "queryMode": "text_query",
+    "originalQuery": "  ＳＥＯＵＬ　Cafe  ",
+    "normalizedQuery": "seoul cafe",
+    "queryFingerprint": "e4dbdbddd2f05633fa31e2354936d60ceaf9d421bc0cc4dcbdcb0838b65dd5c1",
+    "normalizationVersion": "search-query-normalization-v1",
+    "languageHint": "ko",
+    "localeHint": "ko-KR",
+    "codePointLength": 10,
+    "utf8SizeBytes": 10
+  },
+  "context": {
+    "subjectRef": "subject:opaque-user-1",
+    "identitySchemeId": "platform_subject_v1",
+    "sessionRef": "session:search-1",
+    "surface": "global_search",
+    "entityScope": "post",
+    "referenceTime": "2026-07-19T12:00:00Z",
+    "languageHint": "ko",
+    "localeHint": "ko-KR",
+    "coarseRegionRef": "region:KR-11",
+    "consentPrivacyContextRef": "privacy:search-v1"
+  },
+  "filters": [
+    {
+      "filterType": "entity_scope",
+      "values": [
+        "post"
+      ],
+      "source": "system",
+      "schemaVersion": "search-filter-v1"
+    },
+    {
+      "filterType": "region",
+      "values": [
+        "kr-11"
+      ],
+      "source": "user_selected",
+      "schemaVersion": "search-filter-v1"
+    }
+  ],
+  "sort": {
+    "sortType": "relevance",
+    "sortPolicyVersion": "search-sort-policy-v1"
+  },
+  "pageRequest": {
+    "pageSize": 20
+  },
+  "schemaVersion": "search-request-v1",
+  "queryNormalizationVersion": "search-query-normalization-v1",
+  "rankingPolicyVersion": "search-ranking-policy-v1",
+  "featureDefinitionVersion": "search-ranking-features-v1"
+}

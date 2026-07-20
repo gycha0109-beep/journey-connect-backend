@@ -1,0 +1,3 @@
+package com.jc.recommendation.p2;
+import com.jc.recommendation.p2.P2EvaluationContracts.ReleaseState;
+public final class P2ReleaseStateMachine { public boolean canTransition(ReleaseState from,ReleaseState to){if(from==null||to==null)return false;return switch(from){case DRAFT->to==ReleaseState.SHADOW||to==ReleaseState.HOLD;case SHADOW->to==ReleaseState.CANARY||to==ReleaseState.HOLD;case CANARY->to==ReleaseState.LIVE||to==ReleaseState.HOLD||to==ReleaseState.ROLLED_BACK;case LIVE->to==ReleaseState.HOLD||to==ReleaseState.ROLLED_BACK;case HOLD->to==ReleaseState.SHADOW||to==ReleaseState.CANARY||to==ReleaseState.ROLLED_BACK;case ROLLED_BACK->to==ReleaseState.SHADOW;};}}

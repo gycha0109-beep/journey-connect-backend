@@ -1,0 +1,6 @@
+root=JC-IP-12-Prod-Shadow-Wiring-Final
+manifest_rows=1904
+production_shadow=DISABLED
+effective_sampling=0_BPS
+actual_cohort=EMPTY
+search_cutover=NOT_STARTED

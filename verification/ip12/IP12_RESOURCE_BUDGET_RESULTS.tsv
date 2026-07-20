@@ -1,0 +1,12 @@
+resource	approved	result
+core_concurrency	1	PASS
+max_concurrency	2	PASS
+queue_capacity	8	PASS
+runtime_timeout_ms	200	PASS
+hard_timeout_ms	300	PASS
+max_candidates	100	PASS
+max_sampling_bps	10	PASS
+unbounded_queue	prohibited	PASS
+common_fork_join_pool	prohibited	PASS
+request_thread_join	prohibited	PASS
+single_completion_after_timeout	required	PASS

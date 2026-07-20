@@ -1,0 +1,29 @@
+{
+  "name": "maximum-page-size",
+  "request": {
+    "keyword": null,
+    "region": null,
+    "page": 0,
+    "size": 2000,
+    "sortOrders": [],
+    "unsupportedParameters": {}
+  },
+  "page": {
+    "items": [],
+    "page": 0,
+    "size": 2000,
+    "totalElements": 0,
+    "totalPages": 0,
+    "last": true
+  },
+  "context": {
+    "requestId": "request:legacy-explore-001",
+    "correlationId": "correlation:legacy-explore-001",
+    "sessionRef": null,
+    "referenceTime": "2026-07-19T12:00:00Z",
+    "mappedAt": "2026-07-19T12:00:01Z",
+    "producerBuildId": "ip4-build-001"
+  },
+  "expectedStatus": "success",
+  "expectedFailureCode": null
+}

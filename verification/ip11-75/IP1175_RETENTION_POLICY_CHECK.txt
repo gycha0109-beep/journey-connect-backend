@@ -1,0 +1,5 @@
+PASS
+Aggregate evidence: 14 days policy
+Error summary: 30 days policy
+Raw query/identity/JWT/session/full payload: PROHIBITED
+Production persistence/cleanup: NOT IMPLEMENTED

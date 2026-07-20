@@ -1,0 +1,17 @@
+jc-search-shadow-wiring/src/test/java/com/jc/intelligence/wiring/search/SearchShadowWiringContractTest.java
+jc-search-shadow-wiring/src/test/resources/search-shadow-wiring/01-config-missing.json
+jc-search-shadow-wiring/src/test/resources/search-shadow-wiring/02-mode-disabled.json
+jc-search-shadow-wiring/src/test/resources/search-shadow-wiring/03-unknown-mode.json
+jc-search-shadow-wiring/src/test/resources/search-shadow-wiring/04-test-only-no-profile.json
+jc-search-shadow-wiring/src/test/resources/search-shadow-wiring/05-test-only-valid.json
+jc-search-shadow-wiring/src/test/resources/search-shadow-wiring/06-sample-zero.json
+jc-search-shadow-wiring/src/test/resources/search-shadow-wiring/07-executor-rejected.json
+jc-search-shadow-wiring/src/test/resources/search-shadow-wiring/08-queue-full.json
+jc-search-shadow-wiring/src/test/resources/search-shadow-wiring/09-executor-unavailable.json
+jc-search-shadow-wiring/src/test/resources/search-shadow-wiring/10-timeout.json
+jc-search-shadow-wiring/src/test/resources/search-shadow-wiring/11-executor-failed.json
+jc-search-shadow-wiring/src/test/resources/search-shadow-wiring/12-circuit-open.json
+jc-search-shadow-wiring/src/test/resources/search-shadow-wiring/13-half-open-allowed.json
+jc-search-shadow-wiring/src/test/resources/search-shadow-wiring/14-shadow-candidate-hold.json
+jc-search-shadow-wiring/src/test/resources/search-shadow-wiring/15-sample-partial.json
+jc-search-shadow-wiring/src/test/resources/search-shadow-wiring/16-logging-failure.json

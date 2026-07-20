@@ -1,0 +1,35 @@
+{
+  "scenario": "mixed_entity_types",
+  "rawQuery": "travel",
+  "pageSize": 20,
+  "maximumCandidateCount": 10,
+  "retrievalStatus": "success",
+  "rankingStatus": "success",
+  "reverseReranking": false,
+  "candidates": [
+    {
+      "entityRef": "post:1",
+      "sourceRank": 1,
+      "rankingScore": 0.9,
+      "orderingKey": "a",
+      "eligibilityDecision": "allow",
+      "visibilityDecision": "allow"
+    },
+    {
+      "entityRef": "region:KR-11",
+      "sourceRank": 2,
+      "rankingScore": 0.9,
+      "orderingKey": "a",
+      "eligibilityDecision": "allow",
+      "visibilityDecision": "allow"
+    },
+    {
+      "entityRef": "place:77",
+      "sourceRank": 3,
+      "rankingScore": 0.9,
+      "orderingKey": "a",
+      "eligibilityDecision": "allow",
+      "visibilityDecision": "allow"
+    }
+  ]
+}

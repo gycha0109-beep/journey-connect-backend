@@ -1,0 +1,37 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.5/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :jc-recommendation-core:compileJava UP-TO-DATE
+> Task :jc-recommendation-core:processResources NO-SOURCE
+> Task :jc-recommendation-core:classes UP-TO-DATE
+> Task :jc-recommendation-core:compileTestJava UP-TO-DATE
+> Task :jc-recommendation-core:processTestResources UP-TO-DATE
+> Task :jc-recommendation-core:testClasses UP-TO-DATE
+
+> Task :jc-recommendation-core:coreWave5ExposureContractTest
+Java recommendation core Wave 5 exposure contract: PASS
+
+> Task :jc-recommendation-core:coreWave6AttributionContractTest
+Java recommendation core Wave 6 behavior and attribution contract: PASS
+
+> Task :jc-recommendation-core:coreWave7OfflineEvaluationContractTest
+Java recommendation core Wave 7 offline evaluation contract: PASS
+
+> Task :jc-recommendation-core:javaCoreGoldenFixtureContractTest
+Java recommendation core committed golden fixtures: PASS
+
+> Task :jc-recommendation-core:javaCoreIsolationContractTest
+Java recommendation core framework isolation: PASS
+
+> Task :jc-recommendation-core:p1CoreContractTest
+P1 core contract: PASS (17 scenarios)
+
+[Incubating] Problems report is available at: file:///mnt/data/Journey-Connect-P1-Final-Validation-Batch17/jc-backend/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.5/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 14s
+9 actionable tasks: 6 executed, 3 up-to-date

@@ -1,0 +1,8 @@
+IP-11.5 ZIP RE-EXTRACT VERIFICATION
+Package root: JC-IP-11-5-Tech-Final
+Validation engines: Python zipfile, Info-ZIP unzip, Java jar
+Validation scope: entry safety, CRC, extraction, file path set, SHA-256 content equality
+Expected maximum internal path length: <=240
+Windows Explorer: NOT EXECUTED — Linux environment
+7-Zip: NOT EXECUTED — 7z unavailable
+Exact final ZIP verification result is also emitted externally as JC-IP-11-5-Tech-Package-Verification.log.

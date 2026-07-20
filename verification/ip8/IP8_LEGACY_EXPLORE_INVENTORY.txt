@@ -1,0 +1,20 @@
+Legacy /api/v1/explore Inventory
+endpoint=GET /api/v1/explore
+controller=jc-backend/src/main/java/com/jc/backend/post/PostController.java#explore
+service=jc-backend/src/main/java/com/jc/backend/post/PostService.java#explore
+repository=jc-backend/src/main/java/com/jc/backend/post/JourneyPostRepository.java#explore
+response=ApiResponse<PageResponse<PostDtos.Summary>>
+default_page_size=20
+pagination=Spring Pageable offset
+ordering=publishedAt DESC, id DESC
+keyword=case-insensitive substring on title/content/region names
+region=case-insensitive exact match on slug/local/ko/en
+visibility=PUBLISHED + PUBLIC + moderation VISIBLE + active author
+authentication_context=not used
+service_transaction=DatabaseRole.APP readOnly=true
+search_run=absent
+search_snapshot=absent
+search_cursor=absent
+search_exposure=absent
+production_hook=absent
+recommended_future_hook=controller return boundary after service success (proposal only)

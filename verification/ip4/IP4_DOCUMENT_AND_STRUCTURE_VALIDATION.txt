@@ -1,0 +1,14 @@
+PASS
+documents=22
+relative_links=31
+bad_links=0
+contract_ids=17
+duplicate_primary_contract_ids=0
+bad_contract_ids=0
+wire_values_checked=28
+bad_wire_values=0
+fixtures=16
+main_java=29
+test_java=1
+changed_files=80
+unexpected_changes=0

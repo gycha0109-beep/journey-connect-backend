@@ -1,0 +1,9 @@
+check	result
+startup_logs_only_state_and_counts	PASS
+activation_reason_bounded_enum	PASS
+raw_query_logging	ABSENT
+raw_identity_logging	ABSENT
+jwt_session_logging	ABSENT
+account_hash_logging	ABSENT
+request_response_payload_logging	ABSENT
+exception_message_logging	ABSENT

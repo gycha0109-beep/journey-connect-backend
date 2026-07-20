@@ -1,0 +1,6 @@
+IP-5 forbidden dependency and production wiring scan
+main_java_files=41
+forbidden_import_or_annotation_matches=0
+runtime_build_dependencies:
+15:    api(project(":jc-search-contracts"))
+result=PASS

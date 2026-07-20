@@ -1,0 +1,1 @@
+Canonical SQL 01..26 26/26 SHA-256 exact match: PASS

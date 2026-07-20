@@ -1,0 +1,12 @@
+case	expected	result
+empty	reject_all	PASS
+valid_match	true	PASS
+non_match	false	PASS
+uppercase_hex	normalize_lowercase	PASS
+whitespace	trim	PASS
+duplicate	startup_reject	PASS
+invalid_length	startup_reject	PASS
+invalid_character	startup_reject	PASS
+raw_id_like	startup_reject	PASS
+null_or_anonymous	false	PASS
+production_resource_fixture	zero_entries	PASS

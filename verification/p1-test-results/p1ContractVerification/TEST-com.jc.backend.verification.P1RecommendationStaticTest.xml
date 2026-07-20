@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.jc.backend.verification.P1RecommendationStaticTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-07-18T19:55:23.455Z" hostname="d063fc686b07" time="0.38">
+  <properties/>
+  <testcase name="p1CoreIsPureVersionedDeterministicAndRuntimeIsRollbackSafe()" classname="com.jc.backend.verification.P1RecommendationStaticTest" time="0.119"/>
+  <testcase name="p0DatabaseScriptsRemainExactAndP1CanonicalCopiesAreExact()" classname="com.jc.backend.verification.P1RecommendationStaticTest" time="0.029"/>
+  <testcase name="p0CoreBaselineRemainsByteExactExceptForTheDeclaredBuildTaskExtension()" classname="com.jc.backend.verification.P1RecommendationStaticTest" time="0.219"/>
+  <testcase name="p1SchemaIsAppendOnlyBoundAndEvidenceComplete()" classname="com.jc.backend.verification.P1RecommendationStaticTest" time="0.009"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

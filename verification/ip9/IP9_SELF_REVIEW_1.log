@@ -1,0 +1,14 @@
+IP-9 Self Review 1 — structure and authority
+
+1. FOUND: request factory did not validate Pageable page/size against the completed legacy PageResponse.
+   FIXED: exact page and size validation added; mismatch is isolated by the bridge.
+2. FOUND: static test referenced a non-existent IP-8 protected manifest filename.
+   FIXED: reference corrected to IP8_PROTECTED_BASELINE_EXPECTED_SHA256.txt.
+3. FOUND: review assumed the 320 protected manifest included PostController.
+   FIXED: protected 320/320 exact and backend Controller approved delta are now separate evidence sets.
+
+Post-fix verification:
+- direct Search/Recommendation regression PASS
+- bridge compile/direct behavior PASS
+- protected 320/320 PASS
+- SQL 26/26 PASS

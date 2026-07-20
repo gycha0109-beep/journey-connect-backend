@@ -1,0 +1,8 @@
+--- /mnt/data/ip7_base/Journey-Connect-IP-6-Search-Runtime-Integration-Boundary-Final/jc-backend/settings.gradle.kts	2026-07-19 16:21:27.000000000 +0000
++++ jc-backend/settings.gradle.kts	2026-07-19 18:08:18.973412221 +0000
+@@ -17,3 +17,5 @@
+ 
+ include(":jc-search-integration")
+ project(":jc-search-integration").projectDir = file("../jc-search-integration")
++include(":jc-search-shadow-wiring")
++project(":jc-search-shadow-wiring").projectDir = file("../jc-search-shadow-wiring")

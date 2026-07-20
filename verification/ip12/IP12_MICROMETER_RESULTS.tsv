@@ -1,0 +1,7 @@
+capability	result
+MeterRegistry_adapter_source	IMPLEMENTED
+counter_timer_gauge_binding_tests	DECLARED_NOT_EXECUTED
+bounded_tag_validation	DIRECT_STATIC_PASS
+high_cardinality_tag_rejection	DIRECT_STATIC_PASS
+registry_failure_isolation	SOURCE_PASS
+Spring_binding	NOT_EXECUTED

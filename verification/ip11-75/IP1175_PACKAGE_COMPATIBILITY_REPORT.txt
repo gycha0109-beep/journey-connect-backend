@@ -1,0 +1,12 @@
+root_folder=JC-IP-11-75-Gov-Final
+root_folder_length=21
+file_count_excluding_manifest=1816
+maximum_internal_path_length=177
+maximum_internal_path=JC-IP-11-75-Gov-Final/verification/p1-test-results/p1BehaviorProfileIntegration/TEST-com.jc.backend.recommendation.application.RecommendationP1BehaviorProfileIntegrationTest.xml
+paths_over_220=0
+paths_over_240=0
+non_ascii_paths=0
+compatibility_issues=0
+status=PASS
+Windows Explorer=NOT EXECUTED — Linux environment
+7-Zip=NOT EXECUTED — 7z unavailable unless later detected

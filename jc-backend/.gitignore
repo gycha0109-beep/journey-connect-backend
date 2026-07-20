@@ -1,0 +1,47 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+# 로컬·운영 설정만 제외
+jc-backend/src/main/resources/application.yml
+jc-backend/src/main/resources/application-local.yml
+jc-backend/src/main/resources/application-*.local.yml
+
+# 테스트 설정은 추적
+!jc-backend/src/test/resources/
+!jc-backend/src/test/resources/application.yml
+.env

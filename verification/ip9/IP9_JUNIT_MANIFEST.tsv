@@ -1,0 +1,5 @@
+test_class	intended_task	status	reason
+com.jc.backend.post.PostControllerSearchShadowHookTest	ip9BackendHookContractTest	NOT_EXECUTED	Gradle 8.14.5 distribution unavailable due DNS
+com.jc.backend.search.shadow.ExploreSearchShadowBridgeContractTest	ip9BackendHookContractTest	NOT_EXECUTED	Gradle 8.14.5 distribution unavailable due DNS
+com.jc.backend.search.shadow.SearchShadowBackendConfigurationTest	ip9BackendHookContractTest	NOT_EXECUTED	Gradle 8.14.5 distribution unavailable due DNS
+com.jc.backend.verification.IP9ControlledBackendHookStaticTest	ip9BackendHookContractTest	NOT_EXECUTED	Gradle 8.14.5 distribution unavailable due DNS

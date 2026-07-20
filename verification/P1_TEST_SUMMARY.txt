@@ -1,0 +1,16 @@
+Journey Connect P1 Final Validation
+===================================
+Backend JUnit unique classes: 39
+Backend JUnit tests: 67
+Failures: 0
+Errors: 0
+Skipped: 0
+
+P1 backend dedicated gates: 13/13 PASS
+P1 Java core scenarios: 17/17 PASS
+Legacy Java core contract tasks: 11/11 PASS
+P0 verification: 11/11 PASS
+PostgreSQL SQL: 01..24 PASS
+P0 core baseline: 239/239 SHA-256 exact
+P0 SQL baseline: 01..22 SHA-256 exact
+Final status: P1 CLOSED

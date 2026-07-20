@@ -1,0 +1,5 @@
+scope	status
+IP11_9_SQL_01_28_baseline	ATTESTED_PASS_BY_SUPPLIED_EVIDENCE
+IP12_SQL_changes	NONE
+IP12_local_PostgreSQL_replay	NOT_EXECUTED
+reason	Docker_PostgreSQL_psql_unavailable

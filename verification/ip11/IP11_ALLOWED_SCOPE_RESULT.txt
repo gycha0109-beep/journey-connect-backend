@@ -1,0 +1,7 @@
+diff_rows=61
+renames=10
+added=50
+modified=1
+deleted=0
+violations=0
+result=PASS

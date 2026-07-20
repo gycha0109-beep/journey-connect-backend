@@ -1,0 +1,15 @@
+{
+  "contractVersion": "search-retrieval-ranking-v1",
+  "entityRef": "post:123",
+  "entityType": "post",
+  "sourceId": "123",
+  "retrievalSource": "database_post",
+  "retrievalScore": 0.875,
+  "sourceRank": 1,
+  "retrievedAt": "2026-07-19T12:00:01Z",
+  "sourceSnapshotRef": "source-snapshot-posts-001",
+  "eligibilityState": "eligible",
+  "visibilityState": "visible",
+  "candidateMetadataRef": "metadata:post-123-v1",
+  "retrievalStrategyVersion": "database-lexical-v1"
+}

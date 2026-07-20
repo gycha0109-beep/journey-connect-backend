@@ -1,0 +1,17 @@
+[MAIN] jc-intelligence-contracts
+[TEST] jc-intelligence-contracts
+[MAIN] jc-search-contracts
+[TEST] jc-search-contracts
+[MAIN] jc-search-compatibility
+[TEST] jc-search-compatibility
+[MAIN] jc-search-runtime
+[TEST] jc-search-runtime
+[MAIN] jc-search-integration
+[TEST] jc-search-integration
+[MAIN] jc-search-shadow-wiring
+[TEST] jc-search-shadow-wiring
+[MAIN] jc-search-readiness
+[TEST] jc-search-readiness
+[MAIN] jc-recommendation-core
+[TEST] jc-recommendation-core
+DIRECT COMPILE PASS

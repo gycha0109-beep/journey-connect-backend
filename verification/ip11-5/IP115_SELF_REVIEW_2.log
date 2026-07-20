@@ -1,0 +1,6 @@
+FAILURE/OPERATIONS REVIEW
+1. Metric sink failure could escape technical gate: isolated.
+2. Kill-switch supplier/control failure could escape: default-killed isolation added.
+3. Non-zero production-approved sampling object could be constructed: rejected in IP-11.5.
+4. Queue saturation/shutdown tested by direct Java contract.
+Result: findings remediated; production remote switch and load approval remain open.

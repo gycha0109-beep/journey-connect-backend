@@ -1,0 +1,4 @@
+PASS_WITH_CONDITION
+Approved bounds: core=1 max=2 queue=8 runtime=200ms hard<=300ms candidates=100 current_sample=0bps pilot_ceiling=10bps
+Current implementation hard cancellation=250ms (within approved upper bound)
+Current provisional technical sample capability=100bps; IP-12 must enforce approved 10bps ceiling; effective current sample remains 0bps

@@ -1,0 +1,1528 @@
+Journey Connect IP-9 full project diff manifest
+baseline=/mnt/data/ip9_baseline
+current=/mnt/data/ip9_work/Journey-Connect-IP-9-Controlled-Backend-Hook-Implementation-Final
+added=36
+changed=5
+removed=0
+
+=== ADDED ===
+e8ba38da5afe8ebae1d4d3a61b9cd720f9b61e89167b11c709028d3008cc8bd4  docs/platform/intelligence/IP-9-CONTROLLED-BACKEND-HOOK-IMPLEMENTATION.md
+f91c4ca8aa7899a3af82510cdfc7d44bb0b0a95a087a6981e2fe9731cd15469e  docs/platform/intelligence/IP-9-DISABLED-MODE-AND-FAILURE-ISOLATION-CONTRACT.md
+4b2c925dcf3aaf62a0efb0e2fcd56feea209e6e45b9e56de83fc0aaa97b1b9e0  docs/platform/intelligence/IP-9-HANDOFF.md
+97c5d7255fd73bacc1e854b37c59e80ad9de760b0ccd0cad24aa7dd0807b89a1  docs/platform/intelligence/IP-9-VERIFICATION-AND-SELF-REVIEW.md
+8a8a7ffde72f9b79c1193774d1ecb2ab66f01adebcd81398b7b57451342735af  jc-backend/src/main/java/com/jc/backend/search/shadow/DefaultExploreSearchShadowBridge.java
+da1050508f04eeac9625e6b9108b1aa4c79822cdf9d894a8510775f378832ded  jc-backend/src/main/java/com/jc/backend/search/shadow/DefaultExploreShadowHookRequestFactory.java
+bf373afcdca7d7a79bbf4666328031d23eb08d4b4bdc337e240c431e36a408f2  jc-backend/src/main/java/com/jc/backend/search/shadow/DisabledExploreSearchShadowBridge.java
+cb7200c712585762c3f35409315ba98fc88737fa387dc3c359060a95db2df6ec  jc-backend/src/main/java/com/jc/backend/search/shadow/ExploreSearchShadowBridge.java
+f4aef257f6c4207fe49933fe6e78ebaf43e6fa503c4fece6d07e63751428333f  jc-backend/src/main/java/com/jc/backend/search/shadow/ExploreShadowHookRequestFactory.java
+b5d31a50456c13e9381a608ab4ad83761fa2f9432e659d6fede8b290db3df17e  jc-backend/src/main/java/com/jc/backend/search/shadow/ExploreShadowRequestContext.java
+e9fc7af03d74017ce6044a9cb07b79411dad8229a092827bd722b8c755751ea0  jc-backend/src/main/java/com/jc/backend/search/shadow/ExploreShadowRequestContextProvider.java
+b54f8904e8cf374962632974f8f0948237e6dc24149a606a856f42249dcbba1e  jc-backend/src/main/java/com/jc/backend/search/shadow/SearchShadowBackendConfiguration.java
+07e0e928ef4552d494129ca9c518937443f7ef7f3e300df635010087c3d19970  jc-backend/src/test/java/com/jc/backend/post/PostControllerSearchShadowHookTest.java
+4346b893423c69478bf13dbfa60f02e9c42132cb28d7d7c4fb84ae7acf1f89a7  jc-backend/src/test/java/com/jc/backend/search/shadow/ExploreSearchShadowBridgeContractTest.java
+12abbabeffe85fadf789d07540f4d0d4004ddc1ea410b53d8a4a0fa2503c1811  jc-backend/src/test/java/com/jc/backend/search/shadow/SearchShadowBackendConfigurationTest.java
+27af2fc73857edd71dbff800fa448f7321903b1593c2c8c64d68a8c0afa75302  jc-backend/src/test/java/com/jc/backend/verification/IP9ControlledBackendHookStaticTest.java
+45ccc06b9eb19913fd1fe13aab01cb8651a2d77728d622d8c417fd15da3226c0  verification/ip9/IP9_BACKEND_PROTECTED_DELTA_RESULT.txt
+3e88e5e9a9d46df07240e6d8d4d9cbfad5e1a0cc75a7f924de64afe386fcb5fe  verification/ip9/IP9_BACKEND_REGRESSION.log
+e577bf0d022c896fb53883ebe6ce62aba10b115db55beb861af0d384e7615435  verification/ip9/IP9_CHANGE_SCOPE_VALIDATION.txt
+22747d7d8e04dbff673bff7b7a8c520d2498a3685ec8be0c421ff0f622fcc8ec  verification/ip9/IP9_DIRECT_VERIFICATION.log
+052dbee1e9c20091a55b3057a7310c9a83ccde21bf803a4c44973d135d5abeea  verification/ip9/IP9_GRADLE_EXECUTION.log
+00263258ea3566d4c01ad0f1025b6bb5d9d3d873650b37d47b53523b5be57c5e  verification/ip9/IP9_JUNIT_MANIFEST.tsv
+7dd1d83cb6fa9e85b0ab025050a1c91f5583eb95f89cc3fcee1519f45cd68374  verification/ip9/IP9_JUNIT_SUMMARY.txt
+7351d6f2e47b96c5aa6d27fb3c1ae9d575a8dc9a183231920e6a383d16c8e748  verification/ip9/IP9_POSTCHANGE_BACKEND_PROTECTED_SHA256.txt
+f47daddfd0eac891cd4f81f9cc6c10f15cd5d891dd302f05e4ffe08a0c370d44  verification/ip9/IP9_PRECHANGE_BACKEND_PROTECTED_SHA256.txt
+31d9189634cff471342ac9cf933071762c338088221a15cfd120129848d335a4  verification/ip9/IP9_PROTECTED_SOURCE_CURRENT_SHA256.txt
+3c818679b3a6a6f54a019a8650913983a93eacb3df0b207be75f887a63628ee8  verification/ip9/IP9_PROTECTED_SOURCE_RESULT.txt
+8a1f11d6d990f88416d4bee8c38c71cd7a3d7ac2870f3fe213c4c9b0d17d069c  verification/ip9/IP9_SELF_REVIEW_1.log
+f3836c94c5f92e475caa1947d84fe2b2202e3408bb56570f791047527e9c6825  verification/ip9/IP9_SELF_REVIEW_2.log
+c1cddb1e6d4f952657a24ad76d1a61756abafc07bd75fbaab2fbbc090507f507  verification/ip9/IP9_SQL_01_26_CURRENT_SHA256.txt
+cbd287bd2ae9f1d1d17595f5c4d3aa39355edbe5caf7d7e8f40f622aabdc09c3  verification/ip9/IP9_SQL_01_26_RESULT.txt
+4c1e996a8f9fd5b9b9f19000829fd475c59a2a93175ed7cd44336f9f22a456fc  verification/ip9/IP9_STATIC_VERIFICATION.log
+aa7a12d99368b42649c5b27f07e17faf5b1d91211346747e3dc468433280cb72  verification/ip9/IP9_TASK_GRAPH_STATIC_VALIDATION.txt
+0ba17bb471cbedeb1d142e540afab5b1d0aeafe5e0dc47fd0fa145bd3aceefb1  verification/ip9/IP9_VERIFICATION_SUMMARY.txt
+92dcc67f151998f4bb45c75e1fab2965896fdf4607510f2cbf9208c5285bcde5  verification/ip9/run_ip9_direct_verification.sh
+1fd9cf71d7a61043d069e84173fb7b21014b3010cbbd43aafe15c20f52a8f092  verification/ip9/run_ip9_static_verification.py
+
+=== CHANGED ===
+ac5c655c34dca35dcc852045929e73c03a3b423a57cb6e5fc4dbbde15ce578ee -> 95f64497ec6f756ffa5548d1d5f22b306890d776c58650da7b5e36a59b62cfea  docs/platform/intelligence/README.md
+6350964ee50603758f2cd9a16764cfefae16f3e3a7c3f1363ade723df688646a -> e070cabaf9305ec32c1bcc8e6d0b86578442877a662e56b4f3cb31d5e7f6e71d  jc-backend/build.gradle.kts
+433ce10ccae1bac6fe961c153cee534e82d174c6c8aa6e2aa4df00013045fd5a -> 3d2afa500a4b602da1d8fb431aed3b788bce0b733882bd19750321502763363f  jc-backend/src/main/java/com/jc/backend/post/PostController.java
+95903cd7bca30ef25bb9b1336048b144c8e2bb39cada3949377a4080dd5b0f36 -> ecf60e7a07236408a00a9888bce9413a1f7554e007555b1ddc8cc5bc70849b83  jc-search-readiness/src/test/java/com/jc/intelligence/readiness/search/SearchShadowReadinessContractTest.java
+ab48363bbaecf1ec5e980fbb8f6f932c8f4b6cc0bbdd8180f6e4914a3b6f9d97 -> ebb06c915e418b0c77ec8d90f5d685fb74b817c0d2917e7d8a9fc3ee45d758cf  jc-search-runtime/src/test/java/com/jc/intelligence/runtime/search/SearchRuntimeContractTest.java
+
+=== REMOVED ===
+NONE
+
+=== UNIFIED TEXT DIFF (source/build/docs; verification evidence excluded) ===
+--- a/docs/platform/intelligence/README.md
++++ b/docs/platform/intelligence/README.md
+@@ -5,7 +5,7 @@
+ | 항목 | 값 |
+ |---|---|
+ | 소유 트랙 | Intelligence Platform |
+-| 현재 단계 | `IP-8 Search Shadow Activation Readiness & Regression Closure` |
++| 현재 단계 | `IP-9 Controlled Backend Hook Implementation & Disabled-Mode Closure` |
+ | IP-0 | `COMPLETE` |
+ | SC-1 | `COMPLETE` |
+ | IP-1/IP-1.10 | `CLOSED` |
+@@ -16,10 +16,11 @@
+ | IP-6 | `COMPLETE / DISABLED_SHADOW_BOUNDARY` |
+ | IP-7 | `COMPLETE / DISABLED_SHADOW_WIRING` |
+ | IP-8 | `COMPLETE / READINESS_ASSESSED / PRODUCTION_INACTIVE` |
++| IP-9 | `IMPLEMENTATION_COMPLETE / EXTERNAL_ATTESTATION_PENDING` |
+ | Search runtime | `IMPLEMENTED / IN_MEMORY FOUNDATION` |
+ | Search integration | `IMPLEMENTED / DISABLED_BY_DEFAULT / NON_PERSISTENT` |
+ | Search shadow wiring | `IMPLEMENTED / NOT PRODUCTION-WIRED / DEFAULT_ZERO` |
+-| Search activation readiness | `READY_FOR_CONTROLLED_HOOK_PROPOSAL / ACTIVATION HOLD` |
++| Search activation readiness | `CONTROLLED_HOOK_APPLIED / DEFAULT_DISABLED / ACTIVATION HOLD` |
+ | Search exposure persistence | `NOT IMPLEMENTED` |
+ | 기준 추천 | `P0 CLOSED / P1 CLOSED / P2 TECHNICAL CLOSED / P2 PRODUCTION HOLD` |
+ | 기준 DB | `journey-connect-db-v2.7/01..26` |
+@@ -61,6 +62,10 @@
+ 28. [IP-8 Activation Prerequisite Matrix](IP-8-ACTIVATION-PREREQUISITE-MATRIX.md)
+ 29. [IP-8 Rollback/Kill-switch/Observability](IP-8-ROLLBACK-KILL-SWITCH-AND-OBSERVABILITY-CONTRACT.md)
+ 30. [IP-8 Handoff](IP-8-HANDOFF.md)
++31. [IP-9 Controlled Backend Hook Implementation](IP-9-CONTROLLED-BACKEND-HOOK-IMPLEMENTATION.md)
++32. [IP-9 Disabled Mode & Failure Isolation](IP-9-DISABLED-MODE-AND-FAILURE-ISOLATION-CONTRACT.md)
++33. [IP-9 Verification & Self Review](IP-9-VERIFICATION-AND-SELF-REVIEW.md)
++34. [IP-9 Handoff](IP-9-HANDOFF.md)
+ 
+ ## 권위 범위
+ 
+@@ -90,6 +95,8 @@
+ | IP-7 Handoff | 완료/검증/보호 결과/IP-8 gate |
+ | IP-8 Readiness | hook proposal, disabled equivalence, regression closure, activation HOLD |
+ | IP-8 Handoff | 외부 Gradle/backend 검증과 IP-9 gate |
++| IP-9 Implementation | controlled Controller boundary, disabled bridge, failure isolation |
++| IP-9 Handoff | 외부 Gradle/backend attestation과 IP-10 HOLD gate |
+ 
+ ## 현재 구현과 목표
+ 
+@@ -124,8 +131,13 @@
+   → non-persistent structured record
+   → response unchanged
+ 
++CONTROLLED HOOK APPLIED / DEFAULT DISABLED
++/api/v1/explore legacy response
++  → backend-local disabled bridge
++  → identical legacy response returned
++
+ FUTURE / NOT IMPLEMENTED
+-  → production backend shadow hook insertion
++  → test/stage active shadow assembly
+   → persisted SearchRun/result snapshot
+   → production snapshot-bound cursor
+   → search_exposure_v1
+@@ -148,3 +160,7 @@
+ 
+ - IP-8은 production hook을 삽입하지 않았으며 controlled proposal과 disabled-mode equivalence만 완료했다.
+ - `ip8SearchRegressionClosure`는 IP-1/IP-3..IP-8 및 Recommendation Core 회귀를 묶고 backend Spring/Testcontainers는 별도 명령으로 실행한다.
++
++
++- IP-9은 Controller return boundary에 controlled void hook을 적용했지만 기본 bean은 완전 no-op이며 production activation/configuration은 없다.
++- 외부 Gradle 8.14.5 및 backend Spring/Testcontainers attestation 전 상태는 `IMPLEMENTATION_COMPLETE / EXTERNAL_ATTESTATION_PENDING`이다.
+--- a/jc-backend/build.gradle.kts
++++ b/jc-backend/build.gradle.kts
+@@ -29,6 +29,7 @@
+ dependencies {
+     implementation(project(":jc-recommendation-core"))
+     implementation(project(":jc-intelligence-contracts"))
++    implementation(project(":jc-search-shadow-wiring"))
+     // Spring Boot, JPA, Security, Validation, OpenAPI를 함께 묶어 API 서버의 기본 실행 환경을 구성합니다.
+     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+@@ -204,3 +205,30 @@
+         ":jc-recommendation-core:p2CoreContractTest",
+     )
+ }
++
++
++/** IP-9 controlled backend hook and disabled-mode contract tests. */
++tasks.register<Test>("ip9BackendHookContractTest") {
++    group = "verification"
++    description = "Runs IP-9 controlled explore hook, disabled wiring, and failure-isolation tests."
++    testClassesDirs = sourceSets["test"].output.classesDirs
++    classpath = sourceSets["test"].runtimeClasspath
++    dependsOn(tasks.testClasses)
++    useJUnitPlatform()
++    filter {
++        includeTestsMatching("com.jc.backend.post.PostControllerSearchShadowHookTest")
++        includeTestsMatching("com.jc.backend.search.shadow.ExploreSearchShadowBridgeContractTest")
++        includeTestsMatching("com.jc.backend.search.shadow.SearchShadowBackendConfigurationTest")
++        includeTestsMatching("com.jc.backend.verification.IP9ControlledBackendHookStaticTest")
++    }
++}
++
++tasks.register("ip9ControlledBackendHookRegression") {
++    group = "verification"
++    description = "Runs IP-8 Search closure, IP-1 backend compatibility, and IP-9 controlled backend hook regression."
++    dependsOn(
++        "ip8SearchRegressionClosure",
++        "ip1CompatibilityContractTest",
++        "ip9BackendHookContractTest",
++    )
++}
+--- a/jc-backend/src/main/java/com/jc/backend/post/PostController.java
++++ b/jc-backend/src/main/java/com/jc/backend/post/PostController.java
+@@ -7,6 +7,7 @@
+ import com.jc.backend.recommendation.application.RecommendationPostInteractionService;
+ import com.jc.backend.recommendation.application.RecommendationPostInteractionService.TrackingContext;
+ import com.jc.backend.recommendation.persistence.RecommendationPostInteractionStore.Action;
++import com.jc.backend.search.shadow.ExploreSearchShadowBridge;
+ import jakarta.validation.Valid;
+ import jakarta.validation.constraints.Max;
+ import jakarta.validation.constraints.Min;
+@@ -37,14 +38,17 @@
+     private final PostService postService;
+     private final RecommendationFeedService recommendationFeedService;
+     private final RecommendationPostInteractionService recommendationPostInteractionService;
++    private final ExploreSearchShadowBridge exploreSearchShadowBridge;
+ 
+     public PostController(
+             PostService postService,
+             RecommendationFeedService recommendationFeedService,
+-            RecommendationPostInteractionService recommendationPostInteractionService) {
++            RecommendationPostInteractionService recommendationPostInteractionService,
++            ExploreSearchShadowBridge exploreSearchShadowBridge) {
+         this.postService = postService;
+         this.recommendationFeedService = recommendationFeedService;
+         this.recommendationPostInteractionService = recommendationPostInteractionService;
++        this.exploreSearchShadowBridge = exploreSearchShadowBridge;
+     }
+ 
+     @GetMapping("/feed")
+@@ -71,7 +75,9 @@
+             @RequestParam(required = false) String keyword,
+             @RequestParam(required = false) String region,
+             @PageableDefault(size = 20) Pageable pageable) {
+-        return ApiResponse.ok(postService.explore(keyword, region, pageable));
++        PageResponse<PostDtos.Summary> legacyResponse = postService.explore(keyword, region, pageable);
++        exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);
++        return ApiResponse.ok(legacyResponse);
+     }
+ 
+     @GetMapping("/posts/{postId}")
+--- a/jc-search-readiness/src/test/java/com/jc/intelligence/readiness/search/SearchShadowReadinessContractTest.java
++++ b/jc-search-readiness/src/test/java/com/jc/intelligence/readiness/search/SearchShadowReadinessContractTest.java
+@@ -467,10 +467,13 @@
+         String testConfig = Files.readString(project.resolve("jc-backend/src/test/resources/application.yml"));
+ 
+         check(controller.contains("@GetMapping(\"/explore\")"), "explore endpoint exists");
+-        check(controller.contains("return ApiResponse.ok(postService.explore(keyword, region, pageable));"),
+-                "controller calls legacy service directly");
++        check(controller.contains("PageResponse<PostDtos.Summary> legacyResponse = postService.explore(keyword, region, pageable);")
++                        && controller.contains("return ApiResponse.ok(legacyResponse);"),
++                "controller preserves the legacy service result as response authority");
+         check(controller.contains("@PageableDefault(size = 20)"), "legacy page size default 20");
+-        check(!controller.contains("SearchShadowHook") && !controller.contains("searchShadow"), "controller hook not inserted");
++        check(controller.contains("exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);")
++                        && !controller.contains("SearchShadowDispatchReceiptV1"),
++                "controller contains only the controlled backend-local shadow bridge call");
+         check(service.contains("public PageResponse<PostDtos.Summary> explore(String keyword, String region, Pageable pageable)"),
+                 "legacy service method exact");
+         check(service.contains("posts.explore(blankToNull(keyword), normalizeRegionQuery(region), pageable)"),
+@@ -510,7 +513,14 @@
+             HashEntry entry = parseHashEntry(line);
+             Path file = project.resolve(entry.relativePath());
+             check(Files.isRegularFile(file), "protected file exists " + entry.relativePath());
+-            check(sha256(file).equals(entry.sha256()), "protected file exact " + entry.relativePath());
++            if (entry.relativePath().equals("jc-backend/src/main/java/com/jc/backend/post/PostController.java")) {
++                String controller = Files.readString(file);
++                check(controller.contains("exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);")
++                                && controller.contains("return ApiResponse.ok(legacyResponse);"),
++                        "approved IP-9 controller delta preserves legacy authority");
++            } else {
++                check(sha256(file).equals(entry.sha256()), "protected file exact " + entry.relativePath());
++            }
+         }
+         for (String line : sqlLines) {
+             HashEntry entry = parseHashEntry(line);
+--- a/jc-search-runtime/src/test/java/com/jc/intelligence/runtime/search/SearchRuntimeContractTest.java
++++ b/jc-search-runtime/src/test/java/com/jc/intelligence/runtime/search/SearchRuntimeContractTest.java
+@@ -463,8 +463,11 @@
+                 && !build.contains("jc-search-compatibility"), "runtime build excludes forbidden modules");
+         String settings = Files.readString(project.resolve("jc-backend/settings.gradle.kts"));
+         check(settings.contains("include(\":jc-search-runtime\")"), "runtime module registered");
+-        check(!Files.exists(project.resolve("jc-backend/src/main/java/com/jc/backend/search")),
+-                "no backend Search production wiring created");
++        Path backendSearch = project.resolve("jc-backend/src/main/java/com/jc/backend/search");
++        check(Files.isDirectory(backendSearch.resolve("shadow"))
++                        && !Files.exists(backendSearch.resolve("runtime"))
++                        && !Files.exists(backendSearch.resolve("persistence")),
++                "backend contains only the IP-9 controlled disabled shadow boundary");
+     }
+ 
+     private static void wireContracts() {
+--- /dev/null
++++ b/docs/platform/intelligence/IP-9-CONTROLLED-BACKEND-HOOK-IMPLEMENTATION.md
+@@ -0,0 +1,176 @@
++# IP-9 Controlled Backend Hook Implementation
++
++## 1. 문서 정보
++
++| 항목 | 값 |
++|---|---|
++| 단계 ID | `IP-9` |
++| 계약 ID | `ip-9-controlled-backend-hook-implementation-v1` |
++| 상태 | `IMPLEMENTATION_COMPLETE / EXTERNAL_ATTESTATION_PENDING` |
++| 기준 | `IP-8 COMPLETE / READY_FOR_CONTROLLED_HOOK_PROPOSAL` |
++| production activation | `PROHIBITED / NOT_CONFIGURED` |
++| legacy response authority | `true` |
++| Search response authority | `false` |
++| DB/SQL | `UNCHANGED` |
++
++## 2. 목적
++
++IP-8에서 문서로만 확정한 controlled hook을 실제 `/api/v1/explore` Controller return boundary에 최소 삽입한다. Search Runtime 결과를 응답으로 사용하지 않고, 기본 Spring wiring을 완전한 no-op으로 유지한다.
++
++이번 구현은 production shadow 활성화, Search API cutover, SearchRun/snapshot/exposure persistence 또는 production cursor authority를 생성하지 않는다.
++
++## 3. 실제 시작 기준선
++
++```text
++GET /api/v1/explore
++  → PostController.explore
++  → PostService.explore
++  → JourneyPostRepository.explore
++  → PageResponse<PostDtos.Summary>
++  → ApiResponse.ok(...)
++```
++
++- Service가 legacy `PageResponse`를 최종 조립한다.
++- Repository는 published/public/moderation-visible/active-author 조건과 `publishedAt DESC, id DESC`를 적용한다.
++- Service/Repository 내부와 transaction 경계는 변경하지 않았다.
++- 기존 Controller의 직접 return만 controlled boundary 형태로 최소 분해했다.
++
++## 4. 실제 wiring
++
++```text
++PostService.explore(...) exactly once
++  → legacyResponse 확정
++  → ExploreSearchShadowBridge.afterExplore(...)
++  → 동일 legacyResponse로 ApiResponse.ok(...)
++```
++
++Controller 적용 코드 의미:
++
++```java
++PageResponse<PostDtos.Summary> legacyResponse =
++        postService.explore(keyword, region, pageable);
++exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);
++return ApiResponse.ok(legacyResponse);
++```
++
++Hook 반환값, receipt, runtime result 또는 comparison evidence는 응답 생성에 사용하지 않는다.
++
++## 5. Backend-local bridge
++
++신규 package:
++
++```text
++com.jc.backend.search.shadow
++├─ ExploreSearchShadowBridge
++├─ DisabledExploreSearchShadowBridge
++├─ DefaultExploreSearchShadowBridge
++├─ ExploreShadowHookRequestFactory
++├─ DefaultExploreShadowHookRequestFactory
++├─ ExploreShadowRequestContext
++├─ ExploreShadowRequestContextProvider
++└─ SearchShadowBackendConfiguration
++```
++
++### 5.1 기본 구현
++
++`SearchShadowBackendConfiguration`은 `DisabledExploreSearchShadowBridge` 하나만 등록한다.
++
++- property binding 없음
++- profile binding 없음
++- active hook bean 없음
++- executor bean 없음
++- runtime input provider bean 없음
++- comparison logger bean 없음
++- production resource 설정 변경 없음
++
++설정 누락, 임의 property 또는 production-equivalent profile은 active bridge를 만들 수 없다.
++
++### 5.2 Controlled implementation
++
++`DefaultExploreSearchShadowBridge`는 명시적으로 조립해야만 사용할 수 있으며 Spring component가 아니다.
++
++- request factory와 IP-7 `SearchShadowHook`을 생성자에서 받는다.
++- factory/dispatch의 일반 `RuntimeException`을 bridge 내부에서 격리한다.
++- fatal `Error`는 삼키지 않는다.
++- dispatch receipt를 폐기하며 legacy response authority를 취득하지 않는다.
++
++### 5.3 Request factory
++
++`DefaultExploreShadowHookRequestFactory`는 IP-4 legacy compatibility representation과 IP-7 hook request를 조립한다.
++
++- legacy response는 comparison representation으로만 사용한다.
++- runtime candidate source로 재투입하지 않는다.
++- `Pageable`과 완성된 `PageResponse`의 page/size가 다르면 mapping을 거부한다.
++- raw query 또는 identifier를 production log에 쓰지 않는다.
++- production cursor, policy owner 또는 persistence reference를 발명하지 않는다.
++
++## 6. 변경 파일
++
++### Production 변경
++
++- `jc-backend/src/main/java/com/jc/backend/post/PostController.java`
++- `jc-backend/build.gradle.kts`
++- 신규 `jc-backend/src/main/java/com/jc/backend/search/shadow/**`
++
++### Test 변경
++
++- `PostControllerSearchShadowHookTest`
++- `ExploreSearchShadowBridgeContractTest`
++- `SearchShadowBackendConfigurationTest`
++- `IP9ControlledBackendHookStaticTest`
++- IP-8 direct regression이 controlled hook 상태를 정확히 인식하도록 기존 Search contract test 2개를 의미 변경 없이 보정
++
++### 비변경
++
++- `PostService`
++- `JourneyPostRepository` 및 JPQL
++- `PostDtos`
++- `SecurityConfig`
++- production application resources
++- Recommendation production/core source
++- canonical SQL `01..26`
++
++## 7. Gradle 구성
++
++Backend root에 최소 dependency를 추가했다.
++
++```kotlin
++implementation(project(":jc-search-shadow-wiring"))
++```
++
++신규 task:
++
++```text
++ip9BackendHookContractTest
++ip9ControlledBackendHookRegression
++```
++
++`ip9ControlledBackendHookRegression` dependency:
++
++```text
++ip8SearchRegressionClosure
++ip1CompatibilityContractTest
++ip9BackendHookContractTest
++```
++
++`ignoreFailures` 또는 실패 무시 Exec 처리는 없다.
++
++## 8. Authority 불변조건
++
++1. legacy Service 반환값만 client response authority다.
++2. hook receipt와 Search result는 응답에 합쳐지지 않는다.
++3. 기본 context에서 bridge는 완전 no-op이다.
++4. shadow failure는 legacy success를 실패로 바꾸지 않는다.
++5. legacy Service exception이면 hook은 호출되지 않는다.
++6. persistence/exposure/release-gate/production-cursor authority는 없다.
++7. Search module은 backend로 역의존하지 않는다.
++8. Service/Repository/DB/provider 호출은 신규 bridge에 없다.
++
++## 9. 현재 검증 판정
++
++- dependency-free Search/Recommendation direct regression: `PASS`
++- backend-local bridge Java 21 stub compile/direct behavior: `PASS`
++- Gradle configuration/task execution: `NOT_EXECUTED`
++- backend Spring/JUnit/Testcontainers: `NOT_EXECUTED`
++
++Gradle 미실행 항목은 PASS로 간주하지 않는다. 최종 단계 상태는 외부 attestation 전까지 `IMPLEMENTATION_COMPLETE / EXTERNAL_ATTESTATION_PENDING`이다.
+--- /dev/null
++++ b/docs/platform/intelligence/IP-9-DISABLED-MODE-AND-FAILURE-ISOLATION-CONTRACT.md
+@@ -0,0 +1,96 @@
++# IP-9 Disabled Mode and Failure Isolation Contract
++
++## 문서 정보
++
++| 항목 | 값 |
++|---|---|
++| 계약 ID | `ip-9-disabled-mode-failure-isolation-v1` |
++| 상태 | `ACTIVE / PROTECTIVE` |
++| 대상 | `/api/v1/explore` controlled hook |
++
++## 1. Disabled-mode 계약
++
++기본 backend application context에는 다음만 존재한다.
++
++```text
++ExploreSearchShadowBridge
++  = DisabledExploreSearchShadowBridge
++```
++
++기본 동작:
++
++- request factory 호출 `0`
++- Search hook 호출 `0`
++- executor submission `0`
++- runtime input 호출 `0`
++- comparison 호출 `0`
++- logging 호출 `0`
++- persistence/exposure 호출 `0`
++
++Production application 설정에는 `search.shadow.*` 활성 값을 추가하지 않았다. 임의 property를 전달해도 기본 configuration은 disabled bridge만 생성한다.
++
++## 2. Response authority
++
++Hook 전후 다음이 동일해야 한다.
++
++- legacy response object identity
++- response data value
++- item count와 order
++- page/size/totalElements/totalPages/last
++- `ApiResponse` wrapper 의미
++- HTTP status와 JSON serialization
++
++Hook receipt는 API DTO나 header에 포함되지 않는다.
++
++## 3. Failure isolation
++
++다음 일반 runtime failure는 bridge 내부에서 격리한다.
++
++- request context/factory failure
++- compatibility conversion failure
++- page metadata inconsistency
++- Search hook failure
++- sampler/circuit/executor/runtime/comparison/logging 계층에서 hook이 전달한 `RuntimeException`
++
++결과:
++
++```text
++legacy success + shadow RuntimeException
++→ legacy success unchanged
++```
++
++다음은 별도다.
++
++```text
++legacy Service exception
++→ hook not invoked
++→ original exception preserved
++```
++
++JVM fatal `Error`를 broad catch로 삼키지 않는다.
++
++## 4. Active/test-only assembly 경계
++
++`DefaultExploreSearchShadowBridge`와 `DefaultExploreShadowHookRequestFactory`는 자동 Spring component가 아니다. 후속 승인된 test/stage configuration에서만 명시적으로 조립할 수 있다.
++
++Actual runtime input provider가 없으면 fabricated execution을 만들지 않는다. IP-4 compatibility output은 runtime candidate source가 아니다.
++
++## 5. 금지된 authority
++
++- response authority: 없음
++- persistence authority: 없음
++- exposure authority: 없음
++- release gate authority: 없음
++- production cursor authority: 없음
++- production activation authority: 없음
++
++## 6. 외부 attestation 필수 항목
++
++Gradle 사용 가능 환경에서 다음을 확인해야 한다.
++
++- Spring bean exactly one disabled bridge
++- Controller/MVC serialization exact
++- JUnit failure-isolation scenarios
++- backend 전체 `test/check`
++- P0/P1/P2 verification
++- Docker/Testcontainers 또는 external PostgreSQL 경로
+--- /dev/null
++++ b/docs/platform/intelligence/IP-9-HANDOFF.md
+@@ -0,0 +1,101 @@
++# IP-9 Handoff
++
++## 문서 정보
++
++| 항목 | 값 |
++|---|---|
++| 계약 ID | `ip-9-handoff-v1` |
++| 상태 | `IMPLEMENTATION_COMPLETE / EXTERNAL_ATTESTATION_PENDING` |
++| production activation | `PROHIBITED / NOT_CONFIGURED` |
++| 다음 후보 | `IP-10 Test/Stage Shadow Activation` |
++
++## 완료
++
++- `/api/v1/explore` Controller return boundary에 controlled backend-local hook 삽입
++- 동일 legacy `PageResponse`를 유일한 response authority로 유지
++- 기본 `DisabledExploreSearchShadowBridge` Spring bean
++- active bridge/request factory는 명시적 조립 전용, 자동 활성화 없음
++- factory/hook `RuntimeException` fail-open 격리
++- legacy Service exception 시 hook zero-call
++- Controller/MVC/wiring/static JUnit test 작성
++- `ip9BackendHookContractTest`
++- `ip9ControlledBackendHookRegression`
++- 문서 4개와 verification evidence
++- 자체 리뷰 2회 및 보완
++
++## 변경 범위
++
++### 승인된 production 변경
++
++- `PostController.java`: Service 정상 반환 후 void hook 호출
++- backend-local `com.jc.backend.search.shadow` 신규 package
++- `build.gradle.kts`: `jc-search-shadow-wiring` dependency와 IP-9 tasks
++
++### 비변경
++
++- `PostService`
++- `JourneyPostRepository`/JPQL
++- `PostDtos`
++- `SecurityConfig`
++- production application resources
++- canonical SQL `01..26`
++- Recommendation source/evidence/metric/exposure authority
++
++## 검증 상태
++
++```text
++Direct Search/Recommendation/bridge regression: PASS
++Gradle 8.14.5 execution: NOT_EXECUTED
++Backend Spring/JUnit/Testcontainers: NOT_EXECUTED
++```
++
++Gradle은 wrapper 다운로드 단계 `UnknownHostException: services.gradle.org`로 중단됐다. 미실행 항목은 PASS가 아니다.
++
++## 보호 결과
++
++- Recommendation·SQL protected manifest: `320/320 exact`
++- canonical SQL: `26/26 exact`
++- backend protected boundary:
++  - Controller: `APPROVED_DELTA`
++  - Service/Repository/DTO/SecurityConfig/config: `EXACT`
++- production shadow property/profile: 없음
++- persistence/exposure/release/cursor authority: 없음
++- P2 Production: `HOLD`
++
++## 외부 attestation gate
++
++후속 검증자는 Java 21, Gradle 8.14.5와 Docker/Testcontainers 또는 PostgreSQL 15 환경에서 다음을 PASS해야 한다.
++
++1. `tasks --all`
++2. `ip9ControlledBackendHookRegression`
++3. `ip8SearchRegressionClosure`
++4. `ip1CompatibilityContractTest`
++5. backend `test`
++6. `p0Verification p1Verification p2Verification`
++7. `check`
++8. JUnit XML 집계 및 protected/hash 재검증
++
++## IP-10 gate
++
++현재 `HOLD`다. 다음이 모두 닫혀야 제안할 수 있다.
++
++- 외부 Gradle/backend/PostgreSQL attestation PASS
++- runtime input provider 확정
++- visibility/eligibility owner 확정
++- executor/latency/error budget 승인
++- kill-switch/activation/rollback authority 승인
++- query 및 evidence retention 정책 승인
++- production profile에서 test-only 활성화가 불가능함을 재검증
++
++## 최종 상태
++
++```text
++IP-9: IMPLEMENTATION_COMPLETE / EXTERNAL_ATTESTATION_PENDING
++Controlled Hook Source Application: COMPLETE
++Default Mode: DISABLED / NO_OP
++Legacy Response Authority: MAINTAINED
++Production Activation: PROHIBITED / NOT_CONFIGURED
++Search API Cutover: NOT STARTED
++Persistence/Exposure/Release/Cursor Authority: NONE
++IP-10: HOLD
++```
+--- /dev/null
++++ b/docs/platform/intelligence/IP-9-VERIFICATION-AND-SELF-REVIEW.md
+@@ -0,0 +1,138 @@
++# IP-9 Verification and Self Review
++
++## 문서 정보
++
++| 항목 | 값 |
++|---|---|
++| 계약 ID | `ip-9-verification-self-review-v1` |
++| 상태 | `DIRECT_PASS / GRADLE_AND_BACKEND_NOT_EXECUTED` |
++
++## 1. 직접 검증
++
++Java 21 `javac --release 21 -Xlint:all -Werror`로 독립 계약 모듈과 Recommendation core를 깨끗한 임시 디렉터리에 컴파일했다.
++
++| 검증 | 결과 |
++|---|---|
++| IP-1 common contracts | `739 PASS` |
++| IP-3 Search contracts | `425 PASS` |
++| IP-4 compatibility | `584 PASS` |
++| IP-5 runtime | `850 PASS` |
++| IP-6 integration | `972 PASS` |
++| IP-7 wiring | `1700 PASS` |
++| IP-8 readiness | `2560 PASS` |
++| Recommendation Foundation/Wave1~7 | `PASS` |
++| Golden/Isolation | `PASS` |
++| P1 Core | `17 PASS` |
++| P2 Core | `23 PASS` |
++| backend-local bridge stub compile | `PASS` |
++| backend-local bridge direct behavior | `6 PASS` |
++
++근거: `verification/ip9/IP9_DIRECT_VERIFICATION.log`
++
++## 2. Gradle 및 backend 상태
++
++Gradle Wrapper 8.14.5를 실제 실행했으나 distribution 설치 단계에서 중단됐다.
++
++```text
++java.net.UnknownHostException: services.gradle.org
++```
++
++따라서 다음은 `NOT_EXECUTED`다.
++
++- `tasks --all`
++- `ip9ControlledBackendHookRegression`
++- backend `test`
++- `p0Verification p1Verification p2Verification`
++- `check`
++- Spring context/MVC/JUnit XML
++- Docker/Testcontainers/PostgreSQL backend tests
++
++근거: `verification/ip9/IP9_GRADLE_EXECUTION.log`
++
++## 3. 보호 검증
++
++| 대상 | 결과 |
++|---|---|
++| 기존 Recommendation·SQL protected manifest | `320/320 exact` |
++| canonical SQL 별도 manifest | `26/26 exact` |
++| Controller | `APPROVED_DELTA` |
++| Service/Repository/DTO/SecurityConfig | `EXACT` |
++| production application resources | `EXACT` |
++| Recommendation source | `EXACT` |
++
++기존 320 manifest는 Controller를 포함하지 않는다. Controller와 backend production 경계는 별도 pre/post manifest로 검증했다.
++
++## 4. 자체 리뷰 1 — 구조·권한
++
++발견 및 보완:
++
++1. Request factory가 `Pageable`과 완성된 legacy page metadata의 불일치를 명시적으로 차단하지 않았다.
++   - page/size exact validation을 추가했다.
++2. IP-9 static test가 IP-8 보호 manifest 파일명을 잘못 참조했다.
++   - 실제 `IP8_PROTECTED_BASELINE_EXPECTED_SHA256.txt`로 교정했다.
++3. 기존 320 protected manifest에 Controller가 포함된다는 잘못된 가정이 있었다.
++   - 320/320 exact 검증과 backend Controller 승인 delta 검증을 분리했다.
++
++재검증: 직접 전체 회귀 및 hash `PASS`.
++
++## 5. 자체 리뷰 2 — 회귀·운영 실패
++
++발견 및 보완:
++
++1. hook failure unit scenario가 page metadata mismatch에서 먼저 종료되어 실제 hook exception 경로를 검증하지 못했다.
++   - matching page fixture와 hook invocation counter를 적용했다.
++2. external Gradle command의 root path를 재검토했다.
++   - `jc-backend`가 Gradle root이므로 `test`, `p0Verification`, `p1Verification`, `p2Verification`, `check`를 root task로 문서화했다.
++3. temporary compiled classes가 최종 package에 남을 수 있었다.
++   - direct runner를 `/tmp` 기반으로 교체하고 임시 class 디렉터리를 제거했다.
++
++재검증: IP-1~IP-8, Recommendation, bridge direct regression `PASS`; protected 320/320 및 SQL 26/26 `PASS`.
++
++## 6. 외부 검증 명령
++
++실행 위치: `jc-backend`
++
++Linux/macOS:
++
++```bash
++./gradlew --no-daemon --stacktrace --version
++./gradlew --no-daemon --stacktrace tasks --all
++./gradlew --no-daemon --stacktrace ip9ControlledBackendHookRegression
++./gradlew --no-daemon --stacktrace ip8SearchRegressionClosure
++./gradlew --no-daemon --stacktrace ip1CompatibilityContractTest
++./gradlew --no-daemon --stacktrace test
++./gradlew --no-daemon --stacktrace p0Verification p1Verification p2Verification
++./gradlew --no-daemon --stacktrace check
++```
++
++Windows:
++
++```powershell
++.\gradlew.bat --no-daemon --stacktrace --version
++.\gradlew.bat --no-daemon --stacktrace tasks --all
++.\gradlew.bat --no-daemon --stacktrace ip9ControlledBackendHookRegression
++.\gradlew.bat --no-daemon --stacktrace ip8SearchRegressionClosure
++.\gradlew.bat --no-daemon --stacktrace ip1CompatibilityContractTest
++.\gradlew.bat --no-daemon --stacktrace test
++.\gradlew.bat --no-daemon --stacktrace p0Verification p1Verification p2Verification
++.\gradlew.bat --no-daemon --stacktrace check
++```
++
++Backend DB regression requires Docker/Testcontainers-compatible PostgreSQL 15, or the existing external DB contract:
++
++```text
++JC_TEST_DB_URL
++JC_TEST_DB_USERNAME
++JC_TEST_DB_PASSWORD
++JC_TEST_DB_RESET=true
++```
++
++## 7. 현재 판정
++
++```text
++Implementation: COMPLETE
++Direct contract regression: PASS
++Gradle configuration/runtime: NOT_EXECUTED
++Backend Spring/Testcontainers: NOT_EXECUTED
++Final state: IMPLEMENTATION_COMPLETE / EXTERNAL_ATTESTATION_PENDING
++```
+--- /dev/null
++++ b/jc-backend/src/main/java/com/jc/backend/search/shadow/DefaultExploreSearchShadowBridge.java
+@@ -0,0 +1,39 @@
++package com.jc.backend.search.shadow;
++
++import com.jc.backend.common.PageResponse;
++import com.jc.backend.post.PostDtos;
++import com.jc.intelligence.wiring.search.v1.SearchShadowHook;
++import com.jc.intelligence.wiring.search.v1.SearchShadowHookRequestV1;
++import java.util.Objects;
++import org.springframework.data.domain.Pageable;
++
++/**
++ * Explicitly assembled controlled bridge. This class is not a Spring component and is never selected by default.
++ * Ordinary runtime failures are isolated inside the bridge; fatal JVM errors are not swallowed.
++ */
++public final class DefaultExploreSearchShadowBridge implements ExploreSearchShadowBridge {
++    private final ExploreShadowHookRequestFactory requestFactory;
++    private final SearchShadowHook<PageResponse<PostDtos.Summary>> shadowHook;
++
++    public DefaultExploreSearchShadowBridge(
++            ExploreShadowHookRequestFactory requestFactory,
++            SearchShadowHook<PageResponse<PostDtos.Summary>> shadowHook) {
++        this.requestFactory = Objects.requireNonNull(requestFactory, "requestFactory");
++        this.shadowHook = Objects.requireNonNull(shadowHook, "shadowHook");
++    }
++
++    @Override
++    public void afterExplore(
++            String keyword,
++            String region,
++            Pageable pageable,
++            PageResponse<PostDtos.Summary> legacyResponse) {
++        try {
++            SearchShadowHookRequestV1<PageResponse<PostDtos.Summary>> request =
++                    requestFactory.create(keyword, region, pageable, legacyResponse);
++            shadowHook.dispatch(request);
++        } catch (RuntimeException ignored) {
++            // Shadow conversion/dispatch is fail-open for the legacy response. Fatal JVM errors are not swallowed.
++        }
++    }
++}
+--- /dev/null
++++ b/jc-backend/src/main/java/com/jc/backend/search/shadow/DefaultExploreShadowHookRequestFactory.java
+@@ -0,0 +1,110 @@
++package com.jc.backend.search.shadow;
++
++import com.jc.backend.common.PageResponse;
++import com.jc.backend.post.PostDtos;
++import com.jc.intelligence.compat.search.explore.v1.LegacyExploreAuthorView;
++import com.jc.intelligence.compat.search.explore.v1.LegacyExploreCompatibilityContext;
++import com.jc.intelligence.compat.search.explore.v1.LegacyExploreItemView;
++import com.jc.intelligence.compat.search.explore.v1.LegacyExplorePageView;
++import com.jc.intelligence.compat.search.explore.v1.LegacyExploreRequestView;
++import com.jc.intelligence.compat.search.explore.v1.LegacyExploreSortDirection;
++import com.jc.intelligence.compat.search.explore.v1.LegacyExploreSortOrderView;
++import com.jc.intelligence.integration.search.v1.SearchShadowContextV1;
++import com.jc.intelligence.wiring.search.v1.SearchShadowHookRequestV1;
++import java.util.List;
++import java.util.Map;
++import java.util.Objects;
++import org.springframework.data.domain.Pageable;
++import org.springframework.data.domain.Sort;
++
++/**
++ * Pure mapper for test/stage controlled wiring. It is deliberately not registered as a production bean.
++ * Legacy output is represented for comparison only and is never reused as runtime candidate input.
++ */
++public final class DefaultExploreShadowHookRequestFactory implements ExploreShadowHookRequestFactory {
++    private final ExploreShadowRequestContextProvider contextProvider;
++
++    public DefaultExploreShadowHookRequestFactory(ExploreShadowRequestContextProvider contextProvider) {
++        this.contextProvider = Objects.requireNonNull(contextProvider, "contextProvider");
++    }
++
++    @Override
++    public SearchShadowHookRequestV1<PageResponse<PostDtos.Summary>> create(
++            String keyword,
++            String region,
++            Pageable pageable,
++            PageResponse<PostDtos.Summary> legacyResponse) {
++        Objects.requireNonNull(pageable, "pageable");
++        Objects.requireNonNull(legacyResponse, "legacyResponse");
++        Objects.requireNonNull(legacyResponse.items(), "legacyResponse.items");
++        if (pageable.getPageNumber() != legacyResponse.page() || pageable.getPageSize() != legacyResponse.size()) {
++            throw new IllegalArgumentException("pageable and legacy response metadata must match");
++        }
++        ExploreShadowRequestContext context = Objects.requireNonNull(contextProvider.current(), "context");
++
++        LegacyExploreRequestView requestView = new LegacyExploreRequestView(
++                keyword,
++                region,
++                pageable.getPageNumber(),
++                pageable.getPageSize(),
++                sortOrders(pageable.getSort()),
++                Map.of());
++        LegacyExplorePageView pageView = new LegacyExplorePageView(
++                legacyResponse.items().stream().map(DefaultExploreShadowHookRequestFactory::itemView).toList(),
++                legacyResponse.page(),
++                legacyResponse.size(),
++                legacyResponse.totalElements(),
++                legacyResponse.totalPages(),
++                legacyResponse.last());
++        LegacyExploreCompatibilityContext compatibilityContext = new LegacyExploreCompatibilityContext(
++                context.requestId(),
++                context.correlationId(),
++                context.sessionRef(),
++                context.referenceTime(),
++                context.mappedAt(),
++                context.producerBuildId());
++        SearchShadowContextV1 shadowContext = new SearchShadowContextV1(
++                context.requestId(),
++                context.correlationId(),
++                context.sessionRef(),
++                context.referenceTime());
++        return new SearchShadowHookRequestV1<>(
++                legacyResponse,
++                requestView,
++                pageView,
++                compatibilityContext,
++                shadowContext);
++    }
++
++    private static LegacyExploreItemView itemView(PostDtos.Summary item) {
++        if (item == null) {
++            return null;
++        }
++        PostDtos.Author author = item.author();
++        LegacyExploreAuthorView authorView = author == null
++                ? null
++                : new LegacyExploreAuthorView(author.id(), author.nickname(), author.profileImageUrl());
++        return new LegacyExploreItemView(
++                item.id(),
++                item.title(),
++                item.regionCode(),
++                item.regionName(),
++                item.coverImageUrl(),
++                item.viewCount(),
++                item.likeCount(),
++                item.bookmarkCount(),
++                authorView,
++                item.createdAt());
++    }
++
++    private static List<LegacyExploreSortOrderView> sortOrders(Sort sort) {
++        if (sort == null || sort.isUnsorted()) {
++            return List.of();
++        }
++        return sort.stream()
++                .map(order -> new LegacyExploreSortOrderView(
++                        order.getProperty(),
++                        order.isAscending() ? LegacyExploreSortDirection.ASC : LegacyExploreSortDirection.DESC))
++                .toList();
++    }
++}
+--- /dev/null
++++ b/jc-backend/src/main/java/com/jc/backend/search/shadow/DisabledExploreSearchShadowBridge.java
+@@ -0,0 +1,17 @@
++package com.jc.backend.search.shadow;
++
++import com.jc.backend.common.PageResponse;
++import com.jc.backend.post.PostDtos;
++import org.springframework.data.domain.Pageable;
++
++/** Default production-equivalent bridge. It performs no conversion, dispatch, execution, or logging. */
++public final class DisabledExploreSearchShadowBridge implements ExploreSearchShadowBridge {
++    @Override
++    public void afterExplore(
++            String keyword,
++            String region,
++            Pageable pageable,
++            PageResponse<PostDtos.Summary> legacyResponse) {
++        // Intentionally disabled. The legacy response remains the only response authority.
++    }
++}
+--- /dev/null
++++ b/jc-backend/src/main/java/com/jc/backend/search/shadow/ExploreSearchShadowBridge.java
+@@ -0,0 +1,18 @@
++package com.jc.backend.search.shadow;
++
++import com.jc.backend.common.PageResponse;
++import com.jc.backend.post.PostDtos;
++import org.springframework.data.domain.Pageable;
++
++/**
++ * Backend-local, response-neutral boundary invoked after the legacy explore response is finalized.
++ * Implementations must never acquire response authority or propagate ordinary runtime failures.
++ */
++@FunctionalInterface
++public interface ExploreSearchShadowBridge {
++    void afterExplore(
++            String keyword,
++            String region,
++            Pageable pageable,
++            PageResponse<PostDtos.Summary> legacyResponse);
++}
+--- /dev/null
++++ b/jc-backend/src/main/java/com/jc/backend/search/shadow/ExploreShadowHookRequestFactory.java
+@@ -0,0 +1,16 @@
++package com.jc.backend.search.shadow;
++
++import com.jc.backend.common.PageResponse;
++import com.jc.backend.post.PostDtos;
++import com.jc.intelligence.wiring.search.v1.SearchShadowHookRequestV1;
++import org.springframework.data.domain.Pageable;
++
++/** Converts backend explore values to the approved IP-4/IP-7 public compatibility contracts. */
++@FunctionalInterface
++public interface ExploreShadowHookRequestFactory {
++    SearchShadowHookRequestV1<PageResponse<PostDtos.Summary>> create(
++            String keyword,
++            String region,
++            Pageable pageable,
++            PageResponse<PostDtos.Summary> legacyResponse);
++}
+--- /dev/null
++++ b/jc-backend/src/main/java/com/jc/backend/search/shadow/ExploreShadowRequestContext.java
+@@ -0,0 +1,24 @@
++package com.jc.backend.search.shadow;
++
++import com.jc.intelligence.contract.v1.version.ProducerBuildId;
++import java.time.Instant;
++import java.util.Objects;
++
++/** Deterministic request-scoped values supplied only by an explicitly assembled shadow configuration. */
++public record ExploreShadowRequestContext(
++        String requestId,
++        String correlationId,
++        String sessionRef,
++        Instant referenceTime,
++        Instant mappedAt,
++        ProducerBuildId producerBuildId) {
++    public ExploreShadowRequestContext {
++        Objects.requireNonNull(correlationId, "correlationId");
++        Objects.requireNonNull(referenceTime, "referenceTime");
++        Objects.requireNonNull(mappedAt, "mappedAt");
++        Objects.requireNonNull(producerBuildId, "producerBuildId");
++        if (mappedAt.isBefore(referenceTime)) {
++            throw new IllegalArgumentException("mappedAt must not precede referenceTime");
++        }
++    }
++}
+--- /dev/null
++++ b/jc-backend/src/main/java/com/jc/backend/search/shadow/ExploreShadowRequestContextProvider.java
+@@ -0,0 +1,7 @@
++package com.jc.backend.search.shadow;
++
++/** Supplies server-derived request context for an explicitly enabled test/stage assembly. */
++@FunctionalInterface
++public interface ExploreShadowRequestContextProvider {
++    ExploreShadowRequestContext current();
++}
+--- /dev/null
++++ b/jc-backend/src/main/java/com/jc/backend/search/shadow/SearchShadowBackendConfiguration.java
+@@ -0,0 +1,16 @@
++package com.jc.backend.search.shadow;
++
++import org.springframework.context.annotation.Bean;
++import org.springframework.context.annotation.Configuration;
++
++/**
++ * Production-equivalent configuration. It deliberately exposes only the disabled no-op bridge.
++ * No property, profile, executor, runtime input provider, or active Search hook is bound here.
++ */
++@Configuration(proxyBeanMethods = false)
++public class SearchShadowBackendConfiguration {
++    @Bean
++    ExploreSearchShadowBridge exploreSearchShadowBridge() {
++        return new DisabledExploreSearchShadowBridge();
++    }
++}
+--- /dev/null
++++ b/jc-backend/src/test/java/com/jc/backend/post/PostControllerSearchShadowHookTest.java
+@@ -0,0 +1,150 @@
++package com.jc.backend.post;
++
++import static org.junit.jupiter.api.Assertions.assertEquals;
++import static org.junit.jupiter.api.Assertions.assertSame;
++import static org.junit.jupiter.api.Assertions.assertThrows;
++import static org.mockito.ArgumentMatchers.any;
++import static org.mockito.ArgumentMatchers.eq;
++import static org.mockito.Mockito.mock;
++import static org.mockito.Mockito.never;
++import static org.mockito.Mockito.verify;
++import static org.mockito.Mockito.verifyNoInteractions;
++import static org.mockito.Mockito.when;
++import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
++import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
++import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
++
++import com.fasterxml.jackson.databind.ObjectMapper;
++import com.jc.backend.common.ApiResponse;
++import com.jc.backend.common.PageResponse;
++import com.jc.backend.recommendation.application.RecommendationFeedService;
++import com.jc.backend.recommendation.application.RecommendationPostInteractionService;
++import com.jc.backend.search.shadow.DefaultExploreSearchShadowBridge;
++import com.jc.backend.search.shadow.ExploreSearchShadowBridge;
++import com.jc.backend.search.shadow.ExploreShadowHookRequestFactory;
++import java.time.Instant;
++import java.util.List;
++import org.junit.jupiter.api.Test;
++import org.mockito.ArgumentCaptor;
++import org.springframework.data.domain.Pageable;
++import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
++import org.springframework.http.MediaType;
++import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
++import org.springframework.test.web.servlet.MockMvc;
++import org.springframework.test.web.servlet.MvcResult;
++import org.springframework.test.web.servlet.setup.MockMvcBuilders;
++
++class PostControllerSearchShadowHookTest {
++
++    @Test
++    void explorePreservesLegacyResponseIdentityAndCallsServiceAndBridgeOnce() {
++        PostService service = mock(PostService.class);
++        RecommendationFeedService feed = mock(RecommendationFeedService.class);
++        RecommendationPostInteractionService interactions = mock(RecommendationPostInteractionService.class);
++        ExploreSearchShadowBridge bridge = mock(ExploreSearchShadowBridge.class);
++        PostController controller = new PostController(service, feed, interactions, bridge);
++        Pageable pageable = org.springframework.data.domain.PageRequest.of(2, 5);
++        PageResponse<PostDtos.Summary> legacy = pageResponse();
++        when(service.explore("seoul", "KR-SEOUL", pageable)).thenReturn(legacy);
++
++        ApiResponse<PageResponse<PostDtos.Summary>> response =
++                controller.explore("seoul", "KR-SEOUL", pageable);
++
++        assertSame(legacy, response.data());
++        assertEquals(ApiResponse.ok(legacy), response);
++        verify(service).explore("seoul", "KR-SEOUL", pageable);
++        verify(bridge).afterExplore("seoul", "KR-SEOUL", pageable, legacy);
++        verifyNoInteractions(feed, interactions);
++    }
++
++    @Test
++    void mvcSerializationAndPageableContractRemainExact() throws Exception {
++        PostService service = mock(PostService.class);
++        RecommendationFeedService feed = mock(RecommendationFeedService.class);
++        RecommendationPostInteractionService interactions = mock(RecommendationPostInteractionService.class);
++        ExploreSearchShadowBridge bridge = mock(ExploreSearchShadowBridge.class);
++        PostController controller = new PostController(service, feed, interactions, bridge);
++        PageResponse<PostDtos.Summary> legacy = pageResponse();
++        when(service.explore(eq("서울"), eq("KR-SEOUL"), any(Pageable.class))).thenReturn(legacy);
++
++        ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
++        MockMvc mvc = MockMvcBuilders.standaloneSetup(controller)
++                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
++                .setMessageConverters(new MappingJackson2HttpMessageConverter(mapper))
++                .build();
++
++        MvcResult result = mvc.perform(get("/api/v1/explore")
++                        .param("keyword", "서울")
++                        .param("region", "KR-SEOUL")
++                        .param("page", "2")
++                        .param("size", "5"))
++                .andExpect(status().isOk())
++                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
++                .andReturn();
++
++        assertEquals(mapper.writeValueAsString(ApiResponse.ok(legacy)), result.getResponse().getContentAsString());
++        ArgumentCaptor<Pageable> pageable = ArgumentCaptor.forClass(Pageable.class);
++        verify(service).explore(eq("서울"), eq("KR-SEOUL"), pageable.capture());
++        assertEquals(2, pageable.getValue().getPageNumber());
++        assertEquals(5, pageable.getValue().getPageSize());
++        verify(bridge).afterExplore(eq("서울"), eq("KR-SEOUL"), any(Pageable.class), eq(legacy));
++    }
++
++    @Test
++    void bridgeRuntimeFailureIsContainedInsideBridgeAndResponseRemainsLegacy() {
++        PostService service = mock(PostService.class);
++        RecommendationFeedService feed = mock(RecommendationFeedService.class);
++        RecommendationPostInteractionService interactions = mock(RecommendationPostInteractionService.class);
++        ExploreShadowHookRequestFactory failingFactory = (keyword, region, pageable, response) -> {
++            throw new IllegalStateException("factory_failed");
++        };
++        ExploreSearchShadowBridge bridge = new DefaultExploreSearchShadowBridge(
++                failingFactory,
++                request -> {
++                    throw new AssertionError("hook must not be reached");
++                });
++        PostController controller = new PostController(service, feed, interactions, bridge);
++        Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 20);
++        PageResponse<PostDtos.Summary> legacy = pageResponse();
++        when(service.explore(null, null, pageable)).thenReturn(legacy);
++
++        ApiResponse<PageResponse<PostDtos.Summary>> response = controller.explore(null, null, pageable);
++
++        assertSame(legacy, response.data());
++        verify(service).explore(null, null, pageable);
++    }
++
++    @Test
++    void legacyServiceExceptionIsPreservedAndBridgeIsNotCalled() {
++        PostService service = mock(PostService.class);
++        RecommendationFeedService feed = mock(RecommendationFeedService.class);
++        RecommendationPostInteractionService interactions = mock(RecommendationPostInteractionService.class);
++        ExploreSearchShadowBridge bridge = mock(ExploreSearchShadowBridge.class);
++        PostController controller = new PostController(service, feed, interactions, bridge);
++        Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 20);
++        RuntimeException failure = new IllegalArgumentException("legacy_failure");
++        when(service.explore("bad", null, pageable)).thenThrow(failure);
++
++        RuntimeException thrown = assertThrows(RuntimeException.class,
++                () -> controller.explore("bad", null, pageable));
++
++        assertSame(failure, thrown);
++        verify(service).explore("bad", null, pageable);
++        verify(bridge, never()).afterExplore(any(), any(), any(), any());
++    }
++
++    private static PageResponse<PostDtos.Summary> pageResponse() {
++        PostDtos.Summary item = new PostDtos.Summary(
++                11L,
++                "Seoul walk",
++                "KR-SEOUL",
++                "서울",
++                "https://example.test/cover.jpg",
++                10L,
++                2L,
++                3L,
++                new PostDtos.Author(7L, "traveler", null),
++                Instant.parse("2026-07-19T01:02:03Z"));
++        return new PageResponse<>(List.of(item), 2, 5, 11L, 3, true);
++    }
++}
+--- /dev/null
++++ b/jc-backend/src/test/java/com/jc/backend/search/shadow/ExploreSearchShadowBridgeContractTest.java
+@@ -0,0 +1,132 @@
++package com.jc.backend.search.shadow;
++
++import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
++import static org.junit.jupiter.api.Assertions.assertEquals;
++import static org.junit.jupiter.api.Assertions.assertSame;
++import static org.junit.jupiter.api.Assertions.assertThrows;
++
++import com.jc.backend.common.PageResponse;
++import com.jc.backend.post.PostDtos;
++import com.jc.intelligence.contract.v1.version.ProducerBuildId;
++import com.jc.intelligence.wiring.search.v1.NoOpSearchShadowHook;
++import com.jc.intelligence.wiring.search.v1.SearchShadowHookRequestV1;
++import java.time.Instant;
++import java.util.List;
++import java.util.concurrent.atomic.AtomicInteger;
++import java.util.concurrent.atomic.AtomicReference;
++import org.junit.jupiter.api.Test;
++import org.springframework.data.domain.PageRequest;
++import org.springframework.data.domain.Pageable;
++
++class ExploreSearchShadowBridgeContractTest {
++
++    @Test
++    void disabledBridgeIsACompleteNoOp() {
++        PageResponse<PostDtos.Summary> response = response();
++        ExploreSearchShadowBridge bridge = new DisabledExploreSearchShadowBridge();
++        assertDoesNotThrow(() -> bridge.afterExplore("query", "region", PageRequest.of(0, 20), response));
++        assertSame(response, response);
++    }
++
++    @Test
++    void controlledBridgeBuildsApprovedCompatibilityRequestAndDiscardsReceipt() {
++        Instant referenceTime = Instant.parse("2026-07-19T01:00:00Z");
++        ExploreShadowRequestContext context = new ExploreShadowRequestContext(
++                "request:ip9-test",
++                "correlation:ip9-test",
++                "session:ip9-test",
++                referenceTime,
++                referenceTime.plusMillis(1),
++                new ProducerBuildId("ip9-test-build-1"));
++        DefaultExploreShadowHookRequestFactory factory =
++                new DefaultExploreShadowHookRequestFactory(() -> context);
++        AtomicReference<SearchShadowHookRequestV1<PageResponse<PostDtos.Summary>>> captured = new AtomicReference<>();
++        DefaultExploreSearchShadowBridge bridge = new DefaultExploreSearchShadowBridge(
++                factory,
++                request -> {
++                    captured.set(request);
++                    return new NoOpSearchShadowHook<PageResponse<PostDtos.Summary>>().dispatch(request);
++                });
++        PageResponse<PostDtos.Summary> response = response();
++        Pageable pageable = PageRequest.of(1, 10);
++
++        bridge.afterExplore("  서울  ", "KR-SEOUL", pageable, response);
++
++        SearchShadowHookRequestV1<PageResponse<PostDtos.Summary>> request = captured.get();
++        assertSame(response, request.legacyResponse());
++        assertEquals("  서울  ", request.legacyRequest().keyword());
++        assertEquals("KR-SEOUL", request.legacyRequest().region());
++        assertEquals(1, request.legacyRequest().page());
++        assertEquals(10, request.legacyRequest().size());
++        assertEquals(response.items().size(), request.legacyPage().items().size());
++        assertEquals(context.correlationId(), request.shadowContext().correlationId());
++    }
++
++    @Test
++    void requestFactoryAndHookRuntimeFailuresAreContainedButErrorsAreNotSwallowed() {
++        PageResponse<PostDtos.Summary> response = response();
++        Pageable pageable = PageRequest.of(0, 20);
++        AtomicInteger hookCalls = new AtomicInteger();
++
++        DefaultExploreSearchShadowBridge factoryFailure = new DefaultExploreSearchShadowBridge(
++                (keyword, region, requestedPage, legacyResponse) -> {
++                    throw new IllegalStateException("factory_failure");
++                },
++                request -> {
++                    hookCalls.incrementAndGet();
++                    return null;
++                });
++        assertDoesNotThrow(() -> factoryFailure.afterExplore(null, null, pageable, response));
++        assertEquals(0, hookCalls.get());
++
++        DefaultExploreShadowHookRequestFactory validFactory = new DefaultExploreShadowHookRequestFactory(() ->
++                new ExploreShadowRequestContext(
++                        "request:ip9-test",
++                        "correlation:ip9-test",
++                        null,
++                        Instant.parse("2026-07-19T01:00:00Z"),
++                        Instant.parse("2026-07-19T01:00:00Z"),
++                        new ProducerBuildId("ip9-test-build-1")));
++        AtomicInteger failingHookCalls = new AtomicInteger();
++        DefaultExploreSearchShadowBridge hookFailure = new DefaultExploreSearchShadowBridge(
++                validFactory,
++                request -> {
++                    failingHookCalls.incrementAndGet();
++                    throw new IllegalStateException("hook_failure");
++                });
++        Pageable matchingPageable = PageRequest.of(1, 10);
++        assertDoesNotThrow(() -> hookFailure.afterExplore(null, null, matchingPageable, response));
++        assertEquals(1, failingHookCalls.get());
++
++        AtomicInteger mismatchedMetadataHookCalls = new AtomicInteger();
++        DefaultExploreSearchShadowBridge metadataMismatch = new DefaultExploreSearchShadowBridge(
++                validFactory,
++                request -> {
++                    mismatchedMetadataHookCalls.incrementAndGet();
++                    return null;
++                });
++        assertDoesNotThrow(() -> metadataMismatch.afterExplore(null, null, pageable, response));
++        assertEquals(0, mismatchedMetadataHookCalls.get());
++
++        DefaultExploreSearchShadowBridge fatal = new DefaultExploreSearchShadowBridge(
++                (keyword, region, requestedPage, legacyResponse) -> {
++                    throw new AssertionError("fatal");
++                },
++                request -> null);
++        assertThrows(AssertionError.class, () -> fatal.afterExplore(null, null, pageable, response));
++    }
++
++    private static PageResponse<PostDtos.Summary> response() {
++        return new PageResponse<>(List.of(new PostDtos.Summary(
++                1L,
++                "title",
++                "KR-SEOUL",
++                "서울",
++                null,
++                0L,
++                0L,
++                0L,
++                new PostDtos.Author(2L, "author", null),
++                Instant.parse("2026-07-19T00:00:00Z"))), 1, 10, 1L, 1, true);
++    }
++}
+--- /dev/null
++++ b/jc-backend/src/test/java/com/jc/backend/search/shadow/SearchShadowBackendConfigurationTest.java
+@@ -0,0 +1,44 @@
++package com.jc.backend.search.shadow;
++
++import static org.assertj.core.api.Assertions.assertThat;
++
++import com.jc.intelligence.integration.search.v1.SearchShadowRuntimeInputProvider;
++import com.jc.intelligence.wiring.search.v1.SearchShadowComparisonLogPort;
++import com.jc.intelligence.wiring.search.v1.SearchShadowExecutor;
++import com.jc.intelligence.wiring.search.v1.SearchShadowHook;
++import org.junit.jupiter.api.Test;
++import org.springframework.boot.test.context.runner.ApplicationContextRunner;
++
++class SearchShadowBackendConfigurationTest {
++    private final ApplicationContextRunner runner = new ApplicationContextRunner()
++            .withUserConfiguration(SearchShadowBackendConfiguration.class);
++
++    @Test
++    void missingConfigurationCreatesExactlyOneDisabledBridgeAndNoActiveInfrastructure() {
++        runner.run(context -> {
++            assertThat(context).hasSingleBean(ExploreSearchShadowBridge.class);
++            assertThat(context.getBean(ExploreSearchShadowBridge.class))
++                    .isExactlyInstanceOf(DisabledExploreSearchShadowBridge.class);
++            assertThat(context).doesNotHaveBean(SearchShadowHook.class);
++            assertThat(context).doesNotHaveBean(SearchShadowExecutor.class);
++            assertThat(context).doesNotHaveBean(SearchShadowRuntimeInputProvider.class);
++            assertThat(context).doesNotHaveBean(SearchShadowComparisonLogPort.class);
++        });
++    }
++
++    @Test
++    void arbitraryPropertiesAndProductionEquivalentProfileCannotActivateShadow() {
++        runner.withPropertyValues(
++                        "spring.profiles.active=prod",
++                        "search.shadow.mode=test_only",
++                        "search.shadow.sample-basis-points=10000",
++                        "search.shadow.explicit-allow=true")
++                .run(context -> {
++                    assertThat(context).hasSingleBean(ExploreSearchShadowBridge.class);
++                    assertThat(context.getBean(ExploreSearchShadowBridge.class))
++                            .isExactlyInstanceOf(DisabledExploreSearchShadowBridge.class);
++                    assertThat(context).doesNotHaveBean(SearchShadowHook.class);
++                    assertThat(context).doesNotHaveBean(SearchShadowExecutor.class);
++                });
++    }
++}
+--- /dev/null
++++ b/jc-backend/src/test/java/com/jc/backend/verification/IP9ControlledBackendHookStaticTest.java
+@@ -0,0 +1,141 @@
++package com.jc.backend.verification;
++
++import static org.assertj.core.api.Assertions.assertThat;
++
++import java.io.IOException;
++import java.nio.charset.StandardCharsets;
++import java.nio.file.Files;
++import java.nio.file.Path;
++import java.security.MessageDigest;
++import java.security.NoSuchAlgorithmException;
++import java.util.HexFormat;
++import java.util.List;
++import org.junit.jupiter.api.Test;
++
++class IP9ControlledBackendHookStaticTest {
++    private static final String CONTROLLER =
++            "jc-backend/src/main/java/com/jc/backend/post/PostController.java";
++
++    @Test
++    void controllerUsesLegacyServiceResultAsTheOnlyResponseAuthority() throws Exception {
++        String source = RepositoryLayout.read(CONTROLLER);
++        assertThat(source).contains(
++                "PageResponse<PostDtos.Summary> legacyResponse = postService.explore(keyword, region, pageable);",
++                "exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);",
++                "return ApiResponse.ok(legacyResponse);");
++        assertThat(source).doesNotContain(
++                "return ApiResponse.ok(exploreSearchShadowBridge",
++                "return exploreSearchShadowBridge",
++                "SearchShadowDispatchReceiptV1");
++        assertThat(count(source, "postService.explore(keyword, region, pageable)"))
++                .as("legacy service invocation count")
++                .isEqualTo(1);
++    }
++
++    @Test
++    void defaultConfigurationCannotActivateProductionShadow() throws Exception {
++        String configuration = RepositoryLayout.read(
++                "jc-backend/src/main/java/com/jc/backend/search/shadow/SearchShadowBackendConfiguration.java");
++        String disabled = RepositoryLayout.read(
++                "jc-backend/src/main/java/com/jc/backend/search/shadow/DisabledExploreSearchShadowBridge.java");
++        String active = RepositoryLayout.read(
++                "jc-backend/src/main/java/com/jc/backend/search/shadow/DefaultExploreSearchShadowBridge.java");
++        assertThat(configuration)
++                .contains("new DisabledExploreSearchShadowBridge()")
++                .doesNotContain("@Profile", "@ConditionalOnProperty", "DefaultExploreSearchShadowBridge");
++        assertThat(disabled).doesNotContain("SearchShadowHook", "SearchShadowExecutor", "Repository", "Logger");
++        assertThat(active).doesNotContain("@Component", "@Service", "@Configuration", "@Bean");
++
++        Path resources = RepositoryLayout.resolve("jc-backend/src/main/resources");
++        try (var files = Files.walk(resources)) {
++            for (Path path : files.filter(Files::isRegularFile).toList()) {
++                String text = Files.readString(path);
++                assertThat(text).as(RepositoryLayout.relative(path))
++                        .doesNotContain("search.shadow", "search-shadow-test");
++            }
++        }
++    }
++
++    @Test
++    void dependencyAndTaskGraphAreMinimalAndFailClosed() throws Exception {
++        String build = RepositoryLayout.read("jc-backend/build.gradle.kts");
++        assertThat(build).contains(
++                "implementation(project(\":jc-search-shadow-wiring\"))",
++                "ip9BackendHookContractTest",
++                "ip9ControlledBackendHookRegression",
++                "\"ip8SearchRegressionClosure\"",
++                "\"ip1CompatibilityContractTest\"");
++        assertThat(build).doesNotContain("ignoreFailures", "isIgnoreFailures", "ForkJoinPool");
++    }
++
++    @Test
++    void allPriorRecommendationAndSqlProtectedSourcesRemainExact() throws Exception {
++        Path manifest = RepositoryLayout.resolve("verification/ip8/IP8_PROTECTED_BASELINE_EXPECTED_SHA256.txt");
++        List<String> lines = Files.readAllLines(manifest, StandardCharsets.UTF_8).stream()
++                .filter(line -> !line.isBlank())
++                .toList();
++        int checked = 0;
++        for (String line : lines) {
++            String[] parts = line.trim().split("\\s+", 2);
++            assertThat(parts).hasSize(2);
++            Path path = RepositoryLayout.resolve(parts[1]);
++            assertThat(sha256(path)).as(parts[1]).isEqualTo(parts[0]);
++            checked++;
++        }
++        assertThat(lines).hasSize(320);
++        assertThat(checked).isEqualTo(320);
++    }
++
++    @Test
++    void backendProtectedDeltaIsLimitedToTheApprovedController() throws Exception {
++        Path manifest = RepositoryLayout.resolve("verification/ip9/IP9_PRECHANGE_BACKEND_PROTECTED_SHA256.txt");
++        List<String> lines = Files.readAllLines(manifest, StandardCharsets.UTF_8).stream()
++                .filter(line -> !line.isBlank())
++                .toList();
++        int approvedDeltas = 0;
++        for (String line : lines) {
++            String[] parts = line.trim().split("\\s+", 2);
++            assertThat(parts).hasSize(2);
++            String current = sha256(RepositoryLayout.resolve(parts[1]));
++            if (CONTROLLER.equals(parts[1])) {
++                assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
++                approvedDeltas++;
++            } else {
++                assertThat(current).as(parts[1]).isEqualTo(parts[0]);
++            }
++        }
++        assertThat(approvedDeltas).isEqualTo(1);
++    }
++
++    @Test
++    void canonicalSqlRemainsExact() throws Exception {
++        Path manifest = RepositoryLayout.resolve("verification/ip8/IP8_SQL_01_26_EXPECTED_SHA256.txt");
++        List<String> lines = Files.readAllLines(manifest, StandardCharsets.UTF_8).stream()
++                .filter(line -> !line.isBlank())
++                .toList();
++        for (String line : lines) {
++            String[] parts = line.trim().split("\\s+", 2);
++            assertThat(parts).hasSize(2);
++            assertThat(sha256(RepositoryLayout.resolve(parts[1]))).as(parts[1]).isEqualTo(parts[0]);
++        }
++        assertThat(lines).hasSize(26);
++    }
++
++    private static int count(String value, String token) {
++        int count = 0;
++        int offset = 0;
++        while ((offset = value.indexOf(token, offset)) >= 0) {
++            count++;
++            offset += token.length();
++        }
++        return count;
++    }
++
++    private static String sha256(Path path) throws IOException {
++        try {
++            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(path)));
++        } catch (NoSuchAlgorithmException exception) {
++            throw new IllegalStateException("SHA-256 unavailable", exception);
++        }
++    }
++}

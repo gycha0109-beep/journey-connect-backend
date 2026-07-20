@@ -1,0 +1,12 @@
+input_bps	expected	direct_result
+-1	REJECT	PASS
+0	ACCEPT_DISABLED	PASS
+1	ACCEPT	PASS
+9	ACCEPT	PASS
+10	ACCEPT_MAX	PASS
+11	REJECT	PASS
+50	REJECT	PASS
+100	REJECT	PASS
+2147483647	REJECT	PASS
+10_bps_denominator	10_of_10000	PASS
+deterministic_same_hash	same_decision	PASS

@@ -1,0 +1,4 @@
+IP-10 and earlier manifests are immutable historical evidence and retain original encoded/garbled file paths.
+IP-11 package normalization renames 10 documentation files only.
+The mapping and content-preserving SHA proof are in IP11_PATH_RENAME_MAP.tsv.
+No historical PASS result is recalculated or rewritten.

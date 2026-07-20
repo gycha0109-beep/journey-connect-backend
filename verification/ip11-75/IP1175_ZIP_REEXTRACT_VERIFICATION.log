@@ -1,0 +1,10 @@
+PRELIMINARY PACKAGE CONTENT VERIFICATION
+Python zipfile CRC/list/extract: PASS
+Info-ZIP test/extract: PASS
+Java jar listing/extract: PASS
+Clean re-extract static verification: PASS
+Manifest SHA comparison: PASS
+Path compatibility: PASS
+Windows Explorer: NOT EXECUTED — Linux environment
+7-Zip: NOT EXECUTED — 7z unavailable
+NOTE: Final ZIP is rebuilt after including this evidence and is independently reverified externally.

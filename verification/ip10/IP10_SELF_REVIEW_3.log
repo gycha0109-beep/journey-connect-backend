@@ -1,0 +1,8 @@
+IP-10 SELF REVIEW 3 — INDEPENDENT FINAL
+1. Search Runtime is actually invoked against the synthetic catalog; activation is not name-only.
+2. default/prod/prod+stage are fail-closed disabled; production resources have no enable values.
+3. legacy body/order/page/object authority is unchanged; Search output is not returned.
+4. structured evidence excludes raw query and raw correlation/session identifiers.
+5. protected manifest compares 320 expected paths to current bytes; SQL compares 26 expected scripts.
+6. Gradle/JUnit/Spring/PostgreSQL are NOT EXECUTED by user direction and are not reported as PASS.
+RESULT: 0 additional defects, external attestation remains pending.

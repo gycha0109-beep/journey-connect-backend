@@ -1,0 +1,17 @@
+{
+  "registryVersion": "identity-schemes-v1",
+  "schemes": [
+    {
+      "schemeId": "platform_subject_v1",
+      "wirePattern": "subject:<opaque-id>",
+      "status": "active",
+      "automaticConversionAllowed": false
+    },
+    {
+      "schemeId": "legacy_user_numeric_v1",
+      "wirePattern": "user:<positive-numeric-id>",
+      "status": "protected_compatibility",
+      "automaticConversionAllowed": false
+    }
+  ]
+}

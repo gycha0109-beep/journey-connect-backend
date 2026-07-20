@@ -1,0 +1,19 @@
+IP-6 forbidden dependency and activation scan
+scope=src/main/java imports/annotations/constructors only
+^import org\.springframework=0
+^import jakarta\.persistence=0
+^import javax\.persistence=0
+^import java\.sql=0
+^import javax\.sql=0
+^import com\.jc\.backend=0
+^import com\.jc\.recommendation=0
+@(Component|Service|Configuration|Bean)\b=0
+ForkJoinPool=0
+new[[:space:]]+Thread=0
+EntityManager=0
+JdbcTemplate=0
+production_non_java_resources:
+build_dependencies:
+15:    api(project(":jc-search-runtime"))
+16:    api(project(":jc-search-compatibility"))
+result=PASS

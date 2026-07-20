@@ -1,0 +1,3 @@
+exit_code=1
+result=BLOCKED_BEFORE_TASK_EXECUTION
+cause=Gradle distribution DNS resolution failure

@@ -1,0 +1,288 @@
+diff -ruN /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/P0_2_2_INTEGRATION_TEST_FIX_REPORT.md /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/P0_2_2_INTEGRATION_TEST_FIX_REPORT.md
+--- /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/P0_2_2_INTEGRATION_TEST_FIX_REPORT.md	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/P0_2_2_INTEGRATION_TEST_FIX_REPORT.md	2026-07-18 05:02:17.781366312 +0000
+@@ -0,0 +1,88 @@
++# P0-2.2 Integration Test Fix Report
++
++## Scope
++
++This batch fixes the five remaining PostgreSQL integration-test failures after canonical schema validation succeeded.
++
++## Applied fixes
++
++### 1. Crew concurrency fixture transaction
++
++- File: `jc-backend/src/test/java/com/jc/backend/crew/CrewConcurrencyIntegrationTest.java`
++- The crew row and its mandatory OWNER membership are now created within one `TransactionTemplate` transaction.
++- The deferred aggregate constraint remains intact; the test no longer commits an invalid intermediate aggregate.
++
++### 2. PostgreSQL cursor parameter typing
++
++- Files:
++  - `jc-backend/src/main/java/com/jc/backend/post/JourneyPostRepository.java`
++  - `jc-backend/src/main/java/com/jc/backend/post/PostService.java`
++- The initial feed query no longer passes a nullable timestamp into `:cursorPublishedAt is null`.
++- Initial-page and continuation-page queries are separated, preventing PostgreSQL SQLSTATE `42P18` (`could not determine data type of parameter`).
++
++### 3. Fixed-query-count post summaries
++
++- File: `jc-backend/src/main/java/com/jc/backend/post/JourneyPost.java`
++- Added Hibernate `@BatchSize(size = 100)` to the post image collection.
++- Cover-image access now batch-loads image collections instead of issuing one query per post.
++- Expected query contract: feed query + image batch + like counts + bookmark counts, at most four statements for a partial first page.
++
++### 4. Recommendation idempotency timestamp precision
++
++- Files:
++  - `RecommendationExposureStore.java`
++  - `RecommendationBehaviorStore.java`
++- `servedAt` and `occurredAt` are truncated to PostgreSQL microsecond precision before insertion.
++- Identical retries therefore compare against the exact persisted timestamp instead of potentially differing through nanosecond-to-microsecond rounding.
++
++### 5. Recommendation validation/conflict exception contract
++
++- Files:
++  - `RecommendationSnapshotStore.java`
++  - `RecommendationRunStore.java`
++  - `RecommendationExposureStore.java`
++  - `RecommendationBehaviorStore.java`
++- These JDBC-backed application stores now use `@Component` rather than `@Repository`.
++- `JdbcTemplate` still translates SQL failures to Spring `DataAccessException` types.
++- Intentional pre-write `IllegalArgumentException` and idempotency `IllegalStateException` contracts are no longer wrapped by `PersistenceExceptionTranslationInterceptor` as `InvalidDataAccessApiUsageException`.
++
++## Static verification completed
++
++- Eight source/test files changed.
++- Nullable cursor predicate removed.
++- Initial and continuation feed methods present.
++- Crew aggregate fixture transaction present.
++- Image batch-fetch annotation present.
++- Recommendation timestamp normalization present.
++- Recommendation store exception boundaries present.
++
++## Environment limitation
++
++The artifact environment had Java 21 but no Docker, no Gradle distribution cache, and no outbound access to download Gradle. Therefore PostgreSQL/Testcontainers execution could not be completed here.
++
++## Required verification on the project machine
++
++Run from `jc-backend`:
++
++```powershell
++.\gradlew.bat :test `
++  --tests "com.jc.backend.crew.CrewConcurrencyIntegrationTest" `
++  --tests "com.jc.backend.post.FeedCursorIntegrationTest" `
++  --tests "com.jc.backend.post.PostListQueryIntegrationTest" `
++  --tests "com.jc.backend.recommendation.RecommendationPersistenceIntegrationTest" `
++  --rerun-tasks `
++  --stacktrace
++```
++
++Then run the full backend gate:
++
++```powershell
++.\gradlew.bat clean :test --stacktrace
++```
++
++Expected result:
++
++```text
++27 tests completed, 0 failed
++BUILD SUCCESSFUL
++```
+diff -ruN /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/post/JourneyPost.java /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/post/JourneyPost.java
+--- /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/post/JourneyPost.java	2026-07-17 22:35:23.000000000 +0000
++++ /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/post/JourneyPost.java	2026-07-18 04:59:18.573836450 +0000
+@@ -20,6 +20,7 @@
+ import java.util.ArrayList;
+ import java.util.Collections;
+ import java.util.List;
++import org.hibernate.annotations.BatchSize;
+ 
+ /** Canonical posts 행과 이미지·장소 결속을 관리합니다. */
+ @Entity
+@@ -73,6 +74,7 @@
+ 
+     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+     @OrderBy("sortOrder asc, id asc")
++    @BatchSize(size = 100)
+     private List<PostImage> images = new ArrayList<>();
+ 
+     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+diff -ruN /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/post/JourneyPostRepository.java /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/post/JourneyPostRepository.java
+--- /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/post/JourneyPostRepository.java	2026-07-17 22:35:23.000000000 +0000
++++ /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/post/JourneyPostRepository.java	2026-07-18 04:59:18.574215820 +0000
+@@ -87,9 +87,20 @@
+               and p.visibility = com.jc.backend.post.PostVisibility.PUBLIC
+               and p.moderationStatus = com.jc.backend.post.PostModerationStatus.VISIBLE
+               and p.author.accountStatus = 'active'
++            order by p.publishedAt desc, p.id desc
++            """)
++    List<JourneyPost> findFirstFeed(Pageable pageable);
++
++    @EntityGraph(attributePaths = {"author", "region"})
++    @Query("""
++            select p
++            from JourneyPost p
++            where p.status = com.jc.backend.post.PostStatus.PUBLISHED
++              and p.visibility = com.jc.backend.post.PostVisibility.PUBLIC
++              and p.moderationStatus = com.jc.backend.post.PostModerationStatus.VISIBLE
++              and p.author.accountStatus = 'active'
+               and (
+-                    :cursorPublishedAt is null
+-                    or p.publishedAt < :cursorPublishedAt
++                    p.publishedAt < :cursorPublishedAt
+                     or (p.publishedAt = :cursorPublishedAt and p.id < :cursorId)
+               )
+             order by p.publishedAt desc, p.id desc
+diff -ruN /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/post/PostService.java /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/post/PostService.java
+--- /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/post/PostService.java	2026-07-17 22:35:23.000000000 +0000
++++ /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/post/PostService.java	2026-07-18 04:59:18.574874515 +0000
+@@ -69,8 +69,10 @@
+     public CursorPageResponse<PostDtos.Summary> feed(String cursor, int size) {
+         int safeSize = Math.min(Math.max(size, 1), 100);
+         CursorCodec.CursorPosition position = cursorCodec.decode(cursor);
+-        List<JourneyPost> fetched = posts.findFeedAfter(
+-                position.publishedAt(), position.id(), PageRequest.of(0, safeSize + 1));
++        PageRequest pageRequest = PageRequest.of(0, safeSize + 1);
++        List<JourneyPost> fetched = position.publishedAt() == null
++                ? posts.findFirstFeed(pageRequest)
++                : posts.findFeedAfter(position.publishedAt(), position.id(), pageRequest);
+         boolean hasNext = fetched.size() > safeSize;
+         List<JourneyPost> pageItems = hasNext ? fetched.subList(0, safeSize) : fetched;
+         List<PostDtos.Summary> summaries = summaries(pageItems);
+diff -ruN /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationBehaviorStore.java /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationBehaviorStore.java
+--- /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationBehaviorStore.java	2026-07-17 22:29:12.000000000 +0000
++++ /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationBehaviorStore.java	2026-07-18 04:59:40.467785942 +0000
+@@ -11,11 +11,11 @@
+ import java.util.Objects;
+ import java.util.Set;
+ import org.springframework.jdbc.core.JdbcTemplate;
+-import org.springframework.stereotype.Repository;
++import org.springframework.stereotype.Component;
+ import org.springframework.transaction.annotation.Transactional;
+ 
+ /** Stores canonical behavior event bytes with event-id idempotency. */
+-@Repository
++@Component
+ public class RecommendationBehaviorStore {
+ 
+     private static final Set<String> ENTITY_TYPES =
+@@ -59,7 +59,7 @@
+                 write.sourceEntityId() == null
+                         ? null : write.entityType() + ":" + write.sourceEntityId(),
+                 write.sourceEntityId(),
+-                Timestamp.from(write.occurredAt()),
++                Timestamp.from(truncateToMicros(write.occurredAt())),
+                 json(write.metadata()));
+         if (inserted == 0) {
+             assertExisting(write, fingerprint);
+diff -ruN /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationExposureStore.java /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationExposureStore.java
+--- /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationExposureStore.java	2026-07-17 22:38:08.000000000 +0000
++++ /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationExposureStore.java	2026-07-18 04:59:40.468293810 +0000
+@@ -18,11 +18,11 @@
+ import java.util.Set;
+ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+ import org.springframework.jdbc.core.JdbcTemplate;
+-import org.springframework.stereotype.Repository;
++import org.springframework.stereotype.Component;
+ import org.springframework.transaction.annotation.Transactional;
+ 
+ /** Persists one exposure page and verifies idempotent retries against immutable bytes. */
+-@Repository
++@Component
+ public class RecommendationExposureStore {
+ 
+     private static final String INSERT_EVENT = """
+@@ -69,7 +69,7 @@
+                 write.sessionId(),
+                 write.contextId(),
+                 write.surface().value(),
+-                Timestamp.from(write.servedAt()),
++                Timestamp.from(truncateToMicros(write.servedAt())),
+                 write.replayKey(),
+                 write.pageFingerprint(),
+                 write.cursorVersion(),
+diff -ruN /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationRunStore.java /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationRunStore.java
+--- /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationRunStore.java	2026-07-17 22:28:12.000000000 +0000
++++ /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationRunStore.java	2026-07-18 04:59:40.468874142 +0000
+@@ -22,11 +22,11 @@
+ import java.util.Set;
+ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+ import org.springframework.jdbc.core.JdbcTemplate;
+-import org.springframework.stereotype.Repository;
++import org.springframework.stereotype.Component;
+ import org.springframework.transaction.annotation.Transactional;
+ 
+ /** Persists one immutable run and both ranked/terminal candidate partitions. */
+-@Repository
++@Component
+ public class RecommendationRunStore {
+ 
+     private static final String INSERT_RUN = """
+diff -ruN /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationSnapshotStore.java /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationSnapshotStore.java
+--- /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationSnapshotStore.java	2026-07-17 22:38:08.000000000 +0000
++++ /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/main/java/com/jc/backend/recommendation/persistence/RecommendationSnapshotStore.java	2026-07-18 04:59:40.469388675 +0000
+@@ -5,11 +5,11 @@
+ import java.util.Objects;
+ import java.util.Optional;
+ import org.springframework.jdbc.core.JdbcTemplate;
+-import org.springframework.stereotype.Repository;
++import org.springframework.stereotype.Component;
+ import org.springframework.transaction.annotation.Transactional;
+ 
+ /** Canonical snapshot bytes and their domain-separated hash are stored atomically. */
+-@Repository
++@Component
+ public class RecommendationSnapshotStore {
+ 
+     private static final String INSERT = """
+diff -ruN /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/test/java/com/jc/backend/crew/CrewConcurrencyIntegrationTest.java /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/test/java/com/jc/backend/crew/CrewConcurrencyIntegrationTest.java
+--- /mnt/data/jc_fix_batch9_orig/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/test/java/com/jc/backend/crew/CrewConcurrencyIntegrationTest.java	2026-07-17 22:35:24.000000000 +0000
++++ /mnt/data/jc_fix_batch9/Journey-Connect-P0-2-Backend-Convergence-Batch7/jc-backend/src/test/java/com/jc/backend/crew/CrewConcurrencyIntegrationTest.java	2026-07-18 04:59:18.576679988 +0000
+@@ -20,6 +20,8 @@
+ import org.junit.jupiter.api.Test;
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.test.annotation.DirtiesContext;
++import org.springframework.transaction.PlatformTransactionManager;
++import org.springframework.transaction.support.TransactionTemplate;
+ 
+ @CanonicalPostgresTest
+ @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@@ -30,6 +32,7 @@
+     @Autowired private CrewRepository crews;
+     @Autowired private CrewMemberRepository members;
+     @Autowired private CrewService crewService;
++    @Autowired private PlatformTransactionManager transactionManager;
+ 
+     @Test
+     void simultaneousImmediateJoinRequestsCannotExceedCapacity() throws Exception {
+@@ -38,15 +41,19 @@
+         UserAccount second = users.save(new UserAccount("crew-second@example.com", "hash", "second"));
+         Region jeju = region(regions, "KR-JEJU");
+ 
+-        Crew crew = crews.save(new Crew(
+-                owner,
+-                jeju,
+-                "Jeju crew",
+-                "description",
+-                LocalDate.now().plusDays(10),
+-                2,
+-                false));
+-        members.save(new CrewMember(crew, owner, CrewMemberStatus.OWNER));
++        Crew crew = new TransactionTemplate(transactionManager).execute(status -> {
++            Crew saved = crews.save(new Crew(
++                    owner,
++                    jeju,
++                    "Jeju crew",
++                    "description",
++                    LocalDate.now().plusDays(10),
++                    2,
++                    false));
++            members.save(new CrewMember(saved, owner, CrewMemberStatus.OWNER));
++            return saved;
++        });
++        assertThat(crew).isNotNull();
+ 
+         ExecutorService executor = Executors.newFixedThreadPool(2);
+         CountDownLatch ready = new CountDownLatch(2);

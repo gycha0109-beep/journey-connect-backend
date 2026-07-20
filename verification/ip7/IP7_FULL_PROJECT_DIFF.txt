@@ -1,0 +1,6 @@
+Only in /mnt/data/ip7_work/Journey-Connect-IP-6-Search-Runtime-Integration-Boundary-Final/docs/platform/intelligence: IP-7-HANDOFF.md
+Only in /mnt/data/ip7_work/Journey-Connect-IP-6-Search-Runtime-Integration-Boundary-Final/docs/platform/intelligence: IP-7-SEARCH-SHADOW-WIRING-AND-CONTROLLED-COMPARISON.md
+Files /mnt/data/ip7_base/Journey-Connect-IP-6-Search-Runtime-Integration-Boundary-Final/docs/platform/intelligence/README.md and /mnt/data/ip7_work/Journey-Connect-IP-6-Search-Runtime-Integration-Boundary-Final/docs/platform/intelligence/README.md differ
+Files /mnt/data/ip7_base/Journey-Connect-IP-6-Search-Runtime-Integration-Boundary-Final/jc-backend/settings.gradle.kts and /mnt/data/ip7_work/Journey-Connect-IP-6-Search-Runtime-Integration-Boundary-Final/jc-backend/settings.gradle.kts differ
+Only in /mnt/data/ip7_work/Journey-Connect-IP-6-Search-Runtime-Integration-Boundary-Final: jc-search-shadow-wiring
+Only in /mnt/data/ip7_work/Journey-Connect-IP-6-Search-Runtime-Integration-Boundary-Final/verification: ip7

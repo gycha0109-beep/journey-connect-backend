@@ -1,0 +1,8 @@
+{
+  "contractVersion": "search-replay-evidence-v1",
+  "runId": "search-run-failed-001",
+  "failureCode": "retrieval_unavailable",
+  "evidenceRef": "evidence:retrieval-001",
+  "retryable": true,
+  "occurredAt": "2026-07-19T12:00:02Z"
+}

@@ -1,0 +1,14 @@
+Gradle Wrapper External Readiness
+status=READY_FOR_EXTERNAL_ENVIRONMENT
+root=jc-backend
+wrapper_version=8.14.5
+distribution_url=https://services.gradle.org/distributions/gradle-8.14.5-bin.zip
+gradlew=present_executable
+gradlew.bat=present
+wrapper_jar=present
+wrapper_properties=present
+java_toolchain=21
+module_paths=static_validated
+contract_tasks=static_validated
+current_environment_distribution_cache=absent
+current_environment_network=DNS_FAILURE

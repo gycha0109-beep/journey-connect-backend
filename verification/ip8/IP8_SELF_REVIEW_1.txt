@@ -1,0 +1,20 @@
+IP-8 Independent Review 1
+status=PASS_AFTER_FIX
+found=4
+fixed=4
+held=0
+
+1. Readiness fixtures were not directly bound to actual prerequisite-matrix decisions.
+   FIX: fixture decisions now execute against the real matrix and asserted decision.
+2. Blocker counts in documentation were illustrative rather than derived from current matrix.
+   FIX: documentation and tests aligned to the actual 22 activation blockers.
+3. Observability retention collections could preserve caller-dependent order/duplicates.
+   FIX: canonical sorted unique collection invariants added.
+4. Rollback contract accepted insufficiently guarded null fields.
+   FIX: constructor null safety and contract assertions added.
+
+Revalidation:
+- IP-8 readiness 2560 PASS
+- IP-7/IP-6/IP-5/IP-4/IP-3/IP-1 regression PASS
+- protected 320/320 exact
+- SQL 26/26 exact

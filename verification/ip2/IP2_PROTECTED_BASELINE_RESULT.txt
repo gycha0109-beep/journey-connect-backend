@@ -1,0 +1,5 @@
+Protected manifest entries: 320
+Verified entries: 320
+Mismatches: 0
+Missing: 0
+Final: PASS

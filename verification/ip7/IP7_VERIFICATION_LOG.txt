@@ -1,0 +1,62 @@
+IP-7 Search Shadow Wiring & Controlled Comparison — Final Verification
+
+Status:
+IP-7=COMPLETE
+production_hook=NOT_INSERTED
+production_activation=NOT_ENABLED
+legacy_response_authority=MAINTAINED
+response_impact=NONE
+
+Compile/Test:
+IP7 main Java21 -Xlint:all -Werror=PASS
+IP7 test Java21 -Xlint:all -Werror=PASS
+IP7 assertions=1700 PASS
+IP6 assertions=972 PASS
+IP5 assertions=850 PASS
+IP4 assertions=584 PASS
+IP3 assertions=425 PASS
+IP1 assertions=739 PASS
+Recommendation Foundation/Wave1-7/Golden/Isolation=PASS
+P1 Core=17 PASS
+P2 Core=23 PASS
+
+Fixtures:
+JSON=16/16 PASS
+Java controlled scenarios=50+ meanings covered
+
+Authority/Isolation:
+disabled_by_default=PASS
+default_sampling_zero=PASS
+test_only_profile_gate=PASS
+unknown_mode_disabled=PASS
+deterministic_sampling=PASS
+finite_executor_contract=PASS
+rejection_queue_timeout_cancel_fail_open=PASS
+circuit_boundary=PASS
+response_identity_deep_equality_order_pagination=PASS
+compatibility_not_runtime_source=PASS
+privacy_safe_record=PASS
+persistence_exposure_release_metric_cursor_activation_cutover_authority=NONE
+Spring_auto_activation=NONE
+production_config_enablement=NONE
+
+Protection:
+protected_source=320/320 exact
+canonical_SQL=26/26 exact
+Controller/Service/Repository/DTO/JPQL/SecurityConfig=UNCHANGED
+Recommendation/P2 evidence/exposure/metric=UNCHANGED
+DB migration/new SQL/index=NONE
+
+Gradle:
+result=FAIL_ENVIRONMENT
+reason=Gradle 8.14.5 distribution download failed with services.gradle.org UnknownHostException
+Gradle PASS not declared. Direct Java 21 compile and contract runners used as replacement evidence.
+
+Self review:
+review1=3 found / 3 fixed / 0 held
+review2=4 found / 4 fixed / 0 held
+
+Package:
+zip_extract=PASS
+package_compile_and_IP7_to_IP1_regression=PASS
+protected_and_SQL_hash_after_extract=PASS

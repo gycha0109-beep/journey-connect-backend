@@ -1,0 +1,3 @@
+/mnt/data/ip6_work/Journey-Connect-IP-5-Search-Runtime-Foundation-Final/jc-backend/gradle/wrapper/gradle-wrapper.jar
+binary_count=1
+result=REVIEW

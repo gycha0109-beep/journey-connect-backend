@@ -1,0 +1,10 @@
+top_level_folder=JC-IP-11-5-Final
+top_level_length=16
+file_count=1679
+max_internal_path_chars=172
+max_internal_path=JC-IP-11-5-Final/verification/p1-test-results/p1BehaviorProfileIntegration/TEST-com.jc.backend.recommendation.application.RecommendationP1BehaviorProfileIntegrationTest.xml
+paths_over_240=0
+non_ascii_paths=0
+suspicious_encoded_paths=0
+rename_count=10
+result=PASS

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.jc.backend.recommendation.application.RecommendationP1CandidateMapperTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-07-18T19:55:23.842Z" hostname="d063fc686b07" time="0.03">
+  <properties/>
+  <testcase name="mapsV1AndP1FeatureVocabularyWithoutChangingTheV1Mapper()" classname="com.jc.backend.recommendation.application.RecommendationP1CandidateMapperTest" time="0.03"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,76 @@
+IP-5 change scope validation against IP-4 archive
+Expected existing-file changes:
+- jc-backend/settings.gradle.kts (module registration only)
+- docs/platform/intelligence/README.md
+Expected additions:
+- jc-search-runtime/**
+- docs/platform/intelligence/IP-5-*.md
+- verification/ip5/**
+
+Changed existing files:
+docs/platform/intelligence/README.md
+jc-backend/settings.gradle.kts
+
+Removed existing files:
+
+New paths (top-level relevant):
+jc-search-runtime/build.gradle.kts
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/DefaultSearchRuntime.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/SearchRuntime.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/SearchRuntimeAuthorityV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/SearchRuntimeEvidenceV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/SearchRuntimeExecutionRequestV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/SearchRuntimeFailureCode.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/SearchRuntimeFailureV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/SearchRuntimeFallbackCode.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/SearchRuntimeFallbackV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/SearchRuntimeResultV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/SearchRuntimeStageEvidenceV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/SearchRuntimeStatus.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/fixture/DeterministicFixtureSearchRankingPort.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/fixture/InMemorySearchRetrievalPort.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/fixture/PassThroughSearchCandidateFilter.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/fixture/SearchRuntimeFixtureCandidateV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/fixture/SearchRuntimeFixtureCaseV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/fixture/SearchRuntimeFixtureJsonCodecV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/pagination/SearchRuntimePageProjector.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/pagination/SearchRuntimePageV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/pagination/SearchTestCursorV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/port/SearchCandidateFilter.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/port/SearchDependencyDecision.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/port/SearchEligibilityPort.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/port/SearchFilterDecisionV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/port/SearchRetrievalPort.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/port/SearchRetrievalResultV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/port/SearchRetrievalStatus.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/port/SearchVisibilityPort.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/ranking/NoOpSearchRerankingPort.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/ranking/SearchDeterministicOrdering.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/ranking/SearchRankedCandidateV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/ranking/SearchRankingPort.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/ranking/SearchRankingRequestV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/ranking/SearchRankingResultV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/ranking/SearchRankingStatus.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/ranking/SearchRerankingPort.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/snapshot/SearchResultItemV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/snapshot/SearchResultSnapshotBuilder.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/snapshot/SearchResultSnapshotV1.java
+jc-search-runtime/src/main/java/com/jc/intelligence/runtime/search/v1/snapshot/SearchRuntimeFingerprintV1.java
+jc-search-runtime/src/test/java/com/jc/intelligence/runtime/search/SearchRuntimeContractTest.java
+jc-search-runtime/src/test/resources/search-runtime/eligibility-filter.json
+jc-search-runtime/src/test/resources/search-runtime/empty-result.json
+jc-search-runtime/src/test/resources/search-runtime/korean-unicode.json
+jc-search-runtime/src/test/resources/search-runtime/last-page.json
+jc-search-runtime/src/test/resources/search-runtime/max-boundary.json
+jc-search-runtime/src/test/resources/search-runtime/mixed-entity-types.json
+jc-search-runtime/src/test/resources/search-runtime/ranking-fallback.json
+jc-search-runtime/src/test/resources/search-runtime/reranking-change.json
+jc-search-runtime/src/test/resources/search-runtime/retrieval-failed.json
+jc-search-runtime/src/test/resources/search-runtime/retrieval-unavailable.json
+jc-search-runtime/src/test/resources/search-runtime/same-score.json
+jc-search-runtime/src/test/resources/search-runtime/single-candidate.json
+jc-search-runtime/src/test/resources/search-runtime/valid-multiple.json
+jc-search-runtime/src/test/resources/search-runtime/visibility-unavailable.json
+docs/platform/intelligence/IP-5-SEARCH-RUNTIME-FOUNDATION.md
+docs/platform/intelligence/IP-5-HANDOFF.md
+verification/ip5/

@@ -1,0 +1,11 @@
+IP-9 package preparation validation
+- final project directory name: Journey-Connect-IP-9-Controlled-Backend-Hook-Implementation-Final
+- direct verification: PASS
+- static verification: 584 PASS
+- protected source: 320/320 exact
+- canonical SQL: 26/26 exact
+- backend protected delta: PostController approved; Service/Repository/DTO/SecurityConfig/resources exact
+- Gradle/backend Spring regression: NOT_EXECUTED due services.gradle.org DNS failure
+- temporary class/build output: absent
+- production activation configuration: absent
+status=READY_TO_PACKAGE / EXTERNAL_ATTESTATION_PENDING

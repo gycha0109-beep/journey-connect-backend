@@ -1,0 +1,8 @@
+jc-search-readiness/src/test/resources/search-readiness/01-default-disabled.json
+jc-search-readiness/src/test/resources/search-readiness/02-missing-config-disabled.json
+jc-search-readiness/src/test/resources/search-readiness/03-invalid-config-safe.json
+jc-search-readiness/src/test/resources/search-readiness/04-proposal-incomplete.json
+jc-search-readiness/src/test/resources/search-readiness/05-architecture-change-hold.json
+jc-search-readiness/src/test/resources/search-readiness/06-owner-decisions-hold.json
+jc-search-readiness/src/test/resources/search-readiness/07-disabled-equivalence-pass.json
+jc-search-readiness/src/test/resources/search-readiness/08-all-prerequisites-resolved.json

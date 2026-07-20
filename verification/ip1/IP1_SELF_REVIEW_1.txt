@@ -1,0 +1,22 @@
+REVIEW 1 - CONTRACT AND ARCHITECTURE
+contract module java files: 60
+backend adapter java files: 10
+Forbidden external imports in contract module:
+Forbidden framework/system-clock tokens:
+Direct DB/write tokens in adapter:
+Reserved contract IDs:
+intelligence-candidate-snapshot-v1
+intelligence-explanation-v1
+intelligence-feature-value-v1
+intelligence-input-snapshot-v1
+intelligence-output-snapshot-v1
+intelligence-run-v1
+model-inference-record-v1
+Exposure source IDs:
+recommendation_behavior_impression_v1
+recommendation_general_exposure_v1
+recommendation_p2_experiment_exposure_v1
+search_exposure_v1
+Identity schemes:
+legacy_user_numeric_v1
+platform_subject_v1

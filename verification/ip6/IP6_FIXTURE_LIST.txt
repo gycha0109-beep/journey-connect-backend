@@ -1,0 +1,12 @@
+search-integration/count-mismatch.json
+search-integration/empty-both.json
+search-integration/exact-match.json
+search-integration/input-unavailable.json
+search-integration/input-unsupported.json
+search-integration/legacy-only.json
+search-integration/mixed-entity-types.json
+search-integration/ordering-mismatch.json
+search-integration/runtime-failed.json
+search-integration/runtime-fallback.json
+search-integration/runtime-only.json
+search-integration/timeout.json

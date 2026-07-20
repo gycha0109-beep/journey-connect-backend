@@ -1,0 +1,12 @@
+Review: contract and architecture
+Found: 7
+Fixed: 7
+Deferred: 0
+- isolated Search contracts into jc-search-contracts to preserve the IP-1 739-assertion baseline
+- separated cursor binding from expiration validation
+- enforced cursor checksum at construction
+- enforced exact request/filter V1 schema
+- made fallback evidence/order references mandatory
+- hardened explanation collection and sensitive-detail validation
+- renamed exposure helper to reservedExposureSourceId
+Revalidation: PASS

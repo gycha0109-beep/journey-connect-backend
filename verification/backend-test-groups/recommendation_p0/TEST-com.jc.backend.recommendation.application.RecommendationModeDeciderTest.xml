@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.jc.backend.recommendation.application.RecommendationModeDeciderTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-07-18T20:12:31.513Z" hostname="d063fc686b07" time="0.022">
+  <properties/>
+  <testcase name="canaryAllocationIsStableWithinAndNamespacedByRelease()" classname="com.jc.backend.recommendation.application.RecommendationModeDeciderTest" time="0.008"/>
+  <testcase name="shadowRunsOnlyForAuthenticatedFirstPage()" classname="com.jc.backend.recommendation.application.RecommendationModeDeciderTest" time="0.001"/>
+  <testcase name="canaryRequiresExplicitReleaseControlsAndUsesStableAllocation()" classname="com.jc.backend.recommendation.application.RecommendationModeDeciderTest" time="0.002"/>
+  <testcase name="liveAndIncompleteCanaryFailClosed()" classname="com.jc.backend.recommendation.application.RecommendationModeDeciderTest" time="0.005"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

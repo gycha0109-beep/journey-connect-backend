@@ -1,0 +1,15 @@
+{
+  "contractVersion": "intelligence-output-snapshot-v1",
+  "snapshotId": "snapshot-output-0001",
+  "schemaVersion": "recommendation-ranking-result-v1",
+  "resultRefs": [
+    "post:123",
+    "post:456"
+  ],
+  "explanationRefs": [
+    "explanation:rec-run-0001-user"
+  ],
+  "domainExtensionRef": "recommendation_result:ranking-result-v1",
+  "contentHash": "3333333333333333333333333333333333333333333333333333333333333333",
+  "producerBuildId": "batch18-build-abc123"
+}
