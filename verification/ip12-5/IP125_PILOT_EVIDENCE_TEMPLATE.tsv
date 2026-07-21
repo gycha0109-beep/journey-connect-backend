@@ -1,0 +1,3 @@
+phase	commit_sha	approval_ref	approver_ref	executor_ref	rollback_owner_ref	metric_ref	window_start	window_end	sampling_bps	allowlist_count	result
+START											NOT_AUTHORIZED
+STOP									0	0	NOT_EXECUTED

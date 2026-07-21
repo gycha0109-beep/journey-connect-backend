@@ -59,8 +59,11 @@ class ProductionSearchShadowDisableDrillTest {
                 NOW.minusSeconds(30)));
 
         var config = new ProductionSearchShadowRuntimeConfig(
-                true, false, 10, 10, Set.of(includedHash), 100, 1, 2, 8,
-                Duration.ofMillis(200), Duration.ofMillis(300));
+                true, false, 10, 10, Set.of(includedHash),
+                "approval:ip12-5-drill", "role:project-owner", "role:release-operator",
+                "role:backend-owner", "metric:journey.search.shadow",
+                NOW.minusSeconds(60), NOW.plusSeconds(3600),
+                100, 1, 2, 8, Duration.ofMillis(200), Duration.ofMillis(300));
         var killSwitch = new TestMutableSearchShadowKillSwitch();
         killSwitch.enable();
         var metrics = new InMemorySearchShadowMetricSink();
@@ -72,7 +75,8 @@ class ProductionSearchShadowDisableDrillTest {
                     new AllowlistedInternalCohortSelector(Set.of(includedHash), true),
                     new ProductionSearchShadowSamplingGate(10),
                     executor,
-                    metrics);
+                    metrics,
+                    Clock.fixed(NOW, ZoneOffset.UTC));
             var runtime = ProductionProjectionSearchRuntimeFactory.create(store, Duration.ofHours(24));
             var integration = new SearchShadowIntegrationBoundary<PageResponse<PostDtos.Summary>>(
                     new SearchShadowPolicyV1(
@@ -113,8 +117,11 @@ class ProductionSearchShadowDisableDrillTest {
     @Test
     void emptyCohortNeverDispatchesEvenWhenEnabledAtTenBps() throws Exception {
         var config = new ProductionSearchShadowRuntimeConfig(
-                true, false, 10, 10, Set.of(), 100, 1, 2, 8,
-                Duration.ofMillis(200), Duration.ofMillis(300));
+                true, false, 10, 10, Set.of(),
+                "approval:ip12-5-drill", "role:project-owner", "role:release-operator",
+                "role:backend-owner", "metric:journey.search.shadow",
+                NOW.minusSeconds(60), NOW.plusSeconds(3600),
+                100, 1, 2, 8, Duration.ofMillis(200), Duration.ofMillis(300));
         var killSwitch = new TestMutableSearchShadowKillSwitch();
         killSwitch.enable();
         var metrics = new InMemorySearchShadowMetricSink();
@@ -125,7 +132,8 @@ class ProductionSearchShadowDisableDrillTest {
                     key -> false,
                     new ProductionSearchShadowSamplingGate(10),
                     executor,
-                    metrics);
+                    metrics,
+                    Clock.fixed(NOW, ZoneOffset.UTC));
             var decision = gate.dispatch(Optional.of(findIncludedHash()),
                     () -> { throw new AssertionError("must not dispatch"); }, ignored -> { });
             assertThat(decision.reason()).isEqualTo(ProductionSearchShadowActivationReason.EMPTY_ALLOWLIST);

@@ -1,0 +1,12 @@
+verification	status	evidence
+GitHub_base_head	PASS	356cc0e25c9da2b57a5f9ed292f997bc3cea3119
+local_direct_compile	PASS	586 pure + 68 backend typed-stub sources
+local_direct_contract	PASS	43 assertions
+IP12_static	PASS	68/68
+IP125_static	PASS	51/51
+Gradle_verifyIp125	PENDING_PR_CI	workflow not yet run
+Spring_profiles	PENDING_PR_CI	workflow not yet run
+P0_P1_P2	PENDING_PR_CI	workflow not yet run
+PostgreSQL	PENDING_PR_CI	workflow environment
+actual_account_allowlist	NOT_PROVIDED	empty cohort
+activation_approval	NOT_PROVIDED	no approval reference

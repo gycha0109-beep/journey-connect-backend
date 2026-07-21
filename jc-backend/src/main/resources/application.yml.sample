@@ -50,6 +50,29 @@ app:
     canary-cursor-secret: ${RECOMMENDATION_CANARY_CURSOR_SECRET:}
     canary-release-id: ${RECOMMENDATION_CANARY_RELEASE_ID:}
 
+  intelligence:
+    search-shadow:
+      production:
+        # Safe default. Positive sampling is rejected unless approval, owners, window, metric path and hash allowlist are complete.
+        enabled: ${JC_SEARCH_SHADOW_PRODUCTION_ENABLED:false}
+        kill-switch: ${JC_SEARCH_SHADOW_PRODUCTION_KILL_SWITCH:true}
+        sampling-bps: ${JC_SEARCH_SHADOW_PRODUCTION_SAMPLING_BPS:0}
+        max-approved-sampling-bps: 10
+        allowlist-hashes: ${JC_SEARCH_SHADOW_PRODUCTION_ALLOWLIST_HASHES:}
+        activation-approval-ref: ${JC_SEARCH_SHADOW_PRODUCTION_APPROVAL_REF:}
+        activation-approver-ref: ${JC_SEARCH_SHADOW_PRODUCTION_APPROVER_REF:}
+        activation-executor-ref: ${JC_SEARCH_SHADOW_PRODUCTION_EXECUTOR_REF:}
+        rollback-owner-ref: ${JC_SEARCH_SHADOW_PRODUCTION_ROLLBACK_OWNER_REF:}
+        metric-verification-ref: ${JC_SEARCH_SHADOW_PRODUCTION_METRIC_REF:}
+        activation-window-start: ${JC_SEARCH_SHADOW_PRODUCTION_WINDOW_START:}
+        activation-window-end: ${JC_SEARCH_SHADOW_PRODUCTION_WINDOW_END:}
+        max-candidates: 100
+        timeout-ms: 200
+        hard-timeout-ms: 300
+        core-concurrency: 1
+        max-concurrency: 2
+        queue-capacity: 8
+
 springdoc:
   api-docs:
     path: /api-docs

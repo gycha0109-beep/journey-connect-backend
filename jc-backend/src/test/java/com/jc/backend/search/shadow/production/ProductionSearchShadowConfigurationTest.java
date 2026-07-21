@@ -47,6 +47,7 @@ class ProductionSearchShadowConfigurationTest {
                     assertThat(config.killSwitchActive()).isTrue();
                     assertThat(config.effectiveSamplingBps()).isZero();
                     assertThat(config.allowlistHashes()).isEmpty();
+                    assertThat(config.operationalInputsPresent()).isFalse();
                     assertThat(context.getBean(SearchShadowKillSwitch.class).killed()).isTrue();
                     assertThat(context).hasSingleBean(ProductionShadowTaskExecutor.class);
                 });
@@ -65,6 +66,16 @@ class ProductionSearchShadowConfigurationTest {
                     assertThat(context).doesNotHaveBean(
                             com.jc.backend.search.shadow.stage.StageSearchShadowProperties.class);
                 });
+    }
+
+    @Test
+    void positiveSamplingWithoutOperationalApprovalOrAllowlistFailsStartup() {
+        runner.withInitializer(context -> context.getEnvironment().setActiveProfiles("prod"))
+                .withPropertyValues(
+                        "app.intelligence.search-shadow.production.enabled=true",
+                        "app.intelligence.search-shadow.production.kill-switch=false",
+                        "app.intelligence.search-shadow.production.sampling-bps=10")
+                .run(context -> assertThat(context).hasFailed());
     }
 
     @Test

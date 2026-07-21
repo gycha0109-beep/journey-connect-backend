@@ -6,6 +6,10 @@ on:
       - "jc-backend/**"
       - "jc-recommendation-core/**"
       - "database/journey-connect-db-v2.1/**"
+      - "database/journey-connect-db-v2.7/**"
+      - "jc-search-*/**"
+      - "docs/platform/intelligence/**"
+      - "verification/ip12-5/**"
       - ".github/workflows/backend-pr-ci.yml"
   workflow_dispatch:
 
@@ -42,11 +46,5 @@ jobs:
       - name: Grant execute permission for Gradle Wrapper
         run: chmod +x ./gradlew
 
-      - name: Run Java static and architecture gates
-        run: ./gradlew p0Verification --stacktrace --no-daemon
-
-      - name: Run backend and PostgreSQL integration tests
-        run: ./gradlew clean test --stacktrace --no-daemon
-
-      - name: Run Java recommendation-core verification
-        run: ./gradlew :jc-recommendation-core:check --stacktrace --no-daemon
+      - name: Run IP-12.5 full protected readiness gate
+        run: ./gradlew verifyIp125 --stacktrace --no-daemon

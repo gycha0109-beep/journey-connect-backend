@@ -8,9 +8,10 @@ public final class ProductionSearchShadowOperationalLogger {
 
     public void startup(ProductionSearchShadowRuntimeConfig config) {
         safeInfo("search_shadow_prod_startup enabled={} killSwitchActive={} configuredSamplingBps={} "
-                        + "effectiveSamplingBps={} allowlistCount={} dispatchEligible={}",
+                        + "effectiveSamplingBps={} allowlistCount={} operationalInputsPresent={} dispatchEligible={}",
                 config.enabled(), config.killSwitchActive(), config.configuredSamplingBps(),
-                config.effectiveSamplingBps(), config.allowlistHashes().size(), config.dispatchConfigured());
+                config.effectiveSamplingBps(), config.allowlistHashes().size(),
+                config.operationalInputsPresent(), config.dispatchConfigured());
     }
 
     public void decision(ProductionSearchShadowActivationReason reason) {

@@ -1,0 +1,12 @@
+gate	current	required_for_pilot	result
+enabled	false	true only after approval	BLOCKED_SAFE
+kill_switch	true	false only inside window	BLOCKED_SAFE
+sampling_bps	0	1..10	BLOCKED_SAFE
+allowlist	empty	1..3 approved SHA-256 hashes	BLOCKED
+approval_ref	empty	bounded opaque ref	BLOCKED
+approver_ref	empty	bounded role ref	BLOCKED
+executor_ref	empty	bounded operator ref	BLOCKED
+rollback_owner_ref	empty	bounded owner ref	BLOCKED
+metric_verification_ref	empty	concrete metric path ref	BLOCKED
+activation_window	empty	valid UTC start/end	BLOCKED
+production_profile	implemented	verifyIp125 CI	PENDING_CI
