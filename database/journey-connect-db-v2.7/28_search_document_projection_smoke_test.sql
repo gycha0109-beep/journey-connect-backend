@@ -42,10 +42,12 @@ BEGIN
     source_post_id, eligibility_status, policy_version, source_version, reason_code)
   VALUES (v_post_id, 'eligible', 'search-document-operational-eligibility-v1', 1, 'internal_fixture');
 
+  -- Flush deferred integrity checks created by the fixture inserts before changing trigger state.
+  -- PostgreSQL rejects ALTER TABLE while pending deferred trigger events exist.
+  SET CONSTRAINTS ALL IMMEDIATE;
   ALTER TABLE public.posts DISABLE TRIGGER posts_set_updated_at;
 
   UPDATE public.posts SET status = 'published', updated_at = clock_timestamp() WHERE id = v_post_id;
-  SET CONSTRAINTS ALL IMMEDIATE;
 
   v_status := public.project_search_document_v1(v_post_id);
   IF v_status <> 'inserted' THEN RAISE EXCEPTION 'expected inserted, got %', v_status; END IF;
