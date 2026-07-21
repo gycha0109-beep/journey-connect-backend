@@ -1,0 +1,21 @@
+spring:
+  flyway:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+app:
+  database:
+    role-routing:
+      verify-on-startup: false
+      require-restricted-login: false
+  security:
+    jwt-secret: journey-connect-test-jwt-secret-at-least-32-bytes
+    access-token-minutes: 120
+    refresh-token-days: 14
+  cors:
+    allowed-origins: http://localhost:5173
+  recommendation:
+    mode: OFF

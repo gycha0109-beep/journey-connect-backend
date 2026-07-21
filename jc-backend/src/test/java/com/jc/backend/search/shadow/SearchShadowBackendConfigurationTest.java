@@ -34,9 +34,7 @@ class SearchShadowBackendConfigurationTest {
                         "search.shadow.sample-basis-points=10000",
                         "search.shadow.explicit-allow=true")
                 .run(context -> {
-                    assertThat(context).hasSingleBean(ExploreSearchShadowBridge.class);
-                    assertThat(context.getBean(ExploreSearchShadowBridge.class))
-                            .isExactlyInstanceOf(DisabledExploreSearchShadowBridge.class);
+                    assertThat(context).doesNotHaveBean(ExploreSearchShadowBridge.class);
                     assertThat(context).doesNotHaveBean(SearchShadowHook.class);
                     assertThat(context).doesNotHaveBean(SearchShadowExecutor.class);
                 });

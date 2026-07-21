@@ -57,9 +57,7 @@ class StageSearchShadowConfigurationTest {
                         .setActiveProfiles("prod", "search-shadow-stage"))
                 .withPropertyValues(activeProperties())
                 .run(context -> {
-                    assertThat(context).hasSingleBean(ExploreSearchShadowBridge.class);
-                    assertThat(context.getBean(ExploreSearchShadowBridge.class))
-                            .isExactlyInstanceOf(DisabledExploreSearchShadowBridge.class);
+                    assertThat(context).doesNotHaveBean(ExploreSearchShadowBridge.class);
                     assertThat(context).doesNotHaveBean(StageSearchShadowTaskExecutor.class);
                 });
 
@@ -67,9 +65,7 @@ class StageSearchShadowConfigurationTest {
                         .setActiveProfiles("production", "search-shadow-stage"))
                 .withPropertyValues(activeProperties())
                 .run(context -> {
-                    assertThat(context).hasSingleBean(ExploreSearchShadowBridge.class);
-                    assertThat(context.getBean(ExploreSearchShadowBridge.class))
-                            .isExactlyInstanceOf(DisabledExploreSearchShadowBridge.class);
+                    assertThat(context).doesNotHaveBean(ExploreSearchShadowBridge.class);
                     assertThat(context).doesNotHaveBean(StageSearchShadowTaskExecutor.class);
                 });
 

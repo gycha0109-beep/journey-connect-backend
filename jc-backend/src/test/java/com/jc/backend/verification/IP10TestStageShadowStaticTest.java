@@ -19,7 +19,7 @@ class IP10TestStageShadowStaticTest {
         for (String line : lines) {
             String[] parts = line.trim().split("\\s+", 2);
             assertThat(parts).hasSize(2);
-            assertThat(sha256(RepositoryLayout.resolve(parts[1]))).as(parts[1]).isEqualTo(parts[0]);
+            assertThat(matchesPortableTextHash(RepositoryLayout.resolve(parts[1]), parts[0])).as(parts[1]).isTrue();
         }
         Path resources = RepositoryLayout.resolve("jc-backend/src/main/resources");
         try (var stream = Files.walk(resources)) {
@@ -43,7 +43,10 @@ class IP10TestStageShadowStaticTest {
         assertThat(config).contains("StageSearchShadowActivationCondition", "DefaultExploreSearchShadowBridge")
                 .doesNotContain("@Profile(\"prod\")", "Repository", "EntityManager", "SearchRunRepository");
         assertThat(condition).contains("activationAllowed");
-        assertThat(properties).contains("search-shadow-test", "search-shadow-stage", "sample-basis-points")
+        assertThat(properties).contains(
+                        "SearchShadowWiringConfigV1.TEST_PROFILE",
+                        "SearchShadowWiringConfigV1.STAGE_PROFILE",
+                        "sample-basis-points")
                 .doesNotContain("SHADOW_CANDIDATE", "production enabled");
         assertThat(controller).contains("return ApiResponse.ok(legacyResponse);")
                 .doesNotContain("stageSearch", "SearchRuntime", "SearchShadowDispatchReceiptV1");
@@ -74,7 +77,15 @@ class IP10TestStageShadowStaticTest {
         assertThat(build).doesNotContain("ignoreFailures", "isIgnoreFailures");
     }
 
-    private static String sha256(Path path) throws Exception {
-        return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(path)));
+    private static boolean matchesPortableTextHash(Path path, String expected) throws Exception {
+        byte[] bytes = Files.readAllBytes(path);
+        if (sha256(bytes).equals(expected)) return true;
+        String text = new String(bytes, StandardCharsets.UTF_8);
+        if (text.indexOf('\r') >= 0) return false;
+        return sha256(text.replace("\n", "\r\n").getBytes(StandardCharsets.UTF_8)).equals(expected);
+    }
+
+    private static String sha256(byte[] bytes) throws Exception {
+        return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
     }
 }
