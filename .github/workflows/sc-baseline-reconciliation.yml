@@ -1,0 +1,28 @@
+name: SC Baseline Reconciliation
+
+on:
+  pull_request:
+    paths:
+      - "docs/platform/governance/**"
+      - "docs/platform/data/**"
+      - "docs/platform/proposals/**"
+      - "verification/sc-dp1-baseline-reconciliation/**"
+      - ".github/workflows/sc-baseline-reconciliation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Validate SC baseline reconciliation
+        run: python verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py

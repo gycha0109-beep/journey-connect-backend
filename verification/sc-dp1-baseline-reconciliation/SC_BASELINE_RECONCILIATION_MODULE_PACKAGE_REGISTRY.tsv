@@ -1,0 +1,3 @@
+module	package	owner	status
+jc-intelligence-contracts	com.jc.intelligence.contract	Intelligence	ACTIVE
+jc-data-contracts	com.jc.data.contract	Data	RESERVED_NOT_IMPLEMENTED

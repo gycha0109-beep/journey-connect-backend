@@ -1,0 +1,14 @@
+key	value	evidence
+state	CLOSED	GitHub PR #3
+merged	true	GitHub PR #3
+reviewReady	true	GitHub PR #3 non-draft before merge
+mergeable	true	GitHub PR #3 before merge
+initialHead	c54e6f2efbff0664470def6a5917292d91828f77	GitHub PR #3
+verifiedHead	aaea95946133f518996b7e57c7f5a657e8f161b9	exact-head verified
+mergeCommit	f38cf56b34ff23fbd5cb20b9013444a8cb2d29f4	GitHub merge result
+incorporatedMainHead	b7a613c2c9746c0bc46e6e76fc23dcf94d5029be	second parent before merge
+mergeMethod	merge commit / no force push	GitHub PR merge
+backendCi	PASS run 29818133726	exact verified head
+coreCi	PASS run 29818133742	exact verified head
+postgresCi	PASS run 29818133764	exact verified head PostgreSQL 15/18
+operationalDecision	HOLD_OPERATIONAL_INPUTS_PENDING	merge does not authorize traffic

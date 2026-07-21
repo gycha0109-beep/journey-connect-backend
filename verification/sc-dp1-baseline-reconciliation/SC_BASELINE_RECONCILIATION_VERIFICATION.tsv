@@ -1,0 +1,8 @@
+checkId	target	expected	observed	result	evidenceReference	sourceHead	executedAtUtc
+SC-DOC-STATIC	SC/DP docs, links, registries, SQL presence, protected paths	PASS	PASS run 29820224641	PASS	GitHub Actions	9979cd7e59d696a7d0d4d00d388ebfa0ce2ba75a	2026-07-21T09:56:22Z
+SC-PR-MERGEABILITY	PR #4	mergeable/review-ready	mergeable=true;draft=false;behind=0	PASS	GitHub PR/compare	9979cd7e59d696a7d0d4d00d388ebfa0ce2ba75a	2026-07-21T09:56:22Z
+PR3-BACKEND	PR #3 Backend verifyIp125	PASS	PASS run 29818133726	PASS	GitHub Actions	aaea95946133f518996b7e57c7f5a657e8f161b9	2026-07-21T09:56:22Z
+PR3-CORE	Recommendation Java Core	PASS	PASS run 29818133742	PASS	GitHub Actions	aaea95946133f518996b7e57c7f5a657e8f161b9	2026-07-21T09:56:22Z
+PR3-PG15-18	PostgreSQL 15/18	PASS	PASS run 29818133764	PASS	GitHub Actions	aaea95946133f518996b7e57c7f5a657e8f161b9	2026-07-21T09:56:22Z
+PR3-MERGEABILITY	PR #3	mergeable/review-ready/current-main incorporated	mergeable=true;draft=false;behind=0	PASS	GitHub PR/compare	aaea95946133f518996b7e57c7f5a657e8f161b9	2026-07-21T09:56:22Z
+LOCAL-WORKTREE	local checkout	clean/known	not accessible	NOT_VERIFIABLE	environment	b7a613c2c9746c0bc46e6e76fc23dcf94d5029be	2026-07-21T09:56:22Z

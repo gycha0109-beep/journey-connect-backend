@@ -1,0 +1,6 @@
+path	changeType	scope
+.github/workflows/sc-baseline-reconciliation.yml	ADD	SC_DOCUMENTATION_ONLY
+docs/platform/data/	ADD_OR_UPDATE	SC_DOCUMENTATION_ONLY
+docs/platform/governance/	ADD	SC_DOCUMENTATION_ONLY
+docs/platform/proposals/DP-0-TRACK-CHANGE-PROPOSAL.md	ADD	SC_DOCUMENTATION_ONLY
+verification/sc-dp1-baseline-reconciliation/	ADD	SC_DOCUMENTATION_ONLY

@@ -1,0 +1,5 @@
+range	ownerPurpose	status	nextRule
+01..26	existing canonical and Recommendation P2	PROTECTED	none
+27	Search projection and Operations eligibility	PROTECTED	not Data migration
+28	SQL 27 smoke test	PROTECTED	not Data migration
+29+	unallocated	SC_ASSIGNMENT_REQUIRED	DP-2 after explicit SC allocation

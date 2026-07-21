@@ -1,0 +1,2 @@
+checkId	target	expected	observed	result	evidenceReference	sourceHead	executedAtUtc
+DOC-LINKS	governed markdown	all relative links resolve	static validator completed successfully	PASS	workflow 29820224641	9979cd7e59d696a7d0d4d00d388ebfa0ce2ba75a	2026-07-21T09:56:22Z
