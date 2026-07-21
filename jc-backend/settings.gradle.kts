@@ -6,6 +6,9 @@ project(":jc-recommendation-core").projectDir = file("../jc-recommendation-core"
 include(":jc-intelligence-contracts")
 project(":jc-intelligence-contracts").projectDir = file("../jc-intelligence-contracts")
 
+include(":jc-data-contracts")
+project(":jc-data-contracts").projectDir = file("../jc-data-contracts")
+
 include(":jc-search-contracts")
 project(":jc-search-contracts").projectDir = file("../jc-search-contracts")
 

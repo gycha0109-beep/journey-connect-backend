@@ -31,8 +31,11 @@ REQUIRED = [
 ]
 ALLOWED = (
     "docs/platform/governance/", "docs/platform/data/", "docs/platform/proposals/",
-    "verification/sc-dp1-baseline-reconciliation/",
+    "verification/sc-dp1-baseline-reconciliation/", "verification/dp1/",
     ".github/workflows/sc-baseline-reconciliation.yml",
+    ".github/workflows/data-contract-ci.yml",
+    "jc-backend/settings.gradle.kts",
+    "jc-data-contracts/",
 )
 
 def fail(message: str) -> None:

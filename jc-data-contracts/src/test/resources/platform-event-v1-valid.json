@@ -1,0 +1,22 @@
+{
+  "contractVersion": "platform-event-v1",
+  "schemaVersion": "user-behavior-event-v1",
+  "canonicalizationVersion": "platform-event-canonical-json-v1",
+  "producerVersion": "jc-backend-event-producer-v1",
+  "producerBuildId": "git:0123456789abcdef0123456789abcdef01234567",
+  "eventId": "event:evt-123",
+  "eventFamily": "user_behavior",
+  "eventType": "post_view",
+  "occurredAt": "2026-07-21T00:00:00Z",
+  "receivedAt": "2026-07-21T00:00:00.100Z",
+  "actorRef": "subject:opaque-user-10",
+  "sessionRef": "session:server-session-1",
+  "entityRef": "post:123",
+  "requestId": "request:req-1",
+  "correlationId": "correlation:corr-1",
+  "causationId": null,
+  "idempotencyKey": "client-post-view-123",
+  "payload": {
+    "surface": "feed"
+  }
+}

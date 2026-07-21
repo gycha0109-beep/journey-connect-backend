@@ -1,0 +1,7 @@
+fixture_id	path	purpose	expected_result	actual_result
+DP1-FIX-001	jc-data-contracts/src/test/resources/client-event-command-v1-valid.json	valid untrusted command	ACCEPT	PASS
+DP1-FIX-002	jc-data-contracts/src/test/resources/platform-event-v1-valid.json	valid canonical envelope	ACCEPT	PASS
+DP1-FIX-003	jc-data-contracts/src/test/resources/platform-event-v1-invalid-forbidden-payload.json	forbidden token/raw payload	REJECT_FORBIDDEN_PAYLOAD_FIELD	PASS
+DP1-FIX-004	jc-data-contracts/src/test/resources/p0-recommendation-behavior-wires-v1.tsv	protect P0 16 wire values	EXACT_COMPATIBILITY_FIXTURE	PASS
+DP1-FIX-005	jc-data-contracts/src/test/resources/p1-identity-version-compatibility-v1.tsv	identity separation and shadow-only P1 source	NO_AUTOMATIC_MAPPING	PASS
+DP1-FIX-006	jc-data-contracts/src/test/resources/p2-authority-compatibility-v1.tsv	P2 exposure/dataset/metric authority	NO_AUTHORITY_CHANGE	PASS

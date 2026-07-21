@@ -1,0 +1,15 @@
+verification_id	area	command	expected	result	status	note
+DP1-VERIFY-001	local_java_main	javac --release 21 -Xlint:all -Werror	PASS	PASS	PASS	dependency-free compile
+DP1-VERIFY-002	local_java_test	javac --release 21 -Xlint:all -Werror	PASS	PASS	PASS	contract test compile
+DP1-VERIFY-003	local_contract_runner	java com.jc.data.contract.DataContractsContractTest	PASS	569 assertions	PASS	all contract categories
+DP1-VERIFY-004	module_gradle	./gradlew :jc-data-contracts:check	PASS	PASS	PASS	Data Contract CI and remote Gradle :jc-data-contracts:check PASS
+DP1-VERIFY-005	intelligence_contracts	./gradlew :jc-intelligence-contracts:check	PASS	PASS	PASS	Backend verifyIp125 protected readiness gate PASS
+DP1-VERIFY-006	recommendation_core	./gradlew :jc-recommendation-core:check	PASS	PASS	PASS	Recommendation Java Core CI PASS
+DP1-VERIFY-007	search_contracts	existing Search contract gate	PASS	PASS	PASS	Backend verifyIp125 protected readiness gate PASS
+DP1-VERIFY-008	backend_p0	./gradlew p0Verification	PASS	PASS	PASS	Backend verifyIp125 protected readiness gate PASS
+DP1-VERIFY-009	backend_p1	./gradlew p1Verification	PASS	PASS	PASS	Backend verifyIp125 protected readiness gate PASS
+DP1-VERIFY-010	backend_p2	./gradlew p2Verification	PASS	PASS	PASS	Backend verifyIp125 protected readiness gate PASS
+DP1-VERIFY-011	ip12_5	./gradlew verifyIp125	PASS	PASS	PASS	Backend PR CI verifyIp125 PASS
+DP1-VERIFY-012	protected_diff	GitHub compare e8cd8e43..branch head	no protected changes	PASS	PASS	GitHub compare from work-start HEAD shows only approved DP-1 and SC validator paths
+DP1-VERIFY-013	fingerprint	static absence and unresolved boundary	fail closed	PASS	PASS	SC-DP1-009 preserved
+DP1-VERIFY-014	sc_baseline_reconciliation	python verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py	PASS	PASS	PASS	SC Baseline Reconciliation rerun PASS after exact allowlist correction

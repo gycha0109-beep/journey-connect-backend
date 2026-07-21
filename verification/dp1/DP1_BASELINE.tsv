@@ -1,0 +1,11 @@
+record_id	field	value	status	evidence
+DP1-BASE-001	default_branch	main	CONFIRMED	GitHub repository metadata
+DP1-BASE-002	official_baseline_sha	9d84f630e87d54f780e332eead0c1f8df6a51d0b	CONFIRMED	main ancestry / PR #4 merge commit
+DP1-BASE-003	work_start_head	e8cd8e434e0eac75de561417ae4eb5a4f73e448b	CONFIRMED	current main at branch creation
+DP1-BASE-004	baseline_ancestry	baseline is ancestor of work_start_head	PASS	compare 9d84f630..e8cd8e43
+DP1-BASE-005	post_baseline_delta	2 commits; governance docs only	PASS	System Contract and SC-HANDOFF only
+DP1-BASE-006	pr_3	merged f38cf56b34ff23fbd5cb20b9013444a8cb2d29f4	PASS	GitHub PR state
+DP1-BASE-007	pr_4	merged 9d84f630e87d54f780e332eead0c1f8df6a51d0b	PASS	GitHub PR state
+DP1-BASE-008	implementation_branch	codex/dp-1-event-contracts	CONFIRMED	branch created from exact work start HEAD
+DP1-BASE-009	canonical_db	journey-connect-db-v2.7/01..28	PROTECTED	SC-DP1-001
+DP1-BASE-010	working_tree	remote isolated branch created from exact clean commit tree	PASS	no shared local working tree used

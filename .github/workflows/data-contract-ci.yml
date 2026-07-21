@@ -1,0 +1,63 @@
+name: Data Contract CI
+
+on:
+  pull_request:
+    paths:
+      - "jc-data-contracts/**"
+      - "jc-backend/settings.gradle.kts"
+      - "docs/platform/data/DP-1-*.md"
+      - "verification/dp1/**"
+      - ".github/workflows/data-contract-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: data-contract-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  data-contracts:
+    name: Java 21 / DP-1 contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    defaults:
+      run:
+        working-directory: jc-backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Grant execute permission for Gradle Wrapper
+        run: chmod +x ./gradlew
+
+      - name: Run DP-1 contract gate
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p ../verification/dp1/runtime
+          ./gradlew :jc-data-contracts:check --stacktrace --no-daemon 2>&1 \
+            | tee ../verification/dp1/runtime/DP1_DATA_CONTRACT_CI.log
+
+      - name: Upload DP-1 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dp1-data-contract-ci-evidence
+          path: |
+            verification/dp1/runtime/DP1_DATA_CONTRACT_CI.log
+            jc-data-contracts/build/reports/**
+            jc-data-contracts/build/test-results/**
+          if-no-files-found: warn

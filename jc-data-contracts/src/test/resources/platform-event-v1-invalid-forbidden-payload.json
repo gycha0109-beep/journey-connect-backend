@@ -1,0 +1,7 @@
+{
+  "eventType": "post_view",
+  "payload": {
+    "surface": "feed",
+    "accessToken": "must-not-be-stored"
+  }
+}
