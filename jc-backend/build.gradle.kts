@@ -364,6 +364,27 @@ tasks.register<Test>("verifyIp12DisableDrill") {
     filter { includeTestsMatching("com.jc.backend.search.shadow.production.ProductionSearchShadowDisableDrillTest") }
 }
 
+tasks.register<Test>("verifyIp125InternalPilotReadiness") {
+    group = "verification"
+    description = "Runs IP-12.5 operational input, approval, activation-window, rollback-owner, and hold-state gates."
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    dependsOn(tasks.testClasses)
+    useJUnitPlatform()
+    filter {
+        includeTestsMatching("com.jc.backend.search.shadow.production.ProductionSearchShadowPilotReadinessTest")
+        includeTestsMatching("com.jc.backend.search.shadow.production.ProductionSearchShadowPropertiesTest")
+        includeTestsMatching("com.jc.backend.search.shadow.production.ProductionSearchShadowConfigurationTest")
+        includeTestsMatching("com.jc.backend.search.shadow.production.IP12ProductionShadowStaticTest")
+    }
+}
+
+tasks.register("verifyIp125") {
+    group = "verification"
+    description = "Runs the full protected IP-12 closure and IP-12.5 internal-pilot readiness gates."
+    dependsOn("verifyIp12", "verifyIp125InternalPilotReadiness")
+}
+
 tasks.register("verifyIp12") {
     group = "verification"
     description = "Runs IP-9, IP-10, IP-11.5 and all IP-12 operational wiring gates with backend and P0/P1/P2 checks."

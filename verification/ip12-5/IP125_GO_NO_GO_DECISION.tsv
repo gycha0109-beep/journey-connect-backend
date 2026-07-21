@@ -1,0 +1,2 @@
+decision	reason
+IP-12.5 HOLD_OPERATIONAL_INPUTS_PENDING	actual account hashes, approval, activation window, execution/rollback ownership and metric verification path are not supplied

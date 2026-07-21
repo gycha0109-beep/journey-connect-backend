@@ -51,9 +51,27 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run Java source and SQL integrity gates
-        run: ./gradlew p0Verification --stacktrace --no-daemon
+        shell: bash
+        run: |
+          set -o pipefail
+          ./gradlew p0Verification --stacktrace --no-daemon 2>&1 | tee ../verification/ip12-5/IP125_P0_STATIC_PG${{ matrix.postgres }}.log
 
       - name: Run canonical PostgreSQL integration suite
+        shell: bash
         env:
           JC_TEST_POSTGRES_IMAGE: postgres:${{ matrix.postgres }}-alpine
-        run: ./gradlew test --stacktrace --no-daemon
+        run: |
+          set -o pipefail
+          ./gradlew test --stacktrace --no-daemon 2>&1 | tee ../verification/ip12-5/IP125_POSTGRESQL_${{ matrix.postgres }}.log
+
+      - name: Upload PostgreSQL verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ip125-postgresql-${{ matrix.postgres }}-evidence
+          path: |
+            verification/ip12-5/IP125_P0_STATIC_PG${{ matrix.postgres }}.log
+            verification/ip12-5/IP125_POSTGRESQL_${{ matrix.postgres }}.log
+            jc-backend/build/test-results/**/*.xml
+            jc-backend/build/reports/tests/**
+          if-no-files-found: warn

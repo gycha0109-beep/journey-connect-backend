@@ -1,0 +1,15 @@
+verification	status	evidence
+GitHub_base_head	PASS	356cc0e25c9da2b57a5f9ed292f997bc3cea3119
+implementation_head	PASS	f95c1928b6143d8c5d519d6f2504f158661d82cb
+local_direct_compile	PASS	586 pure + 68 backend typed-stub sources
+local_direct_contract	PASS	43 assertions
+IP12_static	PASS	68/68
+IP125_static	PASS	51/51
+Gradle_verifyIp125	PASS	Backend PR CI run 29814868823
+Spring_profiles	PASS	verifyIp125 exact implementation head
+P0_P1_P2	PASS	verifyIp125 exact implementation head
+Recommendation_Java_Core	PASS	workflow run 29814868799
+PostgreSQL_15_18	PASS	Recommendation P0 Database CI run 29814868839
+actual_account_allowlist	NOT_PROVIDED	empty cohort
+activation_approval	NOT_PROVIDED	no approval reference
+final_decision	HOLD_OPERATIONAL_INPUTS_PENDING	traffic activation not authorized

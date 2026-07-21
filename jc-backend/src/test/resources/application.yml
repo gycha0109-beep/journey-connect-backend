@@ -1,0 +1,12 @@
+# Canonical PostgreSQL connection, JWT and CORS values are injected by
+# CanonicalPostgresInitializer for integration tests.
+spring:
+  flyway:
+    enabled: false
+  jpa:
+    open-in-view: false
+
+app:
+  database:
+    role-routing:
+      verify-on-startup: false

@@ -27,18 +27,18 @@ class SearchShadowBackendConfigurationTest {
     }
 
     @Test
-    void arbitraryPropertiesAndProductionEquivalentProfileCannotActivateShadow() {
+    void productionProfileDelegatesBridgeOwnershipWithoutActivatingStageInfrastructure() {
         runner.withPropertyValues(
                         "spring.profiles.active=prod",
                         "search.shadow.mode=test_only",
                         "search.shadow.sample-basis-points=10000",
                         "search.shadow.explicit-allow=true")
                 .run(context -> {
-                    assertThat(context).hasSingleBean(ExploreSearchShadowBridge.class);
-                    assertThat(context.getBean(ExploreSearchShadowBridge.class))
-                            .isExactlyInstanceOf(DisabledExploreSearchShadowBridge.class);
+                    assertThat(context).doesNotHaveBean(ExploreSearchShadowBridge.class);
                     assertThat(context).doesNotHaveBean(SearchShadowHook.class);
                     assertThat(context).doesNotHaveBean(SearchShadowExecutor.class);
+                    assertThat(context).doesNotHaveBean(SearchShadowRuntimeInputProvider.class);
+                    assertThat(context).doesNotHaveBean(SearchShadowComparisonLogPort.class);
                 });
     }
 }

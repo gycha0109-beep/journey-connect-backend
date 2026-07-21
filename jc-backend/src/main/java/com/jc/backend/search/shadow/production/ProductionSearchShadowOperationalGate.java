@@ -7,6 +7,7 @@ import com.jc.intelligence.production.search.v1.ProductionShadowTaskExecutor;
 import com.jc.intelligence.production.search.v1.SearchShadowKillSwitch;
 import com.jc.intelligence.production.search.v1.SearchShadowMetricName;
 import com.jc.intelligence.production.search.v1.SearchShadowMetricSink;
+import java.time.Clock;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -20,6 +21,7 @@ public final class ProductionSearchShadowOperationalGate {
     private final ProductionSearchShadowSamplingGate sampling;
     private final ProductionShadowTaskExecutor executor;
     private final SearchShadowMetricSink metrics;
+    private final Clock clock;
 
     public ProductionSearchShadowOperationalGate(
             ProductionSearchShadowRuntimeConfig config,
@@ -27,13 +29,15 @@ public final class ProductionSearchShadowOperationalGate {
             ProductionShadowCohortSelector cohort,
             ProductionSearchShadowSamplingGate sampling,
             ProductionShadowTaskExecutor executor,
-            SearchShadowMetricSink metrics) {
+            SearchShadowMetricSink metrics,
+            Clock clock) {
         this.config = Objects.requireNonNull(config, "config");
         this.killSwitch = Objects.requireNonNull(killSwitch, "killSwitch");
         this.cohort = Objects.requireNonNull(cohort, "cohort");
         this.sampling = Objects.requireNonNull(sampling, "sampling");
         this.executor = Objects.requireNonNull(executor, "executor");
         this.metrics = Objects.requireNonNull(metrics, "metrics");
+        this.clock = Objects.requireNonNull(clock, "clock");
     }
 
     public ProductionSearchShadowActivationDecision dispatch(
@@ -63,6 +67,14 @@ public final class ProductionSearchShadowOperationalGate {
         if (config.effectiveSamplingBps() == 0) {
             return blocked(ProductionSearchShadowActivationReason.ZERO_SAMPLING,
                     ProductionShadowDispatchStatus.NOT_SAMPLED, "zero_sampling");
+        }
+        if (!config.operationalInputsPresent()) {
+            return blocked(ProductionSearchShadowActivationReason.OPERATIONAL_INPUTS_MISSING,
+                    ProductionShadowDispatchStatus.KILLED, "operational_inputs_missing");
+        }
+        if (!config.activationWindowAllows(clock.instant())) {
+            return blocked(ProductionSearchShadowActivationReason.ACTIVATION_WINDOW_CLOSED,
+                    ProductionShadowDispatchStatus.KILLED, "activation_window_closed");
         }
         if (!config.hasCohort()) {
             return blocked(ProductionSearchShadowActivationReason.EMPTY_ALLOWLIST,

@@ -6,6 +6,10 @@ on:
       - "jc-backend/**"
       - "jc-recommendation-core/**"
       - "database/journey-connect-db-v2.1/**"
+      - "database/journey-connect-db-v2.7/**"
+      - "jc-search-*/**"
+      - "docs/platform/intelligence/**"
+      - "verification/ip12-5/**"
       - ".github/workflows/backend-pr-ci.yml"
   workflow_dispatch:
 
@@ -42,11 +46,19 @@ jobs:
       - name: Grant execute permission for Gradle Wrapper
         run: chmod +x ./gradlew
 
-      - name: Run Java static and architecture gates
-        run: ./gradlew p0Verification --stacktrace --no-daemon
+      - name: Run IP-12.5 full protected readiness gate
+        shell: bash
+        run: |
+          set -o pipefail
+          ./gradlew verifyIp125 --stacktrace --no-daemon 2>&1 | tee ../verification/ip12-5/IP125_BACKEND_CI.log
 
-      - name: Run backend and PostgreSQL integration tests
-        run: ./gradlew clean test --stacktrace --no-daemon
-
-      - name: Run Java recommendation-core verification
-        run: ./gradlew :jc-recommendation-core:check --stacktrace --no-daemon
+      - name: Upload IP-12.5 backend CI evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ip125-backend-ci-evidence
+          path: |
+            verification/ip12-5/IP125_BACKEND_CI.log
+            jc-backend/build/test-results/**/*.xml
+            jc-backend/build/reports/tests/**
+          if-no-files-found: warn

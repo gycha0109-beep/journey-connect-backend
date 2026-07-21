@@ -1,0 +1,69 @@
+PASS	doc:IP-12-CONTROLLED-PRODUCTION-SHADOW-OPERATIONAL-WIRING.md	
+PASS	doc:IP-12-PRODUCTION-PROPERTY-AND-ACTIVATION-CONTRACT.md	
+PASS	doc:IP-12-TEN-BPS-ENFORCEMENT-AND-SAMPLING-CONTRACT.md	
+PASS	doc:IP-12-INTERNAL-ACCOUNT-ALLOWLIST-IMPLEMENTATION.md	
+PASS	doc:IP-12-KILL-SWITCH-AND-DISABLE-DRILL.md	
+PASS	doc:IP-12-MICROMETER-AND-STRUCTURED-LOGGING.md	
+PASS	doc:IP-12-SECURITY-PRIVACY-AND-FAILURE-ISOLATION-REVIEW.md	
+PASS	doc:IP-12-VERIFICATION-AND-SELF-REVIEW.md	
+PASS	doc:IP-12-GO-NO-GO-DELTA.md	
+PASS	doc:IP-12-HANDOFF.md	
+PASS	ip119_doc:IP-11-9-EXTERNAL-ATTESTATION-CORRECTION.md	
+PASS	ip119_doc:IP-11-9-EXTERNAL-ATTESTATION-AND-OPERATIONAL-READINESS-CLOSURE.md	
+PASS	ip119_doc:IP-11-9-EXECUTION-ENVIRONMENT-AND-ATTESTATION-RESULT.md	
+PASS	ip119_doc:IP-11-9-GO-NO-GO-REASSESSMENT.md	
+PASS	ip119_doc:IP-11-9-HANDOFF.md	
+PASS	ip119_doc:IP-11-9-ACCOUNT-ALLOWLIST-CONTRACT.md	
+PASS	ip119_doc:IP-11-9-KILL-SWITCH-RESTART-AND-DISABLE-DRILL.md	
+PASS	default_enabled_false	
+PASS	default_kill_true	
+PASS	default_sample_zero	
+PASS	maximum_approved_10	
+PASS	sample_range_0_10	
+PASS	resource_exact	
+PASS	yaml_resources	
+PASS	allowlist_default_empty	
+PASS	no_fixture_hash_in_resources	
+PASS	allowlist_sha_validator	
+PASS	lazy_identity_resolution	
+PASS	kill_before_identity	
+PASS	sample_before_identity	
+PASS	empty_cohort_before_identity	
+PASS	bounded_executor	
+PASS	no_common_pool	
+PASS	single_completion	
+PASS	request_thread_no_join	
+PASS	metric_prefix	
+PASS	metric_tag_prohibition	
+PASS	metric_failure_isolated	
+PASS	safe_logging	
+PASS	production_profile_condition	
+PASS	no_persistent_evidence	
+PASS	controller_legacy_identity	
+PASS	controller_no_search_output	
+PASS	resource_policy_10	
+PASS	actuator_dependency	
+PASS	gradle_task:verifyIp12ProductionShadowWiring	
+PASS	gradle_task:verifyIp12SamplingCeiling	
+PASS	gradle_task:verifyIp12SpringWiring	
+PASS	gradle_task:verifyIp12DisableDrill	
+PASS	gradle_task:verifyIp12	
+PASS	sql_count_28	28
+PASS	no_sql_29	
+PASS	sql28_trigger_fix	
+PASS	log:verification/ip12/IP12_DIRECT_VERIFICATION.log	
+PASS	log:verification/ip12/IP12_UPSTREAM_DIRECT_REGRESSION.log	
+PASS	backend_stub_compile	
+PASS	pure_compile	
+PASS	protected_320	
+PASS	decision_count_12	12
+PASS	decision_unique	
+PASS	document_links_valid	[]
+PASS	state:Production shadow: DISABLED	
+PASS	state:Effective production sampling: 0 BPS	
+PASS	state:Actual cohort: empty / 0%	
+PASS	state:Search cutover: NOT STARTED	
+PASS	no_traffic_go	
+PASS	source_non_ascii_paths	
+PASS	source_path_under_220	155
+SUMMARY	68/68 PASS	0 FAIL

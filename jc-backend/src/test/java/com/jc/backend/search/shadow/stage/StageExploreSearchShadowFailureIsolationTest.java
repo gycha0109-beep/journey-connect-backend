@@ -9,10 +9,10 @@ import com.jc.intelligence.compat.search.explore.v1.LegacyExplorePageView;
 import com.jc.intelligence.compat.search.explore.v1.LegacyExploreRequestView;
 import com.jc.intelligence.contract.v1.version.PolicyVersion;
 import com.jc.intelligence.contract.v1.version.ProducerBuildId;
+import com.jc.intelligence.integration.search.v1.SearchShadowAuthorityV1;
 import com.jc.intelligence.integration.search.v1.SearchShadowContextV1;
 import com.jc.intelligence.integration.search.v1.SearchShadowIntegrationResult;
 import com.jc.intelligence.integration.search.v1.SearchShadowStatus;
-import com.jc.intelligence.integration.search.v1.SearchShadowAuthorityV1;
 import com.jc.intelligence.wiring.search.v1.FixedSearchShadowCircuitBreaker;
 import com.jc.intelligence.wiring.search.v1.SearchShadowCircuitState;
 import com.jc.intelligence.wiring.search.v1.SearchShadowDispatchStatus;
@@ -64,13 +64,13 @@ class StageExploreSearchShadowFailureIsolationTest {
                     (legacy, compatibility, context, provider) -> { throw new AssertionError("must not execute"); },
                     (request, context) -> { throw new AssertionError("must not create provider"); },
                     new InMemoryStageSearchShadowComparisonLogPort(10));
-            assertThat(zero.dispatch(request(response)).status()).isEqualTo(SearchShadowDispatchStatus.NOT_SAMPLED);
+            assertThat(zero.dispatch(request(response)).status()).isEqualTo(SearchShadowDispatchStatus.DISABLED);
             assertThat(zeroExecutor.acceptedCount()).isZero();
         } finally {
             zeroExecutor.close();
         }
 
-        StageSearchShadowTaskExecutor circuitExecutor = new StageSearchShadowTaskExecutor(1, 1);
+        StageSearchShadowTaskExecutor circuitExecutor = new StageSearchShadowTaskExecutor(1, 2);
         try {
             var open = new StageExploreSearchShadowHook(config(10_000), circuitExecutor,
                     new FixedSearchShadowCircuitBreaker(SearchShadowCircuitState.OPEN, false),
@@ -90,8 +90,7 @@ class StageExploreSearchShadowFailureIsolationTest {
                 (legacy, compatibility, context, provider) -> { throw new AssertionError("must not execute"); },
                 (request, context) -> { throw new AssertionError("must not create provider"); },
                 new InMemoryStageSearchShadowComparisonLogPort(10));
-        assertThat(unavailable.dispatch(request(response)).status())
-                .isEqualTo(SearchShadowDispatchStatus.DISABLED);
+        assertThat(unavailable.dispatch(request(response)).status()).isEqualTo(SearchShadowDispatchStatus.DISABLED);
         assertThat(response.items()).hasSize(1);
     }
 
@@ -102,8 +101,7 @@ class StageExploreSearchShadowFailureIsolationTest {
                 new ProducerBuildId("ip10-test-stage-shadow"));
     }
 
-    private static SearchShadowHookRequestV1<PageResponse<PostDtos.Summary>> request(
-            PageResponse<PostDtos.Summary> response) {
+    private static SearchShadowHookRequestV1<PageResponse<PostDtos.Summary>> request(PageResponse<PostDtos.Summary> response) {
         return new SearchShadowHookRequestV1<>(response,
                 new LegacyExploreRequestView("서울", "서울", 0, 20, List.of(), java.util.Map.of()),
                 new LegacyExplorePageView(List.of(), 0, 20, 1L, 1, true),

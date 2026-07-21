@@ -1,0 +1,5 @@
+repository=gycha0109-beep/journey-connect-backend
+base_branch=main
+base_head=356cc0e25c9da2b57a5f9ed292f997bc3cea3119
+work_branch=codex/ip-12-5-readiness
+working_tree=clean_branch_created_from_exact_head

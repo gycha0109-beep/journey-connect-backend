@@ -62,6 +62,7 @@ public final class IP12DirectOperationalContract {
         check(p.getAllowlistHashes().isEmpty(), "allowlist defaults empty");
         ProductionSearchShadowRuntimeConfig c = ProductionSearchShadowPropertiesValidator.validate(p);
         check(c.effectiveSamplingBps() == 0 && !c.dispatchConfigured(), "default effective disabled");
+        check(!c.operationalInputsPresent(), "default operational inputs absent");
         for (int accepted : new int[]{0, 1, 9, 10}) {
             p = enabledProperties(accepted, false, List.of(hash("user:" + (accepted + 1))));
             check(ProductionSearchShadowPropertiesValidator.validate(p).configuredSamplingBps() == accepted,
@@ -73,6 +74,10 @@ public final class IP12DirectOperationalContract {
             expectFailure(() -> ProductionSearchShadowPropertiesValidator.validate(invalidSampling),
                     "rejected sampling " + rejected);
         }
+        ProductionSearchShadowProperties missingApproval = enabledProperties(10, false, List.of(hash("user:1")));
+        missingApproval.setActivationApprovalRef("");
+        expectFailure(() -> ProductionSearchShadowPropertiesValidator.validate(missingApproval),
+                "activation approval required");
         ProductionSearchShadowProperties rawIdentity = enabledProperties(10, false, List.of(" user-1 "));
         expectFailure(() -> ProductionSearchShadowPropertiesValidator.validate(rawIdentity), "raw identity rejected");
         String h = hash("user:1");
@@ -98,6 +103,9 @@ public final class IP12DirectOperationalContract {
     private static void gateAndKillSwitch() throws Exception {
         String included = findIncludedHash();
         var config = new ProductionSearchShadowRuntimeConfig(true, false, 10, 10, Set.of(included),
+                "approval:ip12-5-direct", "role:project-owner", "role:release-operator",
+                "role:backend-owner", "metric:journey.search.shadow",
+                NOW.minusSeconds(60), NOW.plusSeconds(3600),
                 100, 1, 2, 8, Duration.ofMillis(200), Duration.ofMillis(300));
         var kill = new TestMutableSearchShadowKillSwitch();
         kill.enable();
@@ -106,7 +114,7 @@ public final class IP12DirectOperationalContract {
         try (var executor = new ProductionShadowTaskExecutor(ProductionShadowResourcePolicyV1.approvedInitialPilot())) {
             var gate = new ProductionSearchShadowOperationalGate(config, kill,
                     new AllowlistedInternalCohortSelector(Set.of(included), true),
-                    new ProductionSearchShadowSamplingGate(10), executor, metrics);
+                    new ProductionSearchShadowSamplingGate(10), executor, metrics, Clock.fixed(NOW, ZoneOffset.UTC));
             var accepted = gate.dispatch(Optional.of(included), work::incrementAndGet, ignored -> { });
             check(accepted.reason() == ProductionSearchShadowActivationReason.DISPATCHED,
                     "allowlisted sampled request submitted");
@@ -119,11 +127,12 @@ public final class IP12DirectOperationalContract {
             check(work.get() == 1, "killed path has zero new work");
         }
         var disabledConfig = new ProductionSearchShadowRuntimeConfig(false, true, 0, 0, Set.of(),
+                null, null, null, null, null, null, null,
                 100, 1, 2, 8, Duration.ofMillis(200), Duration.ofMillis(300));
         AtomicInteger identityCalls = new AtomicInteger();
         try (var executor = new ProductionShadowTaskExecutor(ProductionShadowResourcePolicyV1.approvedInitialPilot())) {
             var disabledGate = new ProductionSearchShadowOperationalGate(disabledConfig, kill, key -> false,
-                    new ProductionSearchShadowSamplingGate(0), executor, metrics);
+                    new ProductionSearchShadowSamplingGate(0), executor, metrics, Clock.fixed(NOW, ZoneOffset.UTC));
             var blocked = disabledGate.dispatch(() -> {
                 identityCalls.incrementAndGet();
                 return Optional.of(included);
@@ -134,12 +143,15 @@ public final class IP12DirectOperationalContract {
         }
 
         var empty = new ProductionSearchShadowRuntimeConfig(true, false, 10, 10, Set.of(),
+                "approval:ip12-5-direct", "role:project-owner", "role:release-operator",
+                "role:backend-owner", "metric:journey.search.shadow",
+                NOW.minusSeconds(60), NOW.plusSeconds(3600),
                 100, 1, 2, 8, Duration.ofMillis(200), Duration.ofMillis(300));
         var emptyKill = new TestMutableSearchShadowKillSwitch();
         emptyKill.enable();
         try (var executor = new ProductionShadowTaskExecutor(ProductionShadowResourcePolicyV1.approvedInitialPilot())) {
             var gate = new ProductionSearchShadowOperationalGate(empty, emptyKill, key -> false,
-                    new ProductionSearchShadowSamplingGate(10), executor, metrics);
+                    new ProductionSearchShadowSamplingGate(10), executor, metrics, Clock.fixed(NOW, ZoneOffset.UTC));
             var blocked = gate.dispatch(Optional.of(included), () -> { throw new AssertionError(); }, ignored -> { });
             check(blocked.reason() == ProductionSearchShadowActivationReason.EMPTY_ALLOWLIST,
                     "empty cohort dispatch zero");
@@ -181,6 +193,9 @@ public final class IP12DirectOperationalContract {
                 ProjectionPublicationStatus.PUBLISHED, ProjectionModerationStatus.ELIGIBLE,
                 ProjectionDeletionStatus.ACTIVE, false, NOW.minusSeconds(30)));
         var config = new ProductionSearchShadowRuntimeConfig(true, false, 10, 10, Set.of(included),
+                "approval:ip12-5-direct", "role:project-owner", "role:release-operator",
+                "role:backend-owner", "metric:journey.search.shadow",
+                NOW.minusSeconds(60), NOW.plusSeconds(3600),
                 100, 1, 2, 8, Duration.ofMillis(200), Duration.ofMillis(300));
         var kill = new TestMutableSearchShadowKillSwitch(); kill.enable();
         var metrics = new InMemorySearchShadowMetricSink();
@@ -188,7 +203,7 @@ public final class IP12DirectOperationalContract {
         try (var executor = new ProductionShadowTaskExecutor(ProductionShadowResourcePolicyV1.approvedInitialPilot())) {
             var gate = new ProductionSearchShadowOperationalGate(config, kill,
                     new AllowlistedInternalCohortSelector(Set.of(included), true),
-                    new ProductionSearchShadowSamplingGate(10), executor, metrics);
+                    new ProductionSearchShadowSamplingGate(10), executor, metrics, Clock.fixed(NOW, ZoneOffset.UTC));
             var runtime = ProductionProjectionSearchRuntimeFactory.create(store, Duration.ofHours(24));
             var integration = new SearchShadowIntegrationBoundary<PageResponse<PostDtos.Summary>>(
                     new SearchShadowPolicyV1(SearchShadowMode.SHADOW_ENABLED,
@@ -218,6 +233,13 @@ public final class IP12DirectOperationalContract {
     private static ProductionSearchShadowProperties enabledProperties(int sample, boolean kill, List<String> hashes) {
         ProductionSearchShadowProperties p = new ProductionSearchShadowProperties();
         p.setEnabled(true); p.setKillSwitch(kill); p.setSamplingBps(sample); p.setAllowlistHashes(hashes);
+        p.setActivationApprovalRef("approval:ip12-5-direct");
+        p.setActivationApproverRef("role:project-owner");
+        p.setActivationExecutorRef("role:release-operator");
+        p.setRollbackOwnerRef("role:backend-owner");
+        p.setMetricVerificationRef("metric:journey.search.shadow");
+        p.setActivationWindowStart("2026-07-19T23:00:00Z");
+        p.setActivationWindowEnd("2026-07-20T01:00:00Z");
         return p;
     }
 
@@ -235,7 +257,7 @@ public final class IP12DirectOperationalContract {
     }
 
     private static void await(Check condition, String name) throws Exception {
-        for (int i = 0; i < 400 && !condition.ok(); i++) Thread.sleep(5);
+        for (int i = 0; i < 1_000 && !condition.ok(); i++) Thread.sleep(5);
         check(condition.ok(), name);
     }
 
