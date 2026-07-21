@@ -2,75 +2,90 @@
 
 ## 상태
 
-`DP1_MAIN_INTEGRATED / DP2_ENTRY_DECISIONS_APPROVED`
+`DP2_MAIN_INTEGRATED / DP3_ENTRY_DECISIONS_APPROVED`
 
 ## 기준
 
 - official DP-1 Baseline SHA: `9d84f630e87d54f780e332eead0c1f8df6a51d0b`
-- DP-1 implementation HEAD: `f4f48b139e49b9cba98f60ab64a18871f204b4de`
-- DP-1 PR: `#6`
-- DP-1 merge commit/current authority start: `bdce7de5ef6be31f8da6a8a349424be8f06a87a1`
-- DP-1 exact-head CI: Data Contract `29840338516`, Recommendation Core `29840339853`, Backend `29840338075`, SC `29840340842` — PASS
-- DP-1 result: `DP1_IMPLEMENTATION_COMPLETE_WITH_BLOCKED_FINGERPRINT_ALGORITHM`
-- SC fingerprint decision: `SC-DP1-009 RESOLVED` by `SC-DP2-001`
+- DP-1 merge commit: `bdce7de5ef6be31f8da6a8a349424be8f06a87a1`
+- SC DP-2 decision merge commit: `c3f791c6c6eaa12b2aba3a1dbe686cb0b3d3cc80`
+- DP-2 implementation HEAD: `f6c45a86ee21beb0d7a12e931c73ca887effdf18`
+- DP-2 PR: `#8`
+- DP-2 merge commit/current authority start: `0ff67aaf9a86b61be2b41c431a570a9f0d460f7c`
+- DP-2 exact-head CI: Data PostgreSQL `29855410623`, Data Contract `29855410811`, Recommendation DB `29855410680`, Backend `29855410550`, SC `29855410537` — PASS
+- DP-2 result: `DP2_IMPLEMENTATION_COMPLETE`
 
 ## 완료
 
-- PR #3, PR #4 and PR #6 merged into `main`
-- `jc-data-contracts` is active at `com.jc.data.contract.v1`
-- Client command/canonical envelope, taxonomy, identity namespace, version, validation, canonicalization and idempotency boundaries are main authority
-- SQL 01..28 and Recommendation/Search/runtime authority remain protected
-- new Data fingerprint exact contract approved without reusing or rewriting protected P0 fingerprint
-- DP-2 DB target, SQL sequence, physical writer/roles and technical retention baseline assigned
+- DP-1 and DP-2 are integrated into `main`
+- Data contract, fingerprint, canonical event store, atomic idempotency and least-privilege Data roles are main authority
+- PostgreSQL 15/18 concurrency and protected regression passed at the DP-2 exact HEAD
+- SQL `01..31` are protected
+- DP-3 retry/quarantine state, budget, role, lease and observability decisions are approved
 
-## DP-2 approved decisions
+## DP-3 approved decisions
 
-### Fingerprint
+### Scope
 
-- wire ID: `platform-event-fingerprint-sha256-v1`
-- algorithm: SHA-256
-- encoding: lowercase hexadecimal, 64 characters
-- included: `contractVersion`, `schemaVersion`, `canonicalizationVersion`, `eventFamily`, `eventType`, `occurredAt`, `actorRef`, `sessionRef`, `entityRef`, `causationId`, `payload`
-- excluded: `eventId`, `receivedAt`, `producerVersion`, `producerBuildId`, `requestId`, `correlationId`, `idempotencyKey`
-- exact rules: `SC-DP2-ENTRY-DECISIONS.md`
+DP-3 implements retry scheduling, atomic work claiming, quarantine/review evidence and observability contracts. It does not activate production scheduling, execute replay, expose HTTP APIs, modify canonical source rows, map identities or cut over projections.
 
-### DB and SQL
+### SQL
 
-- target: `database/journey-connect-db-v2.7`
-- SQL 29: canonical event store/evidence base
-- SQL 30: idempotency/atomic ingest/grants
-- SQL 31: PostgreSQL smoke/contract/concurrency verification
-- SQL 32+: unallocated
+- SQL `32`: retry schedule, processing-attempt and quarantine evidence
+- SQL `33`: atomic claim/lease/complete/fail/quarantine procedures and grants
+- SQL `34`: PostgreSQL 15/18 smoke, concurrency, lease and authority validation
+- SQL `35+`: unallocated
 
-### Roles
+### Retry policy
 
-- writer: `jc_data_event_writer`
-- reader: `jc_data_event_reader`
-- future replay executor: `jc_data_replay_executor`
-- direct canonical UPDATE/DELETE prohibited
+- policy ID: `data-projection-retry-v1`
+- initial attempt: 1
+- maximum automatic retries: 5
+- maximum total executions: 6
+- delays: `1m`, `5m`, `30m`, `2h`, `12h`
+- deterministic scheduling jitter: `0..10%`
+- retry exhaustion: terminal quarantine
+- three consecutive identical normalized failure signatures may quarantine early
+- unknown, validation, authorization, privacy, fingerprint, lineage and invariant failures fail closed without automatic retry
 
-### Retention technical baseline
+### Claim and roles
 
-- idempotency binding: 30 days
-- attempt/conflict/quarantine: 90 days
-- canonical event default class: 365 days
-- automatic purge remains disabled until Operations/Security/Privacy approval
+- processor: `jc_data_retry_processor`
+- reviewer: `jc_data_quarantine_reviewer`
+- replay executor: `jc_data_replay_executor`, with no execution grant in DP-3
+- lease: 60 seconds
+- heartbeat: 20 seconds
+- default maximum batch: 100
+- stale/foreign completion is rejected
+- expired claims are reclaimed only through the approved procedure
 
-## DP-2 entry
+### Observability
+
+DP-3 must expose bounded metric/evidence contracts for scheduled, claimed, succeeded, failed, exhausted, quarantine, latency, queue depth, oldest age, lease expiry and stale-claim rejection. Raw identity, payload, idempotency key, token and unrestricted error text are prohibited.
+
+Operations owns production alert routing and scheduler activation.
+
+### Retention
+
+Retry, quarantine and review evidence use 90-day technical retention metadata. Automatic purge and physical deletion remain disabled.
+
+## DP-3 entry
 
 ```text
-DP-1: MAIN INTEGRATED
-SC-DP1-009: RESOLVED
-DP-2 ENTRY: AUTHORIZED AFTER SC DP-2 DECISION PR MERGE
+DP-2: MAIN INTEGRATED
+DP-3 ENTRY: AUTHORIZED AFTER SC DP-3 DECISION PR MERGE
 ```
 
-DP-2 may implement PostgreSQL persistence and concurrency only. It must not add a public API, production ingestion activation, identity mapping/join, projection cutover or cross-track writes.
+Exact rules: `SC-DP3-ENTRY-DECISIONS.md`.
 
-## Remaining unresolved
+## Remaining unresolved/outside DP-3
 
-- identity mapping physical owner/deletion workflow remains unresolved and outside DP-2
-- country/legal retention and erasure rules remain outside the technical baseline
-- production purge/erasure executor requires Operations/Security/Privacy approval
+- identity mapping physical owner/deletion workflow
+- replay execution procedure and grant
+- production scheduler deployment and activation
+- production alert routing
+- legal/country-specific retention and erasure
+- consumer projection cutover
 
 ## Protected state
 
