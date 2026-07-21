@@ -9,18 +9,20 @@
 - initial main HEAD: `b7a613c2c9746c0bc46e6e76fc23dcf94d5029be`
 - PR #3 original HEAD: `c54e6f2efbff0664470def6a5917292d91828f77`
 - PR #3 updated/verified HEAD: `aaea95946133f518996b7e57c7f5a657e8f161b9`
+- PR #3 merge commit: `f38cf56b34ff23fbd5cb20b9013444a8cb2d29f4`
 - PR #3 exact-head CI: Backend `29818133726`, Core `29818133742`, PostgreSQL 15/18 `29818133764` — PASS
 - SC branch: `codex/sc-dp1-baseline-reconciliation`
 - SC branch start: `b7a613c2c9746c0bc46e6e76fc23dcf94d5029be`
-- SC verified content HEAD: `9979cd7e59d696a7d0d4d00d388ebfa0ce2ba75a`
-- SC exact-head static workflow: `29820224641` — PASS
-- PR #3 merged: `NO`
+- latest main incorporated into SC branch: `f38cf56b34ff23fbd5cb20b9013444a8cb2d29f4`
+- SC synchronization merge commit: `72c59299392b86125e77d0b2463ad102f02287b1`
+- PR #3 merged: `YES`
 - SC PR #4 merged: `NO`
 
 ## 완료
 
-- latest main incorporated into PR #3 by non-force merge commit
-- PR #3 exact updated-head protected CI PASS; open/non-draft/mergeable
+- PR #3 merged into `main`; protected IP-12.5 controls are current main authority
+- IP-12.5 remains `HOLD_OPERATIONAL_INPUTS_PENDING` and authorizes no production traffic
+- current main incorporated into PR #4 without history rewrite
 - DB baseline reconciled to `journey-connect-db-v2.7/01..28`
 - SQL 27/28 ownership fixed without SQL changes
 - authoritative execution sequence and historical recommendation precedence fixed
@@ -42,10 +44,10 @@ Identity mapping physical owner/deletion policy also remains unresolved and is o
 
 ```text
 DP-1 entry:
-BLOCKED UNTIL PR #3 AND SC RECONCILIATION ARE BOTH MERGED
+BLOCKED UNTIL SC PR #4 IS MERGED
 ```
 
-DP-1 exact start SHA is the first main HEAD containing both merges. No current SHA is declared as the start baseline.
+DP-1 exact start SHA is the first `main` HEAD containing both merged PR #3 and merged PR #4. It remains pending until PR #4 merge.
 
 ## Protected state
 
