@@ -74,7 +74,9 @@ public final class CanonicalPostgresInitializer
                 "spring.datasource.url=" + jdbcUrl,
                 "spring.datasource.username=" + username,
                 "spring.datasource.password=" + password,
-                "spring.datasource.driver-class-name=org.postgresql.Driver")
+                "spring.datasource.driver-class-name=org.postgresql.Driver",
+                "app.security.jwt-secret=ip125-test-only-jwt-secret-0123456789abcdef0123456789abcdef",
+                "app.cors.allowed-origins=http://localhost:5173")
                 .applyTo(context.getEnvironment());
     }
 
