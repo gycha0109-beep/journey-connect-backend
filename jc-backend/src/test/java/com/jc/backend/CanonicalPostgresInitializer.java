@@ -75,6 +75,7 @@ public final class CanonicalPostgresInitializer
                 "spring.datasource.username=" + username,
                 "spring.datasource.password=" + password,
                 "spring.datasource.driver-class-name=org.postgresql.Driver",
+                "app.database.role-routing.verify-on-startup=false",
                 "app.security.jwt-secret=ip125-test-only-jwt-secret-0123456789abcdef0123456789abcdef",
                 "app.security.access-token-minutes=120",
                 "app.security.refresh-token-days=14",
