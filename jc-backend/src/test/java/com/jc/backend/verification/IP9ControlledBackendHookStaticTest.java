@@ -96,12 +96,12 @@ class IP9ControlledBackendHookStaticTest {
         for (String line : lines) {
             String[] parts = line.trim().split("\\s+", 2);
             assertThat(parts).hasSize(2);
-            String current = sha256(RepositoryLayout.resolve(parts[1]));
+            Path currentPath = RepositoryLayout.resolve(parts[1]);
             if (CONTROLLER.equals(parts[1])) {
-                assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
+                assertThat(matchesPortableTextHash(currentPath, parts[0])).as(parts[1]).isFalse();
                 approvedDeltas++;
             } else {
-                assertThat(current).as(parts[1]).isEqualTo(parts[0]);
+                assertThat(matchesPortableTextHash(currentPath, parts[0])).as(parts[1]).isTrue();
             }
         }
         assertThat(approvedDeltas).isEqualTo(1);
@@ -131,9 +131,21 @@ class IP9ControlledBackendHookStaticTest {
         return count;
     }
 
+    private static boolean matchesPortableTextHash(Path path, String expected) throws IOException {
+        byte[] bytes = Files.readAllBytes(path);
+        if (sha256(bytes).equals(expected)) return true;
+        String text = new String(bytes, StandardCharsets.UTF_8);
+        if (text.indexOf('\r') >= 0) return false;
+        return sha256(text.replace("\n", "\r\n").getBytes(StandardCharsets.UTF_8)).equals(expected);
+    }
+
     private static String sha256(Path path) throws IOException {
+        return sha256(Files.readAllBytes(path));
+    }
+
+    private static String sha256(byte[] bytes) {
         try {
-            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(path)));
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
         } catch (NoSuchAlgorithmException exception) {
             throw new IllegalStateException("SHA-256 unavailable", exception);
         }

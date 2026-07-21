@@ -101,9 +101,10 @@ class ProductionSearchShadowDisableDrillTest {
             long completed = metrics.value(SearchShadowMetricName.COMPLETED);
 
             killSwitch.kill();
-            var killed = hook.dispatch(request());
+            var killedRequest = request();
+            var killed = hook.dispatch(killedRequest);
             assertThat(killed.status()).isEqualTo(SearchShadowDispatchStatus.DISABLED);
-            assertThat(killed.legacyResponse()).isSameAs(request.legacyResponse());
+            assertThat(killed.legacyResponse()).isSameAs(killedRequest.legacyResponse());
             Thread.sleep(30);
             assertThat(metrics.value(SearchShadowMetricName.COMPLETED)).isEqualTo(completed);
             assertThat(metrics.value(SearchShadowMetricName.KILLED)).isGreaterThanOrEqualTo(1L);

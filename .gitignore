@@ -6,6 +6,9 @@ application.yml
 application.properties
 application-*.yml
 application-*.properties
+!jc-backend/src/main/resources/application-prod.yml
+!jc-backend/src/main/resources/application-production.yml
+!jc-backend/src/test/resources/application.yml
 .env
 .env.local
 .env.development.local

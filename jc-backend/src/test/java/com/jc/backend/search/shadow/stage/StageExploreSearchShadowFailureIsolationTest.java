@@ -57,7 +57,7 @@ class StageExploreSearchShadowFailureIsolationTest {
     @Test
     void sampleZeroCircuitOpenAndClosedExecutorSkipWithoutResponseImpact() {
         PageResponse<PostDtos.Summary> response = response();
-        StageSearchShadowTaskExecutor zeroExecutor = new StageSearchShadowTaskExecutor(1, 1);
+        StageSearchShadowTaskExecutor zeroExecutor = new StageSearchShadowTaskExecutor(1, 2);
         try {
             var zero = new StageExploreSearchShadowHook(config(0), zeroExecutor,
                     new FixedSearchShadowCircuitBreaker(SearchShadowCircuitState.CLOSED, false),
@@ -70,7 +70,7 @@ class StageExploreSearchShadowFailureIsolationTest {
             zeroExecutor.close();
         }
 
-        StageSearchShadowTaskExecutor circuitExecutor = new StageSearchShadowTaskExecutor(1, 1);
+        StageSearchShadowTaskExecutor circuitExecutor = new StageSearchShadowTaskExecutor(1, 2);
         try {
             var open = new StageExploreSearchShadowHook(config(10_000), circuitExecutor,
                     new FixedSearchShadowCircuitBreaker(SearchShadowCircuitState.OPEN, false),

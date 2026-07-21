@@ -1,0 +1,15 @@
+app:
+  intelligence:
+    search-shadow:
+      production:
+        enabled: ${JC_SEARCH_SHADOW_PRODUCTION_ENABLED:false}
+        kill-switch: ${JC_SEARCH_SHADOW_PRODUCTION_KILL_SWITCH:true}
+        sampling-bps: ${JC_SEARCH_SHADOW_PRODUCTION_SAMPLING_BPS:0}
+        max-approved-sampling-bps: 10
+        allowlist-hashes: ${JC_SEARCH_SHADOW_PRODUCTION_ALLOWLIST_HASHES:}
+        max-candidates: 100
+        timeout-ms: 200
+        hard-timeout-ms: 300
+        core-concurrency: 1
+        max-concurrency: 2
+        queue-capacity: 8

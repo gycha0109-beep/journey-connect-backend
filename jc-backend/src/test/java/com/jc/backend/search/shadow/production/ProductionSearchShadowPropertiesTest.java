@@ -47,37 +47,37 @@ class ProductionSearchShadowPropertiesTest {
 
     @Test
     void resourceBoundsAndImmutableApprovedCeilingAreRejectedWhenChanged() {
-        var properties = validEnabled();
-        properties.setMaxApprovedSamplingBps(11);
-        assertThatThrownBy(() -> ProductionSearchShadowPropertiesValidator.validate(properties))
+        var approvedCeilingProperties = validEnabled();
+        approvedCeilingProperties.setMaxApprovedSamplingBps(11);
+        assertThatThrownBy(() -> ProductionSearchShadowPropertiesValidator.validate(approvedCeilingProperties))
                 .isInstanceOf(IllegalStateException.class);
 
-        properties = validEnabled();
-        properties.setMaxConcurrency(3);
-        assertThatThrownBy(() -> ProductionSearchShadowPropertiesValidator.validate(properties))
+        var concurrencyProperties = validEnabled();
+        concurrencyProperties.setMaxConcurrency(3);
+        assertThatThrownBy(() -> ProductionSearchShadowPropertiesValidator.validate(concurrencyProperties))
                 .isInstanceOf(IllegalStateException.class);
 
-        properties = validEnabled();
-        properties.setQueueCapacity(9);
-        assertThatThrownBy(() -> ProductionSearchShadowPropertiesValidator.validate(properties))
+        var queueProperties = validEnabled();
+        queueProperties.setQueueCapacity(9);
+        assertThatThrownBy(() -> ProductionSearchShadowPropertiesValidator.validate(queueProperties))
                 .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void allowlistIsTrimmedLowercasedDeduplicatedOnlyByRejection() {
-        var properties = validEnabled();
-        properties.setAllowlistHashes(List.of("  " + HASH.toUpperCase(java.util.Locale.ROOT) + "  "));
-        assertThat(ProductionSearchShadowPropertiesValidator.validate(properties).allowlistHashes())
+        var normalizedProperties = validEnabled();
+        normalizedProperties.setAllowlistHashes(List.of("  " + HASH.toUpperCase(java.util.Locale.ROOT) + "  "));
+        assertThat(ProductionSearchShadowPropertiesValidator.validate(normalizedProperties).allowlistHashes())
                 .containsExactly(HASH);
 
-        properties = validEnabled();
-        properties.setAllowlistHashes(List.of(HASH, HASH));
-        assertThatThrownBy(() -> ProductionSearchShadowPropertiesValidator.validate(properties))
+        var duplicateProperties = validEnabled();
+        duplicateProperties.setAllowlistHashes(List.of(HASH, HASH));
+        assertThatThrownBy(() -> ProductionSearchShadowPropertiesValidator.validate(duplicateProperties))
                 .isInstanceOf(IllegalStateException.class);
 
-        properties = validEnabled();
-        properties.setAllowlistHashes(List.of("42"));
-        assertThatThrownBy(() -> ProductionSearchShadowPropertiesValidator.validate(properties))
+        var malformedProperties = validEnabled();
+        malformedProperties.setAllowlistHashes(List.of("42"));
+        assertThatThrownBy(() -> ProductionSearchShadowPropertiesValidator.validate(malformedProperties))
                 .isInstanceOf(IllegalStateException.class);
     }
 
