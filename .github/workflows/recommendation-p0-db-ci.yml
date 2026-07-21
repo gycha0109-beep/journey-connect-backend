@@ -64,12 +64,14 @@ jobs:
           set -o pipefail
           ./gradlew test --stacktrace --no-daemon 2>&1 | tee ../verification/ip12-5/IP125_POSTGRESQL_${{ matrix.postgres }}.log
 
-      - name: Upload PostgreSQL verification logs
+      - name: Upload PostgreSQL verification evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ip125-postgresql-${{ matrix.postgres }}-logs
+          name: ip125-postgresql-${{ matrix.postgres }}-evidence
           path: |
             verification/ip12-5/IP125_P0_STATIC_PG${{ matrix.postgres }}.log
             verification/ip12-5/IP125_POSTGRESQL_${{ matrix.postgres }}.log
-          if-no-files-found: error
+            jc-backend/build/test-results/**/*.xml
+            jc-backend/build/reports/tests/**
+          if-no-files-found: warn

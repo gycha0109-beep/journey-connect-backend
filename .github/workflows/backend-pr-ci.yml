@@ -52,10 +52,13 @@ jobs:
           set -o pipefail
           ./gradlew verifyIp125 --stacktrace --no-daemon 2>&1 | tee ../verification/ip12-5/IP125_BACKEND_CI.log
 
-      - name: Upload IP-12.5 backend CI log
+      - name: Upload IP-12.5 backend CI evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ip125-backend-ci-log
-          path: verification/ip12-5/IP125_BACKEND_CI.log
-          if-no-files-found: error
+          name: ip125-backend-ci-evidence
+          path: |
+            verification/ip12-5/IP125_BACKEND_CI.log
+            jc-backend/build/test-results/**/*.xml
+            jc-backend/build/reports/tests/**
+          if-no-files-found: warn
