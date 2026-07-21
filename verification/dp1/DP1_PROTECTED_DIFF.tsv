@@ -1,0 +1,15 @@
+protected_id	path_or_state	expected_change	observed_change	status
+DP1-PROT-001	database/journey-connect-db-v2.7/01..28	none	none in implementation file set	PASS_LOCAL_SCOPE
+DP1-PROT-002	jc-recommendation-core/**	none	none in implementation file set	PASS_LOCAL_SCOPE
+DP1-PROT-003	jc-backend/src/main/java/com/jc/backend/recommendation/**	none	none in implementation file set	PASS_LOCAL_SCOPE
+DP1-PROT-004	jc-backend/src/main/java/com/jc/backend/recommendation/p2/**	none	none in implementation file set	PASS_LOCAL_SCOPE
+DP1-PROT-005	jc-intelligence-contracts/**	none	none in implementation file set	PASS_LOCAL_SCOPE
+DP1-PROT-006	jc-search-*/**	none	none in implementation file set	PASS_LOCAL_SCOPE
+DP1-PROT-007	docs/platform/intelligence/IP-12* and verification/ip12*	none	none in implementation file set	PASS_LOCAL_SCOPE
+DP1-PROT-008	application-prod.yml/application-production.yml	none	none in implementation file set	PASS_LOCAL_SCOPE
+DP1-PROT-009	/api/v1/explore authority	legacy maintained	no runtime/API change	PASS_LOCAL_SCOPE
+DP1-PROT-010	production shadow/kill switch/sampling/cohort	DISABLED/ENABLED/0/EMPTY	no control change	PASS_LOCAL_SCOPE
+DP1-PROT-011	Search cutover	NOT STARTED	no runtime change	PASS_LOCAL_SCOPE
+DP1-PROT-012	P0 fingerprint/canonical bytes	unchanged	no dependency or implementation reuse	PASS_LOCAL_SCOPE
+DP1-PROT-013	full branch diff	protected paths absent	only approved DP-1 module/docs/evidence and exact SC validator allowlist change	PASS_REMOTE_DIFF
+DP1-PROT-014	SC baseline reconciliation allowlist	exact DP-1 contract/evidence paths only	jc-data-contracts, settings registry, DP-1 evidence, data CI workflow	PASS_DESIGN

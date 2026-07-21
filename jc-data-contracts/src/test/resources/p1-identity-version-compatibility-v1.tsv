@@ -1,0 +1,3 @@
+fixture_id	platform_identity	legacy_identity	automatic_conversion	profile_source_authority
+p1_identity_namespace	subject:opaque-user-10	user:10	forbidden	recommendation_behavior_event
+p1_shadow_input	subject:opaque-user-10	user:10	mapping_not_implemented	recommendation-profile-input-v1_shadow_only

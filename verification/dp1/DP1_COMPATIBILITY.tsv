@@ -1,0 +1,11 @@
+compatibility_id	source_or_boundary	target_or_consumer	classification	protection
+DP1-COMP-001	platform-event-v1/user-behavior-event-v1	data-event-consumer-v1	COMPATIBLE	exact supported versions
+DP1-COMP-002	platform-event-v1 + unknown optional fields	data-event-consumer-v1	COMPATIBLE_WITH_IGNORED_OPTIONAL_FIELDS	explicit optional only
+DP1-COMP-003	unknown schema	data-event-consumer-v1	INCOMPATIBLE_SCHEMA	fail closed
+DP1-COMP-004	unknown required enum	data-event-consumer-v1	INCOMPATIBLE_REQUIRED_ENUM	fail closed
+DP1-COMP-005	platform-event-v1	unsupported consumer	UNSUPPORTED_CONSUMER_VERSION	fail closed
+DP1-COMP-006	recommendation-behavior-event-v1	Data canonical event	MIGRATION_REQUIRED	adapter + reconciliation; no source rename
+DP1-COMP-007	platform_subject_v1	legacy_user_numeric_v1	MIGRATION_REQUIRED	no automatic conversion or fallback
+DP1-COMP-008	recommendation-profile-input-v1	current P1 runtime	MIGRATION_REQUIRED	shadow-only; no cutover
+DP1-COMP-009	experiment-outcome-input-v1	current P2 evaluation	MIGRATION_REQUIRED	shadow-only; no cutover
+DP1-COMP-010	recommendation_p2_experiment_exposure	P2 denominator	PROTECTED_AUTHORITY	general exposure/impression excluded

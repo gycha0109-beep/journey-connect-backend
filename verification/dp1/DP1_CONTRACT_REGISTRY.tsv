@@ -1,0 +1,12 @@
+contract_id	java_type_or_registry	owner	status	compatibility_notes
+dp-1-event-domain-types-validation-v1	docs/platform/data/DP-1-EVENT-DOMAIN-TYPES-AND-VALIDATION.md	Data	IMPLEMENTED	DP-1 stage contract
+client-event-command-v1	ClientEventCommandV1	Data	IMPLEMENTED	untrusted ingress intent
+platform-event-v1	PlatformEventEnvelopeV1	Data	IMPLEMENTED	canonical envelope representation
+behavior-event-taxonomy-v1	EventTaxonomyRegistryV1	Data	IMPLEMENTED	21 user_behavior event types
+platform-event-canonical-json-v1	CanonicalJsonNormalizerV1	Data	IMPLEMENTED_STRUCTURAL_ONLY	approved-field structural normalization
+data-event-consumer-v1	CompatibilityEvaluatorV1	Data	IMPLEMENTED	fail-closed compatibility
+identity-platform-subject-v1	IdentityScheme.PLATFORM_SUBJECT_V1	SC/Data	IMPLEMENTED_VALIDATION_ONLY	no mapping or join
+identity-legacy-user-numeric-v1	IdentityScheme.LEGACY_USER_NUMERIC_V1	SC/Compatibility	IMPLEMENTED_VALIDATION_ONLY	protected compatibility; no conversion
+event-idempotency-fingerprint-v1	IdempotencyComparisonV1	Data	IDEMPOTENCY_IMPLEMENTED	persistence deferred DP-2
+event-fingerprint-boundary-v1	EventFingerprintBoundaryV1	Data	BLOCKED_EXACT_ALGORITHM	SC-DP1-009 unresolved
+dp-1-handoff-v1	docs/platform/data/DP-1-HANDOFF.md	Data	IMPLEMENTED	DP-2 handoff

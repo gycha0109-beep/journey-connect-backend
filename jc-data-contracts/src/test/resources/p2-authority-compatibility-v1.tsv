@@ -1,0 +1,6 @@
+fixture_id	authority	value
+p2_exposure_authority	source	recommendation_p2_experiment_exposure
+p2_dataset_authority	schema	recommendation-evaluation-dataset-v1
+p2_engagement_metric	included_events	click,like,save,share
+p2_engagement_metric	excluded_events	view,impression,hide,report
+p2_shadow_input	status	experiment-outcome-input-v1_shadow_only

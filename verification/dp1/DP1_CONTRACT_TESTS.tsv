@@ -1,0 +1,17 @@
+test_id	category	command_or_method	expected	actual	status
+DP1-TEST-001	compile	javac --release 21 -Xlint:all -Werror main	SUCCESS	SUCCESS	PASS
+DP1-TEST-002	compile	javac --release 21 -Xlint:all -Werror test	SUCCESS	SUCCESS	PASS
+DP1-TEST-003	contract_runner	DataContractsContractTest	all assertions pass	569 assertions pass	PASS
+DP1-TEST-004	versions	versionContracts	reject latest/current/default/unversioned	as expected	PASS
+DP1-TEST-005	identity	identityContracts	separate subject/user schemes; no conversion	as expected	PASS
+DP1-TEST-006	taxonomy	taxonomyContracts	complete unique lowercase registry	as expected	PASS
+DP1-TEST-007	command_validation	commandValidationContracts	valid accepted; malformed rejected	as expected	PASS
+DP1-TEST-008	envelope_validation	envelopeValidationContracts	valid accepted; incompatible/reversed time rejected	as expected	PASS
+DP1-TEST-009	canonicalization	canonicalizationContracts	deterministic locale/timezone/map-order independent	as expected	PASS
+DP1-TEST-010	fingerprint	fingerprintBoundaryContracts	unresolved fail closed; no value	as expected	PASS
+DP1-TEST-011	idempotency	idempotencyContracts	NEW/DUPLICATE/CONFLICT exact	as expected	PASS
+DP1-TEST-012	compatibility	compatibilityContracts	6 classifications fail closed	as expected	PASS
+DP1-TEST-013	protected_fixtures	protectedFixtureContracts	P0/P1/P2 meanings preserved	as expected	PASS
+DP1-TEST-014	architecture	architectureIsolation	no Spring/JPA/JDBC/clock/env/digest guess	as expected	PASS
+DP1-TEST-015	fixture_safety	fixtureSafety	secrets absent except explicit negative fixture	as expected	PASS
+DP1-TEST-016	gradle_module	:jc-data-contracts:check	SUCCESS	SUCCESS	PASS

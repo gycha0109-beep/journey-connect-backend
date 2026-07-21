@@ -1,0 +1,11 @@
+decision_id	decision	status	rationale	follow_up
+DP1-DEC-001	Use module jc-data-contracts and package com.jc.data.contract.v1	IMPLEMENTED	SC-DP1-004/005 reservation and existing versioned convention	SC registry activation after merge
+DP1-DEC-002	Use Java 21 pure java-library with no external JSON dependency	IMPLEMENTED	existing contract module convention and isolation	retain dependency-free contract boundary
+DP1-DEC-003	Represent ClientEventCommandV1 separately from PlatformEventEnvelopeV1	IMPLEMENTED	trust boundary	server resolution remains outside DP-1
+DP1-DEC-004	Implement only structural canonicalization over caller-approved fields	IMPLEMENTED	exact inclusion set not approved	do not let normalizer select fields
+DP1-DEC-005	Do not implement fingerprint algorithm or encoding	BLOCKED_BY_SC	SC-DP1-009 unresolved	SC must approve exact contract
+DP1-DEC-006	Return FINGERPRINT_CONTRACT_UNRESOLVED without fingerprint value	IMPLEMENTED	fail closed	replace only in new approved implementation
+DP1-DEC-007	Keep idempotency comparison pure and persistence-free	IMPLEMENTED	DP-2 owns atomic compare/TTL/concurrency	add DB constraints after allocation
+DP1-DEC-008	Keep P1/P2 Data projections shadow-only	PROTECTED	current source authority	cutover requires new versions/reconciliation
+DP1-DEC-009	Use separate Data Contract CI workflow	IMPLEMENTED	isolated fast module gate; backend workflow also protects settings changes	monitor both PR checks
+DP1-DEC-010	Do not modify SC-owned Decision Register/Registry in DP branch	DEFERRED_TO_SC	track ownership	activate module status after merge

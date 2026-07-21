@@ -1,0 +1,10 @@
+{
+  "requestedEventType": "post_view",
+  "entityCandidateRef": "post:123",
+  "occurredAt": "2026-07-21T00:00:00Z",
+  "sessionToken": "opaque-session-token",
+  "idempotencyKey": "client-post-view-123",
+  "context": {
+    "surface": "feed"
+  }
+}
