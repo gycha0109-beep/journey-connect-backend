@@ -31,12 +31,21 @@ REQUIRED = [
 ]
 ALLOWED = (
     "docs/platform/governance/", "docs/platform/data/", "docs/platform/proposals/",
-    "verification/sc-dp1-baseline-reconciliation/", "verification/dp1/",
+    "verification/sc-dp1-baseline-reconciliation/", "verification/dp1/", "verification/dp2/",
     ".github/workflows/sc-baseline-reconciliation.yml",
     ".github/workflows/data-contract-ci.yml",
+    ".github/workflows/data-postgres-ci.yml",
+    ".github/workflows/recommendation-p0-db-ci.yml",
     "jc-backend/settings.gradle.kts",
+    "jc-backend/src/test/java/com/jc/backend/search/shadow/production/IP12ProductionShadowStaticTest.java",
     "jc-data-contracts/",
+    "database/journey-connect-db-v2.7/",
 )
+DP2_SQL = {
+    "database/journey-connect-db-v2.7/29_data_platform_event_store.sql",
+    "database/journey-connect-db-v2.7/30_data_event_idempotency_roles.sql",
+    "database/journey-connect-db-v2.7/31_data_event_store_smoke_test.sql",
+}
 
 def fail(message: str) -> None:
     raise SystemExit(f"FAIL: {message}")
@@ -92,11 +101,14 @@ try:
                    check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     diff = subprocess.run(["git", "diff", "--name-only", "origin/main...HEAD"], cwd=ROOT,
                           check=True, text=True, capture_output=True).stdout.splitlines()
+    changed_sql = {rel for rel in diff if rel.endswith(".sql")}
     for rel in filter(None, diff):
         if not any(rel == prefix or rel.startswith(prefix) for prefix in ALLOWED):
             fail(f"protected/unexpected changed file: {rel}")
-    if any(rel.endswith(".sql") for rel in diff):
-        fail("SQL changed")
+    if changed_sql - DP2_SQL:
+        fail(f"unapproved SQL changed: {sorted(changed_sql - DP2_SQL)}")
+    if changed_sql and changed_sql != DP2_SQL:
+        fail(f"DP-2 SQL allocation must change exactly 29..31: {sorted(changed_sql)}")
     if any(rel.startswith(("jc-backend/src/main/", "jc-recommendation-core/", "jc-search-")) for rel in diff):
         fail("production/recommendation/search source changed")
 except (subprocess.CalledProcessError, FileNotFoundError):

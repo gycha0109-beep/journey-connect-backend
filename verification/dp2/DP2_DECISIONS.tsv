@@ -1,0 +1,9 @@
+decision_id	decision	status	source
+DP2-DEC-001	fingerprint wire SHA-256 lowercase hex exact field set	APPROVED	SC-DP2-ENTRY-DECISIONS
+DP2-DEC-002	SQL 29 event/evidence base	APPROVED	SC-DP2-ENTRY-DECISIONS
+DP2-DEC-003	SQL 30 idempotency roles/grants	APPROVED	SC-DP2-ENTRY-DECISIONS
+DP2-DEC-004	SQL 31 smoke/concurrency validation	APPROVED	SC-DP2-ENTRY-DECISIONS
+DP2-DEC-005	roles writer/reader/replay	APPROVED	SC-DP2-ENTRY-DECISIONS
+DP2-DEC-006	retention 30/90/365 metadata only	APPROVED	SC-DP2-ENTRY-DECISIONS
+DP2-DEC-007	automatic purge	PROHIBITED	SC-DP2-ENTRY-DECISIONS
+DP2-DEC-008	production runtime/API wiring	OUT_OF_SCOPE	DP-2 boundary

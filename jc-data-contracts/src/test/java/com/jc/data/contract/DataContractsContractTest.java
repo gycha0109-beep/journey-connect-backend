@@ -374,19 +374,19 @@ public final class DataContractsContractTest {
                 }
             });
         }
-        Path fingerprintRoot = sourceRoot.resolve("com/jc/data/contract/v1/fingerprint");
-        try (var paths = Files.walk(fingerprintRoot)) {
-            paths.filter(path -> path.toString().endsWith(".java")).forEach(path -> {
-                try {
-                    String source = Files.readString(path);
-                    check(!source.contains("MessageDigest"), "no guessed digest implementation");
-                    check(!source.contains("SHA-256"), "no guessed algorithm constant");
-                    check(!source.contains("Base64"), "no guessed output encoding");
-                } catch (IOException exception) {
-                    throw new IllegalStateException(exception);
-                }
-            });
-        }
+        Path digestSource = sourceRoot.resolve("com/jc/data/contract/support/Sha256DigestV1.java");
+        check(Files.isRegularFile(digestSource), "SC-approved SHA-256 implementation exists");
+        String digestImplementation = Files.readString(digestSource);
+        check(digestImplementation.contains("MessageDigest"), "approved digest implementation is explicit");
+        check(digestImplementation.contains("SHA-256"), "approved algorithm constant is explicit");
+        check(!digestImplementation.contains("Base64"), "approved output is lowercase hex, not Base64");
+        Path unresolvedSource = sourceRoot.resolve(
+                "com/jc/data/contract/v1/fingerprint/UnresolvedEventFingerprintBoundaryV1.java");
+        String unresolvedImplementation = Files.readString(unresolvedSource);
+        check(!unresolvedImplementation.contains("MessageDigest"),
+                "legacy unresolved boundary remains non-concrete");
+        check(!unresolvedImplementation.contains("SHA-256"),
+                "legacy unresolved boundary does not select an algorithm");
     }
 
     private static void fixtureSafety() throws IOException {

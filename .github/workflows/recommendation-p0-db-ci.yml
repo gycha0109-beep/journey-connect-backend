@@ -6,6 +6,7 @@ on:
       - "database/journey-connect-db-v1.9/**"
       - "database/journey-connect-db-v2.0/**"
       - "database/journey-connect-db-v2.1/**"
+      - "database/journey-connect-db-v2.7/**"
       - "jc-backend/src/main/**"
       - "jc-backend/src/test/**"
       - "jc-backend/build.gradle.kts"

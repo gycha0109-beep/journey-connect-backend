@@ -1,0 +1,10 @@
+check_id	contract_item	expected	observed	status	evidence
+DP2-FP-001	wire_id	platform-event-fingerprint-sha256-v1	platform-event-fingerprint-sha256-v1	PASS	Java constant/SQL constraint
+DP2-FP-002	algorithm	SHA-256	SHA-256	PASS	Sha256DigestV1
+DP2-FP-003	encoding	lowercase_hex_64	lowercase_hex_64	PASS	golden fixture
+DP2-FP-004	canonicalization	platform-event-canonical-json-v1	platform-event-canonical-json-v1	PASS	canonicalizer
+DP2-FP-005	included_fields	exact_11	exact_11	PASS	TSV fixture/test
+DP2-FP-006	excluded_fields	exact_7	exact_7	PASS	TSV fixture/test
+DP2-FP-007	golden_hash	f6ca2be46c46150e7c26d82e5c22974b1fd53dc54b500a0fccba29e23450f09d	matched	PASS	Dp2FingerprintContractTest
+DP2-FP-008	determinism	map_locale_timezone_independent	32 assertions pass	PASS	local Java 21 runner
+DP2-FP-009	p0_separation	no P0 change/no reuse	no protected source change	PENDING_REMOTE_DIFF	GitHub compare

@@ -1,0 +1,7 @@
+case_id	scope	input	expected	implementation	status
+DP2-IDEM-001	authenticated	same_scope_same_fingerprint	DUPLICATE_existing_ref	advisory_lock+binding_lookup	PASS_PG15_PG18
+DP2-IDEM-002	authenticated	same_scope_different_fingerprint	CONFLICT_IDEMPOTENCY_CONFLICT	advisory_lock+binding_lookup	PASS_PG15_PG18
+DP2-IDEM-003	authenticated	new_scope	NEW_event_binding_attempt_one_tx	function_transaction	PASS_PG15_PG18
+DP2-IDEM-004	anonymous	server_session_scope	supported_without_actor	generated_scope	PASS_PG15_PG18
+DP2-IDEM-005	missing_scope	actor_and_session_null	reject_no_event	function_validation	PASS_PG15_PG18
+DP2-IDEM-006	duplicate	candidate_event_id_diff	return_existing_event_ref	function_return	PASS_PG15_PG18

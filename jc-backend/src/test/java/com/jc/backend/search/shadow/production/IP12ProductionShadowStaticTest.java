@@ -49,8 +49,15 @@ class IP12ProductionShadowStaticTest {
         assertThat(source).doesNotContain("account_hash\"");
         assertThat(source).doesNotContain("Search output response");
 
-        assertThat(Files.list(ROOT.resolve("database/journey-connect-db-v2.7"))
-                .filter(path -> path.getFileName().toString().matches("^[0-9]{2}_.*\\.sql$"))
-                .count()).isEqualTo(28L);
+        var canonicalSql = Files.list(ROOT.resolve("database/journey-connect-db-v2.7"))
+                .map(path -> path.getFileName().toString())
+                .filter(name -> name.matches("^[0-9]{2}_.*\\.sql$"))
+                .sorted()
+                .toList();
+        assertThat(canonicalSql).hasSize(31);
+        assertThat(canonicalSql).contains(
+                "29_data_platform_event_store.sql",
+                "30_data_event_idempotency_roles.sql",
+                "31_data_event_store_smoke_test.sql");
     }
 }

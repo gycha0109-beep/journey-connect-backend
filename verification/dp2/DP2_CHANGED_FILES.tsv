@@ -1,0 +1,34 @@
+change_id	path	change_type	owner	note
+DP2-CHG-001	.github/workflows/data-contract-ci.yml	MODIFY	Data	DP-2 implementation
+DP2-CHG-002	.github/workflows/data-postgres-ci.yml	ADD	Data	DP-2 implementation
+DP2-CHG-003	.github/workflows/recommendation-p0-db-ci.yml	MODIFY	Data	DP-2 implementation
+DP2-CHG-004	database/journey-connect-db-v2.7/29_data_platform_event_store.sql	ADD	Data	DP-2 implementation
+DP2-CHG-005	database/journey-connect-db-v2.7/30_data_event_idempotency_roles.sql	ADD	Data	DP-2 implementation
+DP2-CHG-006	database/journey-connect-db-v2.7/31_data_event_store_smoke_test.sql	ADD	Data	DP-2 implementation
+DP2-CHG-007	docs/platform/data/DP-2-HANDOFF.md	ADD	Data	DP-2 implementation
+DP2-CHG-008	docs/platform/data/DP-2-POSTGRESQL-EVENT-STORE-AND-IDEMPOTENCY.md	ADD	Data	DP-2 implementation
+DP2-CHG-009	jc-data-contracts/build.gradle.kts	MODIFY	Data	DP-2 implementation
+DP2-CHG-010	jc-data-contracts/src/main/java/com/jc/data/contract/support/Sha256DigestV1.java	ADD	Data	SC-approved SHA-256
+DP2-CHG-011	jc-data-contracts/src/main/java/com/jc/data/contract/v1/canonical/CanonicalJsonNormalizerV1.java	MODIFY	Data	exact fingerprint canonicalization path
+DP2-CHG-012	jc-data-contracts/src/main/java/com/jc/data/contract/v1/fingerprint/PlatformEventFingerprintCanonicalizerV1.java	ADD	Data	exact 11-field selection
+DP2-CHG-013	jc-data-contracts/src/main/java/com/jc/data/contract/v1/fingerprint/Sha256EventFingerprintBoundaryV1.java	ADD	Data	approved fingerprint boundary
+DP2-CHG-014	jc-data-contracts/src/main/java/com/jc/data/contract/v1/validation/DataContractValidatorsV1.java	MODIFY	Data	exact fingerprint key validation
+DP2-CHG-015	jc-data-contracts/src/test/java/com/jc/data/contract/DataContractsContractTest.java	MODIFY	Data	SC-approved digest guard
+DP2-CHG-016	jc-data-contracts/src/test/java/com/jc/data/contract/Dp2FingerprintContractTest.java	ADD	Data	fingerprint contracts
+DP2-CHG-017	jc-data-contracts/src/test/resources/platform-event-fingerprint-sha256-v1.tsv	ADD	Data	golden fixture
+DP2-CHG-018	jc-backend/src/test/java/com/jc/backend/search/shadow/production/IP12ProductionShadowStaticTest.java	MODIFY	Data	exact SQL 29..31 inventory test
+DP2-CHG-019	verification/dp2/DP2_BASELINE.tsv	ADD	Data	verification evidence
+DP2-CHG-020	verification/dp2/DP2_CHANGED_FILES.tsv	ADD	Data	verification evidence
+DP2-CHG-021	verification/dp2/DP2_CONCURRENCY.tsv	ADD	Data	verification evidence
+DP2-CHG-022	verification/dp2/DP2_CONTRACT_TESTS.tsv	ADD	Data	verification evidence
+DP2-CHG-023	verification/dp2/DP2_DB_OBJECTS.tsv	ADD	Data	verification evidence
+DP2-CHG-024	verification/dp2/DP2_DECISIONS.tsv	ADD	Data	verification evidence
+DP2-CHG-025	verification/dp2/DP2_FINGERPRINT.tsv	ADD	Data	verification evidence
+DP2-CHG-026	verification/dp2/DP2_IDEMPOTENCY.tsv	ADD	Data	verification evidence
+DP2-CHG-027	verification/dp2/DP2_PROTECTED_DIFF.tsv	ADD	Data	verification evidence
+DP2-CHG-028	verification/dp2/DP2_RETENTION.tsv	ADD	Data	verification evidence
+DP2-CHG-029	verification/dp2/DP2_ROLE_GRANTS.tsv	ADD	Data	verification evidence
+DP2-CHG-030	verification/dp2/DP2_VERIFICATION_STATUS.tsv	ADD	Data	verification evidence
+DP2-CHG-031	verification/dp2/run_dp2_concurrency.sh	ADD	Data	PostgreSQL concurrency verifier
+DP2-CHG-032	verification/dp2/run_dp2_static_verification.py	ADD	Data	static verifier
+DP2-CHG-033	verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py	MODIFY	SC	exact DP-2 allowlist

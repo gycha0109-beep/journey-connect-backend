@@ -1,0 +1,19 @@
+field	classification	rationale
+contractVersion	included	cross-track semantic contract
+schemaVersion	included	payload structure
+canonicalizationVersion	included	canonical byte contract
+eventFamily	included	authoritative event family
+eventType	included	authoritative event type
+occurredAt	included	semantic occurrence time
+actorRef	included	canonical pseudonymous actor
+sessionRef	included	server session binding
+entityRef	included	canonical entity binding
+causationId	included	direct semantic cause
+payload	included	approved canonical payload
+eventId	excluded	server-generated after NEW decision
+receivedAt	excluded	retry transport time
+producerVersion	excluded	part of idempotency logical scope
+producerBuildId	excluded	deployment-independent semantic identity
+requestId	excluded	transport trace metadata
+correlationId	excluded	transport trace metadata
+idempotencyKey	excluded	comparison key not event content
