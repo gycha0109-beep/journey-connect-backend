@@ -1,0 +1,2 @@
+checkId	target	expected	observed	result	evidenceReference	sourceHead	executedAtUtc
+DOC-LINKS	governed markdown	all local links resolve	pending exact branch workflow	NOT_EXECUTED	run_sc_baseline_reconciliation.py	PENDING_SC_HEAD	2026-07-21T09:39:56Z
