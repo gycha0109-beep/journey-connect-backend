@@ -3,7 +3,7 @@ c24f287bf8dd579bfcc4ef85079d1f6a2784c630ba23394c78129f1b99fa7878  jc-backend/src
 ff4973b36d81e0bed467d424c1888c40b24628e179e5197e33ad7fa6aba75411  jc-backend/src/main/java/com/jc/backend/post/JourneyPostRepository.java
 af497ce2659ce2d93477ffa8a5794f70852202e612a4c476f263db7116baba99  jc-backend/src/main/java/com/jc/backend/post/PostDtos.java
 3ff0374ffed9013dd149c6f786d8db4810cff76d0328fc12d82780abd03b882f  jc-backend/src/main/kotlin/com/jc/backend/config/SecurityConfig.kt
-145d5ef7dce9dea2f2e1b2aa77cc225235f9281e184bc07e78d0ccd78bbe5c91  jc-backend/src/main/resources/application.yml.sample
+3f9215c6489133a8b838aaef97290bb3921e4323bff776d3b882edbefc6dd014  jc-backend/src/main/resources/application.yml.sample
 70a34cc89f99fcaa7ee85a995827ee42c2c35d996c4be52e738ff80063b9ba76  jc-backend/src/main/resources/db/README.md
 f41ecc07c467f8d61e059cf715e56b5c8535cf2bd9864516eb2f4e29538c7179  jc-backend/src/main/resources/db/migration-legacy/V1__baseline_schema.sql
 a52e73bbd63b2421fbb687383601a17cb9a7a89653b2d9bea2be1a013b0147a7  jc-backend/src/main/resources/db/migration-legacy/V2__p2_domain_extensions.sql
