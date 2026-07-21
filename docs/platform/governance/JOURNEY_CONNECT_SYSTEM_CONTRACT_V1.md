@@ -6,8 +6,9 @@
 |---|---|
 | 계약 ID | `jc-system-contract-v1` |
 | 개정 | `V1.2 / SC DP-1 BASELINE RECONCILIATION` |
-| 상태 | `ACTIVE / P2_AND_IP12_5_ALIGNED` |
+| 상태 | `ACTIVE / DP1_BASELINE_ESTABLISHED` |
 | canonical DB | `journey-connect-db-v2.7/01..28` |
+| DP-1 Baseline SHA | `9d84f630e87d54f780e332eead0c1f8df6a51d0b` |
 | 기준일 | 2026-07-21 |
 
 이 문서는 Data, Intelligence, Operations, Reliability와 System Coordination의 공통 식별자, 시간, 버전, source authority, DB sequence와 보호 기준선을 고정한다.
@@ -17,6 +18,8 @@
 ### Main
 
 - PR #3 merge commit: `f38cf56b34ff23fbd5cb20b9013444a8cb2d29f4`
+- PR #4 merge commit: `9d84f630e87d54f780e332eead0c1f8df6a51d0b`
+- official DP-1 Baseline SHA: `9d84f630e87d54f780e332eead0c1f8df6a51d0b`
 - PR #3 protected IP-12.5 controls are current main authority.
 - decision: `IP-12.5 HOLD_OPERATIONAL_INPUTS_PENDING`
 - P0/P1/P2 technical baseline은 보호한다.
@@ -178,11 +181,12 @@ DP-1 start baseline은 다음 둘을 모두 포함하는 최초 main HEAD다.
 1. merged PR #3 protected IP-12.5 controls
 2. merged SC baseline reconciliation changes
 
-현재:
-
 ```text
-DP-1 entry: BLOCKED UNTIL SC PR #4 IS MERGED
+DP-1 Baseline SHA:
+9d84f630e87d54f780e332eead0c1f8df6a51d0b
 ```
+
+이 작업에서는 DP-1 구현을 시작하지 않았다.
 
 ## 13. 절대 금지
 
