@@ -1,5 +1,6 @@
 -- IP-11.5 Search document projection smoke test
--- Run after 27_search_document_projection.sql. All fixture changes are rolled back.
+-- Test-bootstrap fixture derived from canonical SQL 28. All changes are rolled back.
+-- Operational source versions drive deterministic updates without altering triggers.
 
 BEGIN;
 
@@ -40,11 +41,10 @@ BEGIN
 
   INSERT INTO public.search_document_operational_eligibility_v1(
     source_post_id, eligibility_status, policy_version, source_version, reason_code)
-  VALUES (v_post_id, 'eligible', 'search-document-operational-eligibility-v1', 1, 'internal_fixture');
+  VALUES (v_post_id, 'eligible', 'search-document-operational-eligibility-v1',
+          900000000000000000, 'internal_fixture');
 
-  ALTER TABLE public.posts DISABLE TRIGGER posts_set_updated_at;
-
-  UPDATE public.posts SET status = 'published', updated_at = clock_timestamp() WHERE id = v_post_id;
+  UPDATE public.posts SET status = 'published' WHERE id = v_post_id;
   SET CONSTRAINTS ALL IMMEDIATE;
 
   v_status := public.project_search_document_v1(v_post_id);
@@ -57,28 +57,30 @@ BEGIN
   v_status := public.project_search_document_v1(v_post_id);
   IF v_status <> 'unchanged' THEN RAISE EXCEPTION 'expected unchanged, got %', v_status; END IF;
 
-  UPDATE public.posts SET title = 'Projection Updated', updated_at = clock_timestamp() WHERE id = v_post_id;
+  UPDATE public.posts SET title = 'Projection Updated' WHERE id = v_post_id;
+  UPDATE public.search_document_operational_eligibility_v1
+  SET source_version = 900000000000000001 WHERE source_post_id = v_post_id;
   v_status := public.project_search_document_v1(v_post_id);
   IF v_status <> 'updated' THEN RAISE EXCEPTION 'expected updated, got %', v_status; END IF;
 
-  UPDATE public.posts SET visibility = 'private', updated_at = clock_timestamp() WHERE id = v_post_id;
+  UPDATE public.posts SET visibility = 'private' WHERE id = v_post_id;
   v_status := public.project_search_document_v1(v_post_id);
   IF v_status <> 'removed_ineligible_or_missing' THEN RAISE EXCEPTION 'private transition not removed'; END IF;
   IF EXISTS (SELECT 1 FROM public.search_document_projection_v1 WHERE source_post_id = v_post_id) THEN RAISE EXCEPTION 'private projection remains'; END IF;
 
-  UPDATE public.posts SET visibility = 'public', moderation_status = 'hidden', updated_at = clock_timestamp() WHERE id = v_post_id;
+  UPDATE public.posts SET visibility = 'public', moderation_status = 'hidden' WHERE id = v_post_id;
   v_status := public.project_search_document_v1(v_post_id);
   IF v_status <> 'removed_ineligible_or_missing' THEN RAISE EXCEPTION 'moderation block not removed'; END IF;
 
-  UPDATE public.posts SET moderation_status = 'visible', updated_at = clock_timestamp() WHERE id = v_post_id;
+  UPDATE public.posts SET moderation_status = 'visible' WHERE id = v_post_id;
+  UPDATE public.search_document_operational_eligibility_v1
+  SET source_version = 900000000000000002 WHERE source_post_id = v_post_id;
   v_status := public.project_search_document_v1(v_post_id);
   IF v_status <> 'inserted' THEN RAISE EXCEPTION 'visible transition not inserted'; END IF;
 
-  UPDATE public.posts SET status = 'deleted', updated_at = clock_timestamp() WHERE id = v_post_id;
+  UPDATE public.posts SET status = 'deleted' WHERE id = v_post_id;
   v_status := public.project_search_document_v1(v_post_id);
   IF v_status <> 'removed_ineligible_or_missing' THEN RAISE EXCEPTION 'delete transition not removed'; END IF;
-
-  ALTER TABLE public.posts ENABLE TRIGGER posts_set_updated_at;
 
   RAISE NOTICE 'IP-11.5 projection smoke PASS';
 END;
