@@ -1,0 +1,10 @@
+test_id	area	command_or_test	expected	actual	status
+DP2-TEST-001	java_compile	javac --release 21 -Xlint:all -Werror	PASS	PASS	PASS
+DP2-TEST-002	fingerprint_runner	Dp2FingerprintContractTest	PASS	32 assertions PASS	PASS
+DP2-TEST-003	gradle	:jc-data-contracts:check	PASS	PASS run 29854424891	PASS
+DP2-TEST-004	sql_static	run_dp2_static_verification.py	PASS	PASS PG15/18 run 29854424964	PASS
+DP2-TEST-005	postgres15	canonical state SQL through 30 + SQL31 + concurrency	PASS	PASS run 29854424964	PASS
+DP2-TEST-006	postgres18	canonical state SQL through 30 + SQL31 + concurrency	PASS	PASS run 29854424964	PASS
+DP2-TEST-007	recommendation_db	P0 database matrix PG15/18	PASS	PASS run 29854424898	PASS
+DP2-TEST-008	backend	verifyIp125	PASS	PASS run 29854424935	PASS
+DP2-TEST-009	sc	SC baseline reconciliation	PASS	PASS run 29854424897	PASS

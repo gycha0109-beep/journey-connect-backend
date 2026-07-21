@@ -1,0 +1,13 @@
+verification_id	area	command	expected	result	status	evidence
+DP2-VERIFY-001	java_source	javac --release 21 -Xlint:all -Werror	PASS	PASS	PASS	isolated compile + Data Contract CI
+DP2-VERIFY-002	fingerprint	java com.jc.data.contract.Dp2FingerprintContractTest	PASS	32 assertions PASS	PASS	Data Contract CI
+DP2-VERIFY-003	yaml	python yaml.safe_load workflows	PASS	PASS	PASS	static verifier
+DP2-VERIFY-004	shell	bash -n run_dp2_concurrency.sh	PASS	PASS	PASS	static verifier
+DP2-VERIFY-005	python	py_compile static/sc validators	PASS	PASS	PASS	static verifier
+DP2-VERIFY-006	data_contract	./gradlew :jc-data-contracts:check	PASS	PASS	PASS	GitHub Actions run 29854424891
+DP2-VERIFY-007	postgres15	fresh canonical state SQL through 30 + SQL31 + concurrency	PASS	PASS	PASS	GitHub Actions run 29854424964
+DP2-VERIFY-008	postgres18	fresh canonical state SQL through 30 + SQL31 + concurrency	PASS	PASS	PASS	GitHub Actions run 29854424964
+DP2-VERIFY-009	recommendation	p0Verification + canonical tests PG15/18	PASS	PASS	PASS	GitHub Actions run 29854424898
+DP2-VERIFY-010	backend	./gradlew verifyIp125	PASS	PASS	PASS	GitHub Actions run 29854424935
+DP2-VERIFY-011	sc	SC reconciliation	PASS	PASS	PASS	GitHub Actions run 29854424897
+DP2-VERIFY-012	protected_diff	GitHub compare main...HEAD	no protected source or SQL 01..28 diff	PASS	PASS	GitHub compare + SC validation

@@ -1,0 +1,11 @@
+protected_id	path_or_state	expected	observed	status
+DP2-PROT-001	database/journey-connect-db-v2.7/01..28	unchanged	no diff; SC allows exact 29..31 only	PASS
+DP2-PROT-002	jc-recommendation-core/**	unchanged	no source diff; Java/DB regression PASS	PASS
+DP2-PROT-003	jc-backend/src/main/**	unchanged	no production source diff; one exact test-only SQL inventory update	PASS
+DP2-PROT-004	jc-intelligence-contracts/**	unchanged	no diff	PASS
+DP2-PROT-005	jc-search-*/**	unchanged	no diff	PASS
+DP2-PROT-006	IP-12/IP-12.5 evidence	unchanged	no evidence diff; verifyIp125 PASS	PASS
+DP2-PROT-007	/api/v1/explore	legacy authority	no runtime/controller diff	PASS
+DP2-PROT-008	production controls	DISABLED/ENABLED/0/EMPTY	no production configuration diff	PASS
+DP2-PROT-009	Search cutover	NOT_STARTED	no Search runtime diff	PASS
+DP2-PROT-010	P0 fingerprint	unchanged/no reuse	new Data-only SHA-256 helper and fixtures	PASS

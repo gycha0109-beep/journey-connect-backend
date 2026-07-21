@@ -1,0 +1,6 @@
+retention_id	evidence_type	class	policy_version	expires_rule	auto_purge	status
+DP2-RET-001	canonical_event	canonical_event_365d	data-retention-policy-v1	received_at+365d	ABSENT	PASS_PG15_PG18
+DP2-RET-002	idempotency_binding	idempotency_binding_30d	data-retention-policy-v1	created_at+30d	ABSENT	PASS_PG15_PG18
+DP2-RET-003	ingest_attempt	ingest_evidence_90d	data-retention-policy-v1	created_at+90d	ABSENT	PASS_PG15_PG18
+DP2-RET-004	duplicate_observation	ingest_evidence_90d	data-retention-policy-v1	created_at+90d	ABSENT	PASS_PG15_PG18
+DP2-RET-005	conflict_observation	ingest_evidence_90d	data-retention-policy-v1	created_at+90d	ABSENT	PASS_PG15_PG18

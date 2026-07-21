@@ -1,0 +1,8 @@
+item_id	item	value	status	evidence
+DP2-BASE-001	default_branch	main	CONFIRMED	GitHub repository metadata
+DP2-BASE-002	work_start_head	c3f791c6c6eaa12b2aba3a1dbe686cb0b3d3cc80	CONFIRMED	main HEAD
+DP2-BASE-003	dp1_merge_commit	bdce7de5ef6be31f8da6a8a349424be8f06a87a1	CONFIRMED	PR #6
+DP2-BASE-004	sc_dp2_decision_merge	c3f791c6c6eaa12b2aba3a1dbe686cb0b3d3cc80	CONFIRMED	PR #7
+DP2-BASE-005	dp2_entry	AUTHORIZED	CONFIRMED	SC-DP2-ENTRY-DECISIONS
+DP2-BASE-006	canonical_db	journey-connect-db-v2.7/01..28 protected	CONFIRMED	SC contract
+DP2-BASE-007	dp2_sql_allocation	29..31	CONFIRMED	SC decision

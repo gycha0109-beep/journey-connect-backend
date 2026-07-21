@@ -15,6 +15,17 @@ import java.util.TreeMap;
 
 public final class CanonicalJsonNormalizerV1 {
     public CanonicalizationResultV1 canonicalize(CanonicalizationRequestV1 request) {
+        return canonicalize(request, false);
+    }
+
+    public CanonicalizationResultV1 canonicalizePlatformEventFingerprintV1(
+            CanonicalizationRequestV1 request) {
+        return canonicalize(request, true);
+    }
+
+    private CanonicalizationResultV1 canonicalize(
+            CanonicalizationRequestV1 request,
+            boolean platformEventFingerprint) {
         ArrayList<ValidationError> errors = new ArrayList<>();
         if (request == null || request.canonicalizationVersion() == null) {
             errors.add(new ValidationError(
@@ -29,7 +40,10 @@ public final class CanonicalJsonNormalizerV1 {
                     "canonicalizationVersion", "unsupported"));
             return new CanonicalizationResultV1(null, errors);
         }
-        errors.addAll(DataContractValidatorsV1.validateApprovedCanonicalMap(request.approvedFields()));
+        errors.addAll(platformEventFingerprint
+                ? DataContractValidatorsV1.validatePlatformEventFingerprintCanonicalMap(
+                        request.approvedFields())
+                : DataContractValidatorsV1.validateApprovedCanonicalMap(request.approvedFields()));
         if (!errors.isEmpty()) {
             return new CanonicalizationResultV1(null, errors);
         }

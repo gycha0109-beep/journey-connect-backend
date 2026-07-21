@@ -28,6 +28,14 @@ val dataContractTest = tasks.register<JavaExec>("dataContractTest") {
     dependsOn(tasks.testClasses)
 }
 
+val dp2FingerprintContractTest = tasks.register<JavaExec>("dp2FingerprintContractTest") {
+    group = "verification"
+    description = "Runs the SC-approved DP-2 SHA-256 fingerprint contract checks."
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass.set("com.jc.data.contract.Dp2FingerprintContractTest")
+    dependsOn(tasks.testClasses)
+}
+
 tasks.check {
-    dependsOn(dataContractTest)
+    dependsOn(dataContractTest, dp2FingerprintContractTest)
 }

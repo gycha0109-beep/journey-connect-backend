@@ -19,6 +19,10 @@ public final class DataContractValidatorsV1 {
             "apikey", "token", "rawuserid", "userid", "accountid", "actorref", "subjectref",
             "email", "phone", "rawquery", "query", "latitude", "longitude", "gps",
             "freetext", "rawtext", "rawcontent", "rawprompt", "credential");
+    private static final Set<String> PLATFORM_EVENT_FINGERPRINT_KEYS = Set.of(
+            "contractVersion", "schemaVersion", "canonicalizationVersion", "eventFamily",
+            "eventType", "occurredAt", "actorRef", "sessionRef", "entityRef",
+            "causationId", "payload");
     private static final int MAX_DEPTH = 8;
     private static final int MAX_ENTRIES = 100;
     private static final int MAX_ARRAY_LENGTH = 100;
@@ -74,6 +78,30 @@ public final class DataContractValidatorsV1 {
     public static List<ValidationError> validateApprovedCanonicalMap(Map<String, Object> values) {
         ArrayList<ValidationError> errors = new ArrayList<>();
         validateValue(values, "canonical", 0, errors, new Counter());
+        return List.copyOf(errors);
+    }
+
+    public static List<ValidationError> validatePlatformEventFingerprintCanonicalMap(
+            Map<String, Object> values) {
+        ArrayList<ValidationError> errors = new ArrayList<>();
+        if (values == null) {
+            errors.add(new ValidationError(
+                    DataValidationErrorCode.REQUIRED_FIELD_MISSING, "canonical", "required"));
+            return List.copyOf(errors);
+        }
+        if (!values.keySet().equals(PLATFORM_EVENT_FINGERPRINT_KEYS)) {
+            errors.add(new ValidationError(
+                    DataValidationErrorCode.INVALID_PAYLOAD,
+                    "canonical",
+                    "exact platform event fingerprint fields required"));
+            return List.copyOf(errors);
+        }
+        Counter counter = new Counter();
+        for (Map.Entry<String, Object> entry : values.entrySet()) {
+            counter.add(entry.getKey().length());
+            validateValue(entry.getValue(), "canonical." + entry.getKey(), 1, errors, counter);
+        }
+        checkBudget("canonical", counter, errors);
         return List.copyOf(errors);
     }
 

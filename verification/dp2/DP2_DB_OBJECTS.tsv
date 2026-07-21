@@ -1,0 +1,9 @@
+object_id	object_name	object_type	owner	mutation_contract	retention
+DP2-DB-001	data_platform_event_v1	table	jc_security_owner	append_only	365d
+DP2-DB-002	data_event_ingest_attempt_v1	table	jc_security_owner	append_only	90d
+DP2-DB-003	data_event_duplicate_observation_v1	table	jc_security_owner	append_only	90d
+DP2-DB-004	data_event_conflict_observation_v1	table	jc_security_owner	append_only	90d
+DP2-DB-005	data_event_idempotency_binding_v1	table	jc_security_owner	append_only	30d
+DP2-DB-006	ingest_data_platform_event_v1	security_definer_function	jc_security_owner	atomic_function_only	n/a
+DP2-DB-007	data_platform_event_reader_v1	view	jc_security_owner	read_only	n/a
+DP2-DB-008	data_event_observation_reader_v1	view	jc_security_owner	read_only	n/a

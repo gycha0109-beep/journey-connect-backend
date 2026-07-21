@@ -1,0 +1,6 @@
+role_id	role	allowed	forbidden	status	evidence
+DP2-ROLE-001	jc_data_event_writer	ingest function execute	direct insert/update/delete; other-track write; DDL	PASS_PG15_PG18	SQL31 + run 29854424964
+DP2-ROLE-002	jc_data_event_reader	reader view select	raw table writes; function ownership	PASS_PG15_PG18	SQL31 + run 29854424964
+DP2-ROLE-003	jc_data_replay_executor	role exists only	canonical mutation; replay execute	PASS_PG15_PG18	SQL31 + run 29854424964
+DP2-ROLE-004	PUBLIC	none	Data read/write/function execute	PASS_PG15_PG18	catalog ACL checks
+DP2-ROLE-005	jc_security_owner	object ownership only	login/superuser/broad runtime membership	PASS_PG15_PG18	existing safe role convention

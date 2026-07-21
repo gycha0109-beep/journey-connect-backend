@@ -1,0 +1,5 @@
+case_id	workers	scope_fingerprint	expected	actual	status	evidence
+DP2-CON-001	2	same_key_same_fingerprint	1_NEW+1_DUPLICATE	1_NEW+1_DUPLICATE	PASS	PG15/18 run 29854424964
+DP2-CON-002	2	same_key_different_fingerprint	1_NEW+1_CONFLICT	1_NEW+1_CONFLICT	PASS	PG15/18 run 29854424964
+DP2-CON-003	4	total_persisted	2_events+2_bindings+1_duplicate+1_conflict	2_events+2_bindings+1_duplicate+1_conflict	PASS	SQL counts PG15/18
+DP2-CON-004	4	transaction_health	no_deadlock_no_abort	no_deadlock_no_abort	PASS	parallel psql exit status
