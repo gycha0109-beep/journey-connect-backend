@@ -35,7 +35,7 @@ class ProductionShadowTechnicalConfigurationTest {
     }
 
     @Test
-    void explicitTechnicalTestGraphIsAvailableButProductionProfileAlwaysWins() {
+    void explicitTechnicalTestGraphIsAvailableButProductionProfileOwnsItsSeparateGraph() {
         runner.withInitializer(context -> context.getEnvironment()
                         .setActiveProfiles(ProductionShadowTechnicalCapabilityCondition.PROFILE))
                 .withPropertyValues(
@@ -53,9 +53,8 @@ class ProductionShadowTechnicalConfigurationTest {
                         .setActiveProfiles("prod", ProductionShadowTechnicalCapabilityCondition.PROFILE))
                 .withPropertyValues(ProductionShadowTechnicalCapabilityCondition.ALLOW_PROPERTY + "=true")
                 .run(context -> {
-                    assertThat(context.getBean(SearchShadowKillSwitch.class).killed()).isTrue();
-                    assertThat(context.getBean(ProductionShadowSamplingAuthorization.class)
-                            .effectiveBasisPoints()).isZero();
+                    assertThat(context).doesNotHaveBean(SearchShadowKillSwitch.class);
+                    assertThat(context).doesNotHaveBean(ProductionShadowSamplingAuthorization.class);
                     assertThat(context).doesNotHaveBean(ProductionShadowTaskExecutor.class);
                     assertThat(context).doesNotHaveBean(JdbcSearchDocumentProjectionStore.class);
                 });

@@ -9,10 +9,10 @@ import com.jc.intelligence.compat.search.explore.v1.LegacyExplorePageView;
 import com.jc.intelligence.compat.search.explore.v1.LegacyExploreRequestView;
 import com.jc.intelligence.contract.v1.version.PolicyVersion;
 import com.jc.intelligence.contract.v1.version.ProducerBuildId;
+import com.jc.intelligence.integration.search.v1.SearchShadowAuthorityV1;
 import com.jc.intelligence.integration.search.v1.SearchShadowContextV1;
 import com.jc.intelligence.integration.search.v1.SearchShadowIntegrationResult;
 import com.jc.intelligence.integration.search.v1.SearchShadowStatus;
-import com.jc.intelligence.integration.search.v1.SearchShadowAuthorityV1;
 import com.jc.intelligence.wiring.search.v1.FixedSearchShadowCircuitBreaker;
 import com.jc.intelligence.wiring.search.v1.SearchShadowCircuitState;
 import com.jc.intelligence.wiring.search.v1.SearchShadowDispatchStatus;
@@ -64,7 +64,7 @@ class StageExploreSearchShadowFailureIsolationTest {
                     (legacy, compatibility, context, provider) -> { throw new AssertionError("must not execute"); },
                     (request, context) -> { throw new AssertionError("must not create provider"); },
                     new InMemoryStageSearchShadowComparisonLogPort(10));
-            assertThat(zero.dispatch(request(response)).status()).isEqualTo(SearchShadowDispatchStatus.NOT_SAMPLED);
+            assertThat(zero.dispatch(request(response)).status()).isEqualTo(SearchShadowDispatchStatus.DISABLED);
             assertThat(zeroExecutor.acceptedCount()).isZero();
         } finally {
             zeroExecutor.close();

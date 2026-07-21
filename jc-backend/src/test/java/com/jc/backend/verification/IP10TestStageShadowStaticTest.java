@@ -43,7 +43,10 @@ class IP10TestStageShadowStaticTest {
         assertThat(config).contains("StageSearchShadowActivationCondition", "DefaultExploreSearchShadowBridge")
                 .doesNotContain("@Profile(\"prod\")", "Repository", "EntityManager", "SearchRunRepository");
         assertThat(condition).contains("activationAllowed");
-        assertThat(properties).contains("search-shadow-test", "search-shadow-stage", "sample-basis-points")
+        assertThat(properties).contains(
+                        "SearchShadowWiringConfigV1.TEST_PROFILE",
+                        "SearchShadowWiringConfigV1.STAGE_PROFILE",
+                        "sample-basis-points")
                 .doesNotContain("SHADOW_CANDIDATE", "production enabled");
         assertThat(controller).contains("return ApiResponse.ok(legacyResponse);")
                 .doesNotContain("stageSearch", "SearchRuntime", "SearchShadowDispatchReceiptV1");
