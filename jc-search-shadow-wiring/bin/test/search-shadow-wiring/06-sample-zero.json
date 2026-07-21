@@ -1,0 +1,10 @@
+{
+  "scenario": "sample-zero",
+  "mode": "test_only",
+  "activeProfile": "search-shadow-test",
+  "explicitAllow": true,
+  "sampleBasisPoints": 0,
+  "executorStatus": "completed",
+  "circuitState": "closed",
+  "expectedStatus": "not_sampled"
+}

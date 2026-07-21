@@ -1,0 +1,10 @@
+{
+  "scenario": "timeout",
+  "mode": "test_only",
+  "activeProfile": "search-shadow-test",
+  "explicitAllow": true,
+  "sampleBasisPoints": 10000,
+  "executorStatus": "timed_out",
+  "circuitState": "closed",
+  "expectedStatus": "timed_out"
+}

@@ -1,0 +1,10 @@
+{
+  "scenario": "empty_result",
+  "rawQuery": "없음",
+  "pageSize": 20,
+  "maximumCandidateCount": 10,
+  "retrievalStatus": "success",
+  "rankingStatus": "success",
+  "reverseReranking": false,
+  "candidates": []
+}

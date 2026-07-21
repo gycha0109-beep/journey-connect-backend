@@ -1,0 +1,8 @@
+{
+  "scenario": "architecture_change_hold",
+  "proposalReady": true,
+  "unresolvedActivationCount": 22,
+  "expectedProposalDecision": "hold_for_architecture_change",
+  "expectedActivationDecision": "hold_for_architecture_change",
+  "disabledEquivalenceExpected": true
+}

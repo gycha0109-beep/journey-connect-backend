@@ -1,0 +1,10 @@
+{
+  "scenario": "config-missing",
+  "mode": "disabled",
+  "activeProfile": null,
+  "explicitAllow": false,
+  "sampleBasisPoints": 0,
+  "executorStatus": "completed",
+  "circuitState": "closed",
+  "expectedStatus": "disabled"
+}

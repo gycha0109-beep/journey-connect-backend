@@ -1,0 +1,26 @@
+{
+  "contractVersion": "model-inference-record-v1",
+  "inferenceId": "inference:content-0001",
+  "runId": "content-run-0001",
+  "status": "succeeded",
+  "modelType": "llm",
+  "modelVersion": "provider-model-v1",
+  "promptVersion": "content-analysis-prompt-v1",
+  "toolVersion": "tool-contract-v1",
+  "parameterSnapshotRef": "snapshot-parameters-0001",
+  "inputSnapshotRef": "snapshot-content-input-0001",
+  "outputSnapshotRef": "snapshot-content-output-0001",
+  "safetyPolicyVersion": "safety-policy-v1",
+  "safetyResult": "passed",
+  "producerBuildId": "ip1-fixture-build-001",
+  "startedAt": "2026-07-18T12:10:00Z",
+  "completedAt": "2026-07-18T12:10:00.400Z",
+  "latencyMillis": 400,
+  "tokenOrComputeUsage": {
+    "inputTokens": 120,
+    "outputTokens": 40
+  },
+  "resultHash": "4444444444444444444444444444444444444444444444444444444444444444",
+  "replayClass": "evidence_replay",
+  "deterministicProviderGuarantee": false
+}

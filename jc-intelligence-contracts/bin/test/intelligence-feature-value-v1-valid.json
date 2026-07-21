@@ -1,0 +1,13 @@
+{
+  "contractVersion": "intelligence-feature-value-v1",
+  "featureNamespace": "user.preference",
+  "featureName": "travel_theme",
+  "valueType": "string",
+  "value": "healing",
+  "authorityClass": "source_fact",
+  "sourceRef": "recommendation_user_preference:user-42",
+  "definitionVersion": "feature-vocabulary-v2",
+  "observedAt": "2026-07-18T11:30:00Z",
+  "validFrom": "2026-07-18T11:30:00Z",
+  "privacyClass": "pseudonymous"
+}

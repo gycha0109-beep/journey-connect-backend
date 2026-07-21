@@ -1,0 +1,18 @@
+{
+  "contractVersion": "intelligence-explanation-v1",
+  "explanationId": "explanation:rec-run-0001-user",
+  "runId": "rec-run-0001",
+  "audience": "user",
+  "reasonCodes": [
+    "MATCHED_TRAVEL_THEME"
+  ],
+  "message": "선호한 여행 테마와 관련된 게시물입니다.",
+  "evidenceRefs": [
+    "feature:user.preference.travel_theme"
+  ],
+  "attributes": {
+    "theme": "healing"
+  },
+  "privacyClass": "public",
+  "createdAt": "2026-07-18T12:00:00.025Z"
+}

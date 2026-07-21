@@ -1,0 +1,35 @@
+{
+  "scenario": "same_score",
+  "rawQuery": "맛집",
+  "pageSize": 20,
+  "maximumCandidateCount": 10,
+  "retrievalStatus": "success",
+  "rankingStatus": "success",
+  "reverseReranking": false,
+  "candidates": [
+    {
+      "entityRef": "post:1",
+      "sourceRank": 1,
+      "rankingScore": 1.0,
+      "orderingKey": "same",
+      "eligibilityDecision": "allow",
+      "visibilityDecision": "allow"
+    },
+    {
+      "entityRef": "post:2",
+      "sourceRank": 2,
+      "rankingScore": 1.0,
+      "orderingKey": "same",
+      "eligibilityDecision": "allow",
+      "visibilityDecision": "allow"
+    },
+    {
+      "entityRef": "post:3",
+      "sourceRank": 3,
+      "rankingScore": 1.0,
+      "orderingKey": "same",
+      "eligibilityDecision": "allow",
+      "visibilityDecision": "allow"
+    }
+  ]
+}

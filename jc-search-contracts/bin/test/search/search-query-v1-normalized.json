@@ -1,0 +1,11 @@
+{
+  "queryMode": "text_query",
+  "originalQuery": "  ＳＥＯＵＬ　Cafe  ",
+  "normalizedQuery": "seoul cafe",
+  "queryFingerprint": "e4dbdbddd2f05633fa31e2354936d60ceaf9d421bc0cc4dcbdcb0838b65dd5c1",
+  "normalizationVersion": "search-query-normalization-v1",
+  "languageHint": "ko",
+  "localeHint": "ko-KR",
+  "codePointLength": 10,
+  "utf8SizeBytes": 10
+}

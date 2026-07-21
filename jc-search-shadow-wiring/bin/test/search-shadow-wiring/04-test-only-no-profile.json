@@ -1,0 +1,10 @@
+{
+  "scenario": "test-only-no-profile",
+  "mode": "test_only",
+  "activeProfile": null,
+  "explicitAllow": true,
+  "sampleBasisPoints": 10000,
+  "executorStatus": "completed",
+  "circuitState": "closed",
+  "expectedStatus": "profile_blocked"
+}

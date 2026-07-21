@@ -1,0 +1,62 @@
+{
+  "name": "duplicate-item-reference",
+  "request": {
+    "keyword": null,
+    "region": null,
+    "page": 0,
+    "size": 20,
+    "sortOrders": [],
+    "unsupportedParameters": {}
+  },
+  "page": {
+    "items": [
+      {
+        "id": 20,
+        "title": "Seoul Walk",
+        "regionCode": "KR-11",
+        "regionName": "서울",
+        "coverImageUrl": "https://img.example.com/cover.jpg",
+        "viewCount": 120,
+        "likeCount": 30,
+        "bookmarkCount": 25,
+        "author": {
+          "id": 1020,
+          "nickname": "user20",
+          "profileImageUrl": "https://img.example.com/u.jpg"
+        },
+        "createdAt": "2026-07-19T10:00:00Z"
+      },
+      {
+        "id": 20,
+        "title": "Duplicate",
+        "regionCode": "KR-11",
+        "regionName": "서울",
+        "coverImageUrl": "https://img.example.com/cover.jpg",
+        "viewCount": 120,
+        "likeCount": 30,
+        "bookmarkCount": 25,
+        "author": {
+          "id": 1020,
+          "nickname": "user20",
+          "profileImageUrl": "https://img.example.com/u.jpg"
+        },
+        "createdAt": "2026-07-19T10:00:00Z"
+      }
+    ],
+    "page": 0,
+    "size": 20,
+    "totalElements": 2,
+    "totalPages": 1,
+    "last": true
+  },
+  "context": {
+    "requestId": "request:legacy-explore-001",
+    "correlationId": "correlation:legacy-explore-001",
+    "sessionRef": null,
+    "referenceTime": "2026-07-19T12:00:00Z",
+    "mappedAt": "2026-07-19T12:00:01Z",
+    "producerBuildId": "ip4-build-001"
+  },
+  "expectedStatus": "mapping_failure",
+  "expectedFailureCode": "duplicate_item_reference"
+}

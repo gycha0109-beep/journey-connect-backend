@@ -1,0 +1,46 @@
+{
+  "name": "legacy-response-field-missing",
+  "request": {
+    "keyword": null,
+    "region": null,
+    "page": 0,
+    "size": 20,
+    "sortOrders": [],
+    "unsupportedParameters": {}
+  },
+  "page": {
+    "items": [
+      {
+        "id": 13,
+        "title": null,
+        "regionCode": "KR-11",
+        "regionName": "서울",
+        "coverImageUrl": "https://img.example.com/cover.jpg",
+        "viewCount": 113,
+        "likeCount": 23,
+        "bookmarkCount": 18,
+        "author": {
+          "id": 1013,
+          "nickname": "user13",
+          "profileImageUrl": "https://img.example.com/u.jpg"
+        },
+        "createdAt": "2026-07-19T10:00:00Z"
+      }
+    ],
+    "page": 0,
+    "size": 20,
+    "totalElements": 1,
+    "totalPages": 1,
+    "last": true
+  },
+  "context": {
+    "requestId": "request:legacy-explore-001",
+    "correlationId": "correlation:legacy-explore-001",
+    "sessionRef": null,
+    "referenceTime": "2026-07-19T12:00:00Z",
+    "mappedAt": "2026-07-19T12:00:01Z",
+    "producerBuildId": "ip4-build-001"
+  },
+  "expectedStatus": "mapping_failure",
+  "expectedFailureCode": "missing_required_legacy_field"
+}

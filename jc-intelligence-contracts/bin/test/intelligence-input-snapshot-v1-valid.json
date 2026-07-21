@@ -1,0 +1,16 @@
+{
+  "contractVersion": "intelligence-input-snapshot-v1",
+  "snapshotId": "snapshot-input-0001",
+  "schemaVersion": "recommendation-ranking-input-v1",
+  "sourceRefs": [
+    "recommendation_snapshot:snapshot-input-0001",
+    "recommendation_run:rec-run-0001"
+  ],
+  "identityContextRef": "identity_context:user-42",
+  "referenceTime": "2026-07-18T12:00:00Z",
+  "canonicalizationVersion": "recommendation-canonical-json-v1",
+  "contentHash": "1111111111111111111111111111111111111111111111111111111111111111",
+  "payloadSizeBytes": 512,
+  "privacyClass": "pseudonymous",
+  "producerBuildId": "batch18-build-abc123"
+}

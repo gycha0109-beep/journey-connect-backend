@@ -1,0 +1,9 @@
+{
+  "contractVersion": "search-replay-evidence-v1",
+  "runId": "search-run-fallback-001",
+  "fallbackCode": "retrieval_unavailable",
+  "fallbackStrategyVersion": "database-lexical-fallback-v1",
+  "primaryFailureEvidenceRef": "evidence:retrieval-001",
+  "orderingContractRef": "ordering:recent-entity-ref-v1",
+  "createdAt": "2026-07-19T12:00:03Z"
+}

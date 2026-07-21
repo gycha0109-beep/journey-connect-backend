@@ -1,0 +1,23 @@
+{
+  "cursorVersion": "search-pagination-cursor-v1",
+  "searchRunId": "search-run-001",
+  "resultSnapshotRef": "search-output-snapshot-001",
+  "queryFingerprint": "e4dbdbddd2f05633fa31e2354936d60ceaf9d421bc0cc4dcbdcb0838b65dd5c1",
+  "filterFingerprint": "6b7800b9c61ec09ca4d631135a955e082078e927eb578596dd8cc29cffd21222",
+  "sortPolicyVersion": "search-sort-policy-v1",
+  "rankingPolicyVersion": "search-ranking-policy-v1",
+  "referenceTime": "2026-07-19T12:00:00Z",
+  "nextRank": 21,
+  "lastOrderingTuple": [
+    "0.9825",
+    "post:123"
+  ],
+  "surface": "global_search",
+  "entityScope": "post",
+  "subjectBindingRef": "subject:opaque-user-1",
+  "identitySchemeId": "platform_subject_v1",
+  "sessionBindingRef": "session:search-1",
+  "issuedAt": "2026-07-19T12:00:01Z",
+  "expiresAt": "2026-07-19T12:30:01Z",
+  "checksum": "afe3cc6e4db8a68eb7892bd5507b063cffd1cac16298a0f50e8b756b5c44978f"
+}

@@ -1,0 +1,46 @@
+{
+  "name": "hidden-deleted-excluded-legacy-response",
+  "request": {
+    "keyword": null,
+    "region": null,
+    "page": 0,
+    "size": 20,
+    "sortOrders": [],
+    "unsupportedParameters": {}
+  },
+  "page": {
+    "items": [
+      {
+        "id": 12,
+        "title": "Only Visible Item",
+        "regionCode": "KR-11",
+        "regionName": "서울",
+        "coverImageUrl": "https://img.example.com/cover.jpg",
+        "viewCount": 112,
+        "likeCount": 22,
+        "bookmarkCount": 17,
+        "author": {
+          "id": 1012,
+          "nickname": "user12",
+          "profileImageUrl": "https://img.example.com/u.jpg"
+        },
+        "createdAt": "2026-07-19T10:00:00Z"
+      }
+    ],
+    "page": 0,
+    "size": 20,
+    "totalElements": 1,
+    "totalPages": 1,
+    "last": true
+  },
+  "context": {
+    "requestId": "request:legacy-explore-001",
+    "correlationId": "correlation:legacy-explore-001",
+    "sessionRef": null,
+    "referenceTime": "2026-07-19T12:00:00Z",
+    "mappedAt": "2026-07-19T12:00:01Z",
+    "producerBuildId": "ip4-build-001"
+  },
+  "expectedStatus": "success",
+  "expectedFailureCode": null
+}

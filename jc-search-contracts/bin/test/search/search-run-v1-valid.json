@@ -1,0 +1,32 @@
+{
+  "contractVersion": "search-domain-contract-v1",
+  "runId": "search-run-001",
+  "status": "succeeded",
+  "requestId": "request:search-001",
+  "correlationId": "correlation:search-001",
+  "subjectRef": "subject:opaque-user-1",
+  "identitySchemeId": "platform_subject_v1",
+  "sessionRef": "session:search-1",
+  "surface": "global_search",
+  "entityScope": "post",
+  "inputSnapshotRef": "search-input-snapshot-001",
+  "candidateSnapshotRef": "search-candidate-snapshot-001",
+  "outputSnapshotRef": "search-output-snapshot-001",
+  "queryNormalizationVersion": "search-query-normalization-v1",
+  "retrievalStrategyVersion": "database-lexical-v1",
+  "rankingPolicyVersion": "search-ranking-policy-v1",
+  "featureDefinitionVersion": "search-ranking-features-v1",
+  "referenceTime": "2026-07-19T12:00:00Z",
+  "startedAt": "2026-07-19T12:00:00Z",
+  "completedAt": "2026-07-19T12:00:02Z",
+  "producerBuildId": "ip3-contract-build-001",
+  "replayClass": "exact_replay",
+  "replayEvidence": {
+    "deterministicPath": true,
+    "immutableInputBound": true,
+    "immutableOutputBound": true,
+    "versionsBound": true,
+    "deterministicSeedBound": false,
+    "modelOrProviderInferenceUsed": false
+  }
+}

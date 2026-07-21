@@ -1,0 +1,8 @@
+{
+  "scenario": "all_prerequisites_resolved",
+  "proposalReady": true,
+  "unresolvedActivationCount": 0,
+  "expectedProposalDecision": "ready_for_controlled_hook_proposal",
+  "expectedActivationDecision": "ready_for_controlled_hook_proposal",
+  "disabledEquivalenceExpected": true
+}

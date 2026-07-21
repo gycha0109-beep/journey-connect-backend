@@ -1,0 +1,10 @@
+{
+  "scenario": "executor-rejected",
+  "mode": "test_only",
+  "activeProfile": "search-shadow-test",
+  "explicitAllow": true,
+  "sampleBasisPoints": 10000,
+  "executorStatus": "rejected",
+  "circuitState": "closed",
+  "expectedStatus": "rejected"
+}

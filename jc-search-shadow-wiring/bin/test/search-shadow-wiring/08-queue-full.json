@@ -1,0 +1,10 @@
+{
+  "scenario": "queue-full",
+  "mode": "test_only",
+  "activeProfile": "search-shadow-test",
+  "explicitAllow": true,
+  "sampleBasisPoints": 10000,
+  "executorStatus": "queue_full",
+  "circuitState": "closed",
+  "expectedStatus": "queue_full"
+}

@@ -1,0 +1,1 @@
+{"scenario":"runtime_fallback","mode":"test_only","runtimeInputStatus":"available","runtimeStatus":"fallback","topK":3,"timeout":false,"legacyEntityRefs":["post:1","post:2"],"runtimeEntityRefs":["post:1","post:2"]}

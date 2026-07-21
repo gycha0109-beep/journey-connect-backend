@@ -1,0 +1,31 @@
+{
+  "contractVersion": "intelligence-run-v1",
+  "runId": "rec-run-0001",
+  "runType": "recommendation",
+  "status": "succeeded",
+  "requestId": "request:0001",
+  "correlationId": "correlation:0001",
+  "domainRunMode": "shadow",
+  "surface": "home",
+  "entityRef": "post:123",
+  "subjectRef": "user:42",
+  "identitySchemeId": "legacy_user_numeric_v1",
+  "inputSnapshotRef": "snapshot-input-0001",
+  "outputSnapshotRef": "snapshot-output-0001",
+  "policyVersion": "ranking-policy-v2",
+  "featureDefinitionVersion": "feature-vocabulary-v2",
+  "producerBuildId": "batch18-build-abc123",
+  "referenceTime": "2026-07-18T12:00:00Z",
+  "startedAt": "2026-07-18T12:00:00Z",
+  "completedAt": "2026-07-18T12:00:00.025Z",
+  "replayClass": "exact_replay",
+  "replayEvidence": {
+    "deterministicPath": true,
+    "immutableInputBound": true,
+    "immutableOutputBound": true,
+    "versionsBound": true,
+    "deterministicSeedBound": true,
+    "modelOrProviderInferenceUsed": false
+  },
+  "exposureSourceRef": "recommendation_general_exposure_v1"
+}

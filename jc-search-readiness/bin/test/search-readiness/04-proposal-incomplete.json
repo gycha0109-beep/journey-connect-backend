@@ -1,0 +1,8 @@
+{
+  "scenario": "proposal_incomplete",
+  "proposalReady": false,
+  "unresolvedActivationCount": 22,
+  "expectedProposalDecision": "not_ready",
+  "expectedActivationDecision": "not_ready",
+  "disabledEquivalenceExpected": false
+}

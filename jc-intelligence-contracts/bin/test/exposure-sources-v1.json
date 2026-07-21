@@ -1,0 +1,34 @@
+{
+  "registryVersion": "exposure-sources-v1",
+  "sources": [
+    {
+      "sourceId": "recommendation_general_exposure_v1",
+      "authoritativeSource": "recommendation_exposure_event+recommendation_exposure_candidate",
+      "purpose": "general_recommendation_page_exposure",
+      "p2ExperimentDenominatorAuthority": false,
+      "runtimeStatus": "active"
+    },
+    {
+      "sourceId": "recommendation_behavior_impression_v1",
+      "authoritativeSource": "recommendation_behavior_event:event_type=impression",
+      "purpose": "behavior_fact",
+      "p2ExperimentDenominatorAuthority": false,
+      "runtimeStatus": "active"
+    },
+    {
+      "sourceId": "recommendation_p2_experiment_exposure_v1",
+      "authoritativeSource": "recommendation_p2_experiment_exposure",
+      "purpose": "p2_experiment_exposure_and_denominator",
+      "p2ExperimentDenominatorAuthority": true,
+      "runtimeStatus": "protected_authority"
+    },
+    {
+      "sourceId": "search_exposure_v1",
+      "authoritativeSource": "not_implemented",
+      "purpose": "future_search_exposure",
+      "p2ExperimentDenominatorAuthority": false,
+      "runtimeStatus": "reserved"
+    }
+  ],
+  "aggregationAllowed": false
+}

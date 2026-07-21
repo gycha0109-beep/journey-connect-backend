@@ -1,0 +1,10 @@
+{
+  "scenario": "test-only-valid",
+  "mode": "test_only",
+  "activeProfile": "search-shadow-test",
+  "explicitAllow": true,
+  "sampleBasisPoints": 10000,
+  "executorStatus": "completed",
+  "circuitState": "closed",
+  "expectedStatus": "completed"
+}
