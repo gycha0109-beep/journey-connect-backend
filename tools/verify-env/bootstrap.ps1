@@ -39,13 +39,14 @@ function Assert-Command {
     }
 }
 
-function Ensure-Gdown {
+function Install-Gdown {
     Assert-Command "python"
 
     python -m gdown --version *> $null
     if ($LASTEXITCODE -ne 0) {
         Write-Host "[bootstrap] gdown 설치"
         python -m pip install --user gdown
+
         if ($LASTEXITCODE -ne 0) {
             throw "gdown 설치 실패"
         }
@@ -66,7 +67,7 @@ function Test-Hash {
     return $actual -eq $Expected.ToUpperInvariant()
 }
 
-function Download-DriveFile {
+function Save-DriveFile {
     param(
         [Parameter(Mandatory = $true)][hashtable]$File
     )
@@ -96,10 +97,10 @@ function Download-DriveFile {
     }
 }
 
-Ensure-Gdown
+Install-Gdown
 
 foreach ($file in $files) {
-    Download-DriveFile -File $file
+    Save-DriveFile -File $file
 }
 
 $gradleZip = Join-Path $downloadDir "gradle-8.14.5-bin.zip"
