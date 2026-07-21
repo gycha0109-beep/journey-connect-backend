@@ -2,54 +2,75 @@
 
 ## 상태
 
-`SC_BASELINE_RECONCILIATION_COMPLETE`
+`DP1_MAIN_INTEGRATED / DP2_ENTRY_DECISIONS_APPROVED`
 
 ## 기준
 
-- initial main HEAD: `b7a613c2c9746c0bc46e6e76fc23dcf94d5029be`
-- PR #3 original HEAD: `c54e6f2efbff0664470def6a5917292d91828f77`
-- PR #3 updated/verified HEAD: `aaea95946133f518996b7e57c7f5a657e8f161b9`
-- PR #3 merge commit: `f38cf56b34ff23fbd5cb20b9013444a8cb2d29f4`
-- PR #3 exact-head CI: Backend `29818133726`, Core `29818133742`, PostgreSQL 15/18 `29818133764` — PASS
-- SC branch: `codex/sc-dp1-baseline-reconciliation`
-- SC synchronization merge commit: `72c59299392b86125e77d0b2463ad102f02287b1`
-- PR #4 exact verified HEAD: `f81eba0740be6dd86e0f8393f51111ec9fa5af6b`
-- PR #4 exact-head CI: SC Baseline Reconciliation `29832806067` — PASS
-- PR #4 merge commit: `9d84f630e87d54f780e332eead0c1f8df6a51d0b`
-- PR #3 merged: `YES`
-- SC PR #4 merged: `YES`
 - official DP-1 Baseline SHA: `9d84f630e87d54f780e332eead0c1f8df6a51d0b`
+- DP-1 implementation HEAD: `f4f48b139e49b9cba98f60ab64a18871f204b4de`
+- DP-1 PR: `#6`
+- DP-1 merge commit/current authority start: `bdce7de5ef6be31f8da6a8a349424be8f06a87a1`
+- DP-1 exact-head CI: Data Contract `29840338516`, Recommendation Core `29840339853`, Backend `29840338075`, SC `29840340842` — PASS
+- DP-1 result: `DP1_IMPLEMENTATION_COMPLETE_WITH_BLOCKED_FINGERPRINT_ALGORITHM`
+- SC fingerprint decision: `SC-DP1-009 RESOLVED` by `SC-DP2-001`
 
 ## 완료
 
-- PR #3 merged into `main`; protected IP-12.5 controls are current main authority
-- IP-12.5 remains `HOLD_OPERATIONAL_INPUTS_PENDING` and authorizes no production traffic
-- PR #4 synchronized with merged PR #3, revalidated at exact HEAD, and merged
-- DB baseline reconciled to `journey-connect-db-v2.7/01..28`
-- SQL 27/28 ownership fixed without SQL changes
-- authoritative execution sequence and historical recommendation precedence fixed
-- DP-0 contract package restored and Foundation inventory matched
-- `jc-data-contracts` / `com.jc.data.contract` reserved only
-- producer/consumer/build version and compatibility rules fixed
-- canonical JSON, idempotency, lineage, snapshot, replay and backfill boundaries fixed
-- Decision Register/RACI canonical paths fixed
-- documentation-only workflow and machine-readable evidence added
-- protected diff limited to governance/data/proposal/evidence/workflow paths
+- PR #3, PR #4 and PR #6 merged into `main`
+- `jc-data-contracts` is active at `com.jc.data.contract.v1`
+- Client command/canonical envelope, taxonomy, identity namespace, version, validation, canonicalization and idempotency boundaries are main authority
+- SQL 01..28 and Recommendation/Search/runtime authority remain protected
+- new Data fingerprint exact contract approved without reusing or rewriting protected P0 fingerprint
+- DP-2 DB target, SQL sequence, physical writer/roles and technical retention baseline assigned
 
-## Explicit unresolved decision
+## DP-2 approved decisions
 
-New Data fingerprint algorithm, output encoding, version ID, exact field set and timestamp/build inclusion remain `SC DECISION REQUIRED` under `SC-DP1-009`. This is an explicit DP-1 fingerprint implementation stop condition.
+### Fingerprint
 
-Identity mapping physical owner/deletion policy also remains unresolved and is outside DP-1.
+- wire ID: `platform-event-fingerprint-sha256-v1`
+- algorithm: SHA-256
+- encoding: lowercase hexadecimal, 64 characters
+- included: `contractVersion`, `schemaVersion`, `canonicalizationVersion`, `eventFamily`, `eventType`, `occurredAt`, `actorRef`, `sessionRef`, `entityRef`, `causationId`, `payload`
+- excluded: `eventId`, `receivedAt`, `producerVersion`, `producerBuildId`, `requestId`, `correlationId`, `idempotencyKey`
+- exact rules: `SC-DP2-ENTRY-DECISIONS.md`
 
-## DP-1 entry
+### DB and SQL
+
+- target: `database/journey-connect-db-v2.7`
+- SQL 29: canonical event store/evidence base
+- SQL 30: idempotency/atomic ingest/grants
+- SQL 31: PostgreSQL smoke/contract/concurrency verification
+- SQL 32+: unallocated
+
+### Roles
+
+- writer: `jc_data_event_writer`
+- reader: `jc_data_event_reader`
+- future replay executor: `jc_data_replay_executor`
+- direct canonical UPDATE/DELETE prohibited
+
+### Retention technical baseline
+
+- idempotency binding: 30 days
+- attempt/conflict/quarantine: 90 days
+- canonical event default class: 365 days
+- automatic purge remains disabled until Operations/Security/Privacy approval
+
+## DP-2 entry
 
 ```text
-DP-1 baseline established:
-9d84f630e87d54f780e332eead0c1f8df6a51d0b
+DP-1: MAIN INTEGRATED
+SC-DP1-009: RESOLVED
+DP-2 ENTRY: AUTHORIZED AFTER SC DP-2 DECISION PR MERGE
 ```
 
-This SHA is the first `main` HEAD containing both merged PR #3 and merged PR #4. DP-1 implementation was not started in this task.
+DP-2 may implement PostgreSQL persistence and concurrency only. It must not add a public API, production ingestion activation, identity mapping/join, projection cutover or cross-track writes.
+
+## Remaining unresolved
+
+- identity mapping physical owner/deletion workflow remains unresolved and outside DP-2
+- country/legal retention and erasure rules remain outside the technical baseline
+- production purge/erasure executor requires Operations/Security/Privacy approval
 
 ## Protected state
 
