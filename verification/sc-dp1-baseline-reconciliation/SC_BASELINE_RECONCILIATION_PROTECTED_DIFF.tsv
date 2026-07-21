@@ -1,4 +1,5 @@
 checkId	target	expected	observed	result	evidenceReference	sourceHead	executedAtUtc
-PROTECTED-SQL	database/journey-connect-db-v2.7/01..28	no diff	pending exact branch compare	NOT_EXECUTED	GitHub compare/SC workflow	PENDING_SC_HEAD	2026-07-21T09:39:56Z
-PROTECTED-PROD	production/recommendation/search source	no diff	pending exact branch compare	NOT_EXECUTED	GitHub compare/SC workflow	PENDING_SC_HEAD	2026-07-21T09:39:56Z
-PROTECTED-IP12	IP-12/IP-12.5 controls	unchanged	SC branch excludes control files	PASS	changed-file allowlist	b7a613c2c9746c0bc46e6e76fc23dcf94d5029be	2026-07-21T09:39:56Z
+PROTECTED-SQL	database/journey-connect-db-v2.7/01..28	no diff	no SQL changed/new SQL	PASS	GitHub compare + workflow 29820224641	9979cd7e59d696a7d0d4d00d388ebfa0ce2ba75a	2026-07-21T09:56:22Z
+PROTECTED-PROD	production/recommendation/Search source	no diff	changed paths limited to docs/evidence/workflow	PASS	GitHub compare + workflow 29820224641	9979cd7e59d696a7d0d4d00d388ebfa0ce2ba75a	2026-07-21T09:56:22Z
+PROTECTED-IP12	IP-12/IP-12.5 control meaning	unchanged	no control file changed on SC branch	PASS	GitHub compare	9979cd7e59d696a7d0d4d00d388ebfa0ce2ba75a	2026-07-21T09:56:22Z
+PROTECTED-CUTOVER	shadow/sampling/cohort/Search authority	unchanged	documentation-only branch	PASS	changed-file allowlist	9979cd7e59d696a7d0d4d00d388ebfa0ce2ba75a	2026-07-21T09:56:22Z

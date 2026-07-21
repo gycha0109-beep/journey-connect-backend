@@ -1,2 +1,2 @@
 decision	result	reason	sourceHead	executedAtUtc
-SC_BASELINE_RECONCILIATION_PENDING_VERIFICATION	PENDING	SC exact-head workflow not completed	PENDING_SC_HEAD	2026-07-21T09:39:56Z
+SC_BASELINE_RECONCILIATION_COMPLETE	PASS	PR3 updated/exact-head CI PASS; SC docs/recovery/protected diff/static PASS; both PRs explicitly unmerged	9979cd7e59d696a7d0d4d00d388ebfa0ce2ba75a	2026-07-21T09:56:22Z
