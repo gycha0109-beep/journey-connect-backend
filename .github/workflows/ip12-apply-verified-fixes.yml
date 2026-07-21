@@ -1,0 +1,42 @@
+name: IP-12 Apply Verified Fixes
+
+on:
+  pull_request:
+    branches:
+      - attestation/ip12-1-runner-base
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.head_ref == 'attestation/ip12-1-runner'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout attestation head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Apply locally verified patch and push
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=verification/ip12-1/apply_verified_fixes.py
+          if [ ! -f "$script" ]; then
+            echo "No patch applicator present; nothing to apply."
+            exit 0
+          fi
+          python3 "$script"
+          git config user.name "IP-12 External Attestation"
+          git config user.email "ip12-attestation@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "No changes after patch application."
+            exit 0
+          fi
+          git commit -m "fix(ip12): apply externally verified regression fixes"
+          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
