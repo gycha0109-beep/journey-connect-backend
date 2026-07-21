@@ -6,7 +6,7 @@
 |---|---|
 | 계약 ID | `jc-system-contract-v1` |
 | 개정 | `V1.2 / SC DP-1 BASELINE RECONCILIATION` |
-| 상태 | `ACTIVE / P2_AND_IP12_5_PENDING_ALIGNED` |
+| 상태 | `ACTIVE / P2_AND_IP12_5_ALIGNED` |
 | canonical DB | `journey-connect-db-v2.7/01..28` |
 | 기준일 | 2026-07-21 |
 
@@ -16,18 +16,13 @@
 
 ### Main
 
-- 기준 `main` 시작 HEAD: `b7a613c2c9746c0bc46e6e76fc23dcf94d5029be`
+- PR #3 merge commit: `f38cf56b34ff23fbd5cb20b9013444a8cb2d29f4`
+- PR #3 protected IP-12.5 controls are current main authority.
+- decision: `IP-12.5 HOLD_OPERATIONAL_INPUTS_PENDING`
 - P0/P1/P2 technical baseline은 보호한다.
 - canonical SQL은 `01..28`이다.
 
-### PR #3 pending state
-
-- PR #3 updated HEAD: `aaea95946133f518996b7e57c7f5a657e8f161b9`
-- 최신 main 반영 및 exact-head protected CI PASS
-- 상태: Open / non-draft / mergeable / unmerged
-- decision: `IP-12.5 HOLD_OPERATIONAL_INPUTS_PENDING`
-
-PR #3은 병합 전까지 main authority가 아니다. 병합도 production pilot/traffic/Search cutover 승인이 아니다.
+PR #3 병합은 production pilot/traffic/Search cutover 승인이 아니다.
 
 보호 상태:
 
@@ -186,7 +181,7 @@ DP-1 start baseline은 다음 둘을 모두 포함하는 최초 main HEAD다.
 현재:
 
 ```text
-DP-1 entry: BLOCKED UNTIL PR #3 AND SC RECONCILIATION ARE BOTH MERGED
+DP-1 entry: BLOCKED UNTIL SC PR #4 IS MERGED
 ```
 
 ## 13. 절대 금지
