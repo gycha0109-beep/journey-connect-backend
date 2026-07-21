@@ -1,13 +1,11 @@
 # IP-12 Handoff
 
-## State
+## Repository-bound state
 
 ```text
-IP-11: GOVERNANCE_DECISIONS_APPROVED_WITH_CONDITIONS
-IP-11.5: TECHNICAL_CONTROLS_IMPLEMENTED / EXTERNAL_ATTESTATION_COMPLETE (baseline)
-IP-11.75: GOVERNANCE_APPROVAL_CLOSURE_COMPLETE
-IP-11.9: EXTERNAL_ATTESTATION_COMPLETE_WITH_FIXES
-IP-12: IMPLEMENTATION_COMPLETE / EXTERNAL_ATTESTATION_PENDING
+Baseline branch: main
+Baseline HEAD: 356cc0e25c9da2b57a5f9ed292f997bc3cea3119
+IP-12: IMPLEMENTATION_COMPLETE / REPOSITORY_ATTESTATION_RENEWAL_REQUIRED
 Production shadow: DISABLED
 Effective production sampling: 0 BPS
 Actual cohort: empty / 0%
@@ -15,12 +13,13 @@ Search cutover: NOT STARTED
 Go/No-Go: NO_GO_FOR_TRAFFIC
 ```
 
-## Required next
+The GitHub HEAD implementation contains the production wiring, 10 BPS ceiling, hashed allowlist, kill-switch and Micrometer adapter. The committed historical verification artifact still records Gradle execution as NOT_EXECUTED, so IP-12.5 must generate new branch-bound CI evidence instead of treating the stale artifact as PASS.
 
-1. Execute Gradle 8.14.5 `verifyIp12`, backend test/check and Spring profile gates on this exact ZIP SHA.
-2. Re-run SQL 01..28 exact/replay if required by the integration authority; no SQL changed in IP-12.
-3. Provide approved Project Owner, Team Lead Youngtak and Backend Owner account hashes.
-4. Confirm initial sample and activation window in a separate IP-12.5 decision.
-5. Execute a production-equivalent property/restart disable drill.
+## IP-12.5 handoff
 
-No traffic activation is permitted from this package alone.
+- positive sampling now additionally requires approval, approver, execution owner, rollback owner, metric verification reference and an active UTC window
+- safe production resource files are committed with disabled/zero/empty defaults
+- actual account hashes and activation approval remain absent
+- final decision remains `IP-12.5 HOLD_OPERATIONAL_INPUTS_PENDING`
+
+See [IP-12.5 Handoff](IP-12-5-HANDOFF.md).

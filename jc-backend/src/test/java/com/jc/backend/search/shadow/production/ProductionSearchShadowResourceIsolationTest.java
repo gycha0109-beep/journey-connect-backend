@@ -53,8 +53,9 @@ class ProductionSearchShadowResourceIsolationTest {
     @Test
     void disabledConfigurationDoesNotResolveIdentityOrSubmitWork() throws Exception {
         var config = new ProductionSearchShadowRuntimeConfig(
-                false, true, 0, 0, java.util.Set.of(), 100, 1, 2, 8,
-                Duration.ofMillis(200), Duration.ofMillis(300));
+                false, true, 0, 0, java.util.Set.of(),
+                null, null, null, null, null, null, null,
+                100, 1, 2, 8, Duration.ofMillis(200), Duration.ofMillis(300));
         var identityCalls = new java.util.concurrent.atomic.AtomicInteger();
         var workCalls = new java.util.concurrent.atomic.AtomicInteger();
         try (var executor = new ProductionShadowTaskExecutor(ProductionShadowResourcePolicyV1.approvedInitialPilot())) {
@@ -64,7 +65,8 @@ class ProductionSearchShadowResourceIsolationTest {
                     key -> false,
                     new ProductionSearchShadowSamplingGate(0),
                     executor,
-                    new com.jc.intelligence.production.search.v1.NoOpSearchShadowMetricSink());
+                    new com.jc.intelligence.production.search.v1.NoOpSearchShadowMetricSink(),
+                    java.time.Clock.systemUTC());
             var decision = gate.dispatch(() -> {
                 identityCalls.incrementAndGet();
                 return java.util.Optional.of("0".repeat(64));

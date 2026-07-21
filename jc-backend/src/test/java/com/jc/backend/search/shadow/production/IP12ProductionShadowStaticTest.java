@@ -31,6 +31,9 @@ class IP12ProductionShadowStaticTest {
         assertThat(profile).contains("kill-switch: ${JC_SEARCH_SHADOW_PRODUCTION_KILL_SWITCH:true}");
         assertThat(profile).contains("sampling-bps: ${JC_SEARCH_SHADOW_PRODUCTION_SAMPLING_BPS:0}");
         assertThat(profile).contains("max-approved-sampling-bps: 10");
+        assertThat(profile).contains("activation-approval-ref: ${JC_SEARCH_SHADOW_PRODUCTION_APPROVAL_REF:}");
+        assertThat(profile).contains("rollback-owner-ref: ${JC_SEARCH_SHADOW_PRODUCTION_ROLLBACK_OWNER_REF:}");
+        assertThat(profile).contains("metric-verification-ref: ${JC_SEARCH_SHADOW_PRODUCTION_METRIC_REF:}");
         assertThat(profile).doesNotContain("0123456789abcdef");
 
         String source = Files.walk(ROOT.resolve(

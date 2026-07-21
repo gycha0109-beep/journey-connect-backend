@@ -78,12 +78,10 @@ public final class ProductionShadowTaskExecutor implements AutoCloseable {
         AtomicBoolean finished = new AtomicBoolean();
         AtomicBoolean completionReported = new AtomicBoolean();
         ScheduledFuture<?> timeoutFuture = watchdog.schedule(() -> {
-            if (!finished.get()) {
+            if (!finished.get() && completionReported.compareAndSet(false, true)) {
+                safeComplete(completion, new ProductionShadowTaskCompletionV1(
+                        ProductionShadowTaskCompletionStatus.TIMED_OUT, elapsed(started), "runtime_timeout"));
                 worker.interrupt();
-                if (completionReported.compareAndSet(false, true)) {
-                    safeComplete(completion, new ProductionShadowTaskCompletionV1(
-                            ProductionShadowTaskCompletionStatus.TIMED_OUT, elapsed(started), "runtime_timeout"));
-                }
             }
         }, runtimeTimeout.toNanos(), TimeUnit.NANOSECONDS);
         ScheduledFuture<?> hardFuture = watchdog.schedule(() -> {
@@ -120,25 +118,11 @@ public final class ProductionShadowTaskExecutor implements AutoCloseable {
         }
     }
 
-    public int queueDepth() {
-        return executor.getQueue().size();
-    }
-
-    public int activeCount() {
-        return executor.getActiveCount();
-    }
-
-    public int maximumConcurrency() {
-        return executor.getMaximumPoolSize();
-    }
-
-    public int queueCapacity() {
-        return executor.getQueue().size() + executor.getQueue().remainingCapacity();
-    }
-
-    public boolean isShutdown() {
-        return executor.isShutdown();
-    }
+    public int queueDepth() { return executor.getQueue().size(); }
+    public int activeCount() { return executor.getActiveCount(); }
+    public int maximumConcurrency() { return executor.getMaximumPoolSize(); }
+    public int queueCapacity() { return executor.getQueue().size() + executor.getQueue().remainingCapacity(); }
+    public boolean isShutdown() { return executor.isShutdown(); }
 
     @Override
     public void close() {

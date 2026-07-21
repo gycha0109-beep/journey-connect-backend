@@ -141,9 +141,10 @@ public class ProductionSearchShadowConfiguration {
             ProductionShadowCohortSelector cohort,
             ProductionSearchShadowSamplingGate sampling,
             ProductionShadowTaskExecutor executor,
-            SearchShadowMetricSink metrics) {
+            SearchShadowMetricSink metrics,
+            Clock productionSearchShadowClock) {
         return new ProductionSearchShadowOperationalGate(
-                config, killSwitch, cohort, sampling, executor, metrics);
+                config, killSwitch, cohort, sampling, executor, metrics, productionSearchShadowClock);
     }
 
     @Bean

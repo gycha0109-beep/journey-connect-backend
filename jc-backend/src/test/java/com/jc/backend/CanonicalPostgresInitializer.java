@@ -38,7 +38,9 @@ public final class CanonicalPostgresInitializer
             "23_recommendation_p1_profile_policy.sql",
             "24_recommendation_p1_profile_policy_smoke_test.sql",
             "25_recommendation_p2_evaluation_release.sql",
-            "26_recommendation_p2_evaluation_release_smoke_test.sql");
+            "26_recommendation_p2_evaluation_release_smoke_test.sql",
+            "27_search_document_projection.sql",
+            "28_search_document_projection_smoke_test.sql");
 
     private static final String EXTERNAL_URL = setting("jc.test.db.url", "JC_TEST_DB_URL", "");
     private static final String EXTERNAL_USERNAME = setting(
@@ -68,10 +70,16 @@ public final class CanonicalPostgresInitializer
             String username,
             String password) {
         TestPropertyValues.of(
+                "spring.flyway.enabled=false",
                 "spring.datasource.url=" + jdbcUrl,
                 "spring.datasource.username=" + username,
                 "spring.datasource.password=" + password,
-                "spring.datasource.driver-class-name=org.postgresql.Driver")
+                "spring.datasource.driver-class-name=org.postgresql.Driver",
+                "app.database.role-routing.verify-on-startup=false",
+                "app.security.jwt-secret=ip125-test-only-jwt-secret-0123456789abcdef0123456789abcdef",
+                "app.security.access-token-minutes=120",
+                "app.security.refresh-token-days=14",
+                "app.cors.allowed-origins=http://localhost:5173")
                 .applyTo(context.getEnvironment());
     }
 
