@@ -78,9 +78,9 @@ BEGIN
   VALUES('dp5-assignment','recommendation-p1','experiment-v1','user:'||v_user_id,v_user_id,'user',
     'treatment',1234,repeat('e',64),'2026-07-19T00:00:00Z','dp5-assignment-build-v1');
   INSERT INTO public.recommendation_p2_experiment_exposure(
-    exposure_id,assignment_id,run_id,user_id,session_id,variant,exposed_at,exposure_fingerprint)
+    exposure_id,assignment_id,run_id,user_id,session_id,variant,exposed_at,exposure_fingerprint,created_at)
   VALUES('dp5-exposure','dp5-assignment','dp5-treatment',v_user_id,'dp5-session','treatment',
-    '2026-07-19T00:00:01Z',repeat('f',64));
+    '2026-07-19T00:00:01Z',repeat('f',64),'2026-07-19T00:00:02Z');
 
   v_profile_fp := encode(public.digest(convert_to('{"profile":1}','UTF8'),'sha256'),'hex');
   v_profile2_fp := encode(public.digest(convert_to('{"profile":2}','UTF8'),'sha256'),'hex');
@@ -143,6 +143,14 @@ BEGIN
     '2026-07-19T00:00:00Z','2026-07-22T00:00:00Z','2026-07-22T00:00:00Z','event:dp5-profile-2',
     v_profile2_members,v_source_set,v_definition);
   IF v_disp<>'CONFLICT' THEN RAISE EXCEPTION 'checkpoint CONFLICT failed'; END IF;
+  -- caller-supplied source timestamps cannot diverge from the authoritative source row.
+  BEGIN
+    PERFORM public.persist_data_source_checkpoint_v1('checkpoint:timestamp-tamper','data-platform-event-v1',
+      'platform-event-v1','user-behavior-event-v1','2026-07-19T00:00:00Z','2026-07-22T00:00:00Z',
+      '2026-07-22T00:00:00Z','event:dp5-profile-2',
+      jsonb_set(v_profile2_members,'{0,occurredAt}','"2026-07-21T00:00:02Z"'::jsonb),v_source_set,v_definition);
+    RAISE EXCEPTION 'source timestamp tamper unexpectedly succeeded';
+  EXCEPTION WHEN SQLSTATE '23514' THEN NULL; END;
   -- invalid fingerprints fail closed.
   BEGIN
     PERFORM public.persist_data_source_checkpoint_v1('checkpoint:invalid','data-platform-event-v1','platform-event-v1',
@@ -230,7 +238,7 @@ BEGIN
   SELECT payload_fingerprint INTO v_outcome_fp FROM public.data_platform_event_v1 WHERE event_id='event:dp5-outcome-click';
   v_members := jsonb_build_array(
     jsonb_build_object('sourceKind','p2_exposure','sourceEventRef','p2_exposure:dp5-exposure','sourceFingerprint',repeat('f',64),
-      'adapterEvidenceRef',NULL,'occurredAt','2026-07-19T00:00:01Z','ingestedAt','2026-07-19T00:00:01Z'),
+      'adapterEvidenceRef',NULL,'occurredAt','2026-07-19T00:00:01Z','ingestedAt','2026-07-19T00:00:02Z'),
     jsonb_build_object('sourceKind','canonical_event','sourceEventRef','event:dp5-outcome-click','sourceFingerprint',v_outcome_fp,
       'adapterEvidenceRef',NULL,'occurredAt','2026-07-19T00:00:30Z','ingestedAt','2026-07-19T00:00:31Z'));
   SELECT public.data_projection_fingerprint_v1('data-source-set-sha256-v1',jsonb_build_object('sources',jsonb_agg(

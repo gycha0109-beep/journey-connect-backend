@@ -55,6 +55,10 @@ DECLARE
   v_member jsonb;
   v_count bigint;
   v_id uuid;
+  v_occurred_at timestamptz;
+  v_ingested_at timestamptz;
+  v_actual_occurred_at timestamptz;
+  v_actual_ingested_at timestamptz;
 BEGIN
   IF p_checkpoint_ref IS NULL OR p_checkpoint_ref !~ '^checkpoint:[A-Za-z0-9][A-Za-z0-9._:~-]{0,149}$'
      OR p_source_stream IS NULL OR p_source_stream !~ '^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$'
@@ -75,35 +79,59 @@ BEGIN
   END IF;
 
   FOR v_member IN SELECT value FROM jsonb_array_elements(p_source_members) LOOP
+    BEGIN
+      v_occurred_at := (v_member->>'occurredAt')::timestamptz;
+      v_ingested_at := (v_member->>'ingestedAt')::timestamptz;
+    EXCEPTION WHEN invalid_datetime_format OR datetime_field_overflow THEN
+      RAISE EXCEPTION 'Invalid checkpoint source timestamp.' USING ERRCODE = '22023';
+    END;
     IF v_member->>'sourceKind' NOT IN ('canonical_event','adapter_output','p2_exposure')
        OR v_member->>'sourceEventRef' IS NULL
        OR NOT public.data_projection_fingerprint_valid_v1(v_member->>'sourceFingerprint')
-       OR (v_member->>'occurredAt')::timestamptz < p_event_time_from
-       OR (v_member->>'occurredAt')::timestamptz >= p_event_time_to
-       OR (v_member->>'ingestedAt')::timestamptz > p_ingested_at_upper_bound THEN
+       OR v_occurred_at < p_event_time_from
+       OR v_occurred_at >= p_event_time_to
+       OR v_ingested_at < v_occurred_at
+       OR v_ingested_at > p_ingested_at_upper_bound THEN
       RAISE EXCEPTION 'Invalid checkpoint source member.' USING ERRCODE = '22023';
     END IF;
     IF v_member->>'sourceKind' = 'canonical_event' THEN
-      IF NOT EXISTS (SELECT 1 FROM public.data_platform_event_v1 e
-                     WHERE e.event_id = v_member->>'sourceEventRef'
-                       AND e.payload_fingerprint = v_member->>'sourceFingerprint') THEN
+      IF v_member->>'adapterEvidenceRef' IS NOT NULL THEN
+        RAISE EXCEPTION 'Canonical source cannot carry adapter evidence.' USING ERRCODE = '22023';
+      END IF;
+      SELECT e.occurred_at,e.received_at INTO v_actual_occurred_at,v_actual_ingested_at
+      FROM public.data_platform_event_v1 e
+      WHERE e.event_id=v_member->>'sourceEventRef'
+        AND e.payload_fingerprint=v_member->>'sourceFingerprint';
+      IF NOT FOUND THEN
         RAISE EXCEPTION 'Canonical source event missing or fingerprint mismatch.' USING ERRCODE = '23503';
       END IF;
     ELSIF v_member->>'sourceKind' = 'adapter_output' THEN
-      IF v_member->>'adapterEvidenceRef' IS NULL OR NOT EXISTS (
-        SELECT 1 FROM public.data_recommendation_adapter_output_v1 o
-        WHERE o.adapter_output_id = (v_member->>'adapterEvidenceRef')::uuid
-          AND o.source_event_ref = v_member->>'sourceEventRef'
-          AND o.source_fingerprint = v_member->>'sourceFingerprint'
-          AND o.mapping_status = 'mapped_shadow') THEN
+      IF v_member->>'adapterEvidenceRef' IS NULL THEN
+        RAISE EXCEPTION 'Adapter source requires evidence reference.' USING ERRCODE = '22023';
+      END IF;
+      SELECT o.mapped_occurred_at,o.created_at INTO v_actual_occurred_at,v_actual_ingested_at
+      FROM public.data_recommendation_adapter_output_v1 o
+      WHERE o.adapter_output_id=(v_member->>'adapterEvidenceRef')::uuid
+        AND o.source_event_ref=v_member->>'sourceEventRef'
+        AND o.source_fingerprint=v_member->>'sourceFingerprint'
+        AND o.mapping_status='mapped_shadow';
+      IF NOT FOUND THEN
         RAISE EXCEPTION 'Adapter output evidence missing, rejected or conflicted.' USING ERRCODE = '23503';
       END IF;
     ELSE
-      IF NOT EXISTS (SELECT 1 FROM public.recommendation_p2_experiment_exposure x
-                     WHERE 'p2_exposure:' || x.exposure_id = v_member->>'sourceEventRef'
-                       AND x.exposure_fingerprint = v_member->>'sourceFingerprint') THEN
+      IF v_member->>'adapterEvidenceRef' IS NOT NULL THEN
+        RAISE EXCEPTION 'P2 exposure cannot carry adapter evidence.' USING ERRCODE = '22023';
+      END IF;
+      SELECT x.exposed_at,x.created_at INTO v_actual_occurred_at,v_actual_ingested_at
+      FROM public.recommendation_p2_experiment_exposure x
+      WHERE 'p2_exposure:'||x.exposure_id=v_member->>'sourceEventRef'
+        AND x.exposure_fingerprint=v_member->>'sourceFingerprint';
+      IF NOT FOUND THEN
         RAISE EXCEPTION 'P2 exposure source missing or fingerprint mismatch.' USING ERRCODE = '23503';
       END IF;
+    END IF;
+    IF v_occurred_at<>v_actual_occurred_at OR v_ingested_at<>v_actual_ingested_at THEN
+      RAISE EXCEPTION 'Checkpoint source timestamps do not match authority.' USING ERRCODE = '23514';
     END IF;
   END LOOP;
 
@@ -218,13 +246,24 @@ DECLARE
   v_source_count bigint;
   v_validation_id uuid;
   v_source_member jsonb;
+  v_record_source_count bigint;
+  v_record_lineage varchar(64);
+  v_outcome_ref text;
+  v_outcome_type text;
+  v_outcome_occurred_at timestamptz;
+  v_clicked boolean;
+  v_liked boolean;
+  v_saved boolean;
+  v_shared boolean;
   v_exposure public.recommendation_p2_experiment_exposure%ROWTYPE;
   v_assignment public.recommendation_p2_experiment_assignment%ROWTYPE;
   v_recommendation_run public.recommendation_run%ROWTYPE;
 BEGIN
   SELECT * INTO v_checkpoint FROM public.data_source_checkpoint_v1 WHERE checkpoint_ref = p_source_checkpoint_ref;
   IF NOT FOUND THEN RAISE EXCEPTION 'Source checkpoint missing.' USING ERRCODE = '23503'; END IF;
-  IF p_projection_name NOT IN ('recommendation-profile-input-v1','experiment-outcome-input-v1')
+  IF p_projection_as_of IS NULL
+   OR p_projection_as_of < v_checkpoint.event_time_from
+   OR p_projection_name NOT IN ('recommendation-profile-input-v1','experiment-outcome-input-v1')
      OR p_projection_schema_version <> p_projection_name
      OR NOT public.data_projection_version_valid_v1(p_projection_policy_version)
      OR NOT public.data_projection_version_valid_v1(p_feature_policy_version)
@@ -257,12 +296,17 @@ BEGIN
     SELECT m.value INTO v_source_member FROM jsonb_array_elements(v_checkpoint.source_members) m
       WHERE m->>'sourceEventRef'=v_entry->>'sourceEventRef'
         AND m->>'sourceFingerprint'=v_entry->>'sourceFingerprint' LIMIT 1;
-    IF v_entry->>'sourceKind' <> v_source_member->>'sourceKind' THEN
-      RAISE EXCEPTION 'Lineage source kind mismatch.' USING ERRCODE = '22023';
+    IF v_entry->>'sourceKind' <> v_source_member->>'sourceKind'
+       OR (v_source_member->>'occurredAt')::timestamptz >= p_projection_as_of THEN
+      RAISE EXCEPTION 'Lineage source kind or as-of boundary mismatch.' USING ERRCODE = '22023';
     END IF;
     IF v_entry->>'sourceKind'='adapter_output'
        AND COALESCE(v_entry->>'adapterEvidenceRef','') <> COALESCE(v_source_member->>'adapterEvidenceRef','') THEN
       RAISE EXCEPTION 'Adapter lineage evidence mismatch.' USING ERRCODE = '22023';
+    END IF;
+    IF v_entry->>'sourceKind'<>'adapter_output'
+       AND (v_entry->>'adapterEvidenceRef' IS NOT NULL OR v_entry->>'mappingPolicyVersion' IS NOT NULL) THEN
+      RAISE EXCEPTION 'Non-adapter lineage carries adapter evidence.' USING ERRCODE = '22023';
     END IF;
     IF public.data_projection_fingerprint_v1('data-projection-lineage-entry-sha256-v1',
          v_entry - 'sourceKind' - 'lineageEntryFingerprint') <> v_entry->>'lineageEntryFingerprint' THEN
@@ -272,16 +316,45 @@ BEGIN
 
   FOR v_record IN SELECT value FROM jsonb_array_elements(p_records) LOOP
     IF v_record->>'projectionName' <> p_projection_name
+       OR v_record->>'sourceCheckpointRef' <> p_source_checkpoint_ref
        OR NOT public.data_projection_fingerprint_valid_v1(v_record->>'projectionRecordFingerprint')
        OR public.data_projection_fingerprint_v1('data-projection-record-sha256-v1',
             v_record - 'recordRef' - 'projectionRecordFingerprint') <> v_record->>'projectionRecordFingerprint' THEN
-      RAISE EXCEPTION 'Projection record fingerprint mismatch.' USING ERRCODE = '22023';
+      RAISE EXCEPTION 'Projection record fingerprint or binding mismatch.' USING ERRCODE = '22023';
     END IF;
-    IF NOT EXISTS (SELECT 1 FROM jsonb_array_elements(p_lineage) e
-                   WHERE e->>'projectionRecordRef'=v_record->>'recordRef') THEN
+    SELECT count(*),public.data_projection_fingerprint_v1('data-projection-lineage-sha256-v1',
+             jsonb_build_object('entries',jsonb_agg(e->>'lineageEntryFingerprint' ORDER BY e->>'lineageEntryFingerprint')))
+      INTO v_record_source_count,v_record_lineage
+    FROM jsonb_array_elements(p_lineage) e
+    WHERE e->>'projectionRecordRef'=v_record->>'recordRef';
+    IF v_record_source_count=0
+       OR (v_record->>'sourceEventCount')::bigint<>v_record_source_count
+       OR v_record->>'sourceLineageFingerprint'<>v_record_lineage THEN
       RAISE EXCEPTION 'Projection record lineage is incomplete.' USING ERRCODE = '23514';
     END IF;
+    IF p_projection_name='recommendation-profile-input-v1' THEN
+      IF (v_record->>'projectionAsOf')::timestamptz<>p_projection_as_of
+         OR v_record->>'profileSchemaVersion'<>p_projection_schema_version
+         OR v_record->>'projectionPolicyVersion'<>p_projection_policy_version
+         OR (v_record->>'activityWindowDays')::integer NOT IN (7,30,90)
+         OR EXISTS (
+           SELECT 1 FROM jsonb_array_elements(p_lineage) e
+           JOIN LATERAL (
+             SELECT m.value FROM jsonb_array_elements(v_checkpoint.source_members) m
+             WHERE m->>'sourceEventRef'=e->>'sourceEventRef'
+               AND m->>'sourceFingerprint'=e->>'sourceFingerprint' LIMIT 1) sm ON true
+           WHERE e->>'projectionRecordRef'=v_record->>'recordRef'
+             AND (sm.value->>'occurredAt')::timestamptz <
+                 p_projection_as_of-make_interval(days=>(v_record->>'activityWindowDays')::integer)) THEN
+        RAISE EXCEPTION 'Profile projection window or version invalid.' USING ERRCODE='23514';
+      END IF;
+    END IF;
   END LOOP;
+  IF EXISTS (SELECT 1 FROM jsonb_array_elements(p_lineage) e
+             WHERE NOT EXISTS (SELECT 1 FROM jsonb_array_elements(p_records) r
+                               WHERE r->>'recordRef'=e->>'projectionRecordRef')) THEN
+    RAISE EXCEPTION 'Orphan projection lineage.' USING ERRCODE='23514';
+  END IF;
 
   SELECT public.data_projection_fingerprint_v1('data-projection-snapshot-sha256-v1',
     jsonb_build_object(
@@ -383,8 +456,63 @@ BEGIN
           FROM jsonb_array_elements(v_checkpoint.source_members) m
           WHERE m->>'sourceEventRef'=ref.value LIMIT 1) event_time ON true
         WHERE event_time.occurred_at IS NULL OR event_time.occurred_at < v_exposure.exposed_at
-          OR event_time.occurred_at >= v_exposure.exposed_at + interval '7 days') THEN
+          OR event_time.occurred_at >= v_exposure.exposed_at + interval '7 days'
+          OR event_time.occurred_at >= p_projection_as_of) THEN
         RAISE EXCEPTION 'P2 outcome window violation.' USING ERRCODE='23514';
+      END IF;
+      IF NOT EXISTS (
+        SELECT 1 FROM jsonb_array_elements(p_lineage) e
+        WHERE e->>'projectionRecordRef'=v_record->>'recordRef'
+          AND e->>'sourceKind'='p2_exposure'
+          AND e->>'sourceEventRef'='p2_exposure:'||v_exposure.exposure_id) THEN
+        RAISE EXCEPTION 'P2 exposure lineage missing.' USING ERRCODE='23514';
+      END IF;
+      IF (SELECT count(*) FROM jsonb_array_elements_text(v_record->'outcomeEventRefs'))<>
+         (SELECT count(DISTINCT value) FROM jsonb_array_elements_text(v_record->'outcomeEventRefs')) THEN
+        RAISE EXCEPTION 'Duplicate outcome event reference.' USING ERRCODE='23505';
+      END IF;
+      v_clicked:=false; v_liked:=false; v_saved:=false; v_shared:=false;
+      FOR v_outcome_ref IN SELECT value FROM jsonb_array_elements_text(v_record->'outcomeEventRefs') LOOP
+        SELECT m.value INTO v_source_member FROM jsonb_array_elements(v_checkpoint.source_members) m
+        WHERE m->>'sourceEventRef'=v_outcome_ref LIMIT 1;
+        IF NOT FOUND OR v_source_member->>'sourceKind' NOT IN ('canonical_event','adapter_output') THEN
+          RAISE EXCEPTION 'Outcome source missing or has wrong authority.' USING ERRCODE='23503';
+        END IF;
+        v_outcome_occurred_at:=(v_source_member->>'occurredAt')::timestamptz;
+        IF v_outcome_occurred_at<v_exposure.exposed_at
+           OR v_outcome_occurred_at>=v_exposure.exposed_at+interval '7 days'
+           OR v_outcome_occurred_at>=p_projection_as_of THEN
+          RAISE EXCEPTION 'P2 outcome window violation.' USING ERRCODE='23514';
+        END IF;
+        IF v_source_member->>'sourceKind'='canonical_event' THEN
+          SELECT event_type INTO v_outcome_type FROM public.data_platform_event_v1
+          WHERE event_id=v_outcome_ref AND payload_fingerprint=v_source_member->>'sourceFingerprint';
+        ELSE
+          SELECT mapped_event_type INTO v_outcome_type FROM public.data_recommendation_adapter_output_v1
+          WHERE adapter_output_id=(v_source_member->>'adapterEvidenceRef')::uuid
+            AND source_event_ref=v_outcome_ref
+            AND source_fingerprint=v_source_member->>'sourceFingerprint'
+            AND mapping_status='mapped_shadow';
+        END IF;
+        IF v_outcome_type NOT IN ('recommendation_click','post_like','post_bookmark','post_share') THEN
+          RAISE EXCEPTION 'Unsupported P2 outcome event type.' USING ERRCODE='23514';
+        END IF;
+        v_clicked:=v_clicked OR v_outcome_type='recommendation_click';
+        v_liked:=v_liked OR v_outcome_type='post_like';
+        v_saved:=v_saved OR v_outcome_type='post_bookmark';
+        v_shared:=v_shared OR v_outcome_type='post_share';
+      END LOOP;
+      IF (v_record->>'clicked')::boolean<>v_clicked
+         OR (v_record->>'liked')::boolean<>v_liked
+         OR (v_record->>'saved')::boolean<>v_saved
+         OR (v_record->>'shared')::boolean<>v_shared
+         OR EXISTS (
+           SELECT 1 FROM jsonb_array_elements(p_lineage) e
+           WHERE e->>'projectionRecordRef'=v_record->>'recordRef'
+             AND e->>'sourceKind'<>'p2_exposure'
+             AND NOT EXISTS (SELECT 1 FROM jsonb_array_elements_text(v_record->'outcomeEventRefs') r
+                             WHERE r.value=e->>'sourceEventRef')) THEN
+        RAISE EXCEPTION 'P2 outcome aggregation mismatch.' USING ERRCODE='23514';
       END IF;
       INSERT INTO public.data_experiment_outcome_input_projection_v1(
         snapshot_ref,projection_record_ref,experiment_ref,experiment_version,variant_ref,exposure_ref,run_ref,
