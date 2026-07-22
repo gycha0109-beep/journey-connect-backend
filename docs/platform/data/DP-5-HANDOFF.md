@@ -2,15 +2,16 @@
 
 ## Status
 
-`IMPLEMENTED / EXACT-HEAD CI PENDING`
+`DP5_IMPLEMENTATION_COMPLETE`
 
 ## Baseline
 
 - authoritative implementation base: `67a9b7515dbfd41360160c8059ac387e74cbdf6b`;
+- validated implementation HEAD: `305f3c689c2487ad2a9bd4791bde21517c0ebc72`;
 - allocation PR #15: merged;
-- implementation PR: #16;
-- SQL `01..37`: protected;
-- SQL `38..42`: implemented;
+- implementation PR: #16, unmerged;
+- SQL `01..37`: protected and unchanged;
+- SQL `38..42`: implemented and validated;
 - SQL `43+`: unallocated.
 
 ## Completed
@@ -22,12 +23,20 @@
 - append-only run/status/snapshot/lineage/validation/conflict evidence;
 - deterministic source, record, snapshot and lineage fingerprints;
 - atomic `NEW / DUPLICATE / CONFLICT` persistence;
-- exact-one-NEW concurrency verifier;
+- concurrent same identity exactly one `NEW`;
 - hardened writer/reader/function-owner roles;
 - aggregate-only safe view;
 - 90-day retention metadata without purge;
-- PostgreSQL 15/18 validation and protected regression wiring;
+- PostgreSQL 15/18 validation and protected regressions;
 - machine-readable evidence.
+
+## Verification
+
+- Data PostgreSQL CI `29917537854`: PASS;
+- Data Contract CI `29917537842`: PASS;
+- Recommendation P0 Database CI `29917537938`: PASS;
+- Backend PR CI `29917537605`: PASS;
+- SC Baseline Reconciliation `29917537971`: PASS.
 
 ## Protected state
 
@@ -46,8 +55,8 @@
 
 ## Remaining gate
 
-Exact-head GitHub Actions must pass before the verdict changes to `DP5_IMPLEMENTATION_COMPLETE`. Do not merge PR #16 without explicit user approval.
+PR #16 must be reviewed and merged with explicit user approval. No production or traffic activation is implied.
 
 ## DP-6 entry
 
-DP-6 remains blocked until PR #16 exact-head PostgreSQL 15/18, Data Contract, Recommendation, Backend and SC gates pass and DP-5 is merged into main.
+The DP-5 technical completion condition is satisfied. DP-6 may start only after PR #16 is merged into `main`, using the resulting merge commit as its authoritative baseline.
