@@ -4,13 +4,13 @@ pr_13_merged	GitHub PR metadata	PASS
 main_head	9a5785448ff300063b7f320c9f1043ef1863741e	PASS
 sql_assignment	SC-DP4-5-PERSISTENCE-ALLOCATION.md	PASS
 role_assignment	SC-DP4-5-PERSISTENCE-ALLOCATION.md	PASS
-sql_01_34_unchanged	protected diff	PENDING_CI
-sql_35_37	implementation diff	IMPLEMENTED
-postgresql_15	Data PostgreSQL CI	PENDING_CI
-postgresql_18	Data PostgreSQL CI	PENDING_CI
-concurrency	DP-4.5 multi-session fixture	PENDING_CI
-dp4_contract_regression	Data Contract CI	PENDING_CI
-recommendation_regression	Recommendation PostgreSQL 15/18	PENDING_CI
-backend_regression	Backend IP-12.5	PENDING_CI
-sc_reconciliation	SC Baseline Reconciliation	PENDING_CI
-final_verdict	DP45_IMPLEMENTATION_COMPLETE	PENDING_EXACT_HEAD
+sql_01_34_unchanged	protected diff	PASS
+sql_35_37	implementation diff	PASS
+postgresql_15	Data PostgreSQL CI run 29895786673	PASS
+postgresql_18	Data PostgreSQL CI run 29895786673	PASS
+concurrency	DP-4.5 multi-session fixture run 29895786673	PASS
+dp4_contract_regression	Data Contract CI run 29895786611	PASS
+recommendation_regression	Recommendation PostgreSQL 15/18 run 29895786652	PASS
+backend_regression	Backend IP-12.5 run 29895786618	PASS
+sc_reconciliation	SC Baseline Reconciliation run 29895786609	PASS
+final_verdict	DP45_IMPLEMENTATION_COMPLETE	CONFIRMED_CANDIDATE_HEAD
