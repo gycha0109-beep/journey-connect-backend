@@ -13,6 +13,7 @@ on:
       - "verification/dp2/**"
       - "verification/dp3/**"
       - "verification/dp4/**"
+      - "verification/dp4-5/**"
       - ".github/workflows/data-contract-ci.yml"
   workflow_dispatch:
 
@@ -25,7 +26,7 @@ concurrency:
 
 jobs:
   data-contracts:
-    name: Java 21 / DP-1 through DP-4 contracts
+    name: Java 21 / DP-1 through DP-4 + DP-4.5 blocker
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -53,11 +54,13 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          mkdir -p ../verification/dp4/runtime
+          mkdir -p ../verification/dp4/runtime ../verification/dp4-5/runtime
           ./gradlew :jc-data-contracts:check --stacktrace --no-daemon 2>&1 \
             | tee ../verification/dp4/runtime/DP4_DATA_CONTRACT_CI.log
           python ../verification/dp4/run_dp4_static_verification.py 2>&1 \
             | tee ../verification/dp4/runtime/DP4_STATIC_CI.log
+          python ../verification/dp4-5/run_dp45_blocker_verification.py 2>&1 \
+            | tee ../verification/dp4-5/runtime/DP45_BLOCKER_STATIC_CI.log
 
       - name: Run Recommendation Java Core regression
         shell: bash
@@ -70,9 +73,10 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dp4-data-contract-ci-evidence
+          name: dp45-data-contract-ci-evidence
           path: |
             verification/dp4/runtime/**
+            verification/dp4-5/runtime/**
             jc-data-contracts/build/reports/**
             jc-data-contracts/build/test-results/**
             jc-recommendation-core/build/reports/**
