@@ -17,6 +17,7 @@ REQUIRED = [
     "docs/platform/governance/SC-DP3-ENTRY-DECISIONS.md",
     "docs/platform/governance/SC-DP4-5-PERSISTENCE-ALLOCATION.md",
     "docs/platform/governance/SC-DP5-PROJECTION-ALLOCATION.md",
+    "docs/platform/governance/SC-DP6-QUALITY-ALLOCATION.md",
     "docs/platform/governance/SC-HANDOFF.md",
     "docs/platform/data/DP-0-DATA-PLATFORM-CONTRACT-FOUNDATION.md",
     "docs/platform/data/DP-0-P2-BASELINE-ALIGNMENT.md",
@@ -29,18 +30,23 @@ REQUIRED = [
     "docs/platform/data/DATA-LINEAGE-AND-SNAPSHOT-V1.md",
     "docs/platform/data/DATA-RETENTION-AND-PRIVACY-V1.md",
     "docs/platform/data/P0-RECOMMENDATION-EVENT-ADAPTER-V1.md",
+    "docs/platform/data/DP-6-DATA-QUALITY-AND-LINEAGE-VALIDATION-HARDENING.md",
+    "docs/platform/data/DP-6-QUALITY-MATRIX.md",
+    "docs/platform/data/DP-6-HANDOFF.md",
     "docs/platform/proposals/DP-0-TRACK-CHANGE-PROPOSAL.md",
 ]
 ALLOWED = (
     "docs/platform/governance/", "docs/platform/data/", "docs/platform/proposals/",
     "verification/sc-dp1-baseline-reconciliation/", "verification/dp1/", "verification/dp2/",
     "verification/dp3/", "verification/dp4/", "verification/dp4-5/", "verification/dp5/",
+    "verification/dp6/",
     ".github/workflows/sc-baseline-reconciliation.yml",
     ".github/workflows/data-contract-ci.yml",
     ".github/workflows/data-postgres-ci.yml",
     ".github/workflows/recommendation-p0-db-ci.yml",
     ".github/workflows/backend-pr-ci.yml",
     ".github/workflows/dp5-governance-finalize.yml",
+    ".github/workflows/dp6-allocation-ci.yml",
     "jc-backend/settings.gradle.kts",
     "jc-backend/src/test/java/com/jc/backend/search/shadow/production/IP12ProductionShadowStaticTest.java",
     "jc-data-contracts/",
@@ -70,8 +76,10 @@ DP5_SQL = {
     "database/journey-connect-db-v2.7/42_data_projection_snapshot_validation.sql",
 }
 
+
 def fail(message: str) -> None:
     raise SystemExit(f"FAIL: {message}")
+
 
 for rel in REQUIRED:
     if not (ROOT / rel).is_file():
@@ -127,6 +135,26 @@ for marker in (
     if marker not in allocation5:
         fail(f"DP-5 allocation marker missing: {marker}")
 
+allocation6 = (ROOT / "docs/platform/governance/SC-DP6-QUALITY-ALLOCATION.md").read_text(encoding="utf-8")
+for marker in (
+    "PROPOSED / NON-AUTHORITATIVE UNTIL MERGED",
+    "BLOCKED UNTIL THIS ALLOCATION IS MERGED",
+    "05a25771cd99d87891504fc00890ab918b970acf",
+    "43_data_quality_validation_foundation.sql",
+    "44_data_quality_metrics_and_verdict.sql",
+    "45_data_quality_persistence_and_roles.sql",
+    "46_data_quality_rebuild_and_safe_views.sql",
+    "47_data_quality_validation.sql",
+    "jc_data_quality_writer",
+    "jc_data_quality_reader",
+    "jc_data_quality_function_owner",
+    "data-quality-policy-v1",
+    "SQL `01..42` remains protected and unchanged",
+    "SQL `48+` remains unallocated",
+):
+    if marker not in allocation6:
+        fail(f"DP-6 allocation marker missing: {marker}")
+
 link_re = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 for rel in REQUIRED:
     path = ROOT / rel
@@ -142,7 +170,8 @@ for contract_id in (
     "platform-event-v1", "data-platform-architecture-v1",
     "event-idempotency-fingerprint-v1", "data-lineage-snapshot-v1",
     "recommendation-profile-input-v1", "experiment-outcome-input-v1",
-    "data-projection-snapshot-v1",
+    "data-projection-snapshot-v1", "data-quality-policy-v1",
+    "data-quality-validation-input-sha256-v1", "data-quality-verdict-sha256-v1",
 ):
     if contract_id not in registry:
         fail(f"contract registry missing {contract_id}")
@@ -152,7 +181,7 @@ for number in range(1, 43):
         fail(f"canonical SQL {number:02d} missing or duplicated")
 if list((ROOT / "database/journey-connect-db-v2.7").glob("4[3-9]_*.sql")) \
         or list((ROOT / "database/journey-connect-db-v2.7").glob("[5-9][0-9]_*.sql")):
-    fail("SQL 43+ remains unallocated")
+    fail("SQL 43+ remains unallocated until DP-6 allocation merge")
 
 try:
     subprocess.run(["git", "fetch", "origin", "main", "--depth=1"], cwd=ROOT,
