@@ -36,7 +36,7 @@ jobs:
           set -euo pipefail
           cat .dp5-bootstrap/chunk-*.b64 > /tmp/dp5-changes.b64
           base64 --decode /tmp/dp5-changes.b64 > /tmp/dp5-changes.tgz
-          test "$(sha256sum /tmp/dp5-changes.tgz | awk '{print $1}')" = "2ee07c76911d89b2997364c1ce134526e53413427b15d81a1fc3da6894b996bf"
+          test "$(sha256sum /tmp/dp5-changes.tgz | awk '{print $1}')" = "e4f251a3028352802dc0b653736cf947cc29f956f8142e91cd112c3f17f0c8e6"
           tar -xzf /tmp/dp5-changes.tgz -C .
           git checkout -- .github/workflows
           chmod +x verification/dp5/run_dp5_concurrency.sh
