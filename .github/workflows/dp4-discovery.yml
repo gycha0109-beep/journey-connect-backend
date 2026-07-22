@@ -38,7 +38,12 @@ jobs:
             docs/platform/data/EVENT-IDEMPOTENCY-AND-FINGERPRINT-V1.md \
             docs/platform/governance/SC-DECISION-REGISTER.md \
             docs/platform/governance/SC-PLATFORM-REGISTRY.md \
+            jc-backend/build.gradle.kts \
+            jc-backend/settings.gradle.kts \
             | sort -u > "$out/all-paths.txt"
+
+          find .github/workflows -maxdepth 1 -type f -name '*.yml' -print | sort >> "$out/all-paths.txt"
+          sort -u -o "$out/all-paths.txt" "$out/all-paths.txt"
 
           while IFS= read -r path; do
             [[ -f "$path" ]] || continue
@@ -51,6 +56,6 @@ jobs:
           tar -czf "$out/dp4-authoritative-inputs.tar.gz" -C "$out/files" .
       - uses: actions/upload-artifact@v4
         with:
-          name: dp4-authoritative-inputs
+          name: dp4-authoritative-inputs-expanded
           path: verification/dp4-discovery/**
           if-no-files-found: error
