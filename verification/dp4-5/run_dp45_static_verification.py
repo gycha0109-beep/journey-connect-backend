@@ -119,7 +119,8 @@ for marker in (
 for marker in (
     "DUPLICATE",
     "CONFLICT",
-    "append-only",
+    "adapter run UPDATE unexpectedly succeeded",
+    "adapter output DELETE unexpectedly succeeded",
     "PUBLIC",
     "ROLLBACK;",
 ):
