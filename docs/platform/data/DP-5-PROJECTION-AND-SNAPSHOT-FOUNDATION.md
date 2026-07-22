@@ -1,297 +1,48 @@
-# DP-5 Projection and Snapshot Foundation
+# DP-5 Projection & Snapshot Foundation
 
-## Result
+## Status
 
-`DP5_IMPLEMENTATION_BLOCKED_BY_SC_ALLOCATION`
-
-## Preflight result
-
-Authoritative repository state checked before design:
-
-- `main`: `de4e9f308130e10948edb69ceb1b2bba0eebcd2e`;
-- PR `#14`: merged;
-- DP-4.5: `DP45_IMPLEMENTATION_COMPLETE`;
-- SQL `01..37`: present and protected;
-- SQL `38+`: absent and unallocated on authoritative `main`;
-- DP-5 projection writer/reader/function-owner roles: absent and unallocated;
-- production worker: not implemented;
-- scheduler, replay, backfill and production shadow: disabled or unauthorized.
-
-Because SQL and role authority is absent, this branch does not implement Java projection contracts, SQL, database objects, grants, fixtures, workers or runtime wiring. It supplies the implementation-ready contract and the SC allocation decision required to resume.
+`DP5_IMPLEMENTATION_COMPLETE`
 
 ## Purpose
 
-DP-5 will establish deterministic, shadow-only projections and immutable snapshots from approved Data sources.
+DP-5 converts approved Data facts into deterministic, immutable shadow projections. It does not feed production Recommendation serving.
 
 ```text
-fixed source checkpoint
-+ canonical Data events
-+ approved DP-4.5 mapped evidence
-+ exact P2 exposure facts where required
-→ deterministic projection records
-→ immutable snapshot
+canonical Data event
++ successful DP-4.5 mapped evidence
++ approved identity/P2 exposure binding
+→ immutable source checkpoint
+→ deterministic profile or experiment-outcome records
+→ immutable validated snapshot
 → append-only lineage and validation evidence
 ```
 
-The output is compatibility/evaluation evidence. It is not a production Recommendation input and cannot change recommendation results.
-
-## Source boundary
-
-Allowed sources:
-
-- canonical Data event store from DP-2;
-- successful mapped DP-4.5 output evidence;
-- exact read-only P2 experiment exposure and bound run status for the experiment outcome projection.
-
-Rejected sources:
-
-- production P1 profile snapshots as the source of `recommendation-profile-input-v1`;
-- Search tables;
-- general exposure substituted for P2 exposure;
-- unsupported, quarantined or conflicted adapter evidence;
-- guessed identity joins.
-
-## Projection definitions
+## Implemented capability
 
 ### Recommendation profile input
 
-Contract:
+`recommendation-profile-input-v1` produces shadow records for explicit 7, 30 and 90 day UTC windows. Each record contains deterministic event counts, stable region/content/tag rankings, positive/negative signals, source count, lineage fingerprint and record fingerprint.
+
+Stable ranking order is:
 
 ```text
-recommendation-profile-input-v1
+count DESC
+last_occurred_at DESC
+stable_reference ASC
 ```
-
-Projection record minimum meaning:
-
-```text
-projection_subject_ref
-projection_as_of
-source_checkpoint_ref
-profile_schema_version
-projection_policy_version
-activity_windows
-interaction_counts
-recent_regions
-recent_content_refs
-recent_tag_refs
-engagement_signals
-negative_signals
-source_event_count
-source_lineage_fingerprint
-projection_record_fingerprint
-```
-
-Rules:
-
-- shadow-only compatibility input;
-- explicit 7, 30 and 90 day UTC windows;
-- duplicate source facts counted once;
-- stable ranking: count descending, latest occurrence descending, reference ascending;
-- bounded lists and counts;
-- `subject:<opaque-id>` and `user:<numeric-id>` remain distinct;
-- profile feature semantics remain Data facts, not Intelligence-owned scoring, decay, saturation, segment or ranking policy.
 
 ### Experiment outcome input
 
-Contract:
+`experiment-outcome-input-v1` requires the protected `recommendation_p2_experiment_exposure` authority. Assignment, run, user, session, variant and exposure time are verified against the existing P2 tables. Only click/like/save/share facts in `[exposed_at, exposed_at + 7 days)` and before `projection_as_of` are accepted. Fallback is read from the bound `recommendation_run.run_status`. Existing engagement and fallback metric denominators remain unchanged.
 
-```text
-experiment-outcome-input-v1
-```
+### Checkpoint
 
-Projection record minimum meaning:
+A checkpoint fixes event-time range, ingestion upper bound, exact source members, source count, source-set fingerprint and checkpoint-definition fingerprint. Checkpoints are append-only. A later event requires a new checkpoint and cannot mutate a prior snapshot.
 
-```text
-experiment_ref
-variant_ref
-exposure_ref
-subject_ref
-exposed_at
-outcome_window
-clicked
-liked
-saved
-shared
-fallback_observed
-outcome_event_refs
-source_checkpoint_ref
-projection_record_fingerprint
-```
+Checkpoint persistence verifies caller-provided `occurredAt` and `ingestedAt` against the authoritative source row. Canonical events use event occurrence/receipt time, mapped adapter evidence uses mapped occurrence/evidence creation time, and P2 exposure uses exposure/evidence creation time. A caller cannot alter the source time boundary while retaining a valid source reference and fingerprint.
 
-Rules:
-
-- exposure authority is `recommendation_p2_experiment_exposure`;
-- assignment, exposure, run, subject, session and variant bindings must match;
-- click/like/save/share are observed only within the existing seven-day exposure window;
-- fallback uses the exposed `recommendation_run.run_status`;
-- exposure-free behavior is not emitted;
-- existing `engagement_rate` and `fallback_rate` denominators, dataset, evaluation and release evidence are unchanged.
-
-## Source checkpoint contract
-
-Minimum meaning:
-
-```text
-checkpoint_id
-source_stream
-source_contract_version
-source_schema_version
-event_time_from
-event_time_to
-ingested_at_upper_bound
-last_source_event_ref
-source_event_count
-source_set_fingerprint
-created_at
-```
-
-Checkpoint rules:
-
-- immutable after creation;
-- event time and ingestion time remain distinct;
-- source definition canonicalization is versioned;
-- same definition produces the same checkpoint fingerprint;
-- late events require a new checkpoint;
-- completed projection run without checkpoint is invalid.
-
-## Run and status contract
-
-Run definition minimum meaning:
-
-```text
-projection_run_id
-projection_name
-projection_schema_version
-projection_policy_version
-source_contract_version
-source_checkpoint_ref
-source_from
-source_to
-as_of
-identity_binding_version
-target_contract_version
-producer_build_id
-started_at
-created_at
-```
-
-Run status is separate append-only evidence:
-
-```text
-projection_run_ref
-status
-observed_at
-failure_code
-validation_ref
-created_at
-```
-
-Status values:
-
-```text
-started
-completed
-failed
-conflicted
-```
-
-The run definition is never updated to overwrite state.
-
-## Snapshot contract
-
-Minimum meaning:
-
-```text
-snapshot_id
-projection_run_ref
-projection_name
-projection_schema_version
-projection_policy_version
-source_checkpoint_ref
-snapshot_as_of
-record_count
-subject_count
-source_event_count
-content_fingerprint
-lineage_fingerprint
-snapshot_status
-created_at
-retention_class
-retention_policy_version
-expires_at
-```
-
-Status values:
-
-```text
-created
-validated
-rejected
-```
-
-Serving, active, production-ready and cutover-ready semantics are prohibited.
-
-## Lineage contract
-
-Each projection record has at least one valid lineage relation.
-
-```text
-snapshot_ref
-projection_record_ref
-source_event_ref
-source_fingerprint
-adapter_evidence_ref
-source_checkpoint_ref
-projection_policy_version
-mapping_policy_version
-created_at
-```
-
-Rules:
-
-- no projection record without lineage;
-- every source reference must exist;
-- source fingerprint must match its source authority;
-- adapter evidence reference is required when the record depends on DP-4.5 mapping;
-- no raw payload is copied into lineage;
-- identity and source reference are not safe-view metric dimensions;
-- bounded lineage summary is permitted only when exact traceability remains possible.
-
-## Deterministic fingerprint contract
-
-Fingerprint versions:
-
-```text
-data-source-set-sha256-v1
-data-projection-record-sha256-v1
-data-projection-snapshot-sha256-v1
-data-projection-lineage-sha256-v1
-```
-
-All outputs are SHA-256 lowercase hexadecimal, 64 characters.
-
-Semantic inclusion:
-
-- source references and source fingerprints in stable order;
-- source checkpoint fingerprint;
-- projection name, schema and policy version;
-- identity binding version;
-- target contract version;
-- canonical projection fields;
-- canonical lineage relations.
-
-Excluded:
-
-- run/snapshot/row UUID;
-- producer build ID;
-- worker ID;
-- database insertion order;
-- execution or creation time not part of `as_of`;
-- locale, timezone and process environment.
-
-Same checkpoint, source set, version boundary and `as_of` must reproduce the same record, snapshot and lineage fingerprints.
-
-## Idempotency
+### Snapshot and idempotency
 
 Logical identity:
 
@@ -304,58 +55,97 @@ projection_name
 + target_contract_version
 ```
 
-Behavior:
+- no existing identity: `NEW`;
+- same identity and same content/lineage fingerprints: `DUPLICATE` and existing snapshot returned;
+- same identity and different content: `CONFLICT`, existing snapshot preserved and `PROJECTION_SNAPSHOT_CONFLICT` appended.
 
-| Disposition | Required behavior |
-|---|---|
-| `NEW` | persist one immutable snapshot and complete lineage |
-| `DUPLICATE` | return the existing snapshot reference; create no snapshot |
-| `CONFLICT` | preserve the existing snapshot; append conflict evidence; return `PROJECTION_SNAPSHOT_CONFLICT` |
+Transaction-scoped advisory locks and unique constraints guarantee exactly one `NEW` under concurrent requests. Run, records, snapshot, lineage, validation and terminal status are inserted in one transaction.
 
-Atomic persistence requires a transaction-scoped advisory lock plus a matching unique constraint.
+## Deterministic boundary
 
-## Failure and privacy boundary
+Implemented fingerprint contracts:
 
-Stable failure codes are fixed by the SC allocation document. Identity, exposure, source, fingerprint, schema, lineage and privacy ambiguity fail closed.
+- `data-source-set-sha256-v1`;
+- `data-checkpoint-definition-sha256-v1`;
+- `data-projection-record-sha256-v1`;
+- `data-projection-snapshot-sha256-v1`;
+- `data-projection-lineage-entry-sha256-v1`;
+- `data-projection-lineage-sha256-v1`.
 
-No unrestricted user text, raw query, exact GPS, token, credential, raw provider payload, canonical event bytes, full idempotency key, raw numeric identity copied into opaque identity, stack trace or unrestricted error text may be persisted.
+All use SHA-256 lowercase hexadecimal. Canonical object keys, source lists, record fingerprints and lineage fingerprints use stable lexical ordering. Build ID, execution time, row UUID, insertion order, locale, timezone and map iteration order do not affect semantic output.
 
-## Proposed database boundary
+## Identity boundary
 
-Physical objects and SQL responsibilities are specified in:
+Supported source namespaces remain distinct:
 
-- `../governance/SC-DP5-PROJECTION-ALLOCATION.md`.
+- `subject:<opaque-id>`;
+- `user:<numeric-id>`.
 
-No object in that document exists on this branch. All are `PROPOSED_NOT_IMPLEMENTED` until the allocation PR is merged and a new implementation branch starts from the then-current `main`.
+A numeric user identity requires an explicit binding version, source, fingerprint and scope. Conflicting bindings for one source identity fail closed. No identity repository, inferred join or numeric-to-opaque conversion is implemented.
 
-## Verification performed in this blocked stage
+## Source and lineage validation
 
-Performed:
+Each projection record requires lineage. Persistence verifies that every lineage entry is a member of the immutable checkpoint and that the referenced source exists with the same fingerprint:
 
-- current main and PR #14 merge state inspection;
-- SQL `38+` allocation inspection;
-- source authority and P1/P2 compatibility review;
-- projection matrix consistency review;
-- documentation and machine-readable evidence validation;
-- protected-diff validation through CI.
+- canonical event: `data_platform_event_v1`;
+- mapped adapter evidence: `data_recommendation_adapter_output_v1` with `mapped_shadow` status;
+- P2 exposure: `recommendation_p2_experiment_exposure`.
 
-Not performed:
+Persistence also verifies per-record lineage count and fingerprint, rejects orphan lineage, rejects source rows at or after `projection_as_of`, validates profile window membership and validates P2 outcome event authority, type, deduplication, window and boolean aggregation. Raw payloads are not copied into lineage.
 
-- Java compilation for new DP-5 classes;
-- profile/outcome golden fixtures;
-- PostgreSQL 15/18 DP-5 fixtures;
-- concurrency, role/grant or runtime persistence validation.
+## Database boundary
 
-Unexecuted checks are not reported as PASS.
+SQL `38..42` implements:
 
-## Resume gate
+- checkpoint, run, status, snapshot, lineage, validation and conflict evidence;
+- profile projection records;
+- P2 outcome projection records;
+- atomic checkpoint and snapshot persistence;
+- writer/reader/function-owner separation;
+- aggregate-only safe reader view;
+- PostgreSQL 15/18 rollback-only validation.
 
-After the SC allocation PR is merged:
+SQL `01..37` remains unchanged. SQL `43+` remains unallocated.
 
-1. re-read the latest `main`;
-2. use only SQL `38..42`;
-3. implement pure Java contracts and deterministic fixtures;
-4. implement the approved PostgreSQL objects and roles;
-5. run PostgreSQL 15/18 and protected regressions;
-6. open a separate DP-5 implementation PR;
-7. do not merge without explicit user approval.
+## Access control
+
+- `jc_data_projection_writer`: execute approved persistence functions only;
+- `jc_data_projection_reader`: select aggregate safe view only;
+- `jc_data_projection_function_owner`: hardened `NOLOGIN` function owner with fixed `search_path` and minimum grants;
+- PUBLIC: no function execution or safe-view access.
+
+All projection evidence tables are insert-only through both trigger and privilege controls.
+
+## Retention
+
+Checkpoint, run/status, projection records, snapshot, lineage, validation and conflict evidence carry `projection_evidence_90d`, `data-retention-policy-v1` and `expires_at`. No purge function, deletion scheduler or physical-delete workflow is introduced.
+
+## Independent review corrections
+
+The implementation was independently re-reviewed after the first successful candidate. The following defects were corrected and covered by regression tests:
+
+- invalid source time ordering was previously accepted by the pure Java source contract;
+- checkpoint ingestion upper bounds could precede the event range;
+- conflicting identity bindings could escape as an unclassified exception;
+- experiment outcomes after `projection_as_of` could enter the Java result;
+- PostgreSQL checkpoint persistence trusted caller-supplied source timestamps without comparing them to authority rows;
+- PostgreSQL snapshot persistence did not fully reconcile per-record lineage, profile windows and P2 outcome booleans against checkpoint sources;
+- the SC protected regression gate still expected the pre-merge allocation wording.
+
+All corrections remain within SQL `38..42`, pure Java Data contracts/tests and verification/governance files. Production Java/Kotlin, Recommendation source, Search source, Intelligence source and SQL `01..37` remain unchanged.
+
+## Explicit non-responsibility
+
+DP-5 does not implement a worker, scheduler, replay, backfill, identity repository, production consumer, Recommendation write, P2 exposure creation/update, Search projection, dashboard, alerting, purge, production shadow activation or cutover.
+
+## Verification
+
+Independently reviewed implementation code HEAD: `1dad0d84ffcfacfc56a880e1296ef9430c2d43ed`.
+
+- Data PostgreSQL CI `29931366103`: PostgreSQL 15/18, SQL `01..42`, DP-2/DP-3/DP-4.5 concurrency regression and DP-5 exact-one-`NEW` concurrency PASS;
+- Data Contract CI `29931366173`: Java 21, `-Xlint:all -Werror`, DP-5 golden/determinism/failure/boundary fixtures and Recommendation Java Core PASS;
+- Recommendation P0 Database CI `29931367581`: Testcontainers PostgreSQL 15/18 PASS;
+- Backend PR CI `29931366129`: Backend/IP-12.5 protected readiness PASS;
+- SC Baseline Reconciliation `29931365762`: PASS.
+
+The final documentation/evidence commit is verified separately by PR exact-head checks to avoid embedding a self-referential commit hash. These results authorize the DP-5 implementation verdict only. PR #16 remains unmerged, production activation remains prohibited and DP-6 must use the eventual PR #16 merge commit as its authoritative main baseline.

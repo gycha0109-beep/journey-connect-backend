@@ -1,6 +1,6 @@
 check	expected	status
-record_without_lineage	blocked	DESIGNED
-source_reference_exists	required	DESIGNED
-source_fingerprint_match	required	DESIGNED
-raw_payload_in_lineage	forbidden	DESIGNED
-postgres_validation	complete_lineage	NOT_EXECUTED
+record_without_lineage	blocked	IMPLEMENTED
+canonical_source_validation	required	IMPLEMENTED
+adapter_source_validation	mapped_only	IMPLEMENTED
+p2_exposure_validation	required	IMPLEMENTED
+raw_payload_copy	absent	PASS

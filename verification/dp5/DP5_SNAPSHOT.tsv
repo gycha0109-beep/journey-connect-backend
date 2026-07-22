@@ -1,0 +1,6 @@
+check	expected	status
+append_only	true	IMPLEMENTED
+status	created_validated_rejected_only	IMPLEMENTED
+content_fingerprint	deterministic	IMPLEMENTED
+lineage_fingerprint	deterministic	IMPLEMENTED
+serving_state	absent	PASS

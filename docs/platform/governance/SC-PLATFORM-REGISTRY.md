@@ -12,7 +12,7 @@
 | Module | Package root | Owner | Status |
 |---|---|---|---|
 | `jc-intelligence-contracts` | `com.jc.intelligence.contract` | Intelligence | ACTIVE |
-| `jc-data-contracts` | `com.jc.data.contract.v1` | Data | ACTIVE / DP-4.5 MAIN INTEGRATED |
+| `jc-data-contracts` | `com.jc.data.contract.v1` | Data | ACTIVE / DP-5 IMPLEMENTED ON PR #16 |
 
 ## Identity schemes
 
@@ -46,13 +46,13 @@
 | `dp-2-postgresql-event-store-idempotency-v1` | ACTIVE / MAIN INTEGRATED |
 | `dp-4-recommendation-event-adapter-v1` | ACTIVE / MAIN INTEGRATED |
 | `dp-4-5-recommendation-adapter-shadow-evidence-v1` | ACTIVE / MAIN INTEGRATED |
-| `recommendation-profile-input-v1` | SHADOW-ONLY / DP-5 ASSIGNED AFTER SC MERGE |
-| `experiment-outcome-input-v1` | SHADOW-ONLY / DP-5 ASSIGNED AFTER SC MERGE |
-| `data-projection-snapshot-v1` | DP-5 ASSIGNED AFTER SC MERGE |
-| `data-source-set-sha256-v1` | DP-5 ASSIGNED AFTER SC MERGE |
-| `data-projection-record-sha256-v1` | DP-5 ASSIGNED AFTER SC MERGE |
-| `data-projection-snapshot-sha256-v1` | DP-5 ASSIGNED AFTER SC MERGE |
-| `data-projection-lineage-sha256-v1` | DP-5 ASSIGNED AFTER SC MERGE |
+| `recommendation-profile-input-v1` | SHADOW-ONLY / DP-5 IMPLEMENTED / PR #16 VALIDATED |
+| `experiment-outcome-input-v1` | SHADOW-ONLY / DP-5 IMPLEMENTED / PR #16 VALIDATED |
+| `data-projection-snapshot-v1` | DP-5 IMPLEMENTED / PR #16 VALIDATED |
+| `data-source-set-sha256-v1` | DP-5 IMPLEMENTED / PR #16 VALIDATED |
+| `data-projection-record-sha256-v1` | DP-5 IMPLEMENTED / PR #16 VALIDATED |
+| `data-projection-snapshot-sha256-v1` | DP-5 IMPLEMENTED / PR #16 VALIDATED |
+| `data-projection-lineage-sha256-v1` | DP-5 IMPLEMENTED / PR #16 VALIDATED |
 
 ## Data DB roles
 
@@ -66,9 +66,9 @@
 | `jc_data_adapter_evidence_writer` | execute DP-4.5 persistence function only | ACTIVE / DP-4.5 |
 | `jc_data_adapter_evidence_reader` | select DP-4.5 safe aggregate view only | ACTIVE / DP-4.5 |
 | `jc_data_adapter_evidence_function_owner` | NOLOGIN DP-4.5 function owner | ACTIVE / DP-4.5 |
-| `jc_data_projection_writer` | execute DP-5 atomic persistence only | ASSIGNED AFTER SC MERGE |
-| `jc_data_projection_reader` | select DP-5 aggregate safe view only | ASSIGNED AFTER SC MERGE |
-| `jc_data_projection_function_owner` | NOLOGIN DP-5 function owner | ASSIGNED AFTER SC MERGE |
+| `jc_data_projection_writer` | execute DP-5 atomic persistence only | IMPLEMENTED / PR #16 VALIDATED |
+| `jc_data_projection_reader` | select DP-5 aggregate safe view only | IMPLEMENTED / PR #16 VALIDATED |
+| `jc_data_projection_function_owner` | NOLOGIN DP-5 function owner | IMPLEMENTED / PR #16 VALIDATED |
 
 ## DB sequence
 
@@ -86,9 +86,9 @@
 | `35` | Recommendation adapter shadow evidence | ACTIVE / DP-4.5 |
 | `36` | adapter atomic persistence/roles/safe view | ACTIVE / DP-4.5 |
 | `37` | DP-4.5 validation | ACTIVE / DP-4.5 |
-| `38` | projection run/checkpoint/snapshot/lineage foundation | ASSIGNED AFTER SC MERGE |
-| `39` | recommendation profile input projection | ASSIGNED AFTER SC MERGE |
-| `40` | experiment outcome input projection | ASSIGNED AFTER SC MERGE |
-| `41` | atomic persistence/roles/safe view | ASSIGNED AFTER SC MERGE |
-| `42` | DP-5 PostgreSQL 15/18 validation | ASSIGNED AFTER SC MERGE |
+| `38` | projection run/checkpoint/snapshot/lineage foundation | IMPLEMENTED / PR #16 VALIDATED |
+| `39` | recommendation profile input projection | IMPLEMENTED / PR #16 VALIDATED |
+| `40` | experiment outcome input projection | IMPLEMENTED / PR #16 VALIDATED |
+| `41` | atomic persistence/roles/safe view | IMPLEMENTED / PR #16 VALIDATED |
+| `42` | DP-5 PostgreSQL 15/18 validation | IMPLEMENTED / PR #16 VALIDATED |
 | `43+` | unallocated | SC ASSIGNMENT REQUIRED |

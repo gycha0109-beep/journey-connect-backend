@@ -1,6 +1,6 @@
 check	expected	status
-repeated_run	same_fingerprint	DESIGNED
-insertion_order	independent	DESIGNED
-locale_timezone	independent	DESIGNED
-build_id_row_id_created_at	excluded	DESIGNED
-java_golden_fixture	pass	NOT_EXECUTED
+repeated_run	same_fingerprint	LOCAL_PASS
+insertion_order	independent	LOCAL_PASS
+map_order	independent	LOCAL_PASS
+locale_timezone	independent	LOCAL_PASS
+build_id	independent	LOCAL_PASS
