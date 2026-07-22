@@ -1,0 +1,6 @@
+check	expected	status
+record_without_lineage	blocked	DESIGNED
+source_reference_exists	required	DESIGNED
+source_fingerprint_match	required	DESIGNED
+raw_payload_in_lineage	forbidden	DESIGNED
+postgres_validation	complete_lineage	NOT_EXECUTED

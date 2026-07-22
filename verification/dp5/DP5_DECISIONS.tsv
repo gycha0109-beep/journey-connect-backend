@@ -1,0 +1,7 @@
+decision	value	status
+sql_allocation	38_42	PROPOSED_SC
+roles	projection_writer_reader_function_owner	PROPOSED_SC
+profile_contract	recommendation-profile-input-v1_shadow_only	APPROVED_DESIGN
+outcome_contract	experiment-outcome-input-v1_shadow_only	APPROVED_DESIGN
+p2_exposure_authority	recommendation_p2_experiment_exposure	PROTECTED
+final_verdict	DP5_IMPLEMENTATION_BLOCKED_BY_SC_ALLOCATION	CURRENT

@@ -1,0 +1,6 @@
+check	expected	status
+shadow_only	true	DESIGNED
+windows	7d_30d_90d	DESIGNED
+stable_order	count_desc_last_time_desc_ref_asc	DESIGNED
+production_p1_source_replacement	absent	PASS
+implementation	java_and_sql	NOT_EXECUTED

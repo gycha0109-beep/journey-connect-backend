@@ -1,0 +1,6 @@
+item	expected	observed	status
+main_head	de4e9f308130e10948edb69ceb1b2bba0eebcd2e	de4e9f308130e10948edb69ceb1b2bba0eebcd2e	PASS
+dp45_pr	merged	merged #14	PASS
+sql_01_37	protected	protected	PASS
+sql_38_plus	unallocated_on_main	absent	PASS
+dp5_roles	unallocated_on_main	absent	PASS

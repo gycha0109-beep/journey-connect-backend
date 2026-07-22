@@ -1,0 +1,6 @@
+case	expected	status
+p2_authority	recommendation_p2_experiment_exposure	DESIGNED
+general_exposure_as_p2	blocked	DESIGNED
+behavior_impression_as_p2	blocked	DESIGNED
+missing_exposure	exposure_binding_missing	DESIGNED
+existing_metric_denominator	unchanged	PASS

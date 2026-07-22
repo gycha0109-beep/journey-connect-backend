@@ -7,7 +7,7 @@
 | 계약 ID | `sc-decision-register-v1` |
 | canonical path | `docs/platform/governance/SC-DECISION-REGISTER.md` |
 | 상태 | `ACTIVE` |
-| 기준 main HEAD | `0ff67aaf9a86b61be2b41c431a570a9f0d460f7c` |
+| 기준 main HEAD | `de4e9f308130e10948edb69ceb1b2bba0eebcd2e` |
 | 갱신일 | `2026-07-22` |
 
 | Decision ID | 결정 | 상태 | 근거/제약 |
@@ -22,7 +22,7 @@
 | `SC-DP1-008` | DP-2 SQL은 28 이후 SC가 별도 배정 | SUPERSEDED BY SC-DP2-002 | sequence collision 방지 |
 | `SC-DP1-009` | 신규 Data fingerprint exact contract | APPROVED / RESOLVED | `SC-DP2-001` |
 | `SC-DP1-010` | PR #3 merge commit `f38cf56b34ff23fbd5cb20b9013444a8cb2d29f4`는 main authority | APPROVED / MERGED | traffic activation은 별도 승인 필요 |
-| `SC-DP1-011` | identity mapping physical owner/deletion policy | UNRESOLVED / OUTSIDE DP-3 | mapping 저장소·join 구현 금지 |
+| `SC-DP1-011` | identity mapping physical owner/deletion policy | UNRESOLVED | 자동 join 및 mapping repository 구현 금지 |
 | `SC-DP1-012` | Decision Register canonical path | APPROVED | 이 문서 |
 | `SC-DP1-013` | RACI canonical path | APPROVED | `docs/platform/governance/SC-RACI.md` |
 | `SC-DP1-014` | 공식 DP-1 Baseline SHA | APPROVED | `9d84f630e87d54f780e332eead0c1f8df6a51d0b` |
@@ -32,10 +32,18 @@
 | `SC-DP2-004` | idempotency 30일, attempt/conflict/quarantine 90일 | APPROVED / TECHNICAL BASELINE | 자동 purge 비활성 |
 | `SC-DP2-005` | canonical event 기본 365일 retention metadata | APPROVED / TECHNICAL BASELINE | 물리 삭제 실행 금지 |
 | `SC-DP2-006` | DP-2는 identity mapping, runtime API, projection cutover 제외 | APPROVED | 보호 경계 |
-| `SC-DP3-001` | SQL `32` retry/quarantine evidence, `33` atomic claim/lease/grants, `34` smoke/concurrency; `35+` 미배정 | APPROVED | SQL 01..31 보호 |
-| `SC-DP3-002` | retry policy `data-projection-retry-v1`: initial 1회 + 최대 5 retries, delays 1m/5m/30m/2h/12h | APPROVED | 총 최대 6 executions |
-| `SC-DP3-003` | unknown/validation/privacy/integrity failures는 fail-closed quarantine; automatic retry 금지 | APPROVED | infinite retry 방지 |
-| `SC-DP3-004` | processor `jc_data_retry_processor`, reviewer `jc_data_quarantine_reviewer`; replay executor는 실행 grant 없음 | APPROVED | 최소권한 |
-| `SC-DP3-005` | lease 60초, heartbeat 20초, default claim batch 최대 100, stale claim completion 거부 | APPROVED | atomic claim/reclaim |
-| `SC-DP3-006` | retry/quarantine/review evidence 90일 metadata, 자동 purge 비활성 | APPROVED / TECHNICAL BASELINE | OP/Security/Privacy activation 별도 |
-| `SC-DP3-007` | DP-3는 metric/evidence contract만 구현; production scheduler/alert routing/replay 실행 비활성 | APPROVED | Operations 및 후속 SC gate |
+| `SC-DP3-001` | SQL `32..34` retry/quarantine/processing/validation | APPROVED / IMPLEMENTED | SQL 01..31 보호 |
+| `SC-DP3-002` | retry policy `data-projection-retry-v1`: initial 1회 + 최대 5 retries | APPROVED / IMPLEMENTED | production scheduler 비활성 |
+| `SC-DP3-003` | validation/privacy/integrity failure fail-closed quarantine | APPROVED / IMPLEMENTED | automatic retry 금지 |
+| `SC-DP3-004` | processor/reviewer role 및 replay no-execute | APPROVED / IMPLEMENTED | 최소권한 |
+| `SC-DP3-005` | lease 60초, heartbeat 20초, batch 최대 100 | APPROVED / IMPLEMENTED | atomic claim/reclaim |
+| `SC-DP3-006` | retry/quarantine/review evidence 90일 metadata | APPROVED / TECHNICAL BASELINE | purge 비활성 |
+| `SC-DP3-007` | production scheduler/alert/replay 실행 비활성 | APPROVED | 운영 gate 별도 |
+| `SC-DP45-001` | SQL `35..37` adapter shadow evidence persistence | APPROVED / IMPLEMENTED | PR #14 merge `de4e9f308130e10948edb69ceb1b2bba0eebcd2e` |
+| `SC-DP45-002` | adapter evidence writer/reader/function owner | APPROVED / IMPLEMENTED | execute-only/safe-view-only/NOLOGIN |
+| `SC-DP45-003` | DP-4.5는 DP-5 기술 선행 조건 | APPROVED / SATISFIED | PostgreSQL 15/18 및 protected regression PASS |
+| `SC-DP5-001` | SQL `38..42`을 projection/snapshot foundation에 배정 | APPROVED / EFFECTIVE AFTER MERGE | SQL 01..37 보호, SQL 43+ 미배정 |
+| `SC-DP5-002` | `jc_data_projection_writer`, `jc_data_projection_reader`, `jc_data_projection_function_owner` | APPROVED / EFFECTIVE AFTER MERGE | least privilege |
+| `SC-DP5-003` | `recommendation-profile-input-v1`과 `experiment-outcome-input-v1`은 shadow-only | APPROVED | production/P1/P2 authority 비변경 |
+| `SC-DP5-004` | P2 outcome exposure authority는 `recommendation_p2_experiment_exposure` | APPROVED | general exposure/impression 대체 금지 |
+| `SC-DP5-005` | projection/snapshot/lineage/validation/conflict evidence 90일 metadata | APPROVED / TECHNICAL BASELINE | purge 및 physical delete 비활성 |

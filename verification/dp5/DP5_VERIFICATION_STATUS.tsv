@@ -1,0 +1,10 @@
+check	result	evidence
+preflight_main_and_pr14	PASS	GitHub_repository_and_PR
+allocation_absence	PASS	SC_register_registry_handoff_and_DP45_allocation
+projection_design	PASS	DP-5-PROJECTION-AND-SNAPSHOT-FOUNDATION.md
+projection_matrix	PASS	DP-5-PROJECTION-MATRIX.md
+static_blocker_verifier	PASS	Data Contract CI run 29901862224
+java_dp5	NOT_EXECUTED	SC_allocation_not_authoritative
+postgresql_15_18_dp5	NOT_EXECUTED	SQL_38_42_not_created
+backend_regression	NOT_EXECUTED	no_backend_source_change
+recommendation_db_regression	NOT_EXECUTED	no_sql_or_recommendation_change

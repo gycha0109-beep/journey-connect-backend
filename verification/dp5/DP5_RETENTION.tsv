@@ -1,0 +1,5 @@
+evidence_class	retention	purge	status
+projection_run_status	90d_metadata	disabled	DESIGNED
+source_checkpoint	90d_metadata	disabled	DESIGNED
+snapshot_and_records	90d_metadata	disabled	DESIGNED
+lineage_validation_conflict	90d_metadata	disabled	DESIGNED
