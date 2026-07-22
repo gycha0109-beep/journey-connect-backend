@@ -1,0 +1,5 @@
+class	metadata	automatic_purge	result
+retry_schedule	90 days	disabled	PENDING_CI
+processing_attempt	90 days	disabled	PENDING_CI
+quarantine	90 days	disabled	PENDING_CI
+review	90 days	disabled	PENDING_CI

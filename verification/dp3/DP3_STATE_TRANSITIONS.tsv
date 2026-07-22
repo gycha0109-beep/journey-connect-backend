@@ -1,0 +1,6 @@
+transition	expected	result
+scheduled_to_claimed	allowed	PENDING_CI
+claimed_to_succeeded	allowed exactly once	PENDING_CI
+claimed_to_retry_scheduled	allowed for retryable failure	PENDING_CI
+claimed_to_quarantined	allowed fail-closed	PENDING_CI
+succeeded_to_retry	forbidden	PENDING_CI

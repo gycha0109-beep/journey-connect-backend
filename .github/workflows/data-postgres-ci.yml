@@ -6,8 +6,13 @@ on:
       - "database/journey-connect-db-v2.7/29_*.sql"
       - "database/journey-connect-db-v2.7/30_*.sql"
       - "database/journey-connect-db-v2.7/31_*.sql"
+      - "database/journey-connect-db-v2.7/32_*.sql"
+      - "database/journey-connect-db-v2.7/33_*.sql"
+      - "database/journey-connect-db-v2.7/34_*.sql"
       - "verification/dp2/**"
+      - "verification/dp3/**"
       - "docs/platform/data/DP-2-*.md"
+      - "docs/platform/data/DP-3-*.md"
       - ".github/workflows/data-postgres-ci.yml"
   workflow_dispatch:
 
@@ -19,10 +24,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  data-event-store:
-    name: PostgreSQL ${{ matrix.postgres }} / DP-2 event store
+  data-processing:
+    name: PostgreSQL ${{ matrix.postgres }} / DP-2 and DP-3
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
 
     strategy:
       fail-fast: false
@@ -60,31 +65,33 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq postgresql-client
 
-      - name: Run DP-2 static contract verification
+      - name: Run Data static contract verification
         shell: bash
-        run: python verification/dp2/run_dp2_static_verification.py
+        run: |
+          python verification/dp2/run_dp2_static_verification.py
+          python verification/dp3/run_dp3_static_verification.py
 
-      - name: Verify protected SQL 01..28 unchanged
+      - name: Verify protected SQL 01..31 unchanged
         shell: bash
         run: |
           set -euo pipefail
           git fetch origin main --depth=1
           protected_changes="$(git diff --name-only origin/main...HEAD -- database/journey-connect-db-v2.7 \
-            | grep -E '/(0[1-9]|1[0-9]|2[0-8])_.*\.sql$' || true)"
+            | grep -E '/(0[1-9]|1[0-9]|2[0-9]|3[01])_.*\.sql$' || true)"
           if [[ -n "$protected_changes" ]]; then
             printf 'Protected canonical SQL changed:\n%s\n' "$protected_changes" >&2
             exit 1
           fi
 
-      - name: Apply canonical state SQL through DP-2
+      - name: Apply canonical state SQL through DP-3
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p verification/dp2/runtime
-          log="verification/dp2/runtime/DP2_POSTGRESQL_${{ matrix.postgres }}.log"
+          mkdir -p verification/dp3/runtime
+          log="verification/dp3/runtime/DP3_POSTGRESQL_${{ matrix.postgres }}.log"
           : > "$log"
 
-          for script in database/journey-connect-db-v2.7/{01..30}_*.sql; do
+          for script in database/journey-connect-db-v2.7/{01..33}_*.sql; do
             if [[ "$script" == *_smoke_test.sql ]]; then
               echo "SKIP ROLLBACK-ONLY PROTECTED SMOKE $script" | tee -a "$log"
               continue
@@ -96,19 +103,30 @@ jobs:
           echo "APPLY database/journey-connect-db-v2.7/31_data_event_store_smoke_test.sql" | tee -a "$log"
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
             -f database/journey-connect-db-v2.7/31_data_event_store_smoke_test.sql 2>&1 | tee -a "$log"
+          echo "APPLY database/journey-connect-db-v2.7/34_data_retry_quarantine_smoke_test.sql" | tee -a "$log"
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
+            -f database/journey-connect-db-v2.7/34_data_retry_quarantine_smoke_test.sql 2>&1 | tee -a "$log"
 
-      - name: Run DP-2 concurrency verification
+      - name: Run DP-2 idempotency concurrency verification
         shell: bash
         run: |
           set -o pipefail
           chmod +x verification/dp2/run_dp2_concurrency.sh
           verification/dp2/run_dp2_concurrency.sh 2>&1 \
-            | tee "verification/dp2/runtime/DP2_CONCURRENCY_PG${{ matrix.postgres }}.log"
+            | tee "verification/dp3/runtime/DP2_CONCURRENCY_PG${{ matrix.postgres }}.log"
 
-      - name: Upload DP-2 PostgreSQL evidence
+      - name: Run DP-3 claim concurrency verification
+        shell: bash
+        run: |
+          set -o pipefail
+          chmod +x verification/dp3/run_dp3_concurrency.sh
+          verification/dp3/run_dp3_concurrency.sh 2>&1 \
+            | tee "verification/dp3/runtime/DP3_CONCURRENCY_PG${{ matrix.postgres }}.log"
+
+      - name: Upload DP-3 PostgreSQL evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dp2-postgresql-${{ matrix.postgres }}-evidence
-          path: verification/dp2/runtime/**
+          name: dp3-postgresql-${{ matrix.postgres }}-evidence
+          path: verification/dp3/runtime/**
           if-no-files-found: error

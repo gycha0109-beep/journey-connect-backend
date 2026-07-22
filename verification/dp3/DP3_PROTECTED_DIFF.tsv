@@ -1,0 +1,5 @@
+target	expected	observed	result	verification_head
+SQL_01_31	unchanged	no protected SQL diff	PASS	90943c7cfbd1609677e321ca0c972a0a31533726
+production_runtime	unchanged	no jc-backend/src/main diff	PASS	90943c7cfbd1609677e321ca0c972a0a31533726
+recommendation_search_intelligence	unchanged	no protected source diff	PASS	90943c7cfbd1609677e321ca0c972a0a31533726
+production_controls	disabled/kill switch/0 BPS/empty cohort	protected Backend and SC gates passed	PASS	90943c7cfbd1609677e321ca0c972a0a31533726

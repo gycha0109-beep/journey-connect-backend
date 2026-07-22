@@ -1,0 +1,6 @@
+policy	expected	observed	result
+policy_id	data-projection-retry-v1	data-projection-retry-v1	PASS
+max_retries	5	5	PASS
+max_executions	6	6	PASS
+delays	1m,5m,30m,2h,12h	1m,5m,30m,2h,12h	PASS
+jitter	0..10% deterministic	Java and SQL deterministic boundary	PASS

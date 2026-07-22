@@ -1,0 +1,6 @@
+scenario	expected	result
+immediate_failure	quarantined	PENDING_CI
+unknown_failure	unclassified_failure	PENDING_CI
+retry_exhaustion	retry_exhausted exactly once	PENDING_CI
+repeated_signature	repeated_deterministic_failure	PENDING_CI
+release_request	evidence only, no replay	PENDING_CI

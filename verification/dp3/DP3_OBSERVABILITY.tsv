@@ -1,0 +1,6 @@
+metric	bounded	result
+queue_and_state_counts	yes	PENDING_CI
+lease_counts	yes	PENDING_CI
+latency_and_age	yes	PENDING_CI
+quarantine_by_reason	yes	PENDING_CI
+sensitive_dimensions_absent	yes	PENDING_CI

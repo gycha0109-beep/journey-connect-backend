@@ -1,0 +1,6 @@
+scenario	expected	result
+lease_duration	60 seconds	PENDING_CI
+heartbeat_owner	renewed	PENDING_CI
+foreign_heartbeat	EVENT_CLAIM_STALE	PENDING_CI
+expired_reclaim	allowed	PENDING_CI
+stale_completion	rejected	PENDING_CI
