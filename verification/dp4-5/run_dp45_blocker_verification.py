@@ -112,6 +112,8 @@ try:
         "docs/platform/data/DP-4-5-RECOMMENDATION-ADAPTER-SHADOW-EVIDENCE-PERSISTENCE.md",
         "docs/platform/data/DP-4-5-HANDOFF.md",
         ".github/workflows/data-contract-ci.yml",
+        "verification/dp4/run_dp4_static_verification.py",
+        "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
     }
     unexpected = [
         path for path in changed
