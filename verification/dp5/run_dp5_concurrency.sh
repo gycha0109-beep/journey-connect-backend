@@ -75,10 +75,11 @@ SQL
 (psql "$DATABASE_URL" -At -v ON_ERROR_STOP=1 -c "SELECT public.dp5_concurrency_attempt('b');" >"$work/b" 2>&1) & p2=$!
 wait "$p1"; wait "$p2"
 cat "$work/a" "$work/b"
-new_count=$(grep -hxc 'NEW' "$work/a" "$work/b" || true)
-dup_count=$(grep -hxc 'DUPLICATE' "$work/a" "$work/b" || true)
+new_count=$(grep -h '^NEW$' "$work/a" "$work/b" | wc -l | tr -d ' ')
+dup_count=$(grep -h '^DUPLICATE$' "$work/a" "$work/b" | wc -l | tr -d ' ')
 [[ "$new_count" == 1 && "$dup_count" == 1 ]]
 counts=$(psql "$DATABASE_URL" -At -v ON_ERROR_STOP=1 -c "SELECT count(*)||':'||(SELECT count(*) FROM public.data_projection_snapshot_v1 s JOIN public.data_projection_run_v1 r ON r.projection_run_id=s.projection_run_ref WHERE r.logical_identity_hash=(SELECT logical_identity_hash FROM public.data_projection_run_v1 WHERE projection_run_ref LIKE 'projection_run:dp5-concurrency-%' LIMIT 1)) FROM public.data_projection_run_v1 WHERE projection_run_ref LIKE 'projection_run:dp5-concurrency-%';")
+echo "DP-5 concurrency persisted counts: $counts"
 [[ "$counts" == "1:1" ]]
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "DROP FUNCTION public.dp5_concurrency_attempt(text);" >/dev/null
 echo "DP-5 concurrent same identity: exactly one NEW and one DUPLICATE: PASS"
