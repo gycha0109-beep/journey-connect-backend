@@ -1,0 +1,7 @@
+scenario	expected	fixture	result
+same_identity_same_output_concurrent	exactly one NEW and one DUPLICATE	run_dp45_concurrency.sh	PASS / run 29895786673 / PostgreSQL 15 and 18
+same_identity_run_count	exactly one adapter run	run_dp45_concurrency.sh	PASS / run 29895786673 / PostgreSQL 15 and 18
+same_identity_output_count	exactly one mapped output	run_dp45_concurrency.sh	PASS / run 29895786673 / PostgreSQL 15 and 18
+same_identity_failure_count	zero failure evidence	run_dp45_concurrency.sh	PASS / run 29895786673 / PostgreSQL 15 and 18
+same_identity_conflict_count	zero conflict evidence	run_dp45_concurrency.sh	PASS / run 29895786673 / PostgreSQL 15 and 18
+bounded_duplicate_counter	exactly one duplicate observation count	run_dp45_concurrency.sh	PASS / run 29895786673 / PostgreSQL 15 and 18

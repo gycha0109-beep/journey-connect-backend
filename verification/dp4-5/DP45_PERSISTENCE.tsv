@@ -1,10 +1,12 @@
 contract_item	required_behavior	status
-authority_direction	Recommendation P0 source -> Data shadow candidate	DESIGNED_NOT_IMPLEMENTED
-transaction	adapter run plus exactly one output or failure	DESIGNED_NOT_IMPLEMENTED
-partial_success	prohibited	DESIGNED_NOT_IMPLEMENTED
-output_fingerprint	DP-4 Java fingerprint only / lowercase hex 64	DESIGNED_NOT_IMPLEMENTED
-payload	bounded DP-4 mapped payload only	DESIGNED_NOT_IMPLEMENTED
-raw_source_payload	prohibited	DESIGNED_NOT_IMPLEMENTED
+authority_direction	Recommendation P0 source -> Data shadow candidate	IMPLEMENTED
+transaction	adapter run plus exactly one output or failure	IMPLEMENTED
+partial_success	prohibited by one SECURITY DEFINER transaction	IMPLEMENTED
+logical_identity	approved six-field identity plus advisory lock and unique constraint	IMPLEMENTED
+output_fingerprint	DP-4 Java fingerprint only / lowercase hex 64	IMPLEMENTED
+failure_result_hash	separate bounded persistence comparison hash	IMPLEMENTED
+payload	bounded privacy-validated DP-4 mapped payload only	IMPLEMENTED
+raw_source_payload	prohibited	IMPLEMENTED
 recommendation_write	prohibited	PROTECTED
 canonical_event_write	prohibited	PROTECTED
 production_worker	absent	PROTECTED

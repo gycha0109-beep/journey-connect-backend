@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   data-contracts:
-    name: Java 21 / DP-1 through DP-4 + DP-4.5 blocker
+    name: Java 21 / DP-1 through DP-4.5 contracts
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -37,6 +37,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Set up Java 21
         uses: actions/setup-java@v5
@@ -59,8 +61,8 @@ jobs:
             | tee ../verification/dp4/runtime/DP4_DATA_CONTRACT_CI.log
           python ../verification/dp4/run_dp4_static_verification.py 2>&1 \
             | tee ../verification/dp4/runtime/DP4_STATIC_CI.log
-          python ../verification/dp4-5/run_dp45_blocker_verification.py 2>&1 \
-            | tee ../verification/dp4-5/runtime/DP45_BLOCKER_STATIC_CI.log
+          python ../verification/dp4-5/run_dp45_static_verification.py 2>&1 \
+            | tee ../verification/dp4-5/runtime/DP45_STATIC_CI.log
 
       - name: Run Recommendation Java Core regression
         shell: bash

@@ -13,6 +13,11 @@ PACKAGE = DATA / "src/main/java/com/jc/data/contract/v1/adapter/recommendation"
 CORE_EVENT_TYPE = ROOT / "jc-recommendation-core/src/main/java/com/jc/recommendation/model/event/EventType.java"
 GOLDEN = DATA / "src/test/resources/recommendation-p0-adapter-golden-v1.tsv"
 INVALID = DATA / "src/test/resources/recommendation-p0-adapter-invalid-v1.tsv"
+APPROVED_DP45_SQL = {
+    "database/journey-connect-db-v2.7/35_data_recommendation_adapter_shadow_evidence.sql",
+    "database/journey-connect-db-v2.7/36_data_recommendation_adapter_shadow_persistence.sql",
+    "database/journey-connect-db-v2.7/37_data_recommendation_adapter_shadow_validation.sql",
+}
 
 REQUIRED = [
     PACKAGE / "RecommendationP0EventAdapter.java",
@@ -116,7 +121,7 @@ for required in (
 build = (DATA / "build.gradle.kts").read_text(encoding="utf-8")
 if 'testImplementation(project(":jc-recommendation-core"))' not in build:
     fail("P0 compatibility must be a test-only project dependency")
-if re.search(r"(?m)^\s*implementation\(project\(\":jc-recommendation-core\"\)\)", build):
+if re.search(r'(?m)^\s*implementation\(project\(\":jc-recommendation-core\"\)\)', build):
     fail("Recommendation core cannot be a Data production dependency")
 
 adapter_doc = (ROOT / "docs/platform/data/DP-4-P0-RECOMMENDATION-EVENT-ADAPTER.md").read_text(encoding="utf-8")
@@ -130,12 +135,12 @@ for marker in (
         fail(f"DP-4 authority marker missing: {marker}")
 
 sql_dir = ROOT / "database/journey-connect-db-v2.7"
-for number in range(1, 35):
+for number in range(1, 38):
     matches = list(sql_dir.glob(f"{number:02d}_*.sql"))
     if len(matches) != 1:
-        fail(f"protected SQL {number:02d} expected exactly once, found {len(matches)}")
-if list(sql_dir.glob("3[5-9]_*.sql")) or list(sql_dir.glob("[4-9][0-9]_*.sql")):
-    fail("DP-4 must not allocate SQL 35+")
+        fail(f"canonical SQL {number:02d} expected exactly once, found {len(matches)}")
+if list(sql_dir.glob("3[8-9]_*.sql")) or list(sql_dir.glob("[4-9][0-9]_*.sql")):
+    fail("SQL 38+ must remain unallocated")
 
 try:
     subprocess.run(["git", "fetch", "origin", "main", "--depth=1"], cwd=ROOT,
@@ -143,29 +148,34 @@ try:
     changed = subprocess.run(
         ["git", "diff", "--name-only", "origin/main...HEAD"], cwd=ROOT,
         check=True, text=True, capture_output=True).stdout.splitlines()
+    changed_sql = {path for path in changed if path.endswith(".sql")}
+    if changed_sql and changed_sql != APPROVED_DP45_SQL:
+        fail(f"only allocated DP-4.5 SQL 35..37 may change: {sorted(changed_sql)}")
     allowed = (
-        "jc-data-contracts/",
         "docs/platform/data/DP-4-",
         "verification/dp4/",
         "verification/dp4-5/",
         "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
         ".github/workflows/data-contract-ci.yml",
+        ".github/workflows/data-postgres-ci.yml",
         ".github/workflows/recommendation-p0-db-ci.yml",
         ".github/workflows/backend-pr-ci.yml",
+        "jc-backend/src/test/java/com/jc/backend/search/shadow/production/IP12ProductionShadowStaticTest.java",
+        "database/journey-connect-db-v2.7/35_data_recommendation_adapter_shadow_evidence.sql",
+        "database/journey-connect-db-v2.7/36_data_recommendation_adapter_shadow_persistence.sql",
+        "database/journey-connect-db-v2.7/37_data_recommendation_adapter_shadow_validation.sql",
     )
     unexpected = [path for path in changed if not any(path == prefix or path.startswith(prefix) for prefix in allowed)]
     if unexpected:
         fail(f"unexpected/protected diff: {unexpected}")
-    if any(path.endswith(".sql") for path in changed):
-        fail("SQL 01..34 and SQL 35+ must remain unchanged")
     protected = [path for path in changed if path.startswith((
         "jc-recommendation-core/", "jc-backend/src/main/", "jc-backend/src/main/resources/",
-        "jc-intelligence-contracts/", "jc-search-contracts/", "jc-search-compatibility/",
-        "jc-search-runtime/", "jc-search-integration/", "jc-search-shadow-wiring/",
-        "jc-search-readiness/", "jc-search-production-controls/",
+        "jc-data-contracts/", "jc-intelligence-contracts/", "jc-search-contracts/",
+        "jc-search-compatibility/", "jc-search-runtime/", "jc-search-integration/",
+        "jc-search-shadow-wiring/", "jc-search-readiness/", "jc-search-production-controls/",
     ))]
     if protected:
-        fail(f"production/Recommendation/Search source changed: {protected}")
+        fail(f"production/Recommendation/Data-contract/Search source changed: {protected}")
 except (subprocess.CalledProcessError, FileNotFoundError):
     pass
 

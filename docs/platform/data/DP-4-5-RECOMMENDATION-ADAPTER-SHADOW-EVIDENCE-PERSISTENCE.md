@@ -2,9 +2,7 @@
 
 ## Result
 
-`DP45_IMPLEMENTATION_BLOCKED_BY_SQL_ASSIGNMENT`
-
-DP-4.5 cannot implement PostgreSQL persistence because the authoritative SC documents still reserve SQL `01..34` and mark SQL `35+` as unallocated. No migration number, adapter evidence role, or persistence authority has been assigned.
+`DP45_IMPLEMENTATION_COMPLETE`
 
 ## Authoritative direction
 
@@ -12,55 +10,41 @@ DP-4.5 cannot implement PostgreSQL persistence because the authoritative SC docu
 Recommendation P0 source
   -> DP-4 deterministic adapter
   -> Data Platform shadow candidate
-  -> proposed append-only compatibility evidence
+  -> append-only compatibility evidence
 ```
 
-The reverse path into production Recommendation input is prohibited. This stage does not create canonical Data events, Recommendation events, P2 exposure, recommendation results, projections, workers, schedulers, replay or production traffic.
+The reverse path into production Recommendation input is prohibited. This implementation does not create Recommendation inputs, Recommendation results, P2 experiment exposure, canonical Data events, workers, schedulers, replay, backfill, cutover or production traffic.
 
-## Preflight
+## Baseline and authority
 
-- authoritative main: `c1649c3647e8b640bd95853fdcb645d1571f54c3`;
-- DP-4 PR `#11`: merged;
-- DP-4 result: `DP4_IMPLEMENTATION_COMPLETE_WITH_SQL_ASSIGNMENT_PENDING`;
+- work-start main: `9a5785448ff300063b7f320c9f1043ef1863741e`;
+- DP-4.5 blocker/design PR `#12`: merged;
+- SC allocation PR `#13`: merged;
+- implementation authority: `GRANTED`;
 - SQL `01..34`: protected;
-- SQL `35+`: `SC ASSIGNMENT REQUIRED`;
-- adapter evidence writer/reader roles: not registered;
-- DP-4 output fingerprint: Java-produced, SHA-256 lowercase hexadecimal, 64 characters, not the P0 or canonical Data fingerprint;
-- production worker absent, scheduler disabled, production shadow disabled, kill switch enabled, sampling `0 BPS`, cohort empty, Search cutover not started.
+- SQL `35..37`: allocated to DP-4.5;
+- SQL `38+`: unallocated;
+- DP-4 output fingerprint remains Java-produced SHA-256 lowercase hexadecimal, 64 characters, and is not the P0 or canonical Data fingerprint.
 
-## Why implementation stops
+## Implemented database boundary
 
-Persistence cannot be simulated with Java DTOs, fixtures, in-memory stores, an existing Recommendation table, an existing Data table, or an unassigned SQL filename. Atomic `NEW/DUPLICATE/CONFLICT`, append-only enforcement and least-privilege grants require an SC-owned migration sequence and explicit role allocation.
+### SQL 35 — evidence foundation
 
-## Proposed DB object design
+Implemented append-only evidence:
 
-The following names are design candidates only. They are not implemented or registered. Every proposed object in this document is `PROPOSED_NOT_IMPLEMENTED`.
+- adapter run evidence;
+- mapped shadow output evidence;
+- mapping failure evidence;
+- conflict observation evidence;
+- bounded duplicate counter used only for aggregate observability.
 
-| Proposed object | Purpose | Required invariants |
-|---|---|---|
-| `data_recommendation_adapter_run_v1` | one bounded adapter execution observation | source/adapter/target versions, started/completed times, terminal run status, 90-day retention metadata |
-| `data_recommendation_adapter_output_v1` | successful mapped shadow output evidence | semantic compatibility only, mapped fields, DP-4 output fingerprint, no raw source payload |
-| `data_recommendation_adapter_failure_v1` | deterministic mapping rejection/failure evidence | DP-4 stable failure code, retryability, bounded failure signature, no unrestricted error text |
-| `data_recommendation_adapter_observation_v1` | duplicate/conflict observations | append-only disposition, existing evidence reference, observed fingerprint, bounded conflict code |
-| `persist_recommendation_adapter_evidence_v1(...)` | atomic persistence boundary | one transaction, advisory transaction lock plus unique constraint, validates Java output fingerprint, returns existing evidence reference for duplicate |
-| `prevent_recommendation_adapter_evidence_mutation_v1()` | append-only trigger | rejects UPDATE and DELETE with stable SQLSTATE |
-| `data_recommendation_adapter_summary_v1` | privacy-safe reader view | aggregate counts only; no actor/session/request/payload dimensions |
+Run, output, failure and conflict evidence reject `UPDATE` and `DELETE` through the existing Data append-only trigger. All evidence has `adapter_evidence_90d`, `data-retention-policy-v1` and 90-day expiry metadata. No purge or physical-delete executor exists.
 
-## Proposed SQL sequence requiring SC assignment
+### SQL 36 — atomic persistence
 
-No number below is allocated by this branch.
+`persist_recommendation_adapter_shadow_evidence_v1(...)` is the only writer capability. It validates the exact DP-4 version boundary, reference namespaces, privacy-safe mapped payload, stable failure taxonomy, output fingerprint shape and terminal success-or-failure exclusivity.
 
-| Candidate sequence | Proposed responsibility |
-|---|---|
-| first assigned SQL | run/output/failure/observation tables, constraints, indexes, retention metadata, append-only triggers |
-| second assigned SQL | atomic persistence function, logical identity lock, `NEW/DUPLICATE/CONFLICT`, owner, role and grant boundary, safe aggregate view |
-| third assigned SQL | PostgreSQL 15/18 smoke, duplicate/conflict/concurrency, privilege, append-only, retention and protected-authority validation |
-
-SC may assign different numbers or split responsibilities differently. Implementation must follow the final registry.
-
-## Persistence contract proposal
-
-### Logical identity
+Logical identity:
 
 ```text
 source_event_ref
@@ -71,95 +55,113 @@ source_event_ref
 + mapping_policy_version
 ```
 
-### Outcomes
-
-| Outcome | Required behavior |
+| Outcome | Implemented behavior |
 |---|---|
-| `NEW` | insert run plus exactly one output or failure in one transaction |
-| `DUPLICATE` | return existing evidence reference; append bounded duplicate observation; no new output/failure and no mutation |
-| `CONFLICT` | append bounded conflict observation with `ADAPTER_EVIDENCE_CONFLICT`; no new output/failure and no mutation |
+| `NEW` | create one run and exactly one mapped output or failure in one transaction |
+| `DUPLICATE` | return the existing run/evidence references, increment a bounded aggregate counter, create no new output/failure |
+| `CONFLICT` | create no new output/failure, preserve existing evidence, append conflict evidence and return `ADAPTER_EVIDENCE_CONFLICT` |
 
-Partial run/output/failure persistence is prohibited. The function must serialize the logical identity with a transaction-scoped advisory lock and enforce a matching unique constraint.
+A transaction-scoped advisory lock plus a unique logical-identity constraint protects concurrent callers. Partial run/output/failure writes are impossible because all changes occur in one function transaction.
 
-## Proposed table constraints
+### SQL 37 — validation
 
-- adapter ID/version, mapping policy and target contract are exact versioned wire values;
-- source and output fingerprints match `^[0-9a-f]{64}$`;
-- output fingerprint is supplied by and semantically validated against the DP-4 contract, never recalculated under a different DB contract;
-- compatibility remains `semantic_compatible`; unsupported/rejected outcomes cannot enter the output table;
-- mapping status remains shadow-only and cannot become production-ready or cutover-ready;
-- mapped payload is a bounded object, deterministic canonical JSON, DP-4 allowlisted and privacy-safe;
-- raw source canonical bytes, raw source payload, full idempotency key, numeric user identity, token, credential, unrestricted message and stack trace are prohibited;
-- general Recommendation exposure lineage remains distinct from P2 experiment exposure;
-- foreign keys use `ON DELETE RESTRICT`; no cascade deletion;
-- `expires_at = created_at + interval '90 days'` under a versioned retention class;
-- no purge function, deletion executor or scheduled cleanup.
+The rollback-only PostgreSQL validation covers:
 
-## Proposed roles requiring SC assignment
+- mapped success `NEW`, `DUPLICATE`, `CONFLICT`;
+- deterministic failure `NEW`, `DUPLICATE`, `CONFLICT`;
+- existing evidence reference return;
+- no extra output on conflict;
+- malformed fingerprint, incompatible class and privacy-unsafe payload denial;
+- transaction rollback atomicity;
+- append-only denial;
+- writer, reader, function-owner and PUBLIC privilege boundaries;
+- fixed function `search_path`;
+- safe aggregate view;
+- retention metadata;
+- absence of automatic purge.
 
-Suggested capability names, not approved roles:
+A separate multi-session fixture verifies one concurrent `NEW` plus one `DUPLICATE`, one run and one mapped output.
 
-```text
-jc_data_adapter_evidence_writer
-jc_data_adapter_evidence_reader
-```
+## Fingerprint contract
 
-Writer proposal:
+The database verifies that the supplied DP-4 output fingerprint is lowercase hexadecimal with exactly 64 characters. It does not recalculate it under a different semantic contract and does not reuse the Recommendation P0 or canonical Data event fingerprint.
 
-- EXECUTE only on the approved atomic persistence function;
-- no direct table INSERT/UPDATE/DELETE;
-- no canonical Data event mutation;
-- no Recommendation table write;
-- no retry/quarantine procedure access unless separately granted.
+For failed mapping evidence only, the database derives a separate bounded result-comparison hash from mapping status, stable failure code/class, retryability and failure signature. This hash is used only for persistence idempotency and is not a replacement output fingerprint.
 
-Reader proposal:
+## Privacy and payload
 
-- SELECT only on the aggregate safe view;
-- no raw table SELECT;
-- no function ownership or write authority.
+Persisted mapped payload must be:
 
-Privileged function proposal:
+- the DP-4 mapped payload only;
+- a JSON object;
+- no larger than 64 KiB;
+- accepted by the existing recursive Data forbidden-key validator.
 
-- narrow NOLOGIN owner, consistent with `jc_security_owner` convention if SC approves;
-- `SECURITY DEFINER` only where required;
+Not persisted:
+
+- raw source payload or canonical source bytes;
+- password, token, API key, authorization header or credential;
+- full idempotency key;
+- unrestricted exception text or stack trace;
+- raw numeric identity or unverified identity binding;
+- production Recommendation result;
+- actual Recommendation exposure result;
+- P2 experiment exposure.
+
+## Roles and grants
+
+### Writer
+
+`jc_data_adapter_evidence_writer`
+
+- may execute the approved persistence function;
+- has no direct evidence-table write;
+- has no canonical event mutation;
+- has no Recommendation or P2 table write;
+- has no DDL authority.
+
+### Reader
+
+`jc_data_adapter_evidence_reader`
+
+- may select the safe aggregate view only;
+- cannot select raw evidence tables;
+- cannot insert, update or delete.
+
+### Function owner
+
+`jc_data_adapter_evidence_function_owner`
+
+- `NOLOGIN` and non-superuser;
+- no create-role, create-database, replication or bypass-RLS attributes;
 - fixed `search_path = pg_catalog, public, pg_temp`;
-- PUBLIC execute revoked and explicit role grant;
-- caller cannot select object names, role names, schema names or SQL fragments.
+- PUBLIC execute revoked;
+- narrow table privileges needed by the function only.
 
-## Safe view proposal
+## Safe aggregate view
 
-Permitted dimensions:
+`data_recommendation_adapter_safe_metrics_v1` exposes:
 
-- adapter ID/version;
-- target contract version;
-- compatibility class;
-- run/mapping disposition;
-- stable failure code;
-- time bucket;
-- counts, oldest uncompleted age and bounded latency aggregates.
+- run, success, failure, `NEW`, `DUPLICATE` and `CONFLICT` counts;
+- compatibility-class and failure-code counts;
+- adapter and target-contract versions;
+- oldest run age and latest processed time.
 
-Prohibited dimensions:
-
-- actor/user/session/request/exposure IDs;
-- source event ID where individual lookup is possible;
-- raw payload, fingerprint canonical bytes, idempotency key;
-- raw or unrestricted failure text, token or stack trace.
-
-## Retention
-
-Run, output, failure, duplicate and conflict evidence use the proposed technical class `adapter_evidence_90d`, policy `data-retention-policy-v1`, and 90-day expiry metadata. Automatic purge and physical deletion remain disabled. Final class naming requires SC approval.
-
-## Required SC decisions
-
-1. assign the exact SQL range after `34`;
-2. register exact migration responsibilities and filenames;
-3. approve or replace writer/reader capability roles;
-4. approve function owner and membership/grant routing;
-5. approve physical object and retention-class names;
-6. decide whether duplicate observations are mandatory or optional;
-7. approve deterministic adapter evidence ID/reference formats;
-8. confirm whether persistence is a prerequisite for DP-5.
+It exposes no actor, user, session, request, payload, source fingerprint, idempotency key, error message, stack trace or token dimension.
 
 ## Protected baseline
 
-This blocker branch must contain no changes to SQL `01..34`, Java/Kotlin production source, `jc-data-contracts`, Recommendation P0/P1/P2 source, Search/Intelligence source, production configuration or `/api/v1/explore`. DP-4 output remains fixture/CI evidence only until a later authorized persistence implementation.
+Unchanged:
+
+- SQL `01..34`;
+- Recommendation P0/P1/P2 production source and authority;
+- existing P0 fingerprint;
+- Data canonical event and idempotency sources;
+- DP-3 retry/quarantine sources;
+- Search and Intelligence production source;
+- production configuration and `/api/v1/explore`;
+- production shadow disabled, kill switch enabled, sampling `0 BPS`, cohort empty and Search cutover not started.
+
+## DP-5 gate
+
+DP-4.5 implementation satisfies the technical persistence prerequisite for DP-5 after this PR is merged and the exact-head PostgreSQL 15/18, Data, Recommendation, Backend and SC gates remain successful. DP-5 is not started by this change.
