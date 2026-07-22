@@ -1,0 +1,38 @@
+name: DP5 Function Owner Grant Patch
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: codex/dp-5-projection-snapshot-foundation
+          fetch-depth: 0
+      - name: Grant immutable validator execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          file=database/journey-connect-db-v2.7/41_data_projection_persistence_roles.sql
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('database/journey-connect-db-v2.7/41_data_projection_persistence_roles.sql')
+          text = path.read_text()
+          old = "  public.data_projection_fingerprint_valid_v1(varchar),public.data_projection_fingerprint_v1(varchar,jsonb),\n  public.data_projection_instant_text_v1(timestamptz)"
+          new = "  public.data_projection_fingerprint_valid_v1(varchar),public.data_projection_fingerprint_v1(varchar,jsonb),\n  public.data_projection_instant_text_v1(timestamptz),public.data_projection_identity_valid_v1(varchar),\n  public.data_projection_failure_code_valid_v1(varchar)"
+          assert old in text
+          path.write_text(text.replace(old, new, 1))
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$file"
+          git commit -m "fix(dp5): grant validator execution to function owner"
+          git push origin HEAD:codex/dp-5-projection-snapshot-foundation
