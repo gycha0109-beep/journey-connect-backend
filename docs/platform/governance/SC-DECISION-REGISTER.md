@@ -7,8 +7,8 @@
 | 계약 ID | `sc-decision-register-v1` |
 | canonical path | `docs/platform/governance/SC-DECISION-REGISTER.md` |
 | 상태 | `ACTIVE` |
-| 기준 main HEAD | `67a9b7515dbfd41360160c8059ac387e74cbdf6b` |
-| 갱신일 | `2026-07-22` |
+| 기준 main HEAD | `05a25771cd99d87891504fc00890ab918b970acf` |
+| 갱신일 | `2026-07-23` |
 
 | Decision ID | 결정 | 상태 | 근거/제약 |
 |---|---|---|---|
@@ -42,9 +42,14 @@
 | `SC-DP45-001` | SQL `35..37` adapter shadow evidence persistence | APPROVED / IMPLEMENTED | PR #14 merge `de4e9f308130e10948edb69ceb1b2bba0eebcd2e` |
 | `SC-DP45-002` | adapter evidence writer/reader/function owner | APPROVED / IMPLEMENTED | execute-only/safe-view-only/NOLOGIN |
 | `SC-DP45-003` | DP-4.5는 DP-5 기술 선행 조건 | APPROVED / SATISFIED | PostgreSQL 15/18 및 protected regression PASS |
-| `SC-DP5-001` | SQL `38..42`을 projection/snapshot foundation에 배정 | APPROVED / IMPLEMENTED | PR #16 code HEAD `1dad0d84ffcfacfc56a880e1296ef9430c2d43ed`, PostgreSQL 15/18 PASS |
+| `SC-DP5-001` | SQL `38..42`을 projection/snapshot foundation에 배정 | APPROVED / IMPLEMENTED / MERGED | PR #16 merge `05a25771cd99d87891504fc00890ab918b970acf` |
 | `SC-DP5-002` | `jc_data_projection_writer`, `jc_data_projection_reader`, `jc_data_projection_function_owner` | APPROVED / IMPLEMENTED | execute-only / safe-view-only / NOLOGIN owner |
 | `SC-DP5-003` | `recommendation-profile-input-v1`과 `experiment-outcome-input-v1`은 shadow-only | APPROVED | production/P1/P2 authority 비변경 |
 | `SC-DP5-004` | P2 outcome exposure authority는 `recommendation_p2_experiment_exposure` | APPROVED | general exposure/impression 대체 금지 |
 | `SC-DP5-005` | projection/snapshot/lineage/validation/conflict evidence 90일 metadata | APPROVED / TECHNICAL BASELINE | purge 및 physical delete 비활성 |
 | `SC-DP5-006` | source timestamp, identity, as-of, lineage 및 outcome aggregation은 fail-closed authority 검증 대상 | APPROVED / IMPLEMENTED | independent review correction, exact-head gates PASS |
+| `SC-DP6-001` | SQL `43..47`을 Data quality/lineage validation에 배정 | PROPOSED / NON-AUTHORITATIVE | allocation PR merge 전 SQL 생성 금지; SQL 01..42 보호 |
+| `SC-DP6-002` | `jc_data_quality_writer`, `jc_data_quality_reader`, `jc_data_quality_function_owner` | PROPOSED / NON-AUTHORITATIVE | execute-only / aggregate-safe-view-only / NOLOGIN owner |
+| `SC-DP6-003` | quality policy `data-quality-policy-v1` 및 100% completeness/fingerprint/rebuild 기준 | PROPOSED / NON-AUTHORITATIVE | zero denominator 명시 처리; threshold 임의 완화 금지 |
+| `SC-DP6-004` | snapshot quality verdict는 `VALIDATED / REJECTED / INCONCLUSIVE`만 허용 | PROPOSED / NON-AUTHORITATIVE | production/serving/cutover 의미 없음 |
+| `SC-DP6-005` | validation evidence 90일 metadata, append-only, purge 비활성 | PROPOSED / NON-AUTHORITATIVE | source/projection/snapshot/lineage 수정 금지 |

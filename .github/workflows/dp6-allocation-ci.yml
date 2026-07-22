@@ -1,0 +1,36 @@
+name: DP6 Allocation Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "docs/platform/governance/SC-DP6-QUALITY-ALLOCATION.md"
+      - "docs/platform/governance/SC-DECISION-REGISTER.md"
+      - "docs/platform/governance/SC-PLATFORM-REGISTRY.md"
+      - "docs/platform/governance/SC-HANDOFF.md"
+      - "docs/platform/data/DP-6-*.md"
+      - "verification/dp6/**"
+      - "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py"
+      - ".github/workflows/dp6-allocation-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  allocation:
+    name: DP-6 SC allocation / protected diff
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Validate DP-6 allocation boundary
+        run: python verification/dp6/run_dp6_allocation_verification.py
+      - name: Validate SC reconciliation
+        run: python verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py

@@ -1,0 +1,15 @@
+path_class	allowed	observed_status
+docs/platform/governance/SC-DP6-QUALITY-ALLOCATION.md	yes	ADDED
+docs/platform/governance/SC-DECISION-REGISTER.md	yes	PLANNED_UPDATE
+docs/platform/governance/SC-PLATFORM-REGISTRY.md	yes	PLANNED_UPDATE
+docs/platform/governance/SC-HANDOFF.md	yes	PLANNED_UPDATE
+docs/platform/data/DP-6-*.md	yes	ADDED
+verification/dp6/**	yes	ADDED
+verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py	yes	PLANNED_UPDATE
+.github/workflows/dp6-allocation-ci.yml	yes	PLANNED_ADD
+database/journey-connect-db-v2.7/*.sql	no	UNCHANGED
+jc-data-contracts/**	no	UNCHANGED
+jc-backend/src/main/**	no	UNCHANGED
+jc-recommendation-core/**	no	UNCHANGED
+jc-search-*/**	no	UNCHANGED
+jc-intelligence-contracts/**	no	UNCHANGED

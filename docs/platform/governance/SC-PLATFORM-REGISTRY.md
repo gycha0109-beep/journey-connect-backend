@@ -5,14 +5,14 @@
 | 항목 | 값 |
 |---|---|
 | 계약 ID | `sc-platform-registry-v1` |
-| 상태 | `ACTIVE` |
+| 상태 | `ACTIVE / DP-6 ALLOCATION PROPOSED` |
 
 ## Module/package
 
 | Module | Package root | Owner | Status |
 |---|---|---|---|
 | `jc-intelligence-contracts` | `com.jc.intelligence.contract` | Intelligence | ACTIVE |
-| `jc-data-contracts` | `com.jc.data.contract.v1` | Data | ACTIVE / DP-5 IMPLEMENTED ON PR #16 |
+| `jc-data-contracts` | `com.jc.data.contract.v1` | Data | ACTIVE / DP-5 MAIN INTEGRATED; DP-6 QUALITY PACKAGE PROPOSED |
 
 ## Identity schemes
 
@@ -46,13 +46,19 @@
 | `dp-2-postgresql-event-store-idempotency-v1` | ACTIVE / MAIN INTEGRATED |
 | `dp-4-recommendation-event-adapter-v1` | ACTIVE / MAIN INTEGRATED |
 | `dp-4-5-recommendation-adapter-shadow-evidence-v1` | ACTIVE / MAIN INTEGRATED |
-| `recommendation-profile-input-v1` | SHADOW-ONLY / DP-5 IMPLEMENTED / PR #16 VALIDATED |
-| `experiment-outcome-input-v1` | SHADOW-ONLY / DP-5 IMPLEMENTED / PR #16 VALIDATED |
-| `data-projection-snapshot-v1` | DP-5 IMPLEMENTED / PR #16 VALIDATED |
-| `data-source-set-sha256-v1` | DP-5 IMPLEMENTED / PR #16 VALIDATED |
-| `data-projection-record-sha256-v1` | DP-5 IMPLEMENTED / PR #16 VALIDATED |
-| `data-projection-snapshot-sha256-v1` | DP-5 IMPLEMENTED / PR #16 VALIDATED |
-| `data-projection-lineage-sha256-v1` | DP-5 IMPLEMENTED / PR #16 VALIDATED |
+| `recommendation-profile-input-v1` | SHADOW-ONLY / DP-5 MAIN INTEGRATED |
+| `experiment-outcome-input-v1` | SHADOW-ONLY / DP-5 MAIN INTEGRATED |
+| `data-projection-snapshot-v1` | DP-5 MAIN INTEGRATED |
+| `data-source-set-sha256-v1` | DP-5 MAIN INTEGRATED |
+| `data-projection-record-sha256-v1` | DP-5 MAIN INTEGRATED |
+| `data-projection-snapshot-sha256-v1` | DP-5 MAIN INTEGRATED |
+| `data-projection-lineage-sha256-v1` | DP-5 MAIN INTEGRATED |
+| `data-quality-policy-v1` | PROPOSED / NON-AUTHORITATIVE UNTIL ALLOCATION MERGE |
+| `data-quality-validation-input-sha256-v1` | PROPOSED / NON-AUTHORITATIVE |
+| `data-quality-check-evidence-sha256-v1` | PROPOSED / NON-AUTHORITATIVE |
+| `data-quality-metric-sha256-v1` | PROPOSED / NON-AUTHORITATIVE |
+| `data-quality-verdict-sha256-v1` | PROPOSED / NON-AUTHORITATIVE |
+| `data-quality-rebuild-comparison-sha256-v1` | PROPOSED / NON-AUTHORITATIVE |
 
 ## Data DB roles
 
@@ -66,9 +72,12 @@
 | `jc_data_adapter_evidence_writer` | execute DP-4.5 persistence function only | ACTIVE / DP-4.5 |
 | `jc_data_adapter_evidence_reader` | select DP-4.5 safe aggregate view only | ACTIVE / DP-4.5 |
 | `jc_data_adapter_evidence_function_owner` | NOLOGIN DP-4.5 function owner | ACTIVE / DP-4.5 |
-| `jc_data_projection_writer` | execute DP-5 atomic persistence only | IMPLEMENTED / PR #16 VALIDATED |
-| `jc_data_projection_reader` | select DP-5 aggregate safe view only | IMPLEMENTED / PR #16 VALIDATED |
-| `jc_data_projection_function_owner` | NOLOGIN DP-5 function owner | IMPLEMENTED / PR #16 VALIDATED |
+| `jc_data_projection_writer` | execute DP-5 atomic persistence only | ACTIVE / DP-5 MAIN INTEGRATED |
+| `jc_data_projection_reader` | select DP-5 aggregate safe view only | ACTIVE / DP-5 MAIN INTEGRATED |
+| `jc_data_projection_function_owner` | NOLOGIN DP-5 function owner | ACTIVE / DP-5 MAIN INTEGRATED |
+| `jc_data_quality_writer` | approved DP-6 validation/verdict functions only | PROPOSED / NOT CREATED |
+| `jc_data_quality_reader` | aggregate quality safe-view SELECT only | PROPOSED / NOT CREATED |
+| `jc_data_quality_function_owner` | NOLOGIN DP-6 function owner | PROPOSED / NOT CREATED |
 
 ## DB sequence
 
@@ -86,9 +95,16 @@
 | `35` | Recommendation adapter shadow evidence | ACTIVE / DP-4.5 |
 | `36` | adapter atomic persistence/roles/safe view | ACTIVE / DP-4.5 |
 | `37` | DP-4.5 validation | ACTIVE / DP-4.5 |
-| `38` | projection run/checkpoint/snapshot/lineage foundation | IMPLEMENTED / PR #16 VALIDATED |
-| `39` | recommendation profile input projection | IMPLEMENTED / PR #16 VALIDATED |
-| `40` | experiment outcome input projection | IMPLEMENTED / PR #16 VALIDATED |
-| `41` | atomic persistence/roles/safe view | IMPLEMENTED / PR #16 VALIDATED |
-| `42` | DP-5 PostgreSQL 15/18 validation | IMPLEMENTED / PR #16 VALIDATED |
-| `43+` | unallocated | SC ASSIGNMENT REQUIRED |
+| `38` | projection run/checkpoint/snapshot/lineage foundation | ACTIVE / DP-5 MAIN INTEGRATED |
+| `39` | recommendation profile input projection | ACTIVE / DP-5 MAIN INTEGRATED |
+| `40` | experiment outcome input projection | ACTIVE / DP-5 MAIN INTEGRATED |
+| `41` | atomic persistence/roles/safe view | ACTIVE / DP-5 MAIN INTEGRATED |
+| `42` | DP-5 PostgreSQL 15/18 validation | ACTIVE / DP-5 MAIN INTEGRATED |
+| `43` | quality validation run/check/anomaly foundation | PROPOSED / NON-AUTHORITATIVE |
+| `44` | quality metrics/verdict/late-arrival evidence | PROPOSED / NON-AUTHORITATIVE |
+| `45` | atomic quality persistence and roles | PROPOSED / NON-AUTHORITATIVE |
+| `46` | rebuild comparison and safe aggregate views | PROPOSED / NON-AUTHORITATIVE |
+| `47` | DP-6 PostgreSQL 15/18 validation | PROPOSED / NON-AUTHORITATIVE |
+| `48+` | unallocated | SC ASSIGNMENT REQUIRED |
+
+Proposed DP-6 entries become authoritative only after the SC allocation PR is merged. Until then SQL `43+` and the proposed roles must remain absent.

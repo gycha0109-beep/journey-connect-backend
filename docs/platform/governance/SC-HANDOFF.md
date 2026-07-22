@@ -2,91 +2,85 @@
 
 ## 상태
 
-`DP5_IMPLEMENTATION_COMPLETE / MAIN_MERGE_PENDING`
+`DP6_IMPLEMENTATION_BLOCKED_BY_SC_ALLOCATION`
 
 ## 기준
 
-- authoritative implementation base: `67a9b7515dbfd41360160c8059ac387e74cbdf6b`
-- DP-4.5 implementation PR: `#14`
-- DP-4.5 implementation HEAD: `8880dd8a86703df0f988ff03b22e84bac92f674b`
-- DP-4.5 merge commit: `de4e9f308130e10948edb69ceb1b2bba0eebcd2e`
-- DP-4.5 result: `DP45_IMPLEMENTATION_COMPLETE`
-- SQL `01..37`: protected
-- SQL `38..42`: implemented on PR #16
-- SQL `43+`: unallocated
+- authoritative main: `05a25771cd99d87891504fc00890ab918b970acf`
+- DP-5 implementation PR: `#16`
+- DP-5 implementation HEAD: `0e2be00248988abbc8e7648aa3a00a390d923395`
+- DP-5 merge commit: `05a25771cd99d87891504fc00890ab918b970acf`
+- DP-5 result: `DP5_IMPLEMENTATION_COMPLETE / MAIN INTEGRATED`
+- SQL `01..42`: protected
+- SQL `43+`: unallocated on authoritative main
 
 ## 완료
 
-- DP-1 through DP-4.5 are integrated into `main`.
-- canonical event, idempotency, retry/quarantine, P0 adapter and adapter shadow evidence are protected authority.
-- DP-5 implements deterministic shadow projections, immutable checkpoints/snapshots and append-only lineage evidence without runtime cutover.
-- DP-5 independent review strengthened source-time authority, identity, as-of, profile-window, lineage and P2 outcome boundaries.
-- production worker, scheduler, replay, backfill and production shadow remain disabled or unauthorized.
+- DP-1 through DP-5 are integrated into `main`.
+- canonical event, idempotency, retry/quarantine, P0 adapter, adapter shadow evidence, projection, checkpoint, snapshot and lineage are protected authority.
+- DP-5 deterministic profile/outcome projections and immutable evidence passed PostgreSQL 15/18, Java, Recommendation, Backend and SC gates.
+- production worker, scheduler, replay, backfill, production shadow and cutover remain disabled or unauthorized.
 
-## DP-5 implementation
+## DP-6 allocation proposal
 
-### Scope
+### Scope after allocation merge
 
-DP-5 implements deterministic, shadow-only `recommendation-profile-input-v1` and `experiment-outcome-input-v1` projections, immutable source checkpoints and snapshots, append-only lineage/validation/conflict evidence and aggregate-only observability.
+DP-6 may validate—without mutating—source completeness, projection completeness, snapshot consistency, lineage integrity, identity integrity, P2 exposure integrity and deterministic rebuild equality. It may append versioned checks, quality metrics, anomalies, late-arrival observations, rebuild comparisons and snapshot quality verdicts.
 
-It does not replace the current P1/P2 runtime source, change P2 metrics or exposure authority, write Recommendation/Search/Operations tables, activate a worker or scheduler, execute replay/backfill, purge data, cut over traffic or activate production shadow.
+It may not repair or update source events, adapter evidence, checkpoints, projection records, snapshots or lineage. It may not change Recommendation/P2 authority or metrics, write another track, activate production traffic, execute replay/backfill/rebuild, or create a worker/scheduler/purge path.
 
-### SQL
+### Proposed SQL
 
-- SQL `38`: run/checkpoint/snapshot/lineage/validation/conflict foundation
-- SQL `39`: Recommendation profile input projection
-- SQL `40`: experiment outcome input projection
-- SQL `41`: atomic `NEW/DUPLICATE/CONFLICT`, source authority reconciliation, roles/grants and safe view
-- SQL `42`: PostgreSQL 15/18 validation
-- SQL `43+`: unallocated
+- SQL `43`: validation run/check/anomaly foundation
+- SQL `44`: quality metrics/verdict/late-arrival evidence
+- SQL `45`: atomic `NEW/DUPLICATE/CONFLICT`, roles and grants
+- SQL `46`: deterministic rebuild comparison and aggregate safe views
+- SQL `47`: PostgreSQL 15/18 validation
+- SQL `48+`: unallocated
 
-### Roles
+The proposed SQL numbers are non-authoritative and must remain unused until the allocation PR is merged.
 
-- `jc_data_projection_writer`
-- `jc_data_projection_reader`
-- `jc_data_projection_function_owner` (`NOLOGIN`)
+### Proposed roles
 
-### Source authority
+- `jc_data_quality_writer`
+- `jc_data_quality_reader`
+- `jc_data_quality_function_owner` (`NOLOGIN`)
 
-- profile facts: Data canonical event and successful DP-4.5 mapped evidence
-- P2 experiment exposure: `recommendation_p2_experiment_exposure`
-- fallback: bound exposed `recommendation_run.run_status`
-- identity namespaces remain distinct and require explicit binding
-- caller-supplied checkpoint times must match authoritative source rows
+These roles are proposed only and are not created by the allocation PR.
 
-### Retention
+### Proposed quality policy
 
-Projection run/status, checkpoint, snapshot, record, lineage, validation and conflict evidence use 90-day technical retention metadata. Automatic purge and physical deletion remain disabled.
+`data-quality-policy-v1` requires 100% source, lineage, fingerprint, identity/exposure-when-applicable and rebuild reconciliation; 0% orphan lineage; zero conflicted/rejected adapter evidence inclusion; explicit zero-denominator handling.
 
-### Verified implementation evidence
+Verdicts are append-only:
 
-- independently reviewed implementation code HEAD: `1dad0d84ffcfacfc56a880e1296ef9430c2d43ed`;
-- Data PostgreSQL CI `29931366103`: PASS on PostgreSQL 15/18;
-- Data Contract CI `29931366173`: PASS;
-- Recommendation P0 Database CI `29931367581`: PASS on PostgreSQL 15/18;
-- Backend PR CI `29931366129`: PASS;
-- SC Baseline Reconciliation `29931365762`: PASS.
+- blocker present → `REJECTED`;
+- required evidence missing or required check skipped → `INCONCLUSIVE`;
+- all required checks and thresholds pass → `VALIDATED`.
 
-The final documentation/evidence commit is covered by PR exact-head checks and is intentionally not embedded as a self-referential hash.
+A DP-6 `VALIDATED` verdict has no production, serving, release or cutover meaning.
 
-## DP-5 entry
+## Current entry state
 
 ```text
-DP-4.5: MAIN INTEGRATED
-DP-5 IMPLEMENTATION: COMPLETE
+DP-5: MAIN INTEGRATED
+DP-6 SC ALLOCATION: PROPOSED / NOT YET AUTHORITATIVE
+DP-6 IMPLEMENTATION: BLOCKED
 ```
 
-PR #16 implements only the authorized DP-5 boundary and remains unmerged. Main merge remains prohibited without explicit user approval. DP-6 starts only from the eventual PR #16 merge commit.
+The allocation PR contains documentation, registry/decision updates, machine-readable design evidence and protected-diff checks only. It contains no SQL `43+`, Java validator, DB role, persistence object or runtime validation.
 
-## Remaining unresolved/outside DP-5
+## Remaining unresolved/outside DP-6 allocation
 
+- merge approval for the proposed SQL/role/quality-policy allocation;
+- DP-6 Java and PostgreSQL implementation after allocation merge;
 - identity mapping physical repository and deletion workflow;
 - production worker/scheduler deployment and activation;
-- replay/backfill execution;
+- replay/backfill/automatic rebuild execution;
 - production consumer and P1/P2 cutover;
 - Operations dashboard/alert routing;
 - legal/country-specific retention and erasure;
-- SQL `43+` allocation.
+- SQL `48+` allocation.
 
 ## Protected state
 
@@ -99,3 +93,7 @@ Search cutover: NOT STARTED
 Production traffic: NOT APPROVED
 Go/No-Go: NO_GO_FOR_TRAFFIC
 ```
+
+## Next baseline
+
+If the SC allocation PR is approved and merged, its merge commit becomes the authoritative base for the separate DP-6 implementation PR. User approval is required for both merges.
