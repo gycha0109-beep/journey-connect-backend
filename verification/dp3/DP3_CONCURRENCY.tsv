@@ -1,0 +1,4 @@
+scenario	expected	observed	result	verification_head	run_id
+same_work_two_workers	one claim only	one CLAIMED and one NOT_CLAIMED	PASS	90943c7cfbd1609677e321ca0c972a0a31533726	29882339244
+independent_work_two_workers	unique distribution	two distinct work IDs distributed	PASS	90943c7cfbd1609677e321ca0c972a0a31533726	29882339244
+skip_locked	no duplicate work	PostgreSQL 15 and 18 both passed	PASS	90943c7cfbd1609677e321ca0c972a0a31533726	29882339244

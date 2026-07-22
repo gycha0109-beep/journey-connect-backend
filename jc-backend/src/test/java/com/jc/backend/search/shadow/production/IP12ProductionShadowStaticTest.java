@@ -54,10 +54,13 @@ class IP12ProductionShadowStaticTest {
                 .filter(name -> name.matches("^[0-9]{2}_.*\\.sql$"))
                 .sorted()
                 .toList();
-        assertThat(canonicalSql).hasSize(31);
+        assertThat(canonicalSql).hasSize(34);
         assertThat(canonicalSql).contains(
                 "29_data_platform_event_store.sql",
                 "30_data_event_idempotency_roles.sql",
-                "31_data_event_store_smoke_test.sql");
+                "31_data_event_store_smoke_test.sql",
+                "32_data_retry_quarantine_evidence.sql",
+                "33_data_retry_processing_roles.sql",
+                "34_data_retry_quarantine_smoke_test.sql");
     }
 }

@@ -1,0 +1,7 @@
+check	command_or_evidence	result	verification_head	run_id
+java_contract	:jc-data-contracts:check	PASS	90943c7cfbd1609677e321ca0c972a0a31533726	29882339287
+postgresql_15	Data PostgreSQL CI	PASS	90943c7cfbd1609677e321ca0c972a0a31533726	29882339244
+postgresql_18	Data PostgreSQL CI	PASS	90943c7cfbd1609677e321ca0c972a0a31533726	29882339244
+recommendation_db	Recommendation P0 Database CI	PASS	90943c7cfbd1609677e321ca0c972a0a31533726	29882339248
+backend	Backend PR CI	PASS	90943c7cfbd1609677e321ca0c972a0a31533726	29882339251
+sc	SC Baseline Reconciliation	PASS	90943c7cfbd1609677e321ca0c972a0a31533726	29882339294

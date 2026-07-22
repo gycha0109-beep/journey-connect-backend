@@ -36,6 +36,14 @@ val dp2FingerprintContractTest = tasks.register<JavaExec>("dp2FingerprintContrac
     dependsOn(tasks.testClasses)
 }
 
+val dp3RetryPolicyContractTest = tasks.register<JavaExec>("dp3RetryPolicyContractTest") {
+    group = "verification"
+    description = "Runs the SC-approved DP-3 retry, quarantine and lease contract checks."
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass.set("com.jc.data.contract.Dp3RetryPolicyContractTest")
+    dependsOn(tasks.testClasses)
+}
+
 tasks.check {
-    dependsOn(dataContractTest, dp2FingerprintContractTest)
+    dependsOn(dataContractTest, dp2FingerprintContractTest, dp3RetryPolicyContractTest)
 }

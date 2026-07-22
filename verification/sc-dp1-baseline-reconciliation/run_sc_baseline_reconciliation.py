@@ -7,7 +7,6 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "verification/sc-dp1-baseline-reconciliation"
-
 REQUIRED = [
     "docs/platform/governance/JOURNEY_CONNECT_SYSTEM_CONTRACT_V1.md",
     "docs/platform/governance/JOURNEY_CONNECT_TRACK_GOVERNANCE_V1.md",
@@ -15,6 +14,7 @@ REQUIRED = [
     "docs/platform/governance/SC-RACI.md",
     "docs/platform/governance/SC-PLATFORM-REGISTRY.md",
     "docs/platform/governance/SC-DP1-BASELINE-RECONCILIATION.md",
+    "docs/platform/governance/SC-DP3-ENTRY-DECISIONS.md",
     "docs/platform/governance/SC-HANDOFF.md",
     "docs/platform/data/DP-0-DATA-PLATFORM-CONTRACT-FOUNDATION.md",
     "docs/platform/data/DP-0-P2-BASELINE-ALIGNMENT.md",
@@ -31,7 +31,7 @@ REQUIRED = [
 ]
 ALLOWED = (
     "docs/platform/governance/", "docs/platform/data/", "docs/platform/proposals/",
-    "verification/sc-dp1-baseline-reconciliation/", "verification/dp1/", "verification/dp2/",
+    "verification/sc-dp1-baseline-reconciliation/", "verification/dp1/", "verification/dp2/", "verification/dp3/",
     ".github/workflows/sc-baseline-reconciliation.yml",
     ".github/workflows/data-contract-ci.yml",
     ".github/workflows/data-postgres-ci.yml",
@@ -46,9 +46,16 @@ DP2_SQL = {
     "database/journey-connect-db-v2.7/30_data_event_idempotency_roles.sql",
     "database/journey-connect-db-v2.7/31_data_event_store_smoke_test.sql",
 }
+DP3_SQL = {
+    "database/journey-connect-db-v2.7/32_data_retry_quarantine_evidence.sql",
+    "database/journey-connect-db-v2.7/33_data_retry_processing_roles.sql",
+    "database/journey-connect-db-v2.7/34_data_retry_quarantine_smoke_test.sql",
+}
+
 
 def fail(message: str) -> None:
     raise SystemExit(f"FAIL: {message}")
+
 
 for rel in REQUIRED:
     if not (ROOT / rel).is_file():
@@ -105,10 +112,10 @@ try:
     for rel in filter(None, diff):
         if not any(rel == prefix or rel.startswith(prefix) for prefix in ALLOWED):
             fail(f"protected/unexpected changed file: {rel}")
-    if changed_sql - DP2_SQL:
-        fail(f"unapproved SQL changed: {sorted(changed_sql - DP2_SQL)}")
-    if changed_sql and changed_sql != DP2_SQL:
-        fail(f"DP-2 SQL allocation must change exactly 29..31: {sorted(changed_sql)}")
+    if changed_sql - (DP2_SQL | DP3_SQL):
+        fail(f"unapproved SQL changed: {sorted(changed_sql - (DP2_SQL | DP3_SQL))}")
+    if changed_sql and changed_sql not in (DP2_SQL, DP3_SQL):
+        fail(f"SQL allocation must change exactly DP-2 29..31 or DP-3 32..34: {sorted(changed_sql)}")
     if any(rel.startswith(("jc-backend/src/main/", "jc-recommendation-core/", "jc-search-")) for rel in diff):
         fail("production/recommendation/search source changed")
 except (subprocess.CalledProcessError, FileNotFoundError):

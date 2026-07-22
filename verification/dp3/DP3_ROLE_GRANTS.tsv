@@ -1,0 +1,5 @@
+role	allowed	forbidden	result
+jc_data_retry_processor	approved functions	direct source/table mutation	PENDING_CI
+jc_data_quarantine_reviewer	safe views and review evidence	retry manipulation/replay	PENDING_CI
+jc_data_replay_executor	none in DP-3	replay and source mutation	PENDING_CI
+PUBLIC	none	read/write/execute	PENDING_CI

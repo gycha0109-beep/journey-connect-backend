@@ -1,0 +1,7 @@
+decision	value	status
+retry_policy	data-projection-retry-v1	IMPLEMENTED
+claim	FOR UPDATE SKIP LOCKED	IMPLEMENTED
+lease	60s / heartbeat 20s	IMPLEMENTED
+replay	not authorized	PROTECTED
+scheduler	disabled	PROTECTED
+purge	disabled	PROTECTED

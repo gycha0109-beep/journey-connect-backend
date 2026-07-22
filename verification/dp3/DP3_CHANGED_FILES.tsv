@@ -1,0 +1,6 @@
+category	path	purpose
+sql	database/journey-connect-db-v2.7/32_data_retry_quarantine_evidence.sql	evidence and control state
+sql	database/journey-connect-db-v2.7/33_data_retry_processing_roles.sql	atomic processing and grants
+sql	database/journey-connect-db-v2.7/34_data_retry_quarantine_smoke_test.sql	contract smoke
+java	jc-data-contracts/src/main/java/com/jc/data/contract/v1/retry/**	pure retry contracts
+test	jc-data-contracts/src/test/java/com/jc/data/contract/Dp3RetryPolicyContractTest.java	contract assertions

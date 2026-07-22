@@ -1,0 +1,6 @@
+object_type	object_name	owner	mutability
+control_table	data_projection_work_state_v1	Data	procedure-owned mutable state
+evidence_table	data_projection_retry_schedule_v1	Data	append-only
+evidence_table	data_projection_processing_attempt_v1	Data	append-only
+evidence_table	data_projection_quarantine_evidence_v1	Data	append-only
+view	data_projection_retry_observability_v1	Data	read-only aggregate
