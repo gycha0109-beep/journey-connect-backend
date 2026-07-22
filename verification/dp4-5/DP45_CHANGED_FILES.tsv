@@ -1,6 +1,14 @@
 path	change_type	purpose
-docs/platform/data/DP-4-5-RECOMMENDATION-ADAPTER-SHADOW-EVIDENCE-PERSISTENCE.md	ADD	blocked persistence design and SC decision requirements
-docs/platform/data/DP-4-5-HANDOFF.md	ADD	resume point and protected state
-verification/dp4-5/DP45_*.tsv	ADD	machine-readable blocker evidence
-verification/dp4-5/run_dp45_blocker_verification.py	ADD	protected-diff and blocker validation
-.github/workflows/data-contract-ci.yml	MODIFY	run DP-4.5 blocker verification
+database/journey-connect-db-v2.7/35_data_recommendation_adapter_shadow_evidence.sql	ADD	append-only run output failure conflict evidence
+database/journey-connect-db-v2.7/36_data_recommendation_adapter_shadow_persistence.sql	ADD	atomic persistence roles grants safe aggregate view
+database/journey-connect-db-v2.7/37_data_recommendation_adapter_shadow_validation.sql	ADD	rollback-only PostgreSQL contract validation
+verification/dp4-5/run_dp45_concurrency.sh	ADD	multi-session same-identity concurrency verification
+verification/dp4-5/run_dp45_static_verification.py	ADD	allocation and protected-diff validation
+docs/platform/data/DP-4-5-RECOMMENDATION-ADAPTER-SHADOW-EVIDENCE-PERSISTENCE.md	MODIFY	implementation record
+docs/platform/data/DP-4-5-HANDOFF.md	MODIFY	completion handoff
+verification/dp4-5/DP45_*.tsv	MODIFY	machine-readable implementation evidence
+.github/workflows/data-postgres-ci.yml	MODIFY	PostgreSQL 15 and 18 DP-4.5 gate
+.github/workflows/data-contract-ci.yml	MODIFY	implementation static and contract gate
+jc-backend/src/test/java/com/jc/backend/search/shadow/production/IP12ProductionShadowStaticTest.java	MODIFY	test-only SQL inventory through 37
+verification/dp4/run_dp4_static_verification.py	MODIFY	permit allocated SQL 35 through 37 only
+verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py	MODIFY	recognize SC-allocated DP-4.5 range
