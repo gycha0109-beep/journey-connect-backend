@@ -2,7 +2,7 @@
 
 ## Status
 
-`IMPLEMENTED / EXACT-HEAD CI PENDING`
+`DP5_IMPLEMENTATION_COMPLETE`
 
 ## Purpose
 
@@ -124,4 +124,12 @@ DP-5 does not implement a worker, scheduler, replay, backfill, identity reposito
 
 ## Verification
 
-Local Java 21 `-Xlint:all -Werror` compilation and DP-5 golden/determinism/failure tests passed before push. Repository CI supplies PostgreSQL 15/18, full Gradle, Recommendation, Backend and SC exact-head evidence. Unexecuted checks are not reported as PASS.
+Validated implementation HEAD: `305f3c689c2487ad2a9bd4791bde21517c0ebc72`.
+
+- Data PostgreSQL CI `29917537854`: PostgreSQL 15/18, SQL `01..42`, DP-2/DP-3/DP-4.5 concurrency regression and DP-5 exact-one-`NEW` concurrency PASS;
+- Data Contract CI `29917537842`: Java 21, `-Xlint:all -Werror`, DP-5 golden/determinism/failure fixtures and Recommendation Java Core PASS;
+- Recommendation P0 Database CI `29917537938`: Testcontainers PostgreSQL 15/18 PASS;
+- Backend PR CI `29917537605`: Backend/IP-12.5 protected readiness PASS;
+- SC Baseline Reconciliation `29917537971`: PASS.
+
+These results authorize the DP-5 implementation verdict only. PR #16 remains unmerged, production activation remains prohibited and DP-6 must use the eventual PR #16 merge commit as its authoritative main baseline.
