@@ -2,68 +2,59 @@
 
 ## Result
 
-`DP45_IMPLEMENTATION_BLOCKED_BY_SQL_ASSIGNMENT`
+`DP45_IMPLEMENTATION_COMPLETE`
 
 ## Baseline
 
-- authoritative main: `c1649c3647e8b640bd95853fdcb645d1571f54c3`;
-- DP-4 PR `#11`: merged;
-- DP-4 implementation HEAD: `5d9ce9693f5492d08b5e0c545e1f2e18427fcf5f`;
-- DP-4 merge commit: `c1649c3647e8b640bd95853fdcb645d1571f54c3`;
-- SQL `01..34`: protected;
-- SQL `35+`: unallocated;
-- adapter evidence roles: unassigned.
+- authoritative work-start main: `9a5785448ff300063b7f320c9f1043ef1863741e`;
+- blocker/design PR `#12`: merged as `1eb981fa2ab33e6b3870c6c1b76e547eeae48980`;
+- SC allocation PR `#13`: merged as `9a5785448ff300063b7f320c9f1043ef1863741e`;
+- SQL `01..34`: protected and unchanged;
+- SQL `35..37`: DP-4.5 allocated and implemented;
+- SQL `38+`: unallocated.
 
-## Completed in this stage
+## Delivered
 
-- confirmed the actual SQL and role blocker from the SC Decision Register, Platform Registry and SC Handoff;
-- preserved the authoritative `Recommendation P0 source -> Data shadow candidate` direction;
-- documented the required run, mapped-output, failure, duplicate/conflict and aggregate-view objects;
-- fixed the proposed atomic `NEW/DUPLICATE/CONFLICT` behavior;
-- documented output-fingerprint, privacy, append-only, role/grant and retention constraints;
-- produced machine-readable blocker and protected-diff evidence;
-- added no SQL, Java contract, fake repository, worker, scheduler, runtime connection or production wiring.
+- append-only adapter run, mapped-output, mapping-failure and conflict evidence;
+- bounded duplicate aggregate counter;
+- atomic `NEW / DUPLICATE / CONFLICT` persistence;
+- existing run and evidence references returned for duplicates;
+- `ADAPTER_EVIDENCE_CONFLICT` with no additional output on conflicts;
+- DP-4 fingerprint-shape and exact version-boundary validation;
+- mapped-payload size and privacy validation;
+- writer execute-only and reader aggregate-view-only separation;
+- dedicated NOLOGIN function owner with fixed `search_path` and PUBLIC revoke;
+- privacy-safe aggregate metrics;
+- 90-day retention metadata without purge or physical delete;
+- PostgreSQL 15/18 rollback smoke and multi-session concurrency fixtures.
 
 ## Verification
 
-Candidate-head protected regression completed successfully:
+Implementation candidate checks are wired for:
 
-- Data Contract CI: PASS, run `29891906984`;
-- DP-1 through DP-4 contract regression: PASS;
-- DP-4.5 blocker verifier: PASS;
-- Recommendation PostgreSQL 15/18: PASS, run `29891907012`;
-- Backend/IP-12.5: PASS, run `29891906962`;
-- SC Baseline Reconciliation: PASS, run `29891907017`;
-- SQL `01..34`: unchanged;
-- SQL `35+`: absent;
-- Java, Recommendation, Search/Intelligence and production configuration: unchanged.
+- Data PostgreSQL 15 and 18;
+- concurrent same-identity exactly one `NEW` plus one `DUPLICATE`;
+- DP-2 event-store/idempotency regression;
+- DP-3 retry/quarantine regression;
+- DP-4 adapter and Data contract regression;
+- Recommendation Java Core and PostgreSQL 15/18 regression;
+- Backend/IP-12.5;
+- SC Baseline Reconciliation;
+- protected diff.
 
-Final exact-head CI must remain successful before merge.
-
-## Not implemented
-
-- adapter evidence tables;
-- persistence function;
-- writer/reader roles or grants;
-- safe view;
-- PostgreSQL fixtures or smoke SQL;
-- runtime consumer/worker/scheduler;
-- replay, backfill or purge;
-- Recommendation or canonical Data event write.
-
-These items require explicit SC SQL and role allocation.
+Exact-head workflow run IDs are recorded in `verification/dp4-5/DP45_VERIFICATION_STATUS.tsv` after the final CI pass.
 
 ## Protected state
 
 - Recommendation P0 remains authoritative;
-- DP-4 output remains shadow-only compatibility evidence;
-- existing P0 fingerprint unchanged and not reused;
-- P1/P2 authority and metrics unchanged;
+- DP-4 output remains Data shadow compatibility evidence;
+- existing P0 and canonical Data fingerprints remain unchanged and are not reused;
+- P1/P2 authority and metric meanings remain unchanged;
 - general Recommendation exposure remains separate from P2 experiment exposure;
 - production Recommendation write disabled;
 - production worker not implemented;
 - production scheduler disabled;
-- replay not authorized;
+- replay and backfill not authorized;
 - production shadow disabled;
 - kill switch enabled;
 - sampling `0 BPS`;
@@ -71,17 +62,14 @@ These items require explicit SC SQL and role allocation.
 - Search cutover not started;
 - production traffic not approved.
 
-## Required SC gate
+## Remaining risks
 
-Before implementation resumes, SC must merge a decision that:
+- no production consumer, worker or scheduler invokes the persistence function;
+- application login-to-capability-role membership is outside this stage;
+- legal/country-specific retention and erasure remain pending;
+- automatic purge remains intentionally absent;
+- DP-5 has not started.
 
-1. assigns an exact SQL range after `34`;
-2. registers exact migration responsibilities;
-3. assigns or rejects adapter evidence writer/reader roles;
-4. confirms the function owner and grant model;
-5. approves object names, retention class and evidence ID formats;
-6. decides whether DP-4.5 persistence blocks DP-5 entry.
+## DP-5 entry
 
-## Resume point
-
-After the SC decision merge, re-read current `main`, use only the assigned SQL range, implement PostgreSQL 15/18 persistence and role tests, then run Data, Recommendation, Backend and SC protected regression. Do not reuse this blocker branch as implementation authority without rebasing onto the then-current `main`.
+The DP-4.5 technical prerequisite is satisfied only after this implementation PR is merged and its exact-head PostgreSQL 15/18, Data, Recommendation, Backend and SC checks remain successful. DP-5 should then start from the resulting `main` merge commit.
