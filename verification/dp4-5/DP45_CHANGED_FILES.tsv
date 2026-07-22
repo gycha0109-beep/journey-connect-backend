@@ -1,0 +1,6 @@
+path	change_type	purpose
+docs/platform/data/DP-4-5-RECOMMENDATION-ADAPTER-SHADOW-EVIDENCE-PERSISTENCE.md	ADD	blocked persistence design and SC decision requirements
+docs/platform/data/DP-4-5-HANDOFF.md	ADD	resume point and protected state
+verification/dp4-5/DP45_*.tsv	ADD	machine-readable blocker evidence
+verification/dp4-5/run_dp45_blocker_verification.py	ADD	protected-diff and blocker validation
+.github/workflows/data-contract-ci.yml	MODIFY	run DP-4.5 blocker verification

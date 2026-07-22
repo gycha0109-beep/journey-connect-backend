@@ -1,0 +1,9 @@
+decision	current_state	required_owner	implementation_effect
+sql_range_after_34	UNALLOCATED	System Coordination	blocks all PostgreSQL objects and smoke SQL
+adapter_writer_role	UNASSIGNED	System Coordination / Security	blocks persistence function grant
+adapter_reader_role	UNASSIGNED	System Coordination / Security	blocks safe-view grant
+function_owner	UNCONFIRMED	System Coordination / Security	blocks SECURITY DEFINER ownership
+object_and_retention_names	PROPOSED_ONLY	System Coordination / Data	blocks physical schema
+adapter_evidence_id_format	UNAPPROVED	System Coordination / Data	blocks deterministic stored references
+duplicate_observation_requirement	UNDECIDED	System Coordination / Data	blocks final evidence cardinality
+dp5_dependency	UNDECIDED	System Coordination	blocks DP-5 sequencing decision

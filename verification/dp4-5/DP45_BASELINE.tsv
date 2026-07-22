@@ -1,0 +1,11 @@
+item	value	status
+main_head	c1649c3647e8b640bd95853fdcb645d1571f54c3	CONFIRMED
+pr_11	merged / c1649c3647e8b640bd95853fdcb645d1571f54c3	CONFIRMED
+dp4_result	DP4_IMPLEMENTATION_COMPLETE_WITH_SQL_ASSIGNMENT_PENDING	CONFIRMED
+sql_01_34	protected	CONFIRMED
+sql_35_plus	unallocated / SC assignment required	BLOCKER
+adapter_evidence_roles	unassigned	BLOCKER
+production_shadow	disabled	PROTECTED
+sampling	0 BPS	PROTECTED
+cohort	empty	PROTECTED
+search_cutover	not started	PROTECTED

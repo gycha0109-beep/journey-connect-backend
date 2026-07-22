@@ -1,0 +1,9 @@
+target	expected	result
+SQL_01_34	unchanged	PASS
+SQL_35_plus	absent	PASS
+jc_data_contracts	unchanged	PASS
+recommendation_production_source	unchanged	PASS
+recommendation_p0_fingerprint	unchanged and not reused	PASS
+search_intelligence_source	unchanged	PASS
+production_configuration	unchanged	PASS
+production_controls	disabled / kill switch / 0 BPS / empty cohort / no cutover	PASS
