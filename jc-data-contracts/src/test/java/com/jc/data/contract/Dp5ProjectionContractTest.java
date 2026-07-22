@@ -100,7 +100,7 @@ public final class Dp5ProjectionContractTest {
             if (line.startsWith("fixture_id") || line.isBlank()) {
                 continue;
             }
-            String[] fields = line.split("\\t", -1);
+            String[] fields = line.split("\t", -1);
             expected.put(fields[0], List.of(fields[1], fields[2], fields[3]));
         }
         check(expected.get("profile").equals(List.of(
@@ -198,7 +198,8 @@ public final class Dp5ProjectionContractTest {
                 ProjectionFailureCode.EXPOSURE_BINDING_INVALID);
 
         ProjectionSourceEvent outside = source("event:outside", "recommendation_click",
-                AS_OF.minusSeconds(3600).plusSeconds(604_800), AS_OF.minusSeconds(10),
+                AS_OF.minusSeconds(3600).plusSeconds(604_800),
+                AS_OF.minusSeconds(3600).plusSeconds(604_801),
                 "subject:dp5-fixture", "session:p2", "post:4", null, "post:4", List.of(),
                 "exposure:p2", "control", AdapterEvidenceState.MAPPED, "adapter_output:outside",
                 "recommendation-p0-mapping-policy-v1", Map.of(), "outside");
