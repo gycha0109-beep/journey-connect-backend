@@ -1,0 +1,16 @@
+verification/dp6/.transport/chunk-00.b64	decode_exit=0	size=9000
+verification/dp6/.transport/chunk-01.b64	decode_exit=0	size=18000
+verification/dp6/.transport/chunk-02.b64	decode_exit=0	size=27000
+verification/dp6/.transport/chunk-03.b64	decode_exit=0	size=36000
+blob:3fa9f7f5bc30ded756d80e51f03a4165f501d0d9	exit=0	size=45000
+verification/dp6/.transport/chunk-05.b64	decode_exit=0	size=54000
+blob:e553ef73c0cefae3de3a79ab3b647a882bb78907	exit=0	size=63000
+verification/dp6/.transport/chunk-07.b64	decode_exit=0	size=71052
+archive_size	71052
+archive_sha256	9f853bd183addb42e411748625d6b317aa301fdfae93af91af54627524432932
+expected_sha256	2d3600b2be6180f9e2643053f1a64671c93c1c643319d93feb18452ba6092096
+
+gzip: /tmp/dp6-implementation.tar.gz: invalid compressed data--crc error
+
+gzip: /tmp/dp6-implementation.tar.gz: invalid compressed data--length error
+gzip_status	1
