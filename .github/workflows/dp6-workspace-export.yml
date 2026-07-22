@@ -20,9 +20,9 @@ jobs:
           fetch-depth: 0
       - name: Export workspace
         run: |
-          tar --exclude='.git' -czf dp6-workspace.tar.gz .
+          tar --exclude='.git' -czf /tmp/dp6-workspace.tar.gz .
       - uses: actions/upload-artifact@v4
         with:
           name: dp6-workspace-${{ github.event.pull_request.head.sha || github.sha }}
-          path: dp6-workspace.tar.gz
+          path: /tmp/dp6-workspace.tar.gz
           if-no-files-found: error
