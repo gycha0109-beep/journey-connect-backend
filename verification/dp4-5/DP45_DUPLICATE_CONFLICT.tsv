@@ -1,0 +1,5 @@
+outcome	identity_match	fingerprint_match	required_result	implementation_status
+NEW	no	n/a	insert run plus exactly one output or failure in one transaction	PROPOSED_NOT_IMPLEMENTED
+DUPLICATE	yes	yes	return existing evidence ref; append bounded observation; no new output	PROPOSED_NOT_IMPLEMENTED
+CONFLICT	yes	no	append ADAPTER_EVIDENCE_CONFLICT observation; no new output or mutation	PROPOSED_NOT_IMPLEMENTED
+logical_identity	source_event_ref + source_fingerprint + adapter_id + adapter_version + target_contract_version + mapping_policy_version	n/a	advisory transaction lock plus unique constraint	PROPOSED_NOT_IMPLEMENTED
