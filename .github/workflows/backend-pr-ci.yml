@@ -11,8 +11,10 @@ on:
       - "jc-search-*/**"
       - "docs/platform/intelligence/**"
       - "docs/platform/data/DP-4-*.md"
+      - "docs/platform/data/DP-5-*.md"
       - "verification/ip12-5/**"
       - "verification/dp4/**"
+      - "verification/dp5/**"
       - ".github/workflows/backend-pr-ci.yml"
   workflow_dispatch:
 
@@ -54,7 +56,7 @@ jobs:
         run: |
           set -o pipefail
           ./gradlew verifyIp125 --stacktrace --no-daemon 2>&1 | tee ../verification/ip12-5/IP125_BACKEND_CI.log
-          python ../verification/dp4/run_dp4_static_verification.py
+          python ../verification/dp5/run_dp5_static_verification.py
 
       - name: Upload IP-12.5 backend CI evidence
         if: always()
