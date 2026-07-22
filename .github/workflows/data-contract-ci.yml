@@ -28,7 +28,7 @@ concurrency:
 
 jobs:
   data-contracts:
-    name: Java 21 / DP-1 through DP-4.5 + DP-5 allocation gate
+    name: Java 21 / DP-1 through DP-5 contracts
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -87,7 +87,7 @@ jobs:
             exit 1
           fi
 
-          python ../verification/dp5/run_dp5_allocation_verification.py 2>&1 | tee ../verification/dp5/runtime/DP5_ALLOCATION_STATIC_CI.log
+          python ../verification/dp5/run_dp5_static_verification.py 2>&1 | tee ../verification/dp5/runtime/DP5_STATIC_CI.log
 
       - name: Run Recommendation Java Core regression
         shell: bash
@@ -99,7 +99,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dp5-allocation-data-contract-ci-evidence
+          name: dp5-data-contract-ci-evidence
           path: |
             verification/dp4/runtime/**
             verification/dp4-5/runtime/**
