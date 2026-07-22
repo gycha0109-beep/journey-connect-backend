@@ -1,12 +1,16 @@
 check	evidence	result
-pr_11_merged	GitHub PR metadata	PASS
-main_head	c1649c3647e8b640bd95853fdcb645d1571f54c3	PASS
-sql_assignment	SC Decision Register and Platform Registry	BLOCKED_UNALLOCATED
-role_assignment	SC Platform Registry	BLOCKED_UNASSIGNED
-sql_01_34_unchanged	protected diff	PASS
-sql_35_plus_absent	protected diff	PASS
-dp4_baseline_unchanged	Data Contract CI run 29891906984	PASS
-recommendation_regression	Recommendation PostgreSQL 15/18 run 29891907012	PASS
-backend_regression	Backend IP-12.5 run 29891906962	PASS
-sc_reconciliation	SC Baseline Reconciliation run 29891907017	PASS
-final_verdict	DP45_IMPLEMENTATION_BLOCKED_BY_SQL_ASSIGNMENT	CONFIRMED
+pr_12_merged	GitHub PR metadata	PASS
+pr_13_merged	GitHub PR metadata	PASS
+main_head	9a5785448ff300063b7f320c9f1043ef1863741e	PASS
+sql_assignment	SC-DP4-5-PERSISTENCE-ALLOCATION.md	PASS
+role_assignment	SC-DP4-5-PERSISTENCE-ALLOCATION.md	PASS
+sql_01_34_unchanged	protected diff	PENDING_CI
+sql_35_37	implementation diff	IMPLEMENTED
+postgresql_15	Data PostgreSQL CI	PENDING_CI
+postgresql_18	Data PostgreSQL CI	PENDING_CI
+concurrency	DP-4.5 multi-session fixture	PENDING_CI
+dp4_contract_regression	Data Contract CI	PENDING_CI
+recommendation_regression	Recommendation PostgreSQL 15/18	PENDING_CI
+backend_regression	Backend IP-12.5	PENDING_CI
+sc_reconciliation	SC Baseline Reconciliation	PENDING_CI
+final_verdict	DP45_IMPLEMENTATION_COMPLETE	PENDING_EXACT_HEAD
