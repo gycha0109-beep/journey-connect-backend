@@ -37,6 +37,9 @@ public record ProjectionSourceEvent(
         eventType = ProjectionEngineSupport.requireToken(eventType, "eventType", 80);
         Objects.requireNonNull(occurredAt, "occurredAt");
         Objects.requireNonNull(ingestedAt, "ingestedAt");
+        if (ingestedAt.isBefore(occurredAt)) {
+            throw new IllegalArgumentException("ingestedAt must not precede occurredAt");
+        }
         identityRef = ProjectionEngineSupport.requireIdentity(identityRef, "identityRef");
         if (sessionRef != null) {
             sessionRef = ProjectionEngineSupport.requireReference(sessionRef, "sessionRef");
