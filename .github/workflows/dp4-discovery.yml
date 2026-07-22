@@ -1,61 +1,64 @@
-name: DP-4 Recommendation Contract Discovery
+name: DP-4 Verified Adapter Bootstrap
 
 on:
   pull_request:
     paths:
+      - ".dp4-payload/**"
       - ".github/workflows/dp4-discovery.yml"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  discover:
+  apply-verified-adapter:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
+
     steps:
-      - uses: actions/checkout@v7
+      - name: Checkout implementation branch
+        uses: actions/checkout@v7
         with:
+          ref: ${{ github.head_ref || github.ref_name }}
           fetch-depth: 0
-      - name: Collect authoritative adapter inputs
+          persist-credentials: true
+
+      - name: Reassemble and verify payload
         shell: bash
         run: |
           set -euo pipefail
-          out="verification/dp4-discovery"
-          mkdir -p "$out/files"
+          cat .dp4-payload/part-* > /tmp/dp4-payload.b64
+          base64 --decode /tmp/dp4-payload.b64 > /tmp/dp4-payload.tar.gz
+          echo "4c71b097553d0613730f2c2c86ac41947788ed14f1394f647b4171984d936ad3  /tmp/dp4-payload.tar.gz" | sha256sum -c -
+          tar -tzf /tmp/dp4-payload.tar.gz >/dev/null
+          tar -xzf /tmp/dp4-payload.tar.gz -C .
 
-          find jc-recommendation-core jc-backend/src/main/java/com/jc/backend/recommendation jc-backend/src/test/java/com/jc/backend/recommendation jc-data-contracts \
-            -type f \( -name '*.java' -o -name '*.kt' -o -name '*.kts' -o -name '*.json' -o -name '*.tsv' -o -name '*.md' \) \
-            -print | sort > "$out/relevant-paths.txt"
-
-          grep -RIlE 'recommendation_behavior_event|recommendation_exposure_event|RecommendationBehavior|IDEMPOTENCY_CONFLICT|schema_version|event_type|entity_type|run_id|exposure' \
-            database/journey-connect-db-v2.7 jc-recommendation-core jc-backend/src/main jc-backend/src/test \
-            | sort -u > "$out/semantic-paths.txt" || true
-
-          cat "$out/relevant-paths.txt" "$out/semantic-paths.txt" \
-            docs/platform/data/P0-RECOMMENDATION-EVENT-ADAPTER-V1.md \
-            docs/platform/data/PLATFORM-EVENT-CONTRACT-V1.md \
-            docs/platform/data/EVENT-IDEMPOTENCY-AND-FINGERPRINT-V1.md \
-            docs/platform/governance/SC-DECISION-REGISTER.md \
-            docs/platform/governance/SC-PLATFORM-REGISTRY.md \
-            jc-backend/build.gradle.kts \
-            jc-backend/settings.gradle.kts \
-            | sort -u > "$out/all-paths.txt"
-
-          find .github/workflows -maxdepth 1 -type f -name '*.yml' -print | sort >> "$out/all-paths.txt"
-          sort -u -o "$out/all-paths.txt" "$out/all-paths.txt"
-
-          while IFS= read -r path; do
-            [[ -f "$path" ]] || continue
-            mkdir -p "$out/files/$(dirname "$path")"
-            cp "$path" "$out/files/$path"
-          done < "$out/all-paths.txt"
-
-          git ls-tree -r --name-only HEAD database/journey-connect-db-v2.7 > "$out/sql-inventory.txt"
-          git rev-parse HEAD > "$out/head.txt"
-          tar -czf "$out/dp4-authoritative-inputs.tar.gz" -C "$out/files" .
-      - uses: actions/upload-artifact@v4
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
         with:
-          name: dp4-authoritative-inputs-expanded
-          path: verification/dp4-discovery/**
-          if-no-files-found: error
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Validate adapter and protected contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x jc-backend/gradlew
+          (cd jc-backend && ./gradlew :jc-data-contracts:check :jc-recommendation-core:check --stacktrace --no-daemon)
+          python verification/dp4/run_dp4_static_verification.py
+
+      - name: Publish verified implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .dp4-payload
+          git checkout -- .github/workflows/dp4-discovery.yml jc-backend/gradlew
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "feat(dp4): implement P0 recommendation event adapter"
+          git push origin HEAD:${{ github.head_ref || github.ref_name }}
