@@ -1,6 +1,6 @@
 case	expected	status
-subject_namespace	subject_opaque	DESIGNED
-user_namespace	user_numeric	DESIGNED
+subject_namespace	supported	IMPLEMENTED
+user_namespace	explicit_binding_required	IMPLEMENTED
 automatic_join	forbidden	PASS
-missing_binding	identity_binding_required	DESIGNED
-conflicting_namespace	identity_namespace_conflict	DESIGNED
+binding_metadata	version_source_fingerprint_scope	IMPLEMENTED
+namespace_conflict	fail_closed	IMPLEMENTED

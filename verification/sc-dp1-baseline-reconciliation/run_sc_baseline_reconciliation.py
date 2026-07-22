@@ -61,6 +61,14 @@ DP45_SQL = {
     "database/journey-connect-db-v2.7/37_data_recommendation_adapter_shadow_validation.sql",
 }
 
+DP5_SQL = {
+    "database/journey-connect-db-v2.7/38_data_projection_snapshot_foundation.sql",
+    "database/journey-connect-db-v2.7/39_data_recommendation_profile_projection.sql",
+    "database/journey-connect-db-v2.7/40_data_experiment_outcome_projection.sql",
+    "database/journey-connect-db-v2.7/41_data_projection_persistence_roles.sql",
+    "database/journey-connect-db-v2.7/42_data_projection_snapshot_validation.sql",
+}
+
 def fail(message: str) -> None:
     raise SystemExit(f"FAIL: {message}")
 
@@ -137,12 +145,12 @@ for contract_id in (
     if contract_id not in registry:
         fail(f"contract registry missing {contract_id}")
 
-for number in range(1, 38):
+for number in range(1, 43):
     if len(list((ROOT / "database/journey-connect-db-v2.7").glob(f"{number:02d}_*.sql"))) != 1:
         fail(f"canonical SQL {number:02d} missing or duplicated")
-if list((ROOT / "database/journey-connect-db-v2.7").glob("3[8-9]_*.sql")) \
-        or list((ROOT / "database/journey-connect-db-v2.7").glob("[4-9][0-9]_*.sql")):
-    fail("SQL 38+ must remain absent until the DP-5 implementation PR")
+if list((ROOT / "database/journey-connect-db-v2.7").glob("4[3-9]_*.sql")) \
+        or list((ROOT / "database/journey-connect-db-v2.7").glob("[5-9][0-9]_*.sql")):
+    fail("SQL 43+ remains unallocated")
 
 try:
     subprocess.run(["git", "fetch", "origin", "main", "--depth=1"], cwd=ROOT,
@@ -153,10 +161,10 @@ try:
     for rel in filter(None, diff):
         if not any(rel == prefix or rel.startswith(prefix) for prefix in ALLOWED):
             fail(f"protected/unexpected changed file: {rel}")
-    all_approved_sql = DP2_SQL | DP3_SQL | DP45_SQL
+    all_approved_sql = DP2_SQL | DP3_SQL | DP45_SQL | DP5_SQL
     if changed_sql - all_approved_sql:
         fail(f"unapproved SQL changed: {sorted(changed_sql - all_approved_sql)}")
-    if changed_sql and changed_sql not in (DP2_SQL, DP3_SQL, DP45_SQL):
+    if changed_sql and changed_sql not in (DP2_SQL, DP3_SQL, DP45_SQL, DP5_SQL):
         fail(f"SQL allocation must change exactly one approved implemented range: {sorted(changed_sql)}")
     if any(rel.startswith(("jc-backend/src/main/", "jc-recommendation-core/", "jc-search-")) for rel in diff):
         fail("production/recommendation/search source changed")

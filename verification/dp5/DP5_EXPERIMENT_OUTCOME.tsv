@@ -1,7 +1,6 @@
 check	expected	status
-exposure_authority	recommendation_p2_experiment_exposure	DESIGNED
-outcome_events	click_like_save_share	DESIGNED
-window	exposure_to_plus_7d	DESIGNED
-fallback_source	bound_recommendation_run_status	DESIGNED
-metric_denominator_change	absent	PASS
-implementation	java_and_sql	NOT_EXECUTED
+exposure_authority	recommendation_p2_experiment_exposure	IMPLEMENTED
+outcomes	click_like_save_share	IMPLEMENTED
+window	inclusive_exposure_exclusive_plus_7d	IMPLEMENTED
+fallback	bound_run_status	IMPLEMENTED
+metric_denominator	unchanged	PASS

@@ -42,8 +42,8 @@
 | `SC-DP45-001` | SQL `35..37` adapter shadow evidence persistence | APPROVED / IMPLEMENTED | PR #14 merge `de4e9f308130e10948edb69ceb1b2bba0eebcd2e` |
 | `SC-DP45-002` | adapter evidence writer/reader/function owner | APPROVED / IMPLEMENTED | execute-only/safe-view-only/NOLOGIN |
 | `SC-DP45-003` | DP-4.5는 DP-5 기술 선행 조건 | APPROVED / SATISFIED | PostgreSQL 15/18 및 protected regression PASS |
-| `SC-DP5-001` | SQL `38..42`을 projection/snapshot foundation에 배정 | APPROVED / EFFECTIVE AFTER MERGE | SQL 01..37 보호, SQL 43+ 미배정 |
-| `SC-DP5-002` | `jc_data_projection_writer`, `jc_data_projection_reader`, `jc_data_projection_function_owner` | APPROVED / EFFECTIVE AFTER MERGE | least privilege |
+| `SC-DP5-001` | SQL `38..42`을 projection/snapshot foundation에 배정 | APPROVED / IMPLEMENTED PENDING CI | SQL 01..37 보호, SQL 43+ 미배정 |
+| `SC-DP5-002` | `jc_data_projection_writer`, `jc_data_projection_reader`, `jc_data_projection_function_owner` | APPROVED / IMPLEMENTED PENDING CI | least privilege |
 | `SC-DP5-003` | `recommendation-profile-input-v1`과 `experiment-outcome-input-v1`은 shadow-only | APPROVED | production/P1/P2 authority 비변경 |
 | `SC-DP5-004` | P2 outcome exposure authority는 `recommendation_p2_experiment_exposure` | APPROVED | general exposure/impression 대체 금지 |
 | `SC-DP5-005` | projection/snapshot/lineage/validation/conflict evidence 90일 metadata | APPROVED / TECHNICAL BASELINE | purge 및 physical delete 비활성 |

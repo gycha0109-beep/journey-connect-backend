@@ -1,7 +1,6 @@
-boundary	expected	observed	status
-sql_01_37	unchanged	unchanged	PASS
-sql_38_plus	absent	absent	PASS
-recommendation_sources	unchanged	unchanged	PASS
-search_intelligence_sources	unchanged	unchanged	PASS
-production_configuration	unchanged	unchanged	PASS
-api_v1_explore	unchanged	unchanged	PASS
+boundary	expected	status
+sql_01_37	unchanged	PENDING_GIT_DIFF
+recommendation_source	unchanged	PENDING_GIT_DIFF
+search_intelligence_source	unchanged	PENDING_GIT_DIFF
+production_java_config	unchanged	PENDING_GIT_DIFF
+api_v1_explore	unchanged	PENDING_GIT_DIFF

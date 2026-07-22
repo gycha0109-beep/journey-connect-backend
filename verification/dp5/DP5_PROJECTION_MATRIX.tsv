@@ -1,3 +1,3 @@
-projection	source_authority	identity	exposure	window	target	status
-recommendation-profile-input-v1	canonical_event_or_dp45_mapped	approved_binding	source_contract_specific	7d_30d_90d	profile_facts	DESIGNED
-experiment-outcome-input-v1	recommendation_p2_experiment_exposure_plus_outcome_facts	exact_binding	required_p2_exposure	7d	outcome_facts	DESIGNED
+projection	source	authority	window	status
+recommendation-profile-input-v1	canonical_event_or_mapped_adapter	Data	7_30_90_days	IMPLEMENTED
+experiment-outcome-input-v1	p2_exposure_plus_outcomes	recommendation_p2_experiment_exposure	7_days	IMPLEMENTED

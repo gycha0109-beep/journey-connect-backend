@@ -1,6 +1,6 @@
 check	expected	status
-immutable	true	DESIGNED
-event_and_ingestion_time_separate	true	DESIGNED
-late_event_mutation	forbidden	DESIGNED
-source_set_fingerprint	sha256_lower_hex_64	DESIGNED
-postgres_validation	15_and_18	NOT_EXECUTED
+immutable	true	IMPLEMENTED
+event_ingestion_boundary	separate	IMPLEMENTED
+source_count_match	required	IMPLEMENTED
+source_fingerprint_match	required	IMPLEMENTED
+late_event	new_checkpoint_required	IMPLEMENTED

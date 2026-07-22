@@ -56,11 +56,20 @@ val dp4RecommendationAdapterContractTest = tasks.register<JavaExec>("dp4Recommen
     dependsOn(tasks.testClasses)
 }
 
+val dp5ProjectionContractTest = tasks.register<JavaExec>("dp5ProjectionContractTest") {
+    group = "verification"
+    description = "Runs DP-5 deterministic projection and snapshot contract checks."
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass.set("com.jc.data.contract.Dp5ProjectionContractTest")
+    dependsOn(tasks.testClasses)
+}
+
 tasks.check {
     dependsOn(
         dataContractTest,
         dp2FingerprintContractTest,
         dp3RetryPolicyContractTest,
         dp4RecommendationAdapterContractTest,
+        dp5ProjectionContractTest,
     )
 }

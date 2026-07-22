@@ -1,67 +1,53 @@
 # DP-5 Handoff
 
-## Result
+## Status
 
-`DP5_IMPLEMENTATION_BLOCKED_BY_SC_ALLOCATION`
+`IMPLEMENTED / EXACT-HEAD CI PENDING`
 
 ## Baseline
 
-- authoritative main: `de4e9f308130e10948edb69ceb1b2bba0eebcd2e`;
-- DP-4.5 PR `#14`: merged;
-- DP-4.5 merge commit: `de4e9f308130e10948edb69ceb1b2bba0eebcd2e`;
+- authoritative implementation base: `67a9b7515dbfd41360160c8059ac387e74cbdf6b`;
+- allocation PR #15: merged;
+- implementation PR: #16;
 - SQL `01..37`: protected;
-- SQL `38+`: absent on main;
-- DP-5 roles: unallocated on main.
+- SQL `38..42`: implemented;
+- SQL `43+`: unallocated.
 
 ## Completed
 
-- verified the actual allocation blocker;
-- fixed the profile and experiment outcome projection matrix;
-- defined immutable checkpoint, append-only run-status, snapshot and lineage contracts;
-- fixed deterministic source-set, record, snapshot and lineage fingerprint meanings;
-- fixed identity and P2 exposure fail-closed boundaries;
-- proposed SQL `38..42`;
-- proposed writer, reader and NOLOGIN function-owner roles;
-- documented aggregate safe-view and 90-day retention boundaries;
-- created machine-readable blocker and design evidence;
-- created an SC decision PR.
-
-## Not implemented
-
-- pure Java DP-5 contracts or projection engine;
-- profile or outcome golden fixtures;
-- SQL `38..42`;
-- projection tables, functions, roles, grants or views;
-- PostgreSQL 15/18 DP-5 validation;
-- worker, scheduler, replay, backfill, purge, production Recommendation input or cutover.
+- pure Java projection contracts and deterministic engines;
+- profile 7/30/90 day projection;
+- P2 exposure-bound outcome projection;
+- immutable source checkpoint;
+- append-only run/status/snapshot/lineage/validation/conflict evidence;
+- deterministic source, record, snapshot and lineage fingerprints;
+- atomic `NEW / DUPLICATE / CONFLICT` persistence;
+- exact-one-NEW concurrency verifier;
+- hardened writer/reader/function-owner roles;
+- aggregate-only safe view;
+- 90-day retention metadata without purge;
+- PostgreSQL 15/18 validation and protected regression wiring;
+- machine-readable evidence.
 
 ## Protected state
 
-- Recommendation P0/P1/P2 source and metric authority unchanged;
+- Recommendation P0/P1/P2 authority unchanged;
 - P2 exposure authority remains `recommendation_p2_experiment_exposure`;
-- general exposure and behavior impression are not P2 denominators;
-- canonical Data event and DP-4.5 evidence unchanged;
+- engagement/fallback denominators unchanged;
+- canonical events and DP-4.5 evidence append-only;
 - production Recommendation write absent;
 - worker absent; scheduler disabled;
+- replay/backfill unauthorized;
 - production shadow disabled;
 - kill switch enabled;
 - sampling `0 BPS`;
 - cohort empty;
-- Search cutover not started;
-- production traffic not approved.
+- Search cutover not started.
 
-## Allocation PR verification
+## Remaining gate
 
-- Data Contract CI run `29901862224`: PASS;
-- SC Baseline Reconciliation run `29901862138`: PASS;
-- Java Data contracts DP-1 through DP-4: PASS;
-- Recommendation Java Core regression: PASS;
-- DP-4 and DP-4.5 protected artifact diff: PASS;
-- DP-5 allocation/static blocker gate: PASS;
-- DP-5 Java implementation and PostgreSQL 15/18: not executed because allocation is not yet authoritative.
+Exact-head GitHub Actions must pass before the verdict changes to `DP5_IMPLEMENTATION_COMPLETE`. Do not merge PR #16 without explicit user approval.
 
-## Resume point
+## DP-6 entry
 
-Merge the SC allocation PR only with explicit user approval. Then start a new DP-5 implementation branch from the latest `main`, implement only SQL `38..42`, and run the full Java, PostgreSQL 15/18, determinism, lineage, role/grant and protected regression gates.
-
-Do not treat this branch as DP-5 implementation completion.
+DP-6 remains blocked until PR #16 exact-head PostgreSQL 15/18, Data Contract, Recommendation, Backend and SC gates pass and DP-5 is merged into main.

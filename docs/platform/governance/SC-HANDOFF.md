@@ -2,17 +2,18 @@
 
 ## 상태
 
-`DP45_MAIN_INTEGRATED / DP5_PROJECTION_ALLOCATION_APPROVED_PENDING_MERGE`
+`DP5_IMPLEMENTED / EXACT_HEAD_CI_PENDING`
 
 ## 기준
 
-- authoritative main: `de4e9f308130e10948edb69ceb1b2bba0eebcd2e`
+- authoritative implementation base: `67a9b7515dbfd41360160c8059ac387e74cbdf6b`
 - DP-4.5 implementation PR: `#14`
 - DP-4.5 implementation HEAD: `8880dd8a86703df0f988ff03b22e84bac92f674b`
 - DP-4.5 merge commit: `de4e9f308130e10948edb69ceb1b2bba0eebcd2e`
 - DP-4.5 result: `DP45_IMPLEMENTATION_COMPLETE`
 - SQL `01..37`: protected
-- SQL `38+`: unallocated on current main
+- SQL `38..42`: implemented on PR #16
+- SQL `43+`: unallocated
 
 ## 완료
 
@@ -21,7 +22,7 @@
 - DP-4.5 PostgreSQL 15/18, Data, Recommendation, Backend and SC gates passed at the implementation exact HEAD.
 - production worker, scheduler, replay, backfill and production shadow remain disabled or unauthorized.
 
-## DP-5 approved decision, effective after merge
+## DP-5 implementation candidate
 
 ### Scope
 
@@ -59,10 +60,10 @@ Projection run/status, checkpoint, snapshot, record, lineage, validation and con
 
 ```text
 DP-4.5: MAIN INTEGRATED
-DP-5 IMPLEMENTATION: BLOCKED UNTIL SC ALLOCATION PR MERGE
+DP-5 IMPLEMENTATION: COMPLETE CANDIDATE / EXACT-HEAD CI PENDING
 ```
 
-After merge, DP-5 implementation must start from the then-current `main` and use only SQL `38..42`.
+PR #16 implements only SQL `38..42`. Main merge remains prohibited without explicit user approval.
 
 ## Remaining unresolved/outside DP-5
 

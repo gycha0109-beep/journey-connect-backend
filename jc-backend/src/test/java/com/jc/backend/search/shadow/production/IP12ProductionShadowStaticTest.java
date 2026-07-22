@@ -54,7 +54,7 @@ class IP12ProductionShadowStaticTest {
                 .filter(name -> name.matches("^[0-9]{2}_.*\\.sql$"))
                 .sorted()
                 .toList();
-        assertThat(canonicalSql).hasSize(37);
+        assertThat(canonicalSql).hasSize(42);
         assertThat(canonicalSql).contains(
                 "29_data_platform_event_store.sql",
                 "30_data_event_idempotency_roles.sql",
@@ -64,6 +64,11 @@ class IP12ProductionShadowStaticTest {
                 "34_data_retry_quarantine_smoke_test.sql",
                 "35_data_recommendation_adapter_shadow_evidence.sql",
                 "36_data_recommendation_adapter_shadow_persistence.sql",
-                "37_data_recommendation_adapter_shadow_validation.sql");
+                "37_data_recommendation_adapter_shadow_validation.sql",
+                "38_data_projection_snapshot_foundation.sql",
+                "39_data_recommendation_profile_projection.sql",
+                "40_data_experiment_outcome_projection.sql",
+                "41_data_projection_persistence_roles.sql",
+                "42_data_projection_snapshot_validation.sql");
     }
 }

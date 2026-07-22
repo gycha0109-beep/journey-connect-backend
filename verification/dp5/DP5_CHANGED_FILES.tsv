@@ -1,8 +1,7 @@
-path	change_class	status
-docs/platform/governance/SC-DP5-PROJECTION-ALLOCATION.md	SC_DECISION	PROPOSED
-docs/platform/data/DP-5-PROJECTION-AND-SNAPSHOT-FOUNDATION.md	DESIGN	COMPLETE
-docs/platform/data/DP-5-PROJECTION-MATRIX.md	DESIGN	COMPLETE
-docs/platform/data/DP-5-HANDOFF.md	HANDOFF	COMPLETE
-verification/dp5/**	EVIDENCE	COMPLETE
-database/journey-connect-db-v2.7/38..42	SQL	NOT_CREATED
-jc-data-contracts/**	JAVA	UNCHANGED
+area	change	status
+sql_38_42	projection_checkpoint_snapshot_persistence_validation	IMPLEMENTED
+java_contracts	pure_java_projection_contracts_engines	IMPLEMENTED
+java_fixture	golden_determinism_failure_cases	IMPLEMENTED
+ci	postgres15_18_data_recommendation_backend_sc	IMPLEMENTED
+docs_evidence	handoff_matrix_machine_readable	IMPLEMENTED
+production_sources	no_change	PROTECTED

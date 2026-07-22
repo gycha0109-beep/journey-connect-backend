@@ -1,0 +1,5 @@
+check	expected	status
+same_logical_identity	exactly_one_NEW	PENDING_CI
+other_request	DUPLICATE	PENDING_CI
+run_count	one	PENDING_CI
+snapshot_count	one	PENDING_CI
