@@ -58,7 +58,12 @@ public final class RecommendationProfileProjectionEngine {
         } catch (IllegalArgumentException exception) {
             return failure(ProjectionFailureCode.PROJECTION_INVARIANT_FAILED, "source", "duplicate_conflict");
         }
-        Map<String, IdentityBinding> bindings = bindingIndex(identityBindings);
+        Map<String, IdentityBinding> bindings;
+        try {
+            bindings = bindingIndex(identityBindings);
+        } catch (IllegalArgumentException exception) {
+            return failure(ProjectionFailureCode.IDENTITY_NAMESPACE_CONFLICT, "identity", "binding_conflict");
+        }
         TreeMap<String, List<ProjectionSourceEvent>> bySubject = new TreeMap<>();
         for (ProjectionSourceEvent event : selected) {
             ProjectionFailure sourceFailure = validateSource(event, checkpoint, projectionAsOf);
