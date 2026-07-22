@@ -1,0 +1,31 @@
+name: DP5 Retention Fixture Patch
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: codex/dp-5-projection-snapshot-foundation
+          fetch-depth: 0
+      - name: Correct DP-5 canonical event retention fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          file=database/journey-connect-db-v2.7/42_data_projection_snapshot_validation.sql
+          grep -F "'2027-07-18T00:00:01Z'" "$file"
+          sed -i "s/'2027-07-18T00:00:01Z'/'2027-07-21T00:00:01Z'/" "$file"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$file"
+          git commit -m "fix(dp5): align validation retention metadata"
+          git push origin HEAD:codex/dp-5-projection-snapshot-foundation
