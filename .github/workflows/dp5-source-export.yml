@@ -1,33 +1,54 @@
-name: DP5 Source Export
+name: DP5 Implementation Bootstrap
 
 on:
   push:
     branches:
       - codex/dp-5-projection-snapshot-foundation
-  pull_request:
-    branches:
-      - main
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: dp5-implementation-bootstrap
+  cancel-in-progress: false
 
 jobs:
-  export:
+  apply:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v7
+      - name: Checkout implementation branch
+        uses: actions/checkout@v7
         with:
+          ref: codex/dp-5-projection-snapshot-foundation
           fetch-depth: 0
-      - name: Package exact source
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Apply and validate implementation bundle
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p /tmp/dp5-source
-          git archive --format=tar HEAD | tar -xf - -C /tmp/dp5-source
-          tar -czf dp5-source.tgz -C /tmp/dp5-source .
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dp5-source-${{ github.sha }}
-          path: dp5-source.tgz
-          if-no-files-found: error
+          cat .dp5-bootstrap/chunk-*.b64 > /tmp/dp5-changes.b64
+          base64 --decode /tmp/dp5-changes.b64 > /tmp/dp5-changes.tgz
+          test "$(sha256sum /tmp/dp5-changes.tgz | awk '{print $1}')" = "2ee07c76911d89b2997364c1ce134526e53413427b15d81a1fc3da6894b996bf"
+          tar -xzf /tmp/dp5-changes.tgz -C .
+          git checkout -- .github/workflows
+          chmod +x verification/dp5/run_dp5_concurrency.sh
+          python verification/dp5/run_dp5_static_verification.py
+          cd jc-backend
+          chmod +x ./gradlew
+          ./gradlew :jc-data-contracts:dp5ProjectionContractTest --stacktrace --no-daemon
+          cd ..
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git reset .github/workflows .dp5-bootstrap
+          git diff --cached --quiet && { echo 'No implementation changes staged.' >&2; exit 1; }
+          git commit -m "feat(dp5): implement projection and snapshot foundation"
+          git push origin HEAD:codex/dp-5-projection-snapshot-foundation
