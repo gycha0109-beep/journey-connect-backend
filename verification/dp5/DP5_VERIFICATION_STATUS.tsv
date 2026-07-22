@@ -1,11 +1,13 @@
 check	result	evidence
-implementation_head	PASS	305f3c689c2487ad2a9bd4791bde21517c0ebc72
-postgresql_15	PASS	Data PostgreSQL CI 29917537854
-postgresql_18	PASS	Data PostgreSQL CI 29917537854
-data_contract_java21	PASS	Data Contract CI 29917537842
-profile_and_outcome_golden	PASS	Data Contract CI 29917537842
-recommendation_java_core	PASS	Data Contract CI 29917537842
-recommendation_postgresql_15	PASS	Recommendation P0 Database CI 29917537938
-recommendation_postgresql_18	PASS	Recommendation P0 Database CI 29917537938
-backend_ip125	PASS	Backend PR CI 29917537605
-sc_reconciliation	PASS	SC Baseline Reconciliation 29917537971
+implementation_code_head	PASS	1dad0d84ffcfacfc56a880e1296ef9430c2d43ed
+postgresql_15	PASS	Data PostgreSQL CI 29931366103
+postgresql_18	PASS	Data PostgreSQL CI 29931366103
+data_contract_java21	PASS	Data Contract CI 29931366173
+profile_and_outcome_golden	PASS	Data Contract CI 29931366173
+fail_closed_boundary_fixtures	PASS	Data Contract CI 29931366173
+recommendation_java_core	PASS	Data Contract CI 29931366173
+recommendation_postgresql_15	PASS	Recommendation P0 Database CI 29931367581
+recommendation_postgresql_18	PASS	Recommendation P0 Database CI 29931367581
+backend_ip125	PASS	Backend PR CI 29931366129
+sc_reconciliation	PASS	SC Baseline Reconciliation 29931365762
+final_documentation_head	VERIFY_ON_PR	Exact-head GitHub Actions checks on PR #16
