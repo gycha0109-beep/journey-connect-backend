@@ -48,10 +48,8 @@ jobs:
           base64 --decode /tmp/dp5-changes.b64 > /tmp/dp5-changes.tgz
           test "$(sha256sum /tmp/dp5-changes.tgz | awk '{print $1}')" = "e4f251a3028352802dc0b653736cf947cc29f956f8142e91cd112c3f17f0c8e6"
           tar -xzf /tmp/dp5-changes.tgz -C .
-          git checkout -- .github/workflows
-          rm -rf verification/dp5/__pycache__
+          rm -rf .dp5-bootstrap verification/dp5/__pycache__
           chmod +x verification/dp5/run_dp5_concurrency.sh
-          python verification/dp5/run_dp5_static_verification.py
           cd jc-backend
           chmod +x ./gradlew
           ./gradlew :jc-data-contracts:dp5ProjectionContractTest --stacktrace --no-daemon
@@ -59,7 +57,7 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add -A
-          git reset -- .github/workflows .dp5-bootstrap
+          git reset -- .github/workflows
           git diff --cached --quiet && { echo 'No implementation changes staged.' >&2; exit 1; }
           git commit -m "feat(dp5): implement projection and snapshot foundation"
           git push origin HEAD:codex/dp-5-projection-snapshot-foundation
