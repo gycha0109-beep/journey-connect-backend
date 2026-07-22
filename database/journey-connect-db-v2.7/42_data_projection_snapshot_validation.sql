@@ -148,7 +148,7 @@ BEGIN
     PERFORM public.persist_data_source_checkpoint_v1('checkpoint:timestamp-tamper','data-platform-event-v1',
       'platform-event-v1','user-behavior-event-v1','2026-07-19T00:00:00Z','2026-07-22T00:00:00Z',
       '2026-07-22T00:00:00Z','event:dp5-profile-2',
-      jsonb_set(v_profile2_members,'{0,occurredAt}','"2026-07-21T00:00:02Z"'::jsonb),v_source_set,v_definition);
+      jsonb_set(v_profile2_members,'{0,occurredAt}','"2026-07-20T23:59:59Z"'::jsonb),v_source_set,v_definition);
     RAISE EXCEPTION 'source timestamp tamper unexpectedly succeeded';
   EXCEPTION WHEN SQLSTATE '23514' THEN NULL; END;
   -- invalid fingerprints fail closed.
