@@ -1,0 +1,40 @@
+name: DP6 CI Diagnostic
+
+on:
+  pull_request:
+    branches: [main]
+    paths: [".github/workflows/dp6-ci-diagnostic.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: codex/dp-6-data-quality-validation
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Capture data contract failure
+        shell: bash
+        run: |
+          set +e
+          cd jc-backend
+          chmod +x gradlew
+          ./gradlew dataContractCheck --no-daemon --stacktrace > ../verification/dp6/DP6_JAVA_CI_DIAGNOSTIC.txt 2>&1
+          status=$?
+          cd ..
+          printf '\nstatus=%s\n' "$status" >> verification/dp6/DP6_JAVA_CI_DIAGNOSTIC.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add verification/dp6/DP6_JAVA_CI_DIAGNOSTIC.txt
+          git commit -m "chore(dp6): capture Java CI diagnostic"
+          git push origin HEAD:codex/dp-6-data-quality-validation
