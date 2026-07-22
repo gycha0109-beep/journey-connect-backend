@@ -1,5 +1,5 @@
 role_or_principal	proposed_authority	prohibited_authority	status
-jc_data_adapter_evidence_writer	execute approved atomic persistence function only	direct table mutation / Recommendation write / canonical event mutation	PROPOSED_ROLE_NOT_ASSIGNED
-jc_data_adapter_evidence_reader	select approved aggregate safe view only	raw table read / write / function ownership	PROPOSED_ROLE_NOT_ASSIGNED
-jc_security_owner	narrow NOLOGIN function ownership if SC approves	login / broad application authority	EXISTING_CONVENTION_NOT_GRANTED
-PUBLIC	none	table read write and function execute	MUST_REMAIN_DENIED
+jc_data_adapter_evidence_writer	execute approved atomic persistence function only	direct table mutation / Recommendation write / canonical event mutation	IMPLEMENTED
+jc_data_adapter_evidence_reader	select approved aggregate safe view only	raw table read / write / function ownership	IMPLEMENTED
+jc_data_adapter_evidence_function_owner	NOLOGIN narrow function ownership and required table operations	login / superuser / role creation / database creation / bypass RLS	IMPLEMENTED
+PUBLIC	none	table read write and persistence function execute	IMPLEMENTED
