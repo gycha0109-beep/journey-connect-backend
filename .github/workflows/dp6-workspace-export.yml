@@ -1,4 +1,4 @@
-name: DP6 Apply Diagnostic
+name: DP6 Apply Implementation
 
 on:
   pull_request:
@@ -12,13 +12,17 @@ permissions:
   contents: write
 
 jobs:
-  diagnose:
+  apply:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       TARGET_BRANCH: codex/dp-6-data-quality-validation
       EXPECTED_SHA256: 2d3600b2be6180f9e2643053f1a64671c93c1c643319d93feb18452ba6092096
+      RAW_BLOB_01A: f62a5457f0bfb4dcc4c673652a90e708a39dad11
+      RAW_BLOB_01B: 02823590a436b1ab72a621647a9fef235ad41f24
+      RAW_BLOB_01C: afea6c11572cb2569b70435cbfc3c348f7b87aa5
+      RAW_BLOB_01D: f633ca682285ec1591c72e1658abeaaf3e6fd4ff
       RAW_BLOB_04: 3fa9f7f5bc30ded756d80e51f03a4165f501d0d9
       RAW_BLOB_06: e553ef73c0cefae3de3a79ab3b647a882bb78907
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -28,18 +32,15 @@ jobs:
           ref: codex/dp-6-data-quality-validation
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Diagnose reconstruction and validation
+      - name: Reconstruct, verify and apply implementation
         shell: bash
         run: |
-          set +e
+          set -euo pipefail
           archive=/tmp/dp6-implementation.tar.gz
-          diag=verification/dp6/DP6_APPLY_DIAGNOSTIC_2.txt
           : > "$archive"
-          : > "$diag"
 
           decode_file() {
             base64 -d "$1" >> "$archive"
-            printf '%s\tdecode_exit=%s\tsize=%s\n' "$1" "$?" "$(wc -c < "$archive")" >> "$diag"
           }
 
           fetch_blob() {
@@ -50,38 +51,40 @@ jobs:
               -H "X-GitHub-Api-Version: 2022-11-28" \
               "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/git/blobs/${sha}" \
               | jq -r '.content' | tr -d '\n' | base64 -d >> "$archive"
-            printf 'blob:%s\texit=%s\tsize=%s\n' "$sha" "$?" "$(wc -c < "$archive")" >> "$diag"
           }
 
-          for index in 00 01 02 03; do decode_file "verification/dp6/.transport/chunk-${index}.b64"; done
+          decode_file verification/dp6/.transport/chunk-00.b64
+          fetch_blob "${RAW_BLOB_01A}"
+          fetch_blob "${RAW_BLOB_01B}"
+          fetch_blob "${RAW_BLOB_01C}"
+          fetch_blob "${RAW_BLOB_01D}"
+          decode_file verification/dp6/.transport/chunk-02.b64
+          decode_file verification/dp6/.transport/chunk-03.b64
           fetch_blob "${RAW_BLOB_04}"
           decode_file verification/dp6/.transport/chunk-05.b64
           fetch_blob "${RAW_BLOB_06}"
           decode_file verification/dp6/.transport/chunk-07.b64
 
-          actual_size="$(wc -c < "$archive")"
-          actual_sha="$(sha256sum "$archive" | cut -d' ' -f1)"
-          printf 'archive_size\t%s\narchive_sha256\t%s\nexpected_sha256\t%s\n' "$actual_size" "$actual_sha" "$EXPECTED_SHA256" >> "$diag"
-          gzip -t "$archive" >> "$diag" 2>&1
-          gzip_status=$?
-          printf 'gzip_status\t%s\n' "$gzip_status" >> "$diag"
+          test "$(wc -c < "$archive")" = "71052"
+          test "$(sha256sum "$archive" | cut -d' ' -f1)" = "${EXPECTED_SHA256}"
+          gzip -t "$archive"
+          tar -xzf "$archive"
 
-          if [ "$gzip_status" -eq 0 ]; then
-            tar -xzf "$archive" >> "$diag" 2>&1
-            printf 'extract_status\t%s\n' "$?" >> "$diag"
-            python verification/dp6/run_dp6_static_verification.py >> "$diag" 2>&1
-            printf 'dp6_static_status\t%s\n' "$?" >> "$diag"
-            python verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py >> "$diag" 2>&1
-            printf 'sc_status\t%s\n' "$?" >> "$diag"
-            cd jc-backend
-            chmod +x gradlew
-            ./gradlew :jc-data-contracts:check --no-daemon --stacktrace >> "../$diag" 2>&1
-            printf 'gradle_status\t%s\n' "$?" >> "../$diag"
-            cd ..
-          fi
+          rm -rf verification/dp6/.transport
+          rm -f verification/dp6/DP6_APPLY_DIAGNOSTIC.txt verification/dp6/DP6_APPLY_DIAGNOSTIC_2.txt
+          rm -f .github/workflows/dp6-workspace-export.yml
+          chmod +x verification/dp6/run_dp6_concurrency.sh
+
+          python verification/dp6/run_dp6_static_verification.py
+          python verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py
+
+          cd jc-backend
+          chmod +x gradlew
+          ./gradlew :jc-data-contracts:check --no-daemon --stacktrace
+          cd ..
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$diag"
-          git commit -m "chore(dp6): record apply diagnostics"
+          git add -A
+          git commit -m "feat(dp6): implement data quality and lineage validation"
           git push origin "HEAD:${TARGET_BRANCH}"
