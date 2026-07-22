@@ -1,7 +1,7 @@
 target	expected	result
-SQL_01_34	unchanged	PENDING_EXACT_HEAD
-recommendation_production_source	unchanged	PENDING_EXACT_HEAD
-recommendation_p0_fingerprint	unchanged/not reused	PENDING_EXACT_HEAD
-search_intelligence_production_source	unchanged	PENDING_EXACT_HEAD
-production_configuration	unchanged	PENDING_EXACT_HEAD
-production_controls	disabled/kill switch/0 BPS/empty cohort/no cutover	PENDING_EXACT_HEAD
+SQL_01_34	unchanged	PASS
+recommendation_production_source	unchanged	PASS
+recommendation_p0_fingerprint	unchanged/not reused	PASS
+search_intelligence_production_source	unchanged	PASS
+production_configuration	unchanged	PASS
+production_controls	disabled/kill switch/0 BPS/empty cohort/no cutover	PASS
