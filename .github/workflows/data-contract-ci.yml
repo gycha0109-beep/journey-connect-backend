@@ -60,26 +60,33 @@ jobs:
           set -o pipefail
           mkdir -p ../verification/dp4/runtime ../verification/dp4-5/runtime ../verification/dp5/runtime
           ./gradlew :jc-data-contracts:check --stacktrace --no-daemon 2>&1 | tee ../verification/dp4/runtime/DP4_DATA_CONTRACT_CI.log
-          python ../verification/dp4/run_dp4_static_verification.py 2>&1 | tee ../verification/dp4/runtime/DP4_STATIC_CI.log
+
           if git diff --quiet origin/main...HEAD -- \
+            ':(top)docs/platform/data/DP-4-P0-RECOMMENDATION-EVENT-ADAPTER.md' \
+            ':(top)docs/platform/data/DP-4-HANDOFF.md' \
+            ':(top)verification/dp4' \
             ':(top)database/journey-connect-db-v2.7/35_data_recommendation_adapter_shadow_evidence.sql' \
             ':(top)database/journey-connect-db-v2.7/36_data_recommendation_adapter_shadow_persistence.sql' \
             ':(top)database/journey-connect-db-v2.7/37_data_recommendation_adapter_shadow_validation.sql' \
             ':(top)docs/platform/data/DP-4-5-RECOMMENDATION-ADAPTER-SHADOW-EVIDENCE-PERSISTENCE.md' \
             ':(top)docs/platform/data/DP-4-5-HANDOFF.md' \
             ':(top)verification/dp4-5'; then
-            echo "DP-4.5 protected artifacts unchanged: PASS" | tee ../verification/dp4-5/runtime/DP45_PROTECTED_REGRESSION_CI.log
+            echo "DP-4 and DP-4.5 protected artifacts unchanged: PASS" | tee ../verification/dp4-5/runtime/DP4_DP45_PROTECTED_REGRESSION_CI.log
           else
             git diff --name-only origin/main...HEAD -- \
+              ':(top)docs/platform/data/DP-4-P0-RECOMMENDATION-EVENT-ADAPTER.md' \
+              ':(top)docs/platform/data/DP-4-HANDOFF.md' \
+              ':(top)verification/dp4' \
               ':(top)database/journey-connect-db-v2.7/35_data_recommendation_adapter_shadow_evidence.sql' \
               ':(top)database/journey-connect-db-v2.7/36_data_recommendation_adapter_shadow_persistence.sql' \
               ':(top)database/journey-connect-db-v2.7/37_data_recommendation_adapter_shadow_validation.sql' \
               ':(top)docs/platform/data/DP-4-5-RECOMMENDATION-ADAPTER-SHADOW-EVIDENCE-PERSISTENCE.md' \
               ':(top)docs/platform/data/DP-4-5-HANDOFF.md' \
               ':(top)verification/dp4-5' \
-              | tee ../verification/dp4-5/runtime/DP45_PROTECTED_REGRESSION_CI.log
+              | tee ../verification/dp4-5/runtime/DP4_DP45_PROTECTED_REGRESSION_CI.log
             exit 1
           fi
+
           python ../verification/dp5/run_dp5_allocation_verification.py 2>&1 | tee ../verification/dp5/runtime/DP5_ALLOCATION_STATIC_CI.log
 
       - name: Run Recommendation Java Core regression
