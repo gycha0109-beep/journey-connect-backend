@@ -31,6 +31,9 @@ public record SourceCheckpoint(
         if (!eventTimeFrom.isBefore(eventTimeTo)) {
             throw new IllegalArgumentException("checkpoint event range must be non-empty");
         }
+        if (ingestedAtUpperBound.isBefore(eventTimeFrom)) {
+            throw new IllegalArgumentException("checkpoint ingestion upper bound precedes event range");
+        }
         lastSourceEventRef = ProjectionEngineSupport.requireReference(lastSourceEventRef, "lastSourceEventRef");
         if (sourceEventCount < 1) {
             throw new IllegalArgumentException("sourceEventCount must be positive");
