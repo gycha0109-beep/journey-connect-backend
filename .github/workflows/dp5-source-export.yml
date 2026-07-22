@@ -1,9 +1,9 @@
 name: DP5 Implementation Bootstrap
 
 on:
-  push:
+  pull_request:
     branches:
-      - codex/dp-5-projection-snapshot-foundation
+      - main
 
 permissions:
   contents: write
