@@ -1,8 +1,14 @@
 # DP-4 Handoff
 
-## Provisional result
+## Result
 
-`DP4_IMPLEMENTATION_COMPLETE_WITH_SQL_ASSIGNMENT_PENDING` after exact-head CI succeeds.
+`DP4_IMPLEMENTATION_COMPLETE_WITH_SQL_ASSIGNMENT_PENDING`
+
+## Baseline
+
+- work-start main: `233016060378cd368620cac274c64ca61ce812a7`
+- DP-3 merge commit: `233016060378cd368620cac274c64ca61ce812a7`
+- verified candidate HEAD: `74961fefe495438447f13543178ddca6e14718f9`
 
 ## Delivered
 
@@ -14,6 +20,18 @@
 - stable unsupported/quarantine classifications aligned to DP-3 reasons;
 - golden/invalid fixtures, compatibility matrix and machine-readable evidence;
 - no SQL, runtime consumer, scheduler, dual-write or production cutover.
+
+## Verification
+
+- Data Contract CI: PASS, run `29886994028`;
+- Recommendation Java Core: PASS, run `29886994028`;
+- Recommendation PostgreSQL 15/18: PASS, run `29886994045`;
+- Backend/IP-12.5: PASS, run `29886994024`;
+- SC Baseline Reconciliation: PASS, run `29886994036`;
+- protected diff: PASS;
+- SQL `01..34`: unchanged.
+
+The PR is compacted after this evidence capture. Final exact-head CI must remain successful before merge.
 
 ## Blocked persistence item
 
