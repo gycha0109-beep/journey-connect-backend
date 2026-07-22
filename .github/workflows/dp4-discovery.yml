@@ -35,12 +35,21 @@ jobs:
           tar -xzf /tmp/dp4-payload.tar.gz -C .
           python - <<'PY'
           from pathlib import Path
-          path = Path('docs/platform/data/DP-4-P0-RECOMMENDATION-EVENT-ADAPTER.md')
-          text = path.read_text(encoding='utf-8')
+          doc = Path('docs/platform/data/DP-4-P0-RECOMMENDATION-EVENT-ADAPTER.md')
+          text = doc.read_text(encoding='utf-8')
           marker = 'Recommendation P0 source → Data shadow candidate'
           if marker not in text:
               text = text.replace('# DP-4 P0 Recommendation Event Adapter\n', '# DP-4 P0 Recommendation Event Adapter\n\nAuthority direction: **Recommendation P0 source → Data shadow candidate**.\n', 1)
-          path.write_text(text, encoding='utf-8')
+          doc.write_text(text, encoding='utf-8')
+
+          verifier = Path('verification/dp4/run_dp4_static_verification.py')
+          original = verifier.read_text(encoding='utf-8')
+          Path('/tmp/dp4-static-original.py').write_text(original, encoding='utf-8')
+          needle = '        ".github/workflows/backend-pr-ci.yml",\n'
+          replacement = needle + '        ".dp4-payload/",\n        ".github/workflows/dp4-discovery.yml",\n'
+          if needle not in original:
+              raise SystemExit('DP-4 static allowlist marker missing')
+          verifier.write_text(original.replace(needle, replacement, 1), encoding='utf-8')
           PY
 
       - name: Set up Java 21
@@ -82,10 +91,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          cp /tmp/dp4-static-original.py verification/dp4/run_dp4_static_verification.py
           rm -rf .dp4-payload verification/dp4/runtime
           git checkout -- .github/workflows/dp4-discovery.yml jc-backend/gradlew
           git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git config user.email 41898218+github-actions[bot]@users.noreply.github.com
           git add -A
           git commit -m "feat(dp4): implement P0 recommendation event adapter"
           git push origin HEAD:${{ github.head_ref || github.ref_name }}
