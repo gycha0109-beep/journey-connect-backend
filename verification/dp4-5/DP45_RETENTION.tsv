@@ -1,0 +1,7 @@
+evidence_class	proposed_retention	policy	automatic_purge	status
+adapter_run	90 days	data-retention-policy-v1	disabled	PROPOSED_NOT_IMPLEMENTED
+mapped_output	90 days	data-retention-policy-v1	disabled	PROPOSED_NOT_IMPLEMENTED
+mapping_failure	90 days	data-retention-policy-v1	disabled	PROPOSED_NOT_IMPLEMENTED
+duplicate_observation	90 days	data-retention-policy-v1	disabled	PROPOSED_NOT_IMPLEMENTED
+conflict_observation	90 days	data-retention-policy-v1	disabled	PROPOSED_NOT_IMPLEMENTED
+physical_delete	n/a	n/a	prohibited	PROTECTED
