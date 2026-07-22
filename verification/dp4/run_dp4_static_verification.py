@@ -147,6 +147,7 @@ try:
         "jc-data-contracts/",
         "docs/platform/data/DP-4-",
         "verification/dp4/",
+        "verification/dp4-5/",
         "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
         ".github/workflows/data-contract-ci.yml",
         ".github/workflows/recommendation-p0-db-ci.yml",
