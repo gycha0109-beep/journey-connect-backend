@@ -15,6 +15,7 @@ REQUIRED = [
     "docs/platform/governance/SC-PLATFORM-REGISTRY.md",
     "docs/platform/governance/SC-DP1-BASELINE-RECONCILIATION.md",
     "docs/platform/governance/SC-DP3-ENTRY-DECISIONS.md",
+    "docs/platform/governance/SC-DP4-5-PERSISTENCE-ALLOCATION.md",
     "docs/platform/governance/SC-HANDOFF.md",
     "docs/platform/data/DP-0-DATA-PLATFORM-CONTRACT-FOUNDATION.md",
     "docs/platform/data/DP-0-P2-BASELINE-ALIGNMENT.md",
@@ -53,6 +54,11 @@ DP3_SQL = {
     "database/journey-connect-db-v2.7/33_data_retry_processing_roles.sql",
     "database/journey-connect-db-v2.7/34_data_retry_quarantine_smoke_test.sql",
 }
+DP45_SQL = {
+    "database/journey-connect-db-v2.7/35_data_recommendation_adapter_shadow_evidence.sql",
+    "database/journey-connect-db-v2.7/36_data_recommendation_adapter_shadow_persistence.sql",
+    "database/journey-connect-db-v2.7/37_data_recommendation_adapter_shadow_validation.sql",
+}
 
 
 def fail(message: str) -> None:
@@ -83,6 +89,18 @@ if sequence not in gov:
 if "historical recommendation" not in gov:
     fail("historical recommendation marker missing")
 
+allocation = (ROOT / "docs/platform/governance/SC-DP4-5-PERSISTENCE-ALLOCATION.md").read_text(encoding="utf-8")
+for marker in (
+    "Implementation authority: `GRANTED`",
+    "35_data_recommendation_adapter_shadow_evidence.sql",
+    "36_data_recommendation_adapter_shadow_persistence.sql",
+    "37_data_recommendation_adapter_shadow_validation.sql",
+    "SQL `01..34` remains protected",
+    "SQL `38+` remains unallocated",
+):
+    if marker not in allocation:
+        fail(f"DP-4.5 allocation marker missing: {marker}")
+
 link_re = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 for rel in REQUIRED:
     path = ROOT / rel
@@ -101,9 +119,12 @@ for contract_id in (
     if contract_id not in registry:
         fail(f"contract registry missing {contract_id}")
 
-for number in range(1, 29):
-    if not list((ROOT / "database/journey-connect-db-v2.7").glob(f"{number:02d}_*.sql")):
-        fail(f"canonical SQL {number:02d} missing")
+for number in range(1, 38):
+    if len(list((ROOT / "database/journey-connect-db-v2.7").glob(f"{number:02d}_*.sql"))) != 1:
+        fail(f"canonical SQL {number:02d} missing or duplicated")
+if list((ROOT / "database/journey-connect-db-v2.7").glob("3[8-9]_*.sql")) \
+        or list((ROOT / "database/journey-connect-db-v2.7").glob("[4-9][0-9]_*.sql")):
+    fail("SQL 38+ must remain unallocated")
 
 try:
     subprocess.run(["git", "fetch", "origin", "main", "--depth=1"], cwd=ROOT,
@@ -114,10 +135,11 @@ try:
     for rel in filter(None, diff):
         if not any(rel == prefix or rel.startswith(prefix) for prefix in ALLOWED):
             fail(f"protected/unexpected changed file: {rel}")
-    if changed_sql - (DP2_SQL | DP3_SQL):
-        fail(f"unapproved SQL changed: {sorted(changed_sql - (DP2_SQL | DP3_SQL))}")
-    if changed_sql and changed_sql not in (DP2_SQL, DP3_SQL):
-        fail(f"SQL allocation must change exactly DP-2 29..31 or DP-3 32..34: {sorted(changed_sql)}")
+    all_approved_sql = DP2_SQL | DP3_SQL | DP45_SQL
+    if changed_sql - all_approved_sql:
+        fail(f"unapproved SQL changed: {sorted(changed_sql - all_approved_sql)}")
+    if changed_sql and changed_sql not in (DP2_SQL, DP3_SQL, DP45_SQL):
+        fail(f"SQL allocation must change exactly one approved range: {sorted(changed_sql)}")
     if any(rel.startswith(("jc-backend/src/main/", "jc-recommendation-core/", "jc-search-")) for rel in diff):
         fail("production/recommendation/search source changed")
 except (subprocess.CalledProcessError, FileNotFoundError):
