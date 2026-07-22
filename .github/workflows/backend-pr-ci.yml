@@ -5,11 +5,14 @@ on:
     paths:
       - "jc-backend/**"
       - "jc-recommendation-core/**"
+      - "jc-data-contracts/**"
       - "database/journey-connect-db-v2.1/**"
       - "database/journey-connect-db-v2.7/**"
       - "jc-search-*/**"
       - "docs/platform/intelligence/**"
+      - "docs/platform/data/DP-4-*.md"
       - "verification/ip12-5/**"
+      - "verification/dp4/**"
       - ".github/workflows/backend-pr-ci.yml"
   workflow_dispatch:
 
@@ -51,6 +54,7 @@ jobs:
         run: |
           set -o pipefail
           ./gradlew verifyIp125 --stacktrace --no-daemon 2>&1 | tee ../verification/ip12-5/IP125_BACKEND_CI.log
+          python ../verification/dp4/run_dp4_static_verification.py
 
       - name: Upload IP-12.5 backend CI evidence
         if: always()
