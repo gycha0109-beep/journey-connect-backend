@@ -1,9 +1,9 @@
 decision	current_state	required_owner	implementation_effect
-sql_range_after_34	UNALLOCATED	System Coordination	blocks all PostgreSQL objects and smoke SQL
-adapter_writer_role	UNASSIGNED	System Coordination / Security	blocks persistence function grant
-adapter_reader_role	UNASSIGNED	System Coordination / Security	blocks safe-view grant
-function_owner	UNCONFIRMED	System Coordination / Security	blocks SECURITY DEFINER ownership
-object_and_retention_names	PROPOSED_ONLY	System Coordination / Data	blocks physical schema
-adapter_evidence_id_format	UNAPPROVED	System Coordination / Data	blocks deterministic stored references
-duplicate_observation_requirement	UNDECIDED	System Coordination / Data	blocks final evidence cardinality
-dp5_dependency	UNDECIDED	System Coordination	blocks DP-5 sequencing decision
+sql_range_after_34	35..37 ALLOCATED	System Coordination	implementation authorized
+adapter_writer_role	jc_data_adapter_evidence_writer APPROVED	System Coordination / Security	execute-only function boundary
+adapter_reader_role	jc_data_adapter_evidence_reader APPROVED	System Coordination / Security	safe-view-only boundary
+function_owner	jc_data_adapter_evidence_function_owner APPROVED	System Coordination / Security	NOLOGIN fixed-search-path SECURITY DEFINER owner
+object_and_retention_names	APPROVED BY ALLOCATION	System Coordination / Data	physical schema implemented
+adapter_evidence_id_format	UUID evidence IDs and prefixed returned refs	Data	implemented without canonical event ID creation
+duplicate_observation_requirement	bounded aggregate counter allowed	System Coordination / Data	implemented without duplicate output creation
+dp5_dependency	DP-4.5 required prerequisite	System Coordination	technical gate satisfied after implementation PR merge
