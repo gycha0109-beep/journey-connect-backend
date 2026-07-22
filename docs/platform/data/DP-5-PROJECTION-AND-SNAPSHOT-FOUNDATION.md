@@ -34,11 +34,13 @@ stable_reference ASC
 
 ### Experiment outcome input
 
-`experiment-outcome-input-v1` requires the protected `recommendation_p2_experiment_exposure` authority. Assignment, run, user, session, variant and exposure time are verified against the existing P2 tables. Only click/like/save/share facts in `[exposed_at, exposed_at + 7 days)` are accepted. Fallback is read from the bound `recommendation_run.run_status`. Existing engagement and fallback metric denominators remain unchanged.
+`experiment-outcome-input-v1` requires the protected `recommendation_p2_experiment_exposure` authority. Assignment, run, user, session, variant and exposure time are verified against the existing P2 tables. Only click/like/save/share facts in `[exposed_at, exposed_at + 7 days)` and before `projection_as_of` are accepted. Fallback is read from the bound `recommendation_run.run_status`. Existing engagement and fallback metric denominators remain unchanged.
 
 ### Checkpoint
 
 A checkpoint fixes event-time range, ingestion upper bound, exact source members, source count, source-set fingerprint and checkpoint-definition fingerprint. Checkpoints are append-only. A later event requires a new checkpoint and cannot mutate a prior snapshot.
+
+Checkpoint persistence verifies caller-provided `occurredAt` and `ingestedAt` against the authoritative source row. Canonical events use event occurrence/receipt time, mapped adapter evidence uses mapped occurrence/evidence creation time, and P2 exposure uses exposure/evidence creation time. A caller cannot alter the source time boundary while retaining a valid source reference and fingerprint.
 
 ### Snapshot and idempotency
 
@@ -79,7 +81,7 @@ Supported source namespaces remain distinct:
 - `subject:<opaque-id>`;
 - `user:<numeric-id>`.
 
-A numeric user identity requires an explicit binding version, source, fingerprint and scope. No identity repository, inferred join or numeric-to-opaque conversion is implemented.
+A numeric user identity requires an explicit binding version, source, fingerprint and scope. Conflicting bindings for one source identity fail closed. No identity repository, inferred join or numeric-to-opaque conversion is implemented.
 
 ## Source and lineage validation
 
@@ -89,7 +91,7 @@ Each projection record requires lineage. Persistence verifies that every lineage
 - mapped adapter evidence: `data_recommendation_adapter_output_v1` with `mapped_shadow` status;
 - P2 exposure: `recommendation_p2_experiment_exposure`.
 
-Raw payloads are not copied into lineage.
+Persistence also verifies per-record lineage count and fingerprint, rejects orphan lineage, rejects source rows at or after `projection_as_of`, validates profile window membership and validates P2 outcome event authority, type, deduplication, window and boolean aggregation. Raw payloads are not copied into lineage.
 
 ## Database boundary
 
@@ -118,18 +120,32 @@ All projection evidence tables are insert-only through both trigger and privileg
 
 Checkpoint, run/status, projection records, snapshot, lineage, validation and conflict evidence carry `projection_evidence_90d`, `data-retention-policy-v1` and `expires_at`. No purge function, deletion scheduler or physical-delete workflow is introduced.
 
+## Independent review corrections
+
+The implementation was independently re-reviewed after the first successful candidate. The following defects were corrected and covered by regression tests:
+
+- invalid source time ordering was previously accepted by the pure Java source contract;
+- checkpoint ingestion upper bounds could precede the event range;
+- conflicting identity bindings could escape as an unclassified exception;
+- experiment outcomes after `projection_as_of` could enter the Java result;
+- PostgreSQL checkpoint persistence trusted caller-supplied source timestamps without comparing them to authority rows;
+- PostgreSQL snapshot persistence did not fully reconcile per-record lineage, profile windows and P2 outcome booleans against checkpoint sources;
+- the SC protected regression gate still expected the pre-merge allocation wording.
+
+All corrections remain within SQL `38..42`, pure Java Data contracts/tests and verification/governance files. Production Java/Kotlin, Recommendation source, Search source, Intelligence source and SQL `01..37` remain unchanged.
+
 ## Explicit non-responsibility
 
 DP-5 does not implement a worker, scheduler, replay, backfill, identity repository, production consumer, Recommendation write, P2 exposure creation/update, Search projection, dashboard, alerting, purge, production shadow activation or cutover.
 
 ## Verification
 
-Validated implementation HEAD: `305f3c689c2487ad2a9bd4791bde21517c0ebc72`.
+Independently reviewed implementation code HEAD: `1dad0d84ffcfacfc56a880e1296ef9430c2d43ed`.
 
-- Data PostgreSQL CI `29917537854`: PostgreSQL 15/18, SQL `01..42`, DP-2/DP-3/DP-4.5 concurrency regression and DP-5 exact-one-`NEW` concurrency PASS;
-- Data Contract CI `29917537842`: Java 21, `-Xlint:all -Werror`, DP-5 golden/determinism/failure fixtures and Recommendation Java Core PASS;
-- Recommendation P0 Database CI `29917537938`: Testcontainers PostgreSQL 15/18 PASS;
-- Backend PR CI `29917537605`: Backend/IP-12.5 protected readiness PASS;
-- SC Baseline Reconciliation `29917537971`: PASS.
+- Data PostgreSQL CI `29931366103`: PostgreSQL 15/18, SQL `01..42`, DP-2/DP-3/DP-4.5 concurrency regression and DP-5 exact-one-`NEW` concurrency PASS;
+- Data Contract CI `29931366173`: Java 21, `-Xlint:all -Werror`, DP-5 golden/determinism/failure/boundary fixtures and Recommendation Java Core PASS;
+- Recommendation P0 Database CI `29931367581`: Testcontainers PostgreSQL 15/18 PASS;
+- Backend PR CI `29931366129`: Backend/IP-12.5 protected readiness PASS;
+- SC Baseline Reconciliation `29931365762`: PASS.
 
-These results authorize the DP-5 implementation verdict only. PR #16 remains unmerged, production activation remains prohibited and DP-6 must use the eventual PR #16 merge commit as its authoritative main baseline.
+The final documentation/evidence commit is verified separately by PR exact-head checks to avoid embedding a self-referential commit hash. These results authorize the DP-5 implementation verdict only. PR #16 remains unmerged, production activation remains prohibited and DP-6 must use the eventual PR #16 merge commit as its authoritative main baseline.
