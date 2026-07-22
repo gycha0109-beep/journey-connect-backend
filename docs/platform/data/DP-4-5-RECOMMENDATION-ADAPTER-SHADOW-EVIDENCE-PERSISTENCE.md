@@ -34,7 +34,7 @@ Persistence cannot be simulated with Java DTOs, fixtures, in-memory stores, an e
 
 ## Proposed DB object design
 
-The following names are design candidates only. They are not implemented or registered.
+The following names are design candidates only. They are not implemented or registered. Every proposed object in this document is `PROPOSED_NOT_IMPLEMENTED`.
 
 | Proposed object | Purpose | Required invariants |
 |---|---|---|
