@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   apply:
@@ -33,18 +34,36 @@ jobs:
       - name: Reconstruct and apply DP-6 implementation
         shell: bash
         run: |
-          set -euo pipefail
+          set -Eeuo pipefail
+          exec > >(tee /tmp/dp6-apply.log) 2>&1
+          report_failure() {
+            code=$?
+            tail_text="$(tail -c 3500 /tmp/dp6-apply.log || true)"
+            body="DP6 temporary apply workflow failed at ${GITHUB_SHA}.\n\n\`\`\`text\n${tail_text}\n\`\`\`"
+            jq -n --arg body "$body" '{body:$body}' > /tmp/comment.json
+            curl -fsSL -X POST \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/issues/18/comments" \
+              --data-binary @/tmp/comment.json || true
+            exit "$code"
+          }
+          trap report_failure ERR
           : > /tmp/dp6-payload.b64
           for variable in BLOB_0 BLOB_1 BLOB_2 BLOB_3 BLOB_4 BLOB_5 BLOB_6; do
             sha="${!variable}"
+            echo "FETCH ${variable} ${sha}"
             curl -fsSL \
               -H "Authorization: Bearer ${GH_TOKEN}" \
               -H "Accept: application/vnd.github+json" \
               -H "X-GitHub-Api-Version: 2022-11-28" \
               "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/git/blobs/${sha}" \
               | jq -r '.content' | tr -d '\n' | base64 -d >> /tmp/dp6-payload.b64
+            wc -c /tmp/dp6-payload.b64
           done
           base64 -d /tmp/dp6-payload.b64 > /tmp/dp6-payload.tar.gz
+          gzip -t /tmp/dp6-payload.tar.gz
           tar -xzf /tmp/dp6-payload.tar.gz
           chmod +x verification/dp6/run_dp6_concurrency.sh verification/dp6/run_dp6_static_verification.py
           python verification/dp6/run_dp6_static_verification.py
