@@ -1,0 +1,30 @@
+name: DP5 Source Export
+
+on:
+  push:
+    branches:
+      - codex/dp-5-projection-snapshot-foundation
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Package exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/dp5-source
+          git archive --format=tar HEAD | tar -xf - -C /tmp/dp5-source
+          tar -czf dp5-source.tgz -C /tmp/dp5-source .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dp5-source-${{ github.sha }}
+          path: dp5-source.tgz
+          if-no-files-found: error
