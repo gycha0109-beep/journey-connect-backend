@@ -15,6 +15,10 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    testImplementation(project(":jc-recommendation-core"))
+}
+
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.compilerArgs.addAll(listOf("-Xlint:all", "-Werror"))
@@ -44,6 +48,19 @@ val dp3RetryPolicyContractTest = tasks.register<JavaExec>("dp3RetryPolicyContrac
     dependsOn(tasks.testClasses)
 }
 
+val dp4RecommendationAdapterContractTest = tasks.register<JavaExec>("dp4RecommendationAdapterContractTest") {
+    group = "verification"
+    description = "Runs the DP-4 P0 recommendation shadow adapter compatibility contract checks."
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass.set("com.jc.data.contract.Dp4RecommendationAdapterContractTest")
+    dependsOn(tasks.testClasses)
+}
+
 tasks.check {
-    dependsOn(dataContractTest, dp2FingerprintContractTest, dp3RetryPolicyContractTest)
+    dependsOn(
+        dataContractTest,
+        dp2FingerprintContractTest,
+        dp3RetryPolicyContractTest,
+        dp4RecommendationAdapterContractTest,
+    )
 }

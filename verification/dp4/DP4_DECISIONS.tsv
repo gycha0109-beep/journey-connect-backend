@@ -1,0 +1,8 @@
+decision	status	rationale
+adapter_direction	P0_SOURCE_TO_DATA_SHADOW	authoritative DP0 repository contract
+database_persistence	SC_SQL_ASSIGNMENT_REQUIRED	SQL 35+ unallocated
+module	jc-data-contracts	pure Java responsibility fits existing module
+compatibility	SEMANTIC_NOT_EXACT	wire/payload names differ while meaning is preserved
+identity	EXPLICIT_BINDING_REQUIRED	no numeric-user fallback or repository join
+exposure	GENERAL_ONLY	P2 experiment exposure authority protected
+production_cutover	PROHIBITED	shadow evidence only

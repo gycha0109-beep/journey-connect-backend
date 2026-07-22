@@ -1,0 +1,12 @@
+fixture_id	condition	expected_status	expected_failure	dp3_quarantine_reason	retryable
+unsupported_event_type	unknown P0 event wire	unsupported	unsupported_event_type	schema_unsupported	false
+unsupported_schema	unknown source schema	unsupported	unsupported_schema_version	schema_unsupported	false
+missing_identity	no approved numeric-user to subject binding	unsupported	identity_mapping_required	source_binding_invalid	false
+wrong_identity	binding source user differs from row user	unsupported	identity_mapping_required	source_binding_invalid	false
+missing_exposure	recommendation impression/click lacks general exposure binding	unsupported	missing_exposure_reference	source_binding_invalid	false
+p2_exposure_conflict	P2 experiment exposure supplied to general recommendation adapter	quarantined	exposure_authority_conflict	source_binding_invalid	false
+fingerprint_mismatch	source canonical bytes do not match source fingerprint	quarantined	source_fingerprint_mismatch	source_hash_mismatch	false
+invalid_timestamp	received time precedes occurred time	unsupported	timestamp_invalid	source_binding_invalid	false
+privacy_violation	sensitive metadata key present	quarantined	privacy_policy_violation	privacy_policy_violation	false
+missing_entity	non-search event lacks entity partition	unsupported	missing_required_reference	source_binding_invalid	false
+payload_unmappable	required target payload value cannot be derived	unsupported	payload_unmappable	payload_unmappable	false

@@ -1,0 +1,8 @@
+check	command_or_evidence	result
+data_contract	:jc-data-contracts:check	PENDING_CI
+recommendation_core	:jc-recommendation-core:check	PENDING_CI
+recommendation_postgresql_15	Recommendation P0 Database CI	PENDING_CI
+recommendation_postgresql_18	Recommendation P0 Database CI	PENDING_CI
+backend_ip125	Backend PR CI	PENDING_CI
+sc_reconciliation	SC Baseline Reconciliation	PENDING_CI
+protected_diff	verification/dp4/run_dp4_static_verification.py	PENDING_CI

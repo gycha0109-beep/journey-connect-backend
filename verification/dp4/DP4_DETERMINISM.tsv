@@ -1,0 +1,8 @@
+check	expected	result
+repeated_run	same output fingerprint	PASS_LOCAL_JAVAC
+map_insertion_order	independent	PASS_LOCAL_JAVAC
+locale	independent	PASS_LOCAL_JAVAC
+timezone	independent	PASS_LOCAL_JAVAC
+producer_build_id	excluded from fingerprint	PASS_LOCAL_JAVAC
+adapter_version	changes fingerprint	PASS_LOCAL_JAVAC
+source_meaning	changes fingerprint	PASS_LOCAL_JAVAC
