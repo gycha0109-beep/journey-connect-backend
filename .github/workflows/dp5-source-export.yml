@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - codex/dp-5-projection-snapshot-foundation
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
