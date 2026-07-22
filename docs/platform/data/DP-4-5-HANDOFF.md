@@ -24,6 +24,22 @@
 - produced machine-readable blocker and protected-diff evidence;
 - added no SQL, Java contract, fake repository, worker, scheduler, runtime connection or production wiring.
 
+## Verification
+
+Candidate-head protected regression completed successfully:
+
+- Data Contract CI: PASS, run `29891906984`;
+- DP-1 through DP-4 contract regression: PASS;
+- DP-4.5 blocker verifier: PASS;
+- Recommendation PostgreSQL 15/18: PASS, run `29891907012`;
+- Backend/IP-12.5: PASS, run `29891906962`;
+- SC Baseline Reconciliation: PASS, run `29891907017`;
+- SQL `01..34`: unchanged;
+- SQL `35+`: absent;
+- Java, Recommendation, Search/Intelligence and production configuration: unchanged.
+
+Final exact-head CI must remain successful before merge.
+
 ## Not implemented
 
 - adapter evidence tables;
