@@ -489,7 +489,8 @@ GRANT SELECT ON public.data_platform_event_v1,public.data_recommendation_adapter
 GRANT EXECUTE ON FUNCTION public.gen_random_uuid(),public.digest(bytea,text),
   public.data_event_canonical_json_v1(jsonb),public.data_projection_version_valid_v1(varchar),
   public.data_projection_fingerprint_valid_v1(varchar),public.data_projection_fingerprint_v1(varchar,jsonb),
-  public.data_projection_instant_text_v1(timestamptz)
+  public.data_projection_instant_text_v1(timestamptz),public.data_projection_identity_valid_v1(varchar),
+  public.data_projection_failure_code_valid_v1(varchar)
   TO jc_data_projection_function_owner;
 ALTER FUNCTION public.persist_data_source_checkpoint_v1(varchar,varchar,varchar,varchar,timestamptz,timestamptz,timestamptz,varchar,jsonb,varchar,varchar) OWNER TO jc_data_projection_function_owner;
 ALTER FUNCTION public.persist_data_projection_snapshot_v1(varchar,varchar,varchar,varchar,varchar,varchar,varchar,timestamptz,varchar,varchar,varchar,varchar,varchar,varchar,jsonb,jsonb,varchar,varchar) OWNER TO jc_data_projection_function_owner;
