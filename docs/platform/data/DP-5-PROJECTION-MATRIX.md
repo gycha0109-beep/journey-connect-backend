@@ -2,7 +2,7 @@
 
 ## Status
 
-`IMPLEMENTATION_READY_DESIGN / SQL_AND_ROLE_ALLOCATION_PENDING_MAIN_MERGE`
+`IMPLEMENTED / SHADOW-ONLY / VALIDATED`
 
 ## Source compatibility classes
 
@@ -78,4 +78,3 @@ No physical row order, map iteration order, locale collation or random tie break
 - adapter failures/conflicts;
 - missing identity binding;
 - missing P2 exposure;
-- privacy-unsafe payload or references.
