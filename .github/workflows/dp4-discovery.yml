@@ -1,0 +1,56 @@
+name: DP-4 Recommendation Contract Discovery
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/dp4-discovery.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Collect authoritative adapter inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="verification/dp4-discovery"
+          mkdir -p "$out/files"
+
+          find jc-recommendation-core jc-backend/src/main/java/com/jc/backend/recommendation jc-backend/src/test/java/com/jc/backend/recommendation jc-data-contracts \
+            -type f \( -name '*.java' -o -name '*.kt' -o -name '*.kts' -o -name '*.json' -o -name '*.tsv' -o -name '*.md' \) \
+            -print | sort > "$out/relevant-paths.txt"
+
+          grep -RIlE 'recommendation_behavior_event|recommendation_exposure_event|RecommendationBehavior|IDEMPOTENCY_CONFLICT|schema_version|event_type|entity_type|run_id|exposure' \
+            database/journey-connect-db-v2.7 jc-recommendation-core jc-backend/src/main jc-backend/src/test \
+            | sort -u > "$out/semantic-paths.txt" || true
+
+          cat "$out/relevant-paths.txt" "$out/semantic-paths.txt" \
+            docs/platform/data/P0-RECOMMENDATION-EVENT-ADAPTER-V1.md \
+            docs/platform/data/PLATFORM-EVENT-CONTRACT-V1.md \
+            docs/platform/data/EVENT-IDEMPOTENCY-AND-FINGERPRINT-V1.md \
+            docs/platform/governance/SC-DECISION-REGISTER.md \
+            docs/platform/governance/SC-PLATFORM-REGISTRY.md \
+            | sort -u > "$out/all-paths.txt"
+
+          while IFS= read -r path; do
+            [[ -f "$path" ]] || continue
+            mkdir -p "$out/files/$(dirname "$path")"
+            cp "$path" "$out/files/$path"
+          done < "$out/all-paths.txt"
+
+          git ls-tree -r --name-only HEAD database/journey-connect-db-v2.7 > "$out/sql-inventory.txt"
+          git rev-parse HEAD > "$out/head.txt"
+          tar -czf "$out/dp4-authoritative-inputs.tar.gz" -C "$out/files" .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dp4-authoritative-inputs
+          path: verification/dp4-discovery/**
+          if-no-files-found: error
