@@ -2,12 +2,14 @@
 
 ## Status
 
-- Decision: `APPROVED`
-- Implementation authority: `GRANTED AFTER MERGE INTO MAIN`
-- Decision PR state: this document is non-authoritative until merged
-- Baseline main: `de4e9f308130e10948edb69ceb1b2bba0eebcd2e`
+- Decision: `APPROVED / MERGED`
+- Implementation authority: `GRANTED`
+- Allocation PR: `#15`
+- Authoritative allocation main: `67a9b7515dbfd41360160c8059ac387e74cbdf6b`
 - DP-4.5 prerequisite: `SATISFIED`
-- Current DP-5 implementation state: `BLOCKED UNTIL THIS ALLOCATION IS MERGED`
+- Implementation PR: `#16`
+- Validated implementation HEAD: `305f3c689c2487ad2a9bd4791bde21517c0ebc72`
+- Current DP-5 implementation state: `DP5_IMPLEMENTATION_COMPLETE / MAIN MERGE PENDING`
 
 ## System outcome
 

@@ -1,5 +1,6 @@
 check	expected	status
-same_logical_identity	exactly_one_NEW	PENDING_CI
-other_request	DUPLICATE	PENDING_CI
-run_count	one	PENDING_CI
-snapshot_count	one	PENDING_CI
+concurrent_same_identity	exactly_one_NEW	PASS
+concurrent_same_identity	exactly_one_DUPLICATE	PASS
+logical_identity_rows	1	PASS
+snapshot_rows	1	PASS
+validation_source	Data_PostgreSQL_CI_29917537854	PASS

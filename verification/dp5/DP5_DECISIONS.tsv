@@ -1,6 +1,8 @@
 decision	value	status
-module	jc-data-contracts	IMPLEMENTED
-sql_range	38_42	IMPLEMENTED
-output_mode	shadow_only	PROTECTED
-p2_authority	recommendation_p2_experiment_exposure	PROTECTED
-final_verdict	PENDING_EXACT_HEAD_CI	CURRENT
+sql_allocation	38_42	IMPLEMENTED
+roles	projection_writer_reader_function_owner	IMPLEMENTED
+profile_contract	recommendation-profile-input-v1_shadow_only	IMPLEMENTED
+outcome_contract	experiment-outcome-input-v1_shadow_only	IMPLEMENTED
+p2_exposure_authority	recommendation_p2_experiment_exposure	PROTECTED
+validated_head	305f3c689c2487ad2a9bd4791bde21517c0ebc72	PASS
+final_verdict	DP5_IMPLEMENTATION_COMPLETE	FINAL

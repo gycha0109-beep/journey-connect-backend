@@ -2,7 +2,7 @@
 
 ## 상태
 
-`DP5_IMPLEMENTED / EXACT_HEAD_CI_PENDING`
+`DP5_IMPLEMENTATION_COMPLETE / MAIN_MERGE_PENDING`
 
 ## 기준
 
@@ -22,7 +22,7 @@
 - DP-4.5 PostgreSQL 15/18, Data, Recommendation, Backend and SC gates passed at the implementation exact HEAD.
 - production worker, scheduler, replay, backfill and production shadow remain disabled or unauthorized.
 
-## DP-5 implementation candidate
+## DP-5 implementation
 
 ### Scope
 
@@ -56,14 +56,23 @@ It may not replace the current P1/P2 runtime source, change P2 metrics or exposu
 
 Projection run/status, checkpoint, snapshot, record, lineage, validation and conflict evidence use 90-day technical retention metadata. Automatic purge and physical deletion remain disabled.
 
+### Verified implementation evidence
+
+- implementation HEAD: `305f3c689c2487ad2a9bd4791bde21517c0ebc72`;
+- Data PostgreSQL CI `29917537854`: PASS;
+- Data Contract CI `29917537842`: PASS;
+- Recommendation P0 Database CI `29917537938`: PASS;
+- Backend PR CI `29917537605`: PASS;
+- SC Baseline Reconciliation `29917537971`: PASS.
+
 ## DP-5 entry
 
 ```text
 DP-4.5: MAIN INTEGRATED
-DP-5 IMPLEMENTATION: COMPLETE CANDIDATE / EXACT-HEAD CI PENDING
+DP-5 IMPLEMENTATION: COMPLETE
 ```
 
-PR #16 implements only SQL `38..42`. Main merge remains prohibited without explicit user approval.
+PR #16 implements only the authorized DP-5 boundary and remains unmerged. Main merge remains prohibited without explicit user approval. DP-6 starts only from the eventual PR #16 merge commit.
 
 ## Remaining unresolved/outside DP-5
 

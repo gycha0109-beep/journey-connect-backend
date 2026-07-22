@@ -1,8 +1,11 @@
 check	result	evidence
-java21_xlint_werror	PASS	local_javac
-profile_golden	PASS	Dp5ProjectionContractTest
-outcome_golden	PASS	Dp5ProjectionContractTest
-failure_boundaries	PASS	Dp5ProjectionContractTest
-postgresql15	PENDING_CI	data-postgres-ci
-postgresql18	PENDING_CI	data-postgres-ci
-recommendation_backend_sc	PENDING_CI	GitHub_Actions
+implementation_head	PASS	305f3c689c2487ad2a9bd4791bde21517c0ebc72
+postgresql_15	PASS	Data PostgreSQL CI 29917537854
+postgresql_18	PASS	Data PostgreSQL CI 29917537854
+data_contract_java21	PASS	Data Contract CI 29917537842
+profile_and_outcome_golden	PASS	Data Contract CI 29917537842
+recommendation_java_core	PASS	Data Contract CI 29917537842
+recommendation_postgresql_15	PASS	Recommendation P0 Database CI 29917537938
+recommendation_postgresql_18	PASS	Recommendation P0 Database CI 29917537938
+backend_ip125	PASS	Backend PR CI 29917537605
+sc_reconciliation	PASS	SC Baseline Reconciliation 29917537971
