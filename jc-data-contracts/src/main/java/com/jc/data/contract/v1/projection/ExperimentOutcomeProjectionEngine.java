@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeMap;
 
 public final class ExperimentOutcomeProjectionEngine {
     private static final Set<String> OUTCOME_TYPES = Set.of(
@@ -77,7 +76,7 @@ public final class ExperimentOutcomeProjectionEngine {
         Instant outcomeEnd = exposure.exposedAt().plus(definition.outcomeWindow());
         boolean exposureSourceSeen = false;
         for (ProjectionSourceEvent event : selected) {
-            ProjectionFailure sourceFailure = validateSource(event, checkpoint);
+            ProjectionFailure sourceFailure = validateSource(event, checkpoint, projectionAsOf);
             if (sourceFailure != null) {
                 return ProjectionResult.failure(sourceFailure);
             }
@@ -184,7 +183,8 @@ public final class ExperimentOutcomeProjectionEngine {
         return ProjectionResult.success(run, List.of(record), lineage, snapshot);
     }
 
-    private static ProjectionFailure validateSource(ProjectionSourceEvent event, SourceCheckpoint checkpoint) {
+    private static ProjectionFailure validateSource(
+            ProjectionSourceEvent event, SourceCheckpoint checkpoint, Instant projectionAsOf) {
         if (!event.sourceContractVersion().equals(checkpoint.sourceContractVersion())
                 || !event.sourceSchemaVersion().equals(checkpoint.sourceSchemaVersion())) {
             return new ProjectionFailure(
@@ -195,6 +195,10 @@ public final class ExperimentOutcomeProjectionEngine {
         if (!actual.equals(event.sourceFingerprint())) {
             return new ProjectionFailure(
                     ProjectionFailureCode.SOURCE_FINGERPRINT_MISMATCH, "source", "fingerprint");
+        }
+        if (!event.occurredAt().isBefore(projectionAsOf)) {
+            return new ProjectionFailure(
+                    ProjectionFailureCode.SOURCE_CHECKPOINT_INVALID, "occurredAt", "future_event");
         }
         return switch (event.adapterEvidenceState()) {
             case CONFLICTED -> new ProjectionFailure(
