@@ -1,10 +1,12 @@
 item	value	status
-main_head	c1649c3647e8b640bd95853fdcb645d1571f54c3	CONFIRMED
-pr_11	merged / c1649c3647e8b640bd95853fdcb645d1571f54c3	CONFIRMED
+main_head	9a5785448ff300063b7f320c9f1043ef1863741e	CONFIRMED
+pr_12	merged / 1eb981fa2ab33e6b3870c6c1b76e547eeae48980	CONFIRMED
+pr_13	merged / 9a5785448ff300063b7f320c9f1043ef1863741e	CONFIRMED
 dp4_result	DP4_IMPLEMENTATION_COMPLETE_WITH_SQL_ASSIGNMENT_PENDING	CONFIRMED
 sql_01_34	protected	CONFIRMED
-sql_35_plus	unallocated / SC assignment required	BLOCKER
-adapter_evidence_roles	unassigned	BLOCKER
+sql_35_37	allocated to DP-4.5	AUTHORIZED
+sql_38_plus	unallocated	PROTECTED
+adapter_evidence_roles	writer reader function owner	AUTHORIZED
 production_shadow	disabled	PROTECTED
 sampling	0 BPS	PROTECTED
 cohort	empty	PROTECTED
