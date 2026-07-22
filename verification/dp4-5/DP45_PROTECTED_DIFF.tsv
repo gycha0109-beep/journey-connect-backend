@@ -1,9 +1,10 @@
 target	expected	result
-SQL_01_34	unchanged	PASS
-SQL_35_plus	absent	PASS
-jc_data_contracts	unchanged	PASS
-recommendation_production_source	unchanged	PASS
-recommendation_p0_fingerprint	unchanged and not reused	PASS
-search_intelligence_source	unchanged	PASS
-production_configuration	unchanged	PASS
-production_controls	disabled / kill switch / 0 BPS / empty cohort / no cutover	PASS
+SQL_01_34	unchanged	PENDING_CI
+SQL_35_37	exact allocated files only	IMPLEMENTED
+SQL_38_plus	absent	PASS
+jc_data_contracts	unchanged	PENDING_CI
+recommendation_production_source	unchanged	PENDING_CI
+recommendation_p0_fingerprint	unchanged and not reused	PENDING_CI
+search_intelligence_source	unchanged	PENDING_CI
+production_configuration	unchanged	PENDING_CI
+production_controls	disabled / kill switch / 0 BPS / empty cohort / no cutover	PENDING_CI
