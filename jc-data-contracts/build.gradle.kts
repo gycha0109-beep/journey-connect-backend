@@ -64,6 +64,14 @@ val dp5ProjectionContractTest = tasks.register<JavaExec>("dp5ProjectionContractT
     dependsOn(tasks.testClasses)
 }
 
+val dp5ProjectionBoundaryContractTest = tasks.register<JavaExec>("dp5ProjectionBoundaryContractTest") {
+    group = "verification"
+    description = "Runs DP-5 fail-closed time and identity boundary contract checks."
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass.set("com.jc.data.contract.Dp5ProjectionBoundaryContractTest")
+    dependsOn(tasks.testClasses)
+}
+
 tasks.check {
     dependsOn(
         dataContractTest,
@@ -71,5 +79,6 @@ tasks.check {
         dp3RetryPolicyContractTest,
         dp4RecommendationAdapterContractTest,
         dp5ProjectionContractTest,
+        dp5ProjectionBoundaryContractTest,
     )
 }
