@@ -4,7 +4,7 @@
 
 - Decision: `PROPOSED / NON-AUTHORITATIVE UNTIL MERGED`
 - Implementation authority: `BLOCKED UNTIL THIS ALLOCATION IS MERGED`
-- Proposed allocation PR: `PENDING`
+- Proposed allocation PR: `#17`
 - Authoritative proposal base: `05a25771cd99d87891504fc00890ab918b970acf`
 - DP-5 prerequisite: `SATISFIED / PR #16 MERGED`
 - Current DP-6 state: `DP6_IMPLEMENTATION_BLOCKED_BY_SC_ALLOCATION`
