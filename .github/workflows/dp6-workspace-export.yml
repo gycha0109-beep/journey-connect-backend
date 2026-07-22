@@ -1,4 +1,4 @@
-name: DP6 Apply Diagnostic
+name: DP6 Apply Implementation
 
 on:
   pull_request:
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 jobs:
-  diagnose:
+  apply:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -32,20 +32,22 @@ jobs:
           ref: codex/dp-6-data-quality-validation
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Record exact apply diagnostics
+      - name: Apply, commit, verify and push implementation
         shell: bash
         run: |
-          set +e
+          set -euo pipefail
           archive=/tmp/dp6-implementation.tar.gz
-          diag=verification/dp6/DP6_APPLY_DIAGNOSTIC_3.txt
           : > "$archive"
-          : > "$diag"
 
-          decode_file() { base64 -d "$1" >> "$archive"; printf '%s=%s size=%s\n' "$1" "$?" "$(wc -c < "$archive")" >> "$diag"; }
+          decode_file() { base64 -d "$1" >> "$archive"; }
           fetch_blob() {
             local sha="$1"
-            curl -fsSL -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/git/blobs/${sha}" | jq -r '.content' | tr -d '\n' | base64 -d >> "$archive"
-            printf 'blob:%s=%s size=%s\n' "$sha" "$?" "$(wc -c < "$archive")" >> "$diag"
+            curl -fsSL \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/git/blobs/${sha}" \
+              | jq -r '.content' | tr -d '\n' | base64 -d >> "$archive"
           }
 
           decode_file verification/dp6/.transport/chunk-00.b64
@@ -57,13 +59,23 @@ jobs:
           fetch_blob "${RAW_BLOB_06}"
           decode_file verification/dp6/.transport/chunk-07.b64
 
-          actual_size="$(wc -c < "$archive")"; actual_sha="$(sha256sum "$archive" | cut -d' ' -f1)"
-          printf 'archive_size=%s\narchive_sha=%s\nexpected_sha=%s\n' "$actual_size" "$actual_sha" "$EXPECTED_SHA256" >> "$diag"
-          gzip -t "$archive" >> "$diag" 2>&1; printf 'gzip=%s\n' "$?" >> "$diag"
-          tar -xzf "$archive" >> "$diag" 2>&1; printf 'extract=%s\n' "$?" >> "$diag"
-          python verification/dp6/run_dp6_static_verification.py >> "$diag" 2>&1; printf 'dp6_static=%s\n' "$?" >> "$diag"
-          python verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py >> "$diag" 2>&1; printf 'sc=%s\n' "$?" >> "$diag"
-          (cd jc-backend && chmod +x gradlew && ./gradlew :jc-data-contracts:check --no-daemon --stacktrace) >> "$diag" 2>&1; printf 'gradle=%s\n' "$?" >> "$diag"
+          test "$(wc -c < "$archive")" = "71052"
+          test "$(sha256sum "$archive" | cut -d' ' -f1)" = "${EXPECTED_SHA256}"
+          gzip -t "$archive"
+          tar -xzf "$archive"
 
-          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$diag"; git commit -m "chore(dp6): record exact apply diagnostics"; git push origin "HEAD:${TARGET_BRANCH}"
+          rm -rf verification/dp6/.transport
+          rm -f verification/dp6/DP6_APPLY_DIAGNOSTIC.txt verification/dp6/DP6_APPLY_DIAGNOSTIC_2.txt verification/dp6/DP6_APPLY_DIAGNOSTIC_3.txt
+          rm -f .github/workflows/dp6-workspace-export.yml
+          chmod +x verification/dp6/run_dp6_concurrency.sh
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(dp6): implement data quality and lineage validation"
+
+          python verification/dp6/run_dp6_static_verification.py
+          python verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py
+          (cd jc-backend && chmod +x gradlew && ./gradlew :jc-data-contracts:check --no-daemon --stacktrace)
+
+          git push origin "HEAD:${TARGET_BRANCH}"
