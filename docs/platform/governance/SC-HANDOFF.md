@@ -2,95 +2,81 @@
 
 ## 상태
 
-`DP2_MAIN_INTEGRATED / DP3_ENTRY_DECISIONS_APPROVED`
+`DP45_MAIN_INTEGRATED / DP5_PROJECTION_ALLOCATION_APPROVED_PENDING_MERGE`
 
 ## 기준
 
-- official DP-1 Baseline SHA: `9d84f630e87d54f780e332eead0c1f8df6a51d0b`
-- DP-1 merge commit: `bdce7de5ef6be31f8da6a8a349424be8f06a87a1`
-- SC DP-2 decision merge commit: `c3f791c6c6eaa12b2aba3a1dbe686cb0b3d3cc80`
-- DP-2 implementation HEAD: `f6c45a86ee21beb0d7a12e931c73ca887effdf18`
-- DP-2 PR: `#8`
-- DP-2 merge commit/current authority start: `0ff67aaf9a86b61be2b41c431a570a9f0d460f7c`
-- DP-2 exact-head CI: Data PostgreSQL `29855410623`, Data Contract `29855410811`, Recommendation DB `29855410680`, Backend `29855410550`, SC `29855410537` — PASS
-- DP-2 result: `DP2_IMPLEMENTATION_COMPLETE`
+- authoritative main: `de4e9f308130e10948edb69ceb1b2bba0eebcd2e`
+- DP-4.5 implementation PR: `#14`
+- DP-4.5 implementation HEAD: `8880dd8a86703df0f988ff03b22e84bac92f674b`
+- DP-4.5 merge commit: `de4e9f308130e10948edb69ceb1b2bba0eebcd2e`
+- DP-4.5 result: `DP45_IMPLEMENTATION_COMPLETE`
+- SQL `01..37`: protected
+- SQL `38+`: unallocated on current main
 
 ## 완료
 
-- DP-1 and DP-2 are integrated into `main`
-- Data contract, fingerprint, canonical event store, atomic idempotency and least-privilege Data roles are main authority
-- PostgreSQL 15/18 concurrency and protected regression passed at the DP-2 exact HEAD
-- SQL `01..31` are protected
-- DP-3 retry/quarantine state, budget, role, lease and observability decisions are approved
+- DP-1 through DP-4.5 are integrated into `main`.
+- canonical event, idempotency, retry/quarantine, P0 adapter and adapter shadow evidence are protected authority.
+- DP-4.5 PostgreSQL 15/18, Data, Recommendation, Backend and SC gates passed at the implementation exact HEAD.
+- production worker, scheduler, replay, backfill and production shadow remain disabled or unauthorized.
 
-## DP-3 approved decisions
+## DP-5 approved decision, effective after merge
 
 ### Scope
 
-DP-3 implements retry scheduling, atomic work claiming, quarantine/review evidence and observability contracts. It does not activate production scheduling, execute replay, expose HTTP APIs, modify canonical source rows, map identities or cut over projections.
+DP-5 may implement deterministic, shadow-only `recommendation-profile-input-v1` and `experiment-outcome-input-v1` projections, immutable source checkpoints and snapshots, append-only lineage/validation/conflict evidence and aggregate-only observability.
+
+It may not replace the current P1/P2 runtime source, change P2 metrics or exposure authority, write Recommendation/Search/Operations tables, activate a worker or scheduler, execute replay/backfill, purge data, cut over traffic or activate production shadow.
 
 ### SQL
 
-- SQL `32`: retry schedule, processing-attempt and quarantine evidence
-- SQL `33`: atomic claim/lease/complete/fail/quarantine procedures and grants
-- SQL `34`: PostgreSQL 15/18 smoke, concurrency, lease and authority validation
-- SQL `35+`: unallocated
+- SQL `38`: run/checkpoint/snapshot/lineage/validation/conflict foundation
+- SQL `39`: Recommendation profile input projection
+- SQL `40`: experiment outcome input projection
+- SQL `41`: atomic `NEW/DUPLICATE/CONFLICT`, roles/grants and safe view
+- SQL `42`: PostgreSQL 15/18 validation
+- SQL `43+`: unallocated
 
-### Retry policy
+### Roles
 
-- policy ID: `data-projection-retry-v1`
-- initial attempt: 1
-- maximum automatic retries: 5
-- maximum total executions: 6
-- delays: `1m`, `5m`, `30m`, `2h`, `12h`
-- deterministic scheduling jitter: `0..10%`
-- retry exhaustion: terminal quarantine
-- three consecutive identical normalized failure signatures may quarantine early
-- unknown, validation, authorization, privacy, fingerprint, lineage and invariant failures fail closed without automatic retry
+- `jc_data_projection_writer`
+- `jc_data_projection_reader`
+- `jc_data_projection_function_owner` (`NOLOGIN`)
 
-### Claim and roles
+### Source authority
 
-- processor: `jc_data_retry_processor`
-- reviewer: `jc_data_quarantine_reviewer`
-- replay executor: `jc_data_replay_executor`, with no execution grant in DP-3
-- lease: 60 seconds
-- heartbeat: 20 seconds
-- default maximum batch: 100
-- stale/foreign completion is rejected
-- expired claims are reclaimed only through the approved procedure
-
-### Observability
-
-DP-3 must expose bounded metric/evidence contracts for scheduled, claimed, succeeded, failed, exhausted, quarantine, latency, queue depth, oldest age, lease expiry and stale-claim rejection. Raw identity, payload, idempotency key, token and unrestricted error text are prohibited.
-
-Operations owns production alert routing and scheduler activation.
+- profile facts: Data canonical event and successful DP-4.5 mapped evidence
+- P2 experiment exposure: `recommendation_p2_experiment_exposure`
+- fallback: bound exposed `recommendation_run.run_status`
+- identity namespaces remain distinct and require explicit binding
 
 ### Retention
 
-Retry, quarantine and review evidence use 90-day technical retention metadata. Automatic purge and physical deletion remain disabled.
+Projection run/status, checkpoint, snapshot, record, lineage, validation and conflict evidence use 90-day technical retention metadata. Automatic purge and physical deletion remain disabled.
 
-## DP-3 entry
+## DP-5 entry
 
 ```text
-DP-2: MAIN INTEGRATED
-DP-3 ENTRY: AUTHORIZED AFTER SC DP-3 DECISION PR MERGE
+DP-4.5: MAIN INTEGRATED
+DP-5 IMPLEMENTATION: BLOCKED UNTIL SC ALLOCATION PR MERGE
 ```
 
-Exact rules: `SC-DP3-ENTRY-DECISIONS.md`.
+After merge, DP-5 implementation must start from the then-current `main` and use only SQL `38..42`.
 
-## Remaining unresolved/outside DP-3
+## Remaining unresolved/outside DP-5
 
-- identity mapping physical owner/deletion workflow
-- replay execution procedure and grant
-- production scheduler deployment and activation
-- production alert routing
-- legal/country-specific retention and erasure
-- consumer projection cutover
+- identity mapping physical repository and deletion workflow;
+- production worker/scheduler deployment and activation;
+- replay/backfill execution;
+- production consumer and P1/P2 cutover;
+- Operations dashboard/alert routing;
+- legal/country-specific retention and erasure;
+- SQL `43+` allocation.
 
 ## Protected state
 
 ```text
-IP-12.5: HOLD_OPERATIONAL_INPUTS_PENDING
 Production shadow: DISABLED
 Kill switch: true
 Effective sampling: 0 BPS

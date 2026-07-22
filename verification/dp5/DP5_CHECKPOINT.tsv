@@ -1,0 +1,6 @@
+check	expected	status
+immutable	true	DESIGNED
+event_and_ingestion_time_separate	true	DESIGNED
+late_event_mutation	forbidden	DESIGNED
+source_set_fingerprint	sha256_lower_hex_64	DESIGNED
+postgres_validation	15_and_18	NOT_EXECUTED

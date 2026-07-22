@@ -12,7 +12,7 @@
 | Module | Package root | Owner | Status |
 |---|---|---|---|
 | `jc-intelligence-contracts` | `com.jc.intelligence.contract` | Intelligence | ACTIVE |
-| `jc-data-contracts` | `com.jc.data.contract.v1` | Data | ACTIVE / DP-2 MAIN INTEGRATED |
+| `jc-data-contracts` | `com.jc.data.contract.v1` | Data | ACTIVE / DP-4.5 MAIN INTEGRATED |
 
 ## Identity schemes
 
@@ -40,10 +40,19 @@
 | `platform-event-canonical-json-v1` | ACTIVE |
 | `platform-event-fingerprint-sha256-v1` | ACTIVE / DP-2 IMPLEMENTED |
 | `event-idempotency-fingerprint-v1` | ACTIVE / DP-2 IMPLEMENTED |
-| `event-retry-quarantine-replay-v1` | ACTIVE / DP-3 IMPLEMENTATION AUTHORIZED |
+| `event-retry-quarantine-replay-v1` | ACTIVE / DP-3 IMPLEMENTED |
 | `data-lineage-snapshot-v1` | ACTIVE |
 | `dp-1-event-domain-types-validation-v1` | ACTIVE / MAIN INTEGRATED |
 | `dp-2-postgresql-event-store-idempotency-v1` | ACTIVE / MAIN INTEGRATED |
+| `dp-4-recommendation-event-adapter-v1` | ACTIVE / MAIN INTEGRATED |
+| `dp-4-5-recommendation-adapter-shadow-evidence-v1` | ACTIVE / MAIN INTEGRATED |
+| `recommendation-profile-input-v1` | SHADOW-ONLY / DP-5 ASSIGNED AFTER SC MERGE |
+| `experiment-outcome-input-v1` | SHADOW-ONLY / DP-5 ASSIGNED AFTER SC MERGE |
+| `data-projection-snapshot-v1` | DP-5 ASSIGNED AFTER SC MERGE |
+| `data-source-set-sha256-v1` | DP-5 ASSIGNED AFTER SC MERGE |
+| `data-projection-record-sha256-v1` | DP-5 ASSIGNED AFTER SC MERGE |
+| `data-projection-snapshot-sha256-v1` | DP-5 ASSIGNED AFTER SC MERGE |
+| `data-projection-lineage-sha256-v1` | DP-5 ASSIGNED AFTER SC MERGE |
 
 ## Data DB roles
 
@@ -51,9 +60,15 @@
 |---|---|---|
 | `jc_data_event_writer` | approved Data event-store write boundary only | ACTIVE / DP-2 |
 | `jc_data_event_reader` | approved Data read contracts only | ACTIVE / DP-2 |
-| `jc_data_retry_processor` | approved retry claim/complete/fail/quarantine procedures only | ASSIGNED TO DP-3 |
-| `jc_data_quarantine_reviewer` | append-only review/retain/release-request evidence only | ASSIGNED TO DP-3 |
-| `jc_data_replay_executor` | approved replay procedures; no direct canonical mutation | RESERVED / NO EXECUTE GRANT IN DP-3 |
+| `jc_data_retry_processor` | approved retry procedures only | ACTIVE / DP-3 |
+| `jc_data_quarantine_reviewer` | append-only review evidence only | ACTIVE / DP-3 |
+| `jc_data_replay_executor` | approved replay procedures; no direct canonical mutation | RESERVED / NO EXECUTE GRANT |
+| `jc_data_adapter_evidence_writer` | execute DP-4.5 persistence function only | ACTIVE / DP-4.5 |
+| `jc_data_adapter_evidence_reader` | select DP-4.5 safe aggregate view only | ACTIVE / DP-4.5 |
+| `jc_data_adapter_evidence_function_owner` | NOLOGIN DP-4.5 function owner | ACTIVE / DP-4.5 |
+| `jc_data_projection_writer` | execute DP-5 atomic persistence only | ASSIGNED AFTER SC MERGE |
+| `jc_data_projection_reader` | select DP-5 aggregate safe view only | ASSIGNED AFTER SC MERGE |
+| `jc_data_projection_function_owner` | NOLOGIN DP-5 function owner | ASSIGNED AFTER SC MERGE |
 
 ## DB sequence
 
@@ -64,8 +79,16 @@
 | `28` | SQL 27 smoke test | PROTECTED |
 | `29` | Data canonical event store/evidence base | ACTIVE / DP-2 |
 | `30` | Data idempotency/atomic ingest/grants | ACTIVE / DP-2 |
-| `31` | DP-2 PostgreSQL smoke/contract/concurrency verification | ACTIVE / DP-2 |
-| `32` | Data retry schedule/attempt/quarantine evidence | ASSIGNED TO DP-3 |
-| `33` | atomic claim/lease/complete/fail/quarantine procedures and grants | ASSIGNED TO DP-3 |
-| `34` | DP-3 smoke/concurrency/lease/authority verification | ASSIGNED TO DP-3 |
-| `35+` | unallocated | SC ASSIGNMENT REQUIRED |
+| `31` | DP-2 PostgreSQL validation | ACTIVE / DP-2 |
+| `32` | Data retry/quarantine evidence | ACTIVE / DP-3 |
+| `33` | retry claim/lease/procedures/grants | ACTIVE / DP-3 |
+| `34` | DP-3 validation | ACTIVE / DP-3 |
+| `35` | Recommendation adapter shadow evidence | ACTIVE / DP-4.5 |
+| `36` | adapter atomic persistence/roles/safe view | ACTIVE / DP-4.5 |
+| `37` | DP-4.5 validation | ACTIVE / DP-4.5 |
+| `38` | projection run/checkpoint/snapshot/lineage foundation | ASSIGNED AFTER SC MERGE |
+| `39` | recommendation profile input projection | ASSIGNED AFTER SC MERGE |
+| `40` | experiment outcome input projection | ASSIGNED AFTER SC MERGE |
+| `41` | atomic persistence/roles/safe view | ASSIGNED AFTER SC MERGE |
+| `42` | DP-5 PostgreSQL 15/18 validation | ASSIGNED AFTER SC MERGE |
+| `43+` | unallocated | SC ASSIGNMENT REQUIRED |

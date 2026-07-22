@@ -1,0 +1,5 @@
+case	expected	status
+new_identity	NEW	DESIGNED
+same_identity_same_fingerprint	DUPLICATE_existing_snapshot	DESIGNED
+same_identity_different_fingerprint	CONFLICT_PROJECTION_SNAPSHOT_CONFLICT	DESIGNED
+concurrent_same_identity	exactly_one_NEW	NOT_EXECUTED
