@@ -46,16 +46,34 @@ jobs:
       - name: Validate adapter and protected contracts
         shell: bash
         run: |
-          set -euo pipefail
+          set +e
+          mkdir -p verification/dp4/runtime
           chmod +x jc-backend/gradlew
-          (cd jc-backend && ./gradlew :jc-data-contracts:check :jc-recommendation-core:check --stacktrace --no-daemon)
-          python verification/dp4/run_dp4_static_verification.py
+          (cd jc-backend && ./gradlew :jc-data-contracts:check :jc-recommendation-core:check --stacktrace --no-daemon) \
+            > verification/dp4/runtime/DP4_BOOTSTRAP_GRADLE.log 2>&1
+          gradle_status=$?
+          python verification/dp4/run_dp4_static_verification.py \
+            > verification/dp4/runtime/DP4_BOOTSTRAP_STATIC.log 2>&1
+          static_status=$?
+          cat verification/dp4/runtime/DP4_BOOTSTRAP_GRADLE.log
+          cat verification/dp4/runtime/DP4_BOOTSTRAP_STATIC.log
+          if [[ $gradle_status -ne 0 || $static_status -ne 0 ]]; then
+            exit 1
+          fi
+
+      - name: Upload bootstrap diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dp4-bootstrap-diagnostics
+          path: verification/dp4/runtime/**
+          if-no-files-found: warn
 
       - name: Publish verified implementation
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf .dp4-payload
+          rm -rf .dp4-payload verification/dp4/runtime
           git checkout -- .github/workflows/dp4-discovery.yml jc-backend/gradlew
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
