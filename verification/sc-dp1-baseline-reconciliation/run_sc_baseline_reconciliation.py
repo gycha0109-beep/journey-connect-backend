@@ -40,6 +40,7 @@ ALLOWED = (
     ".github/workflows/data-postgres-ci.yml",
     ".github/workflows/recommendation-p0-db-ci.yml",
     ".github/workflows/backend-pr-ci.yml",
+    ".github/workflows/dp5-governance-finalize.yml",
     "jc-backend/settings.gradle.kts",
     "jc-backend/src/test/java/com/jc/backend/search/shadow/production/IP12ProductionShadowStaticTest.java",
     "jc-data-contracts/",
@@ -110,7 +111,8 @@ for marker in (
 
 allocation5 = (ROOT / "docs/platform/governance/SC-DP5-PROJECTION-ALLOCATION.md").read_text(encoding="utf-8")
 for marker in (
-    "Implementation authority: `GRANTED AFTER MERGE INTO MAIN`",
+    "Implementation authority: `GRANTED`",
+    "Authoritative allocation main: `67a9b7515dbfd41360160c8059ac387e74cbdf6b`",
     "38_data_projection_snapshot_foundation.sql",
     "39_data_recommendation_profile_projection.sql",
     "40_data_experiment_outcome_projection.sql",
