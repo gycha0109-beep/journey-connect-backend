@@ -1,0 +1,8 @@
+category	path_scope	change
+java_contract	jc-data-contracts/src/main/java/com/jc/data/contract/v1/adapter/recommendation/**	added
+java_test	jc-data-contracts/src/test/java/com/jc/data/contract/Dp4RecommendationAdapterContractTest.java	added
+fixture	jc-data-contracts/src/test/resources/recommendation-p0-adapter-*.tsv	added
+documentation	docs/platform/data/DP-4-*.md	added
+verification	verification/dp4/**	added
+ci	.github/workflows/data-contract-ci.yml;recommendation-p0-db-ci.yml;backend-pr-ci.yml	trigger/evidence update
+sc_gate	verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py	DP4 allowlist

@@ -1,0 +1,9 @@
+check	expected	result
+event_wire_set	exact 16 P0 wires	PASS_LOCAL_JAVAC
+p0_resolver	each golden source resolves once	PASS_LOCAL_JAVAC
+mapping_class	semantic compatible, never production authority	PASS_LOCAL_JAVAC
+source_fingerprint	verified before mapping	PASS_LOCAL_JAVAC
+adapter_fingerprint	separate from P0 source and P0 resolver signature	PASS_LOCAL_JAVAC
+general_exposure	accepted for impression/click	PASS_LOCAL_JAVAC
+p2_experiment_exposure	rejected	PASS_LOCAL_JAVAC
+shadow_only	no canonical event ID or Recommendation write	PASS_STATIC

@@ -1,0 +1,6 @@
+item	value	status
+base_branch	main	CONFIRMED
+work_start_head	233016060378cd368620cac274c64ca61ce812a7	CONFIRMED
+dp3_merge_commit	233016060378cd368620cac274c64ca61ce812a7	CONFIRMED
+sql_01_34	protected	CONFIRMED
+sql_35_plus	unallocated	SC_SQL_ASSIGNMENT_REQUIRED

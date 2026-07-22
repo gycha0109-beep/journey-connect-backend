@@ -1,0 +1,7 @@
+target	expected	result
+SQL_01_34	unchanged	PASS
+recommendation_production_source	unchanged	PASS
+recommendation_p0_fingerprint	unchanged/not reused	PASS
+search_intelligence_production_source	unchanged	PASS
+production_configuration	unchanged	PASS
+production_controls	disabled/kill switch/0 BPS/empty cohort/no cutover	PASS

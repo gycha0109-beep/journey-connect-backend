@@ -1,0 +1,7 @@
+scenario	expected	result
+approved_numeric_to_subject_binding	mapped	PASS_LOCAL_JAVAC
+missing_binding	identity_mapping_required	PASS_LOCAL_JAVAC
+wrong_source_user	identity_mapping_required	PASS_LOCAL_JAVAC
+raw_numeric_subject	not constructed	PASS_STATIC
+source_session	privacy-safe deterministic hash only	PASS_LOCAL_JAVAC
+identity_repository	absent	PASS_STATIC

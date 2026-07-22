@@ -31,11 +31,13 @@ REQUIRED = [
 ]
 ALLOWED = (
     "docs/platform/governance/", "docs/platform/data/", "docs/platform/proposals/",
-    "verification/sc-dp1-baseline-reconciliation/", "verification/dp1/", "verification/dp2/", "verification/dp3/",
+    "verification/sc-dp1-baseline-reconciliation/", "verification/dp1/", "verification/dp2/",
+    "verification/dp3/", "verification/dp4/",
     ".github/workflows/sc-baseline-reconciliation.yml",
     ".github/workflows/data-contract-ci.yml",
     ".github/workflows/data-postgres-ci.yml",
     ".github/workflows/recommendation-p0-db-ci.yml",
+    ".github/workflows/backend-pr-ci.yml",
     "jc-backend/settings.gradle.kts",
     "jc-backend/src/test/java/com/jc/backend/search/shadow/production/IP12ProductionShadowStaticTest.java",
     "jc-data-contracts/",

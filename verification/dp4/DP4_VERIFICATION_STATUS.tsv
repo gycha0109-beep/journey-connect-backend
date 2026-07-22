@@ -1,0 +1,8 @@
+check	command_or_evidence	result
+data_contract	:jc-data-contracts:check	PASS / run 29886994028
+recommendation_core	:jc-recommendation-core:check	PASS / run 29886994028
+recommendation_postgresql_15	Recommendation P0 Database CI	PASS / run 29886994045
+recommendation_postgresql_18	Recommendation P0 Database CI	PASS / run 29886994045
+backend_ip125	Backend PR CI	PASS / run 29886994024
+sc_reconciliation	SC Baseline Reconciliation	PASS / run 29886994036
+protected_diff	verification/dp4/run_dp4_static_verification.py	PASS / candidate HEAD 74961fefe495438447f13543178ddca6e14718f9

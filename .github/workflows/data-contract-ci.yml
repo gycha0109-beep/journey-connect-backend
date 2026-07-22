@@ -7,8 +7,12 @@ on:
       - "jc-backend/settings.gradle.kts"
       - "docs/platform/data/DP-1-*.md"
       - "docs/platform/data/DP-2-*.md"
+      - "docs/platform/data/DP-3-*.md"
+      - "docs/platform/data/DP-4-*.md"
       - "verification/dp1/**"
       - "verification/dp2/**"
+      - "verification/dp3/**"
+      - "verification/dp4/**"
       - ".github/workflows/data-contract-ci.yml"
   workflow_dispatch:
 
@@ -21,7 +25,7 @@ concurrency:
 
 jobs:
   data-contracts:
-    name: Java 21 / DP-1 and DP-2 contracts
+    name: Java 21 / DP-1 through DP-4 contracts
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -49,25 +53,26 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          mkdir -p ../verification/dp2/runtime
+          mkdir -p ../verification/dp4/runtime
           ./gradlew :jc-data-contracts:check --stacktrace --no-daemon 2>&1 \
-            | tee ../verification/dp2/runtime/DP2_DATA_CONTRACT_CI.log
+            | tee ../verification/dp4/runtime/DP4_DATA_CONTRACT_CI.log
+          python ../verification/dp4/run_dp4_static_verification.py 2>&1 \
+            | tee ../verification/dp4/runtime/DP4_STATIC_CI.log
 
       - name: Run Recommendation Java Core regression
         shell: bash
         run: |
           set -o pipefail
           ./gradlew :jc-recommendation-core:check --stacktrace --no-daemon 2>&1 \
-            | tee ../verification/dp2/runtime/DP2_RECOMMENDATION_CORE_CI.log
+            | tee ../verification/dp4/runtime/DP4_RECOMMENDATION_CORE_CI.log
 
       - name: Upload Data contract evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dp2-data-contract-ci-evidence
+          name: dp4-data-contract-ci-evidence
           path: |
-            verification/dp2/runtime/DP2_DATA_CONTRACT_CI.log
-            verification/dp2/runtime/DP2_RECOMMENDATION_CORE_CI.log
+            verification/dp4/runtime/**
             jc-data-contracts/build/reports/**
             jc-data-contracts/build/test-results/**
             jc-recommendation-core/build/reports/**
