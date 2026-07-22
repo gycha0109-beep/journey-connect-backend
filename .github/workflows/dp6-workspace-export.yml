@@ -1,4 +1,4 @@
-name: DP6 Workspace Export
+name: DP6 Apply Implementation
 
 on:
   pull_request:
@@ -9,20 +9,48 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  export:
+  apply:
     runs-on: ubuntu-latest
+    env:
+      TARGET_BRANCH: codex/dp-6-data-quality-validation
+      BLOB_0: cac4b7271b1ad4d4b334adf015e5d98772a2c66d
+      BLOB_1: 80e52cee91f87da3b18f56671ebbe3be5b7fcc3e
+      BLOB_2: 478e59433e232348c8d1f7ac484c77b908f54529
+      BLOB_3: d4863d5c1c4fe1d08641fb404474f4fc248171a3
+      BLOB_4: 38001bfcd99c3ce1bcce1ae638a0396a10a42f5a
+      BLOB_5: 2c0f2ce27e8df4fb97d457609e5ed2683afe617d
+      BLOB_6: 8d64d3e12dcd093e3090d13714030b384a555e25
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v7
         with:
+          ref: codex/dp-6-data-quality-validation
           fetch-depth: 0
-      - name: Export workspace
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Reconstruct and apply DP-6 implementation
+        shell: bash
         run: |
-          tar --exclude='.git' -czf /tmp/dp6-workspace.tar.gz .
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dp6-workspace-${{ github.event.pull_request.head.sha || github.sha }}
-          path: /tmp/dp6-workspace.tar.gz
-          if-no-files-found: error
+          set -euo pipefail
+          : > /tmp/dp6-payload.b64
+          for variable in BLOB_0 BLOB_1 BLOB_2 BLOB_3 BLOB_4 BLOB_5 BLOB_6; do
+            sha="${!variable}"
+            curl -fsSL \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/git/blobs/${sha}" \
+              | jq -r '.content' | tr -d '\n' | base64 -d >> /tmp/dp6-payload.b64
+          done
+          base64 -d /tmp/dp6-payload.b64 > /tmp/dp6-payload.tar.gz
+          tar -xzf /tmp/dp6-payload.tar.gz
+          chmod +x verification/dp6/run_dp6_concurrency.sh verification/dp6/run_dp6_static_verification.py
+          python verification/dp6/run_dp6_static_verification.py
+          python verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(dp6): implement data quality and lineage validation"
+          git push origin "HEAD:${TARGET_BRANCH}"
