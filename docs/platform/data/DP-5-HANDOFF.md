@@ -50,6 +50,16 @@
 - Search cutover not started;
 - production traffic not approved.
 
+## Allocation PR verification
+
+- Data Contract CI run `29901862224`: PASS;
+- SC Baseline Reconciliation run `29901862138`: PASS;
+- Java Data contracts DP-1 through DP-4: PASS;
+- Recommendation Java Core regression: PASS;
+- DP-4 and DP-4.5 protected artifact diff: PASS;
+- DP-5 allocation/static blocker gate: PASS;
+- DP-5 Java implementation and PostgreSQL 15/18: not executed because allocation is not yet authoritative.
+
 ## Resume point
 
 Merge the SC allocation PR only with explicit user approval. Then start a new DP-5 implementation branch from the latest `main`, implement only SQL `38..42`, and run the full Java, PostgreSQL 15/18, determinism, lineage, role/grant and protected regression gates.
