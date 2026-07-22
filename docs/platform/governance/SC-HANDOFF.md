@@ -19,23 +19,24 @@
 
 - DP-1 through DP-4.5 are integrated into `main`.
 - canonical event, idempotency, retry/quarantine, P0 adapter and adapter shadow evidence are protected authority.
-- DP-4.5 PostgreSQL 15/18, Data, Recommendation, Backend and SC gates passed at the implementation exact HEAD.
+- DP-5 implements deterministic shadow projections, immutable checkpoints/snapshots and append-only lineage evidence without runtime cutover.
+- DP-5 independent review strengthened source-time authority, identity, as-of, profile-window, lineage and P2 outcome boundaries.
 - production worker, scheduler, replay, backfill and production shadow remain disabled or unauthorized.
 
 ## DP-5 implementation
 
 ### Scope
 
-DP-5 may implement deterministic, shadow-only `recommendation-profile-input-v1` and `experiment-outcome-input-v1` projections, immutable source checkpoints and snapshots, append-only lineage/validation/conflict evidence and aggregate-only observability.
+DP-5 implements deterministic, shadow-only `recommendation-profile-input-v1` and `experiment-outcome-input-v1` projections, immutable source checkpoints and snapshots, append-only lineage/validation/conflict evidence and aggregate-only observability.
 
-It may not replace the current P1/P2 runtime source, change P2 metrics or exposure authority, write Recommendation/Search/Operations tables, activate a worker or scheduler, execute replay/backfill, purge data, cut over traffic or activate production shadow.
+It does not replace the current P1/P2 runtime source, change P2 metrics or exposure authority, write Recommendation/Search/Operations tables, activate a worker or scheduler, execute replay/backfill, purge data, cut over traffic or activate production shadow.
 
 ### SQL
 
 - SQL `38`: run/checkpoint/snapshot/lineage/validation/conflict foundation
 - SQL `39`: Recommendation profile input projection
 - SQL `40`: experiment outcome input projection
-- SQL `41`: atomic `NEW/DUPLICATE/CONFLICT`, roles/grants and safe view
+- SQL `41`: atomic `NEW/DUPLICATE/CONFLICT`, source authority reconciliation, roles/grants and safe view
 - SQL `42`: PostgreSQL 15/18 validation
 - SQL `43+`: unallocated
 
@@ -51,6 +52,7 @@ It may not replace the current P1/P2 runtime source, change P2 metrics or exposu
 - P2 experiment exposure: `recommendation_p2_experiment_exposure`
 - fallback: bound exposed `recommendation_run.run_status`
 - identity namespaces remain distinct and require explicit binding
+- caller-supplied checkpoint times must match authoritative source rows
 
 ### Retention
 
@@ -58,12 +60,14 @@ Projection run/status, checkpoint, snapshot, record, lineage, validation and con
 
 ### Verified implementation evidence
 
-- implementation HEAD: `305f3c689c2487ad2a9bd4791bde21517c0ebc72`;
-- Data PostgreSQL CI `29917537854`: PASS;
-- Data Contract CI `29917537842`: PASS;
-- Recommendation P0 Database CI `29917537938`: PASS;
-- Backend PR CI `29917537605`: PASS;
-- SC Baseline Reconciliation `29917537971`: PASS.
+- independently reviewed implementation code HEAD: `1dad0d84ffcfacfc56a880e1296ef9430c2d43ed`;
+- Data PostgreSQL CI `29931366103`: PASS on PostgreSQL 15/18;
+- Data Contract CI `29931366173`: PASS;
+- Recommendation P0 Database CI `29931367581`: PASS on PostgreSQL 15/18;
+- Backend PR CI `29931366129`: PASS;
+- SC Baseline Reconciliation `29931365762`: PASS.
+
+The final documentation/evidence commit is covered by PR exact-head checks and is intentionally not embedded as a self-referential hash.
 
 ## DP-5 entry
 
