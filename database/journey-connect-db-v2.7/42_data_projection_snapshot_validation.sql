@@ -97,7 +97,7 @@ BEGIN
     ('event:dp5-profile-2','platform-event-v1','user-behavior-event-v1','platform-event-canonical-json-v1',
       'platform-event-fingerprint-sha256-v1',v_profile2_fp,convert_to('{"profile":2}','UTF8'),'dp5-producer-v1',
       'git:'||repeat('1',40),'user_behavior','post_hide','2026-07-21T00:00:00Z','2026-07-21T00:00:01Z',
-      'subject:dp5-smoke','session:dp5-profile','post:2','dp5-profile-2','{}','2027-07-18T00:00:01Z'),
+      'subject:dp5-smoke','session:dp5-profile','post:2','dp5-profile-2','{}','2027-07-21T00:00:01Z'),
     ('event:dp5-outcome-click','platform-event-v1','user-behavior-event-v1','platform-event-canonical-json-v1',
       'platform-event-fingerprint-sha256-v1',v_outcome_fp,convert_to('{"outcome":1}','UTF8'),'dp5-producer-v1',
       'git:'||repeat('1',40),'user_behavior','recommendation_click','2026-07-19T00:00:30Z','2026-07-19T00:00:31Z',
