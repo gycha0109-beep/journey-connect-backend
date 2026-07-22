@@ -217,8 +217,7 @@ BEGIN
 
   SELECT run.* INTO v_existing
   FROM public.data_recommendation_adapter_run_v1 run
-  WHERE run.logical_identity_hash = v_logical_hash
-  FOR UPDATE;
+  WHERE run.logical_identity_hash = v_logical_hash;
 
   IF FOUND THEN
     IF v_existing.evidence_kind = 'mapped' THEN
