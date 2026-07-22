@@ -10,6 +10,9 @@ on:
       - "jc-backend/src/main/**"
       - "jc-backend/src/test/**"
       - "jc-backend/build.gradle.kts"
+      - "jc-data-contracts/**"
+      - "docs/platform/data/DP-4-*.md"
+      - "verification/dp4/**"
       - ".github/workflows/recommendation-p0-db-ci.yml"
   workflow_dispatch:
 
@@ -56,6 +59,7 @@ jobs:
         run: |
           set -o pipefail
           ./gradlew p0Verification --stacktrace --no-daemon 2>&1 | tee ../verification/ip12-5/IP125_P0_STATIC_PG${{ matrix.postgres }}.log
+          python ../verification/dp4/run_dp4_static_verification.py
 
       - name: Run canonical PostgreSQL integration suite
         shell: bash
