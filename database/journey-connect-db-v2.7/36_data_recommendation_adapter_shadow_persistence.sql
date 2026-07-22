@@ -54,6 +54,35 @@ REVOKE jc_data_adapter_evidence_function_owner FROM jc_app, jc_auth, jc_admin,
   jc_data_retry_processor, jc_data_quarantine_reviewer, jc_data_replay_executor,
   jc_data_adapter_evidence_writer, jc_data_adapter_evidence_reader;
 
+REVOKE ALL ON FUNCTION public.data_recommendation_adapter_version_valid_v1(varchar) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.data_recommendation_adapter_failure_code_valid_v1(varchar) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.data_recommendation_adapter_failure_class_valid_v1(varchar) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.data_recommendation_adapter_failure_retryable_v1(varchar) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.data_recommendation_adapter_failure_binding_valid_v1(varchar, varchar) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.data_recommendation_adapter_payload_valid_v1(jsonb) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.data_recommendation_adapter_logical_identity_hash_v1(
+  varchar, varchar, varchar, varchar, varchar, varchar) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.data_recommendation_adapter_failure_result_fingerprint_v1(
+  varchar, varchar, varchar, boolean, varchar) FROM PUBLIC;
+
+GRANT EXECUTE ON FUNCTION public.gen_random_uuid() TO jc_data_adapter_evidence_function_owner;
+GRANT EXECUTE ON FUNCTION public.digest(bytea, text) TO jc_data_adapter_evidence_function_owner;
+GRANT EXECUTE ON FUNCTION public.data_event_type_valid_v1(varchar, varchar)
+  TO jc_data_adapter_evidence_function_owner;
+GRANT EXECUTE ON FUNCTION public.data_event_payload_contains_forbidden_key_v1(jsonb)
+  TO jc_data_adapter_evidence_function_owner;
+GRANT EXECUTE ON FUNCTION public.data_recommendation_adapter_version_valid_v1(varchar),
+  public.data_recommendation_adapter_failure_code_valid_v1(varchar),
+  public.data_recommendation_adapter_failure_class_valid_v1(varchar),
+  public.data_recommendation_adapter_failure_retryable_v1(varchar),
+  public.data_recommendation_adapter_failure_binding_valid_v1(varchar, varchar),
+  public.data_recommendation_adapter_payload_valid_v1(jsonb),
+  public.data_recommendation_adapter_logical_identity_hash_v1(
+    varchar, varchar, varchar, varchar, varchar, varchar),
+  public.data_recommendation_adapter_failure_result_fingerprint_v1(
+    varchar, varchar, varchar, boolean, varchar)
+  TO jc_data_adapter_evidence_function_owner;
+
 CREATE OR REPLACE FUNCTION public.persist_recommendation_adapter_shadow_evidence_v1(
   p_source_event_ref varchar,
   p_source_fingerprint varchar,
@@ -209,16 +238,15 @@ BEGIN
 
     IF v_existing.result_fingerprint = v_result_fingerprint
        AND v_existing.evidence_kind = v_evidence_kind THEN
-      INSERT INTO public.data_recommendation_adapter_duplicate_counter_v1 (
+      INSERT INTO public.data_recommendation_adapter_duplicate_counter_v1 AS counter (
         logical_identity_hash, duplicate_count, first_seen_at, last_seen_at, expires_at
       ) VALUES (
         v_logical_hash, 1, v_now, v_now, v_now + interval '90 days'
       )
       ON CONFLICT (logical_identity_hash) DO UPDATE
       SET duplicate_count = CASE
-            WHEN public.data_recommendation_adapter_duplicate_counter_v1.duplicate_count = 9223372036854775807
-              THEN 9223372036854775807
-            ELSE public.data_recommendation_adapter_duplicate_counter_v1.duplicate_count + 1
+            WHEN counter.duplicate_count = 9223372036854775807 THEN 9223372036854775807
+            ELSE counter.duplicate_count + 1
           END,
           last_seen_at = EXCLUDED.last_seen_at;
 
@@ -245,7 +273,7 @@ BEGIN
     RETURN;
   END IF;
 
-  INSERT INTO public.data_recommendation_adapter_run_v1 (
+  INSERT INTO public.data_recommendation_adapter_run_v1 AS new_run (
     logical_identity_hash, source_event_ref, source_fingerprint,
     source_contract_version, source_schema_version,
     adapter_id, adapter_version, mapping_policy_version,
@@ -259,10 +287,10 @@ BEGIN
     p_output_fingerprint_version, p_target_contract_version, p_target_schema_version,
     p_producer_build_id, v_evidence_kind, v_result_fingerprint, p_mapping_status,
     p_started_at, p_completed_at, v_now + interval '90 days'
-  ) RETURNING adapter_run_id INTO v_run_id;
+  ) RETURNING new_run.adapter_run_id INTO v_run_id;
 
   IF v_evidence_kind = 'mapped' THEN
-    INSERT INTO public.data_recommendation_adapter_output_v1 (
+    INSERT INTO public.data_recommendation_adapter_output_v1 AS new_output (
       adapter_run_ref, source_event_ref, source_fingerprint,
       compatibility_class, mapped_event_type, mapped_actor_ref,
       mapped_session_ref, mapped_entity_ref, mapped_occurred_at,
@@ -273,9 +301,9 @@ BEGIN
       p_mapped_session_ref, p_mapped_entity_ref, p_mapped_occurred_at,
       p_mapped_payload, p_output_fingerprint, p_mapping_status,
       v_now + interval '90 days'
-    ) RETURNING adapter_output_id INTO v_evidence_id;
+    ) RETURNING new_output.adapter_output_id INTO v_evidence_id;
   ELSE
-    INSERT INTO public.data_recommendation_adapter_failure_v1 (
+    INSERT INTO public.data_recommendation_adapter_failure_v1 AS new_failure (
       adapter_run_ref, source_event_ref, source_fingerprint,
       failure_code, failure_class, retryable, failure_signature,
       adapter_version, target_contract_version, mapping_status, expires_at
@@ -284,7 +312,7 @@ BEGIN
       p_failure_code, p_failure_class, p_retryable, p_failure_signature,
       p_adapter_version, p_target_contract_version, p_mapping_status,
       v_now + interval '90 days'
-    ) RETURNING adapter_failure_id INTO v_evidence_id;
+    ) RETURNING new_failure.adapter_failure_id INTO v_evidence_id;
   END IF;
 
   RETURN QUERY SELECT 'NEW'::varchar, v_run_id, v_evidence_kind, v_evidence_id, NULL::varchar;
