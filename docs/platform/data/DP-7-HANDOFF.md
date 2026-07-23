@@ -2,15 +2,16 @@
 
 ## Status
 
-`IMPLEMENTATION CANDIDATE / MAIN MERGE PENDING`
+`IMPLEMENTATION VERIFIED / MAIN MERGE PENDING`
 
 ## Authoritative base
 
 - allocation PR #19 merge: `d18c91a28b271c9f9891b522c6371017a3d0dd79`
 - protected SQL: `01..47`
-- implemented SQL candidate: `48..52`
+- implemented SQL: `48..52`
 - unallocated SQL: `53+`
 - implementation branch: `agent/dp7-cross-track-integration-implementation`
+- implementation PR: `#20`
 
 ## Delivered
 
@@ -32,6 +33,18 @@
 - Intelligence: `INCONCLUSIVE` until a Data-specific domain mapping is approved.
 - Search: `INCONCLUSIVE` until a Data-to-Search input contract is approved.
 
+## Verified gates
+
+- canonical SQL `01..52` applies on PostgreSQL 15 and PostgreSQL 18;
+- DP-7 rollback validation passes on both PostgreSQL versions;
+- same-logical-identity concurrency produces exactly one `NEW`, one `DUPLICATE`, one persisted run, one persisted verdict and zero conflicts;
+- Java 21 Data, Recommendation, Intelligence, Search and compatibility contract regressions pass;
+- Backend protected readiness, production defaults and Search legacy authority remain protected;
+- DP-5, DP-6 and SC predecessor reconciliation gates pass;
+- protected SQL `01..47` and production Recommendation/Intelligence/Search source remain unchanged.
+
+All results are exact-head CI evidence. Any subsequent branch-head change invalidates the evidence until the required workflows pass again on the new head.
+
 ## Production protection
 
 Recommendation writes, Intelligence runtime, Search indexing/cutover, workers, schedulers, replay, backfill, rebuild, purge and traffic remain disabled or unauthorized. `/api/v1/explore`, production shadow defaults, kill switch, sampling and cohort are unchanged.
@@ -42,4 +55,4 @@ Do not merge without explicit user approval. Before merge, PR head, reported fin
 
 ## Post-merge roadmap
 
-DP-0 through DP-7 Data Platform foundation may be marked complete only after the implementation PR is merged. Production integration remains a separate target-track and Operations authorization problem, not a DP-7 consequence.
+DP-0 through DP-7 Data Platform technical foundation may be marked complete only after PR #20 is merged. Production integration remains a separate target-track and Operations authorization problem, not a DP-7 consequence.
