@@ -1,7 +1,9 @@
 item	value	status
 authoritative_main	c0f6b5dc8cc7089412a100989109b61315c062d0	PASS
 allocation_pr	17	MERGED
-implementation_pr	18	OPEN_DRAFT
-sql_01_42	protected	PASS_STATIC
-sql_43_47	allocated_and_implemented	PENDING_POSTGRESQL_CI
-sql_48_plus	absent	PASS_STATIC
+implementation_pr	18	OPEN_FINALIZATION
+implementation_verification_head	c7f96d41fe4cbc18e60180776422ae3a58e8ae15	PASS_REQUIRED_WORKFLOWS
+sql_01_42	protected_unchanged	PASS_EXACT_HEAD
+sql_43_47	allocated_implemented_executed	PASS_POSTGRESQL15_18
+sql_48_plus	absent	PASS_EXACT_HEAD
+production_runtime	unchanged	PASS_PROTECTED_REGRESSION
