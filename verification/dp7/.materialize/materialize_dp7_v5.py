@@ -22,3 +22,4 @@ with tarfile.open(fileobj=io.BytesIO(raw), mode="r:") as source:
 if len(members) != 89:
     raise SystemExit(f"DP-7 payload file count mismatch: {len(members)}")
 print(f"DP-7 payload materialized: {len(members)} files")
+# final-materialization-trigger-v2
