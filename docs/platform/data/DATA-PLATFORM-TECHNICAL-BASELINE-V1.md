@@ -69,4 +69,4 @@ This baseline is technical evidence, not deployment or traffic approval.
 
 Policies: `data-retention-policy-v1`, `data-projection-retry-v1`, projection/feature policies, `data-quality-policy-v1`, `data-cross-track-integration-policy-v1`. Fingerprint semantic change requires a new domain/version; old fingerprints are not reinterpreted.
 
-Main push CI at `c528f6fb0942389b70a348cb9aa672eb7819a392` is `NOT_AVAILABLE`; main tree equivalence to `affb561eeeb7b1eb9cabb44e5d29b9378194934d` is verified; PR #20 exact-head gates passed. Closure PR exact-head gates are required. Unexecuted checks are never PASS.
+Main push CI at `c528f6fb0942389b70a348cb9aa672eb7819a392` is `NOT_AVAILABLE`; main tree equivalence to `affb561eeeb7b1eb9cabb44e5d29b9378194934d` is verified; PR #20 exact-head gates passed. Closure readiness is bound to all eight required workflows succeeding on the current symbolic `SELF_HEAD`; concrete final head and run IDs are recorded in PR metadata and the final report. Unexecuted checks are never PASS.
