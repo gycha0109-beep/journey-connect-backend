@@ -56,20 +56,42 @@
     RAISE EXCEPTION 'Conflict created a second verdict.';
   END IF;
 
+  EXECUTE $ddl$
+    CREATE OR REPLACE FUNCTION public.dp7_force_atomic_failure_v1()
+    RETURNS trigger
+    LANGUAGE plpgsql
+    AS $body$
+    BEGIN
+      IF EXISTS (
+        SELECT 1
+        FROM public.data_cross_track_integration_run_v1 r
+        WHERE r.integration_run_id=NEW.integration_run_ref
+          AND r.integration_run_ref='integration_run:partial-rollback'
+      ) THEN
+        RAISE EXCEPTION 'dp7 atomic rollback fixture' USING ERRCODE='P0001';
+      END IF;
+      RETURN NEW;
+    END;
+    $body$
+  $ddl$;
+  EXECUTE 'CREATE TRIGGER dp7_force_atomic_failure_v1
+    BEFORE INSERT ON public.data_cross_track_contract_mapping_evidence_v1
+    FOR EACH ROW EXECUTE FUNCTION public.dp7_force_atomic_failure_v1()';
+
   SELECT count(*) INTO v_before FROM public.data_cross_track_integration_run_v1;
   v_request:=public.dp7_fixture_request_v1('integration_run:partial-rollback',v_snapshot,v_quality,
     'Data','IDENTITY_BOUNDARY','data-cross-track-authority-matrix-v1',true,true,false);
-  v_request:=jsonb_set(v_request,'{checks,5,targetReference}',to_jsonb(repeat('x',181)));
-  v_request:=jsonb_set(v_request,'{checks,5,evidenceFingerprint}',
-    to_jsonb(public.data_cross_track_check_fingerprint_v1(v_request->'checks'->5)));
   BEGIN
     PERFORM public.persist_data_cross_track_integration_v1(v_request);
     RAISE EXCEPTION 'partial transaction rollback unexpectedly succeeded';
-  EXCEPTION WHEN string_data_right_truncation THEN NULL;
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM<>'dp7 atomic rollback fixture' THEN RAISE; END IF;
   END;
   IF (SELECT count(*) FROM public.data_cross_track_integration_run_v1)<>v_before THEN
     RAISE EXCEPTION 'Partial DP-7 insert was not rolled back.';
   END IF;
+  EXECUTE 'DROP TRIGGER dp7_force_atomic_failure_v1 ON public.data_cross_track_contract_mapping_evidence_v1';
+  EXECUTE 'DROP FUNCTION public.dp7_force_atomic_failure_v1()';
 END;
 $$;
 
