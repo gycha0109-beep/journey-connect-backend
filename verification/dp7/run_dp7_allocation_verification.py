@@ -56,6 +56,7 @@ ALLOWED_COMPATIBILITY = {
 }
 
 ALLOWED_PREFIXES = (
+    ".github/workflows/data-postgres-ci.yml",
     ".github/workflows/dp7-allocation-ci.yml",
     "docs/platform/data/DP-7-",
     "docs/platform/governance/SC-DP7-CROSS-TRACK-INTEGRATION-ALLOCATION.md",
@@ -63,6 +64,7 @@ ALLOWED_PREFIXES = (
     "docs/platform/governance/SC-PLATFORM-REGISTRY.md",
     "docs/platform/governance/SC-HANDOFF.md",
     "verification/dp6/run_dp6_allocation_verification.py",
+    "verification/dp6/run_dp6_static_verification.py",
     "verification/dp7/",
     "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
 )
