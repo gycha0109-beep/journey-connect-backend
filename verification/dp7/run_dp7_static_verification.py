@@ -20,10 +20,8 @@ SQL_FILES = [SQL / f"{number:02d}_{name}.sql" for number, name in (
     (52, "cross_track_integration_validation"),
 )]
 
-
 def fail(message: str) -> None:
     raise SystemExit(f"FAIL: {message}")
-
 
 for path in (*SQL_FILES, TEST, GOLDEN):
     if not path.is_file() or not path.read_text(encoding="utf-8").strip():
@@ -48,22 +46,19 @@ for marker in (
     "data_cross_track_integration_status_evidence_v1", "data_cross_track_integration_check_result_v1",
     "data_cross_track_integration_anomaly_v1", "data-cross-track-integration-policy-v1",
 ):
-    if marker not in sql48:
-        fail(f"SQL 48 marker missing: {marker}")
+    if marker not in sql48: fail(f"SQL 48 marker missing: {marker}")
 for marker in (
     "data_cross_track_contract_mapping_evidence_v1", "data_cross_track_identity_evidence_v1",
     "data_cross_track_authority_evidence_v1", "data_cross_track_privacy_evidence_v1",
     "data_cross_track_retention_evidence_v1",
 ):
-    if marker not in sql49:
-        fail(f"SQL 49 marker missing: {marker}")
+    if marker not in sql49: fail(f"SQL 49 marker missing: {marker}")
 for marker in (
     "data_cross_track_quality_verdict_binding_v1", "data_cross_track_integration_verdict_v1",
     "data_cross_track_integration_conflict_evidence_v1", "CROSS_TRACK_INTEGRATION_VERDICT_CONFLICT",
     "COMPATIBLE", "CONDITIONALLY_COMPATIBLE", "INCOMPATIBLE", "INCONCLUSIVE",
 ):
-    if marker not in sql50:
-        fail(f"SQL 50 marker missing: {marker}")
+    if marker not in sql50: fail(f"SQL 50 marker missing: {marker}")
 for marker in (
     "persist_data_cross_track_integration_v1", "pg_advisory_xact_lock", "SECURITY DEFINER",
     "SET search_path=pg_catalog,public,pg_temp", "jc_data_integration_writer",
@@ -71,8 +66,7 @@ for marker in (
     "data_cross_track_integration_safe_metrics_v1", "REVOKE ALL ON FUNCTION",
     "ALTER VIEW public.data_cross_track_integration_safe_metrics_v1 OWNER TO jc_data_integration_function_owner",
 ):
-    if marker not in sql51:
-        fail(f"SQL 51 marker missing: {marker}")
+    if marker not in sql51: fail(f"SQL 51 marker missing: {marker}")
 for marker in (
     "integration-input-sha256-v1", "integration-check-evidence-sha256-v1",
     "integration-mapping-sha256-v1", "integration-verdict-sha256-v1",
@@ -87,8 +81,7 @@ for marker in (
     "reader raw evidence access unexpectedly succeeded", "function owner role is unsafe",
     "PUBLIC function execute not revoked", "safe view exposes forbidden columns", "ROLLBACK;",
 ):
-    if marker not in sql52:
-        fail(f"SQL 52 validation marker missing: {marker}")
+    if marker not in sql52: fail(f"SQL 52 validation marker missing: {marker}")
 
 combined_sql = "\n".join((sql48, sql49, sql50, sql51))
 for forbidden in (
@@ -96,8 +89,7 @@ for forbidden in (
     "INSERT INTO public.search_document_projection", "UPDATE public.search_document_projection",
     "DELETE FROM public.search_document_projection", "TRUNCATE ", "CREATE EXTENSION",
 ):
-    if forbidden in combined_sql:
-        fail(f"protected authority mutation found: {forbidden}")
+    if forbidden in combined_sql: fail(f"protected authority mutation found: {forbidden}")
 if re.search(r"(?i)\b(CREATE|ALTER)\s+ROLE\s+(postgres|jc_security_owner)\b", combined_sql):
     fail("broad owner role mutation is forbidden")
 if "automatic_purge_enabled boolean NOT NULL CHECK (automatic_purge_enabled=false)" not in sql49:
@@ -116,15 +108,13 @@ required_java = {
     "CrossTrackFingerprintValidator.java", "FullCrossTrackIntegrationValidator.java",
 }
 missing = sorted(name for name in required_java if not (JAVA / name).is_file())
-if missing:
-    fail(f"missing Java DP-7 contracts: {missing}")
+if missing: fail(f"missing Java DP-7 contracts: {missing}")
 java_text = "\n".join(path.read_text(encoding="utf-8") for path in JAVA.glob("*.java"))
 for forbidden in (
     "org.springframework", "jakarta.persistence", "java.sql", "java.net", "Instant.now(",
     "System.currentTimeMillis", "UUID.randomUUID", "Math.random", "static final Map<",
 ):
-    if forbidden in java_text:
-        fail(f"forbidden Java dependency or nondeterminism: {forbidden}")
+    if forbidden in java_text: fail(f"forbidden Java dependency or nondeterminism: {forbidden}")
 for marker in (
     "integration-input-sha256-v1", "integration-check-evidence-sha256-v1",
     "integration-mapping-sha256-v1", "integration-verdict-sha256-v1",
@@ -132,27 +122,21 @@ for marker in (
     "DataIntelligenceIntegrationValidator", "DataSearchIntegrationValidator",
     "FullCrossTrackIntegrationValidator", "CONDITIONALLY_COMPATIBLE", "INCONCLUSIVE",
 ):
-    if marker not in java_text:
-        fail(f"Java implementation marker missing: {marker}")
+    if marker not in java_text: fail(f"Java implementation marker missing: {marker}")
 if "cross-track-identity-binding-sha256-v1" in java_text:
     fail("unallocated fingerprint domain introduced")
 
 with GOLDEN.open(encoding="utf-8", newline="") as handle:
     rows = list(csv.reader(handle, delimiter="\t"))
-if len(rows) < 5:
-    fail("DP-7 golden fixture coverage is insufficient")
-
-evidence_expected = {
+if len(rows) < 5: fail("DP-7 golden fixture coverage is insufficient")
+for name in {
     "DP7_DB_OBJECTS.tsv", "DP7_VERDICTS.tsv", "DP7_RETENTION.tsv", "DP7_CONCURRENCY.tsv",
     "DP7_ROLE_GRANTS.tsv", "DP7_SAFE_VIEW.tsv", "DP7_VERIFICATION_STATUS.tsv",
-}
-for name in evidence_expected:
+}:
     path = DP7 / name
-    if not path.is_file():
-        fail(f"missing DP-7 evidence: {name}")
+    if not path.is_file(): fail(f"missing DP-7 evidence: {name}")
     with path.open(encoding="utf-8", newline="") as handle:
-        if len(list(csv.reader(handle, delimiter="\t"))) < 2:
-            fail(f"empty DP-7 evidence: {name}")
+        if len(list(csv.reader(handle, delimiter="\t"))) < 2: fail(f"empty DP-7 evidence: {name}")
 
 try:
     subprocess.run(["git", "fetch", "origin", "main", "--depth=1"], cwd=ROOT, check=False,
@@ -161,8 +145,8 @@ try:
                              check=True, text=True, capture_output=True).stdout.splitlines()
     changed_sql = {rel for rel in changed if rel.startswith("database/") and rel.endswith(".sql")}
     expected = {str(path.relative_to(ROOT)).replace('\\', '/') for path in SQL_FILES}
-    if changed_sql != expected:
-        fail(f"DP-7 SQL diff must be exactly 48..52: {sorted(changed_sql)}")
+    if changed_sql and changed_sql != expected:
+        fail(f"DP-7 implementation or closure SQL diff must be empty or exactly 48..52: {sorted(changed_sql)}")
     if any(rel.startswith(("jc-backend/src/main/", "jc-recommendation-core/", "jc-intelligence-contracts/",
                            "jc-search-")) for rel in changed):
         fail("protected production or target-track source changed")

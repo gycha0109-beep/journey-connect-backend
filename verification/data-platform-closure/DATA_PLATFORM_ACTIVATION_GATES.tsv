@@ -1,0 +1,10 @@
+gate	objective	owner	prerequisites	evidence	approval	rollback	status	authoritative_commit	evidence_source
+GATE-1	technical closure	Data/SC	DP0-7 merged	closure+exact-head CI	SC/user	docs revert	PR_READY_FOR_USER_APPROVAL	c528f6fb0942389b70a348cb9aa672eb7819a392	closure PR
+GATE-2	contract	target/SC	handoffs	contracts	target+SC	current sources	PARTIAL	c528f6fb0942389b70a348cb9aa672eb7819a392	handoffs
+GATE-3	runtime	Operations	workers/deploy	runtime tests	Ops	disable	NOT_READY	c528f6fb0942389b70a348cb9aa672eb7819a392	gaps
+GATE-4	observability	Ops/Rel	signals	dashboard/alerts	joint	HOLD	NOT_READY	c528f6fb0942389b70a348cb9aa672eb7819a392	gaps
+GATE-5	security	Ops/Security	roles	secrets/network/audit	joint	revoke	PARTIAL	c528f6fb0942389b70a348cb9aa672eb7819a392	gaps
+GATE-6	reliability	Reliability	SLI/recovery	threshold/DR/rollback	Rel	HOLD	NOT_READY	c528f6fb0942389b70a348cb9aa672eb7819a392	gaps
+GATE-7	shadow	joint	G2-6	scope/cohort/kill	joint	stop	NOT_AUTHORIZED	c528f6fb0942389b70a348cb9aa672eb7819a392	activation
+GATE-8	adoption	target	parity	migration/rollback	target+Rel+SC	current source	NOT_AUTHORIZED	c528f6fb0942389b70a348cb9aa672eb7819a392	activation
+GATE-9	cutover	joint	staged evidence	promotion pack	joint	rollback	NOT_AUTHORIZED	c528f6fb0942389b70a348cb9aa672eb7819a392	activation

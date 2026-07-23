@@ -1,0 +1,8 @@
+capability	current_state	required_state	owner	acceptance	authoritative_commit	evidence_source	dependency
+SLI_SLO_error_budget	TO_BE_DECIDED	versioned definitions	Reliability	owner/window/source/target	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff	sample
+release_gate	not approved	gates/evidence	Reliability	technical+contract+runtime+obs+security+shadow	c528f6fb0942389b70a348cb9aa672eb7819a392	activation	all gates
+thresholds	TO_BE_DECIDED	versioned thresholds	Reliability	segment/window/response	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff	SLI
+rollback	TO_BE_DECIDED	authority/threshold/kill	Rel/Ops	tested rollback	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff	runtime
+replay_backfill	unauthorized	bounded approval	Rel/Ops	scope/dryrun/resource/audit/rollback	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff	privacy
+incident_DR	absent	severity/postmortem/RPO/RTO	Reliability	tabletop/restore	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff	Ops
+promotion	absent	exact pack	Reliability	build/config/data/cohort/metric/approval	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff	rollout

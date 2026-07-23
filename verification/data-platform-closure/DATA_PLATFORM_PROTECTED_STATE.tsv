@@ -1,0 +1,12 @@
+control	expected	observed	status	owner	authoritative_commit	evidence_source	method
+SQL01_52	unchanged	closure diff none	VERIFIED	SC	c528f6fb0942389b70a348cb9aa672eb7819a392	closure exact-head CI	git diff
+SQL53_plus	absent	exact scan	VERIFIED	SC	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7 exact-head CI	file scan
+production_shadow	false	default false	VERIFIED	Operations	c528f6fb0942389b70a348cb9aa672eb7819a392	application-prod.yml	static
+kill_switch	true	default true	VERIFIED	Operations	c528f6fb0942389b70a348cb9aa672eb7819a392	application-prod.yml	static
+sampling	0	default 0	VERIFIED	Operations	c528f6fb0942389b70a348cb9aa672eb7819a392	application-prod.yml	static
+cohort	empty	empty default	VERIFIED	Operations	c528f6fb0942389b70a348cb9aa672eb7819a392	application-prod.yml	static
+explore	legacy	protected test	VERIFIED	Search/Backend	c528f6fb0942389b70a348cb9aa672eb7819a392	Backend exact-head CI	CI
+recommendation_write	none	protected	VERIFIED	Recommendation	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7/Recommendation exact-head CI	CI
+intelligence_runtime	disabled	no source diff	VERIFIED	Intelligence	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7 exact-head CI	CI
+search_index_cutover	none	no source diff	VERIFIED	Search	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7 exact-head CI	CI
+worker_recovery_lifecycle	none/disabled	handoff only	VERIFIED_ABSENT	Ops/Rel	c528f6fb0942389b70a348cb9aa672eb7819a392	closure exact-head CI	static

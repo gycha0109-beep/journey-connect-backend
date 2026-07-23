@@ -12,9 +12,12 @@ on:
       - "docs/platform/intelligence/**"
       - "docs/platform/data/DP-4-*.md"
       - "docs/platform/data/DP-5-*.md"
+      - "docs/platform/data/DATA-PLATFORM-*.md"
+      - "docs/platform/data/HANDOFF-DATA-TO-*.md"
       - "verification/ip12-5/**"
       - "verification/dp4/**"
       - "verification/dp5/**"
+      - "verification/data-platform-closure/**"
       - ".github/workflows/backend-pr-ci.yml"
   workflow_dispatch:
 
@@ -38,6 +41,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Set up Java 21
         uses: actions/setup-java@v5
@@ -57,14 +62,16 @@ jobs:
           set -o pipefail
           ./gradlew verifyIp125 --stacktrace --no-daemon 2>&1 | tee ../verification/ip12-5/IP125_BACKEND_CI.log
           python ../verification/dp5/run_dp5_static_verification.py
+          python ../verification/data-platform-closure/run_data_platform_closure_verification.py
 
       - name: Upload IP-12.5 backend CI evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ip125-backend-ci-evidence
+          name: data-platform-closure-backend-evidence
           path: |
             verification/ip12-5/IP125_BACKEND_CI.log
+            verification/data-platform-closure/runtime/**
             jc-backend/build/test-results/**/*.xml
             jc-backend/build/reports/tests/**
           if-no-files-found: warn

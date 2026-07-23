@@ -7,6 +7,7 @@ on:
       - "docs/platform/data/**"
       - "docs/platform/proposals/**"
       - "verification/sc-dp1-baseline-reconciliation/**"
+      - "verification/data-platform-closure/**"
       - ".github/workflows/sc-baseline-reconciliation.yml"
   workflow_dispatch:
 
@@ -26,3 +27,5 @@ jobs:
           python-version: "3.13"
       - name: Validate SC baseline reconciliation
         run: python verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py
+      - name: Validate Data Platform technical closure
+        run: python verification/data-platform-closure/run_data_platform_closure_verification.py

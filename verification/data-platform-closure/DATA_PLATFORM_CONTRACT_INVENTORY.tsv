@@ -1,0 +1,14 @@
+contract	version	producer	consumer	authority	compatibility	migration_rule	deprecation	production_status	authoritative_commit	evidence_source
+event	platform-event-v1	Data	Data store	Data	ACTIVE	new version	ACTIVE	worker absent	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL29
+event_schema	user-behavior-event-v1	Data	validator	Data	ACTIVE	new schema	ACTIVE	worker absent	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL29
+canonical_json	platform-event-canonical-json-v1	Data	fingerprint	Data	EXACT	new version	ACTIVE	technical	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL29
+event_fingerprint	platform-event-fingerprint-sha256-v1	Data	idempotency	Data	EXACT	new domain	ACTIVE	technical	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL29..30
+adapter	dp-4-recommendation-event-adapter-v1	Data	shadow	Recommendation retained	SHADOW	new mapper	ACTIVE	shadow	c528f6fb0942389b70a348cb9aa672eb7819a392	DP4
+profile	recommendation-profile-input-v1	Data	Recommendation candidate	split	CONDITIONALLY_COMPATIBLE	parity+approval	ACTIVE	not adopted	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7
+outcome	experiment-outcome-input-v1	Data	Recommendation/Rel	split	CONDITIONALLY_COMPATIBLE	metric parity	ACTIVE	not adopted	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7
+snapshot	data-projection-snapshot-v1	Data	quality/integration	Data	ACTIVE	new schema/policy	ACTIVE	shadow	c528f6fb0942389b70a348cb9aa672eb7819a392	DP5
+quality	data-quality-policy-v1	Data	integration/Rel	Data validation	ACTIVE	new policy	ACTIVE	not release	c528f6fb0942389b70a348cb9aa672eb7819a392	DP6
+integration	data-cross-track-integration-policy-v1	Data	targets	Data validation	ACTIVE	new policy	ACTIVE	not activation	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7
+recommendation_dataset	recommendation-evaluation-dataset-v1	Recommendation	P2	Recommendation/Rel	AUTHORITATIVE	target migration	ACTIVE	protected	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7
+intelligence	intelligence-input-snapshot-v1	Intelligence	Intelligence	Intelligence	GENERIC_ONLY	Data-specific contract	ACTIVE	inactive	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7
+search	search-document-projection-v1	Search	Search	Search	TARGET_AUTHORITATIVE	Data-to-Search contract	ACTIVE	no mapping	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7

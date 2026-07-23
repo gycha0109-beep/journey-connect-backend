@@ -1,0 +1,17 @@
+domain	scope	status	change_rule	old_reinterpretation	authoritative_commit	evidence_source	owner
+platform-event-fingerprint-sha256-v1	event	ACTIVE	new domain/version	PROHIBITED	c528f6fb0942389b70a348cb9aa672eb7819a392	DP2	Data
+data-source-set-sha256-v1	checkpoint	ACTIVE	new domain/version	PROHIBITED	c528f6fb0942389b70a348cb9aa672eb7819a392	DP5	Data
+data-projection-record-sha256-v1	record	ACTIVE	new domain/version	PROHIBITED	c528f6fb0942389b70a348cb9aa672eb7819a392	DP5	Data
+data-projection-snapshot-sha256-v1	snapshot	ACTIVE	new domain/version	PROHIBITED	c528f6fb0942389b70a348cb9aa672eb7819a392	DP5	Data
+data-projection-lineage-sha256-v1	lineage	ACTIVE	new domain/version	PROHIBITED	c528f6fb0942389b70a348cb9aa672eb7819a392	DP5	Data
+data-quality-validation-input-sha256-v1	quality input	ACTIVE	new domain/version	PROHIBITED	c528f6fb0942389b70a348cb9aa672eb7819a392	DP6	Data
+data-quality-check-evidence-sha256-v1	quality check	ACTIVE	new domain/version	PROHIBITED	c528f6fb0942389b70a348cb9aa672eb7819a392	DP6	Data
+data-quality-metric-sha256-v1	quality metric	ACTIVE	new domain/version	PROHIBITED	c528f6fb0942389b70a348cb9aa672eb7819a392	DP6	Data
+data-quality-verdict-sha256-v1	quality verdict	ACTIVE	new domain/version	PROHIBITED	c528f6fb0942389b70a348cb9aa672eb7819a392	DP6	Data
+data-quality-rebuild-comparison-sha256-v1	rebuild	ACTIVE	new domain/version	PROHIBITED	c528f6fb0942389b70a348cb9aa672eb7819a392	DP6	Data
+data-quality-late-arrival-observation-sha256-v1	late arrival	ACTIVE	new domain/version	PROHIBITED	c528f6fb0942389b70a348cb9aa672eb7819a392	DP6	Data
+integration-input-sha256-v1	integration input	ACTIVE	new domain/version	PROHIBITED	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7	Data
+integration-check-evidence-sha256-v1	integration check	ACTIVE	new domain/version	PROHIBITED	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7	Data
+integration-mapping-sha256-v1	mapping	ACTIVE	new domain/version	PROHIBITED	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7	Data
+integration-verdict-sha256-v1	verdict	ACTIVE	new domain/version	PROHIBITED	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7	Data
+cross-track-contract-matrix-sha256-v1	matrix	ACTIVE	new domain/version	PROHIBITED	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7	Data

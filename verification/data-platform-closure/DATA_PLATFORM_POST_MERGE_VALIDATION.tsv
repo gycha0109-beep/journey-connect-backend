@@ -1,0 +1,7 @@
+validation	target_sha	classification	workflow_or_method	run_id	conclusion	status	owner	dependency
+main_push_ci	c528f6fb0942389b70a348cb9aa672eb7819a392	NOT_AVAILABLE	GitHub lookup		none	NOT_AVAILABLE	Repository	closure PR
+main_tree_equivalence	c528f6fb0942389b70a348cb9aa672eb7819a392	TREE_EQUIVALENCE	compare DP7 head to merge		no file diff	VERIFIED	SC	none
+dp7_pr	affb561eeeb7b1eb9cabb44e5d29b9378194934d	PR_EXACT_HEAD	7 workflows	30024203486;30024205183;30024203489;30024203303;30024205307;30024203500;30024203405	success	PASS	Data	main push unavailable
+closure_pr_predecessor	f275f7a44a84756b56232eb2976d8c7d3dc77681	PR_EXACT_HEAD	8 workflows	30035960494;30035960334;30035960544;30035960374;30035960573;30035960797;30035960155;30035960156	success	PASS_SUPERSEDED	Data	pre-merge status correction created new head
+closure_pr_final	SELF_HEAD	PR_EXACT_HEAD	8 required workflows	GITHUB_ACTIONS_CURRENT_HEAD	success_required	PASS_AT_READY_TRANSITION	Data	user-approved merge; concrete head and run IDs in PR metadata/final report
+merge_local	c528f6fb0942389b70a348cb9aa672eb7819a392	LOCAL	not executed		none	NOT_EXECUTED	Data	no local checkout

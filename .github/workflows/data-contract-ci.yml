@@ -10,12 +10,19 @@ on:
       - "docs/platform/data/DP-3-*.md"
       - "docs/platform/data/DP-4-*.md"
       - "docs/platform/data/DP-5-*.md"
+      - "docs/platform/data/DP-6-*.md"
+      - "docs/platform/data/DP-7-*.md"
+      - "docs/platform/data/DATA-PLATFORM-*.md"
+      - "docs/platform/data/HANDOFF-DATA-TO-*.md"
       - "verification/dp1/**"
       - "verification/dp2/**"
       - "verification/dp3/**"
       - "verification/dp4/**"
       - "verification/dp4-5/**"
       - "verification/dp5/**"
+      - "verification/dp6/**"
+      - "verification/dp7/**"
+      - "verification/data-platform-closure/**"
       - ".github/workflows/data-contract-ci.yml"
   workflow_dispatch:
 
@@ -28,9 +35,9 @@ concurrency:
 
 jobs:
   data-contracts:
-    name: Java 21 / DP-1 through DP-5 contracts
+    name: Java 21 / DP-1 through DP-7 contracts
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     defaults:
       run:
@@ -58,7 +65,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          mkdir -p ../verification/dp4/runtime ../verification/dp4-5/runtime ../verification/dp5/runtime
+          mkdir -p ../verification/dp4/runtime ../verification/dp4-5/runtime ../verification/dp5/runtime ../verification/data-platform-closure/runtime
           ./gradlew :jc-data-contracts:check --stacktrace --no-daemon 2>&1 | tee ../verification/dp4/runtime/DP4_DATA_CONTRACT_CI.log
 
           if git diff --quiet origin/main...HEAD -- \
@@ -88,6 +95,10 @@ jobs:
           fi
 
           python ../verification/dp5/run_dp5_static_verification.py 2>&1 | tee ../verification/dp5/runtime/DP5_STATIC_CI.log
+          python ../verification/dp6/run_dp6_static_verification.py
+          python ../verification/dp7/run_dp7_static_verification.py
+          python ../verification/data-platform-closure/run_data_platform_closure_verification.py \
+            2>&1 | tee ../verification/data-platform-closure/runtime/CLOSURE_STATIC_DATA_CONTRACT_CI.log
 
       - name: Run Recommendation Java Core regression
         shell: bash
@@ -99,11 +110,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dp5-data-contract-ci-evidence
+          name: data-platform-closure-data-contract-evidence
           path: |
             verification/dp4/runtime/**
             verification/dp4-5/runtime/**
             verification/dp5/runtime/**
+            verification/data-platform-closure/runtime/**
             jc-data-contracts/build/reports/**
             jc-data-contracts/build/test-results/**
             jc-recommendation-core/build/reports/**

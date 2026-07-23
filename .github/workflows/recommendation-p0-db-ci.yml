@@ -13,8 +13,11 @@ on:
       - "jc-data-contracts/**"
       - "docs/platform/data/DP-4-*.md"
       - "docs/platform/data/DP-5-*.md"
+      - "docs/platform/data/DATA-PLATFORM-*.md"
+      - "docs/platform/data/HANDOFF-DATA-TO-*.md"
       - "verification/dp4/**"
       - "verification/dp5/**"
+      - "verification/data-platform-closure/**"
       - ".github/workflows/recommendation-p0-db-ci.yml"
   workflow_dispatch:
 
@@ -43,6 +46,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Set up Java 21
         uses: actions/setup-java@v5
@@ -62,6 +67,7 @@ jobs:
           set -o pipefail
           ./gradlew p0Verification --stacktrace --no-daemon 2>&1 | tee ../verification/ip12-5/IP125_P0_STATIC_PG${{ matrix.postgres }}.log
           python ../verification/dp5/run_dp5_static_verification.py
+          python ../verification/data-platform-closure/run_data_platform_closure_verification.py
 
       - name: Run canonical PostgreSQL integration suite
         shell: bash
@@ -75,10 +81,11 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ip125-postgresql-${{ matrix.postgres }}-evidence
+          name: data-platform-closure-postgresql-backend-${{ matrix.postgres }}-evidence
           path: |
             verification/ip12-5/IP125_P0_STATIC_PG${{ matrix.postgres }}.log
             verification/ip12-5/IP125_POSTGRESQL_${{ matrix.postgres }}.log
+            verification/data-platform-closure/runtime/**
             jc-backend/build/test-results/**/*.xml
             jc-backend/build/reports/tests/**
           if-no-files-found: warn

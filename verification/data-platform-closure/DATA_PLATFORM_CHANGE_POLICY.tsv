@@ -1,0 +1,8 @@
+area	change	required_action	prohibited	approval	authoritative_commit	evidence_source	status
+contract	breaking/semantic	new version	reinterpretation	SC/owner	c528f6fb0942389b70a348cb9aa672eb7819a392	policy	ACTIVE
+contract	optional	compatibility review	silent use	owner/SC	c528f6fb0942389b70a348cb9aa672eb7819a392	policy	ACTIVE
+SQL	new object	allocated 53+ migration	01..52 rewrite	SC	c528f6fb0942389b70a348cb9aa672eb7819a392	policy	ACTIVE
+fingerprint	semantic/bytes	new domain/version	old reinterpretation	SC/owner	c528f6fb0942389b70a348cb9aa672eb7819a392	policy	ACTIVE
+quality	threshold	new policy	v1 mutation	Data/Rel/SC	c528f6fb0942389b70a348cb9aa672eb7819a392	policy	ACTIVE
+integration	verdict	new policy	v1 mutation	Data/target/SC	c528f6fb0942389b70a348cb9aa672eb7819a392	policy	ACTIVE
+consumer	shadow/production	authorization+rollback	direct adoption	joint	c528f6fb0942389b70a348cb9aa672eb7819a392	policy	ACTIVE

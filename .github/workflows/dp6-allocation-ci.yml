@@ -10,7 +10,10 @@ on:
       - "docs/platform/governance/SC-PLATFORM-REGISTRY.md"
       - "docs/platform/governance/SC-HANDOFF.md"
       - "docs/platform/data/DP-6-*.md"
+      - "docs/platform/data/DATA-PLATFORM-*.md"
+      - "docs/platform/data/HANDOFF-DATA-TO-*.md"
       - "verification/dp6/**"
+      - "verification/data-platform-closure/**"
       - "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py"
       - ".github/workflows/dp6-allocation-ci.yml"
   workflow_dispatch:
@@ -38,6 +41,12 @@ jobs:
           mkdir -p verification/dp6/runtime
           python verification/dp6/run_dp6_allocation_verification.py \
             2>&1 | tee verification/dp6/runtime/DP6_ALLOCATION_CI.log
+      - name: Validate Data closure boundary
+        shell: bash
+        run: |
+          set -o pipefail
+          python verification/data-platform-closure/run_data_platform_closure_verification.py \
+            2>&1 | tee verification/dp6/runtime/DP6_CLOSURE_CI.log
       - name: Validate SC reconciliation
         shell: bash
         run: |

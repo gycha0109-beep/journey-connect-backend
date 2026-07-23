@@ -1,0 +1,13 @@
+object	owner	storage	schema_policy	writer	reader	retention	append_only	production_status	authoritative_commit	evidence_source
+canonical_event	Data	data_platform_event_v1	platform-event-v1	event function	approved	365d	yes	worker absent	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL29
+idempotency	Data	SQL29..30 evidence	fingerprint v1	event owner	approved	30d/90d	yes	technical	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL29..30
+retry_quarantine	Data	SQL32..33	retry v1	retry processor	reviewer	90d	yes	scheduler absent	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL32..34
+adapter_evidence	Data	adapter evidence tables	DP4.5	adapter owner	safe view	90d	yes	shadow	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL35..37
+checkpoint	Data	data_source_checkpoint_v1	projection v1	projection owner	approved	90d	yes	no worker	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL38
+projection_record	Data	profile/outcome tables	contract v1	projection owner	target comparison	90d	yes	shadow	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL39..40
+snapshot	Data	data_projection_snapshot_v1	snapshot v1	projection owner	quality/integration	90d	yes	not serving	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL38
+lineage	Data	data_projection_lineage_v1	lineage v1	projection owner	audit	90d	yes	evidence	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL38
+quality_run	Data	data_quality_validation_run_v1	quality v1	quality owner	safe view	90d	yes	no scheduler	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL43
+quality_verdict	Data	data_snapshot_quality_verdict_v1	quality policy v1	quality owner	integration/Rel	90d	yes	not release	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL44
+integration_run	Data	data_cross_track_integration_run_v1	integration v1	integration owner	safe view	90d	yes	validation	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL48
+integration_verdict	Data	data_cross_track_integration_verdict_v1	integration v1	integration owner	target/SC	90d	yes	not activation	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL50

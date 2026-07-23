@@ -12,7 +12,10 @@ on:
       - "docs/platform/governance/SC-PLATFORM-REGISTRY.md"
       - "docs/platform/governance/SC-HANDOFF.md"
       - "docs/platform/data/DP-7-*.md"
+      - "docs/platform/data/DATA-PLATFORM-*.md"
+      - "docs/platform/data/HANDOFF-DATA-TO-*.md"
       - "verification/dp7/**"
+      - "verification/data-platform-closure/**"
       - "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py"
       - ".github/workflows/dp7-allocation-ci.yml"
   workflow_dispatch:
@@ -50,6 +53,12 @@ jobs:
           set -o pipefail
           python verification/dp7/run_dp7_static_verification.py \
             2>&1 | tee verification/dp7/runtime/DP7_STATIC_CI.log
+      - name: Validate Data Platform closure
+        shell: bash
+        run: |
+          set -o pipefail
+          python verification/data-platform-closure/run_data_platform_closure_verification.py \
+            2>&1 | tee verification/dp7/runtime/DP7_CLOSURE_CI.log
       - name: Validate SC reconciliation
         shell: bash
         run: |

@@ -45,21 +45,24 @@ EVIDENCE = [
 ]
 ALLOWED = (
     ".github/workflows/data-postgres-ci.yml", ".github/workflows/dp7-allocation-ci.yml",
+    ".github/workflows/data-contract-ci.yml", ".github/workflows/backend-pr-ci.yml",
+    ".github/workflows/recommendation-p0-db-ci.yml", ".github/workflows/dp6-allocation-ci.yml",
+    ".github/workflows/sc-baseline-reconciliation.yml", ".github/workflows/data-platform-closure-ci.yml",
     "database/journey-connect-db-v2.7/", "jc-data-contracts/", "docs/platform/data/DP-7-",
+    "docs/platform/data/DATA-PLATFORM-", "docs/platform/data/HANDOFF-DATA-TO-",
     "docs/platform/governance/SC-DP7-CROSS-TRACK-INTEGRATION-ALLOCATION.md",
+    "docs/platform/governance/SC-DATA-PLATFORM-TECHNICAL-CLOSURE.md",
     "docs/platform/governance/SC-DECISION-REGISTER.md", "docs/platform/governance/SC-PLATFORM-REGISTRY.md",
-    "docs/platform/governance/SC-HANDOFF.md", "verification/dp7/",
-    "verification/dp5/run_dp5_static_verification.py",
-    "verification/dp6/run_dp6_allocation_verification.py",
-    "verification/dp6/run_dp6_static_verification.py",
+    "docs/platform/governance/SC-HANDOFF.md", "docs/platform/governance/JOURNEY_CONNECT_SYSTEM_CONTRACT_V1.md",
+    "docs/platform/governance/JOURNEY_CONNECT_TRACK_GOVERNANCE_V1.md", "verification/dp7/",
+    "verification/data-platform-closure/", "verification/dp5/run_dp5_static_verification.py",
+    "verification/dp6/run_dp6_allocation_verification.py", "verification/dp6/run_dp6_static_verification.py",
     "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
     "jc-backend/src/test/java/com/jc/backend/search/shadow/production/IP12ProductionShadowStaticTest.java",
 )
 
-
 def fail(message: str) -> None:
     raise SystemExit(f"FAIL: {message}")
-
 
 for path in (ALLOCATION, FOUNDATION, HANDOFF, REGISTRY, *(DP7 / name for name in EVIDENCE)):
     if not path.is_file() or not path.read_text(encoding="utf-8").strip():
@@ -121,8 +124,8 @@ try:
         if not any(rel == prefix or rel.startswith(prefix) for prefix in ALLOWED):
             fail(f"protected/unexpected changed file: {rel}")
     changed_sql = {rel for rel in changed if rel.endswith(".sql") and rel.startswith("database/")}
-    if changed_sql != DP7_SQL:
-        fail(f"DP-7 implementation SQL diff must be exactly 48..52: {sorted(changed_sql)}")
+    if changed_sql and changed_sql != DP7_SQL:
+        fail(f"DP-7 implementation or closure SQL diff must be empty or exactly 48..52: {sorted(changed_sql)}")
     protected_sql = [rel for rel in changed_sql if int(Path(rel).name[:2]) <= 47]
     if protected_sql:
         fail(f"protected SQL 01..47 changed: {protected_sql}")
