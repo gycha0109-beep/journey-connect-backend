@@ -41,7 +41,7 @@ Every record must have lineage; every lineage must reference an existing record,
 
 ### Identity and exposure integrity
 
-`subject:<opaque-id>` and `user:<numeric-id>` remain separate. Explicit binding version/source/fingerprint/scope is required where compatibility is used. Conflicting bindings fail closed. Experiment outcomes only accept `recommendation_p2_experiment_exposure`; general exposure and behavior impression cannot substitute.
+`subject:<opaque-id>` and `user:<numeric-id>` remain separate. Machine invariant: `subject:<opaque-id> != user:<numeric-id>`. Explicit binding version/source/fingerprint/scope is required where compatibility is used. Conflicting bindings fail closed. Experiment outcomes only accept `recommendation_p2_experiment_exposure`; general exposure and behavior impression cannot substitute.
 
 ### Deterministic rebuild
 
@@ -111,7 +111,9 @@ A review separated from the initial implementation found and corrected:
 7. orphan lineage could also create a false lineage-missing result — missing and orphan classifications are now separated;
 8. late/out-of-checkpoint adapter evidence could falsely invalidate the checkpoint — adapter eligibility checks are restricted to checkpoint members;
 9. the persistence boundary trusted caller-provided checks/metrics/verdict too broadly — it now validates required identities, fingerprints, thresholds, counts and authoritative observation before `VALIDATED`;
-10. the safe view used verdict insertion time as latest snapshot time — it now exposes the validated snapshot as-of time.
+10. the safe view used verdict insertion time as latest snapshot time — it now exposes the validated snapshot as-of time;
+11. zero-source late/conflict metrics synthesized a denominator of one — they now preserve the explicit zero-denominator policy;
+12. out-of-range source events could be filtered before range validation — they now fail with a stable out-of-range classification.
 
 ## Access and privacy
 
@@ -130,4 +132,4 @@ DP-6 does not mutate source, adapter evidence, checkpoint, projection, snapshot 
 
 ## Verification state
 
-Local Java 21 compilation with `-Xlint:all -Werror`, DP-5 contract/boundary regression and DP-6 contract fixtures pass. PostgreSQL 15/18 and complete exact-head protected CI remain pending until the implementation candidate is pushed.
+Java 21 compilation with `-Xlint:all -Werror`, DP-1 through DP-5 contract regression and DP-6 contract fixtures are implemented. PostgreSQL 15/18 and complete exact-head protected CI remain pending until a final implementation HEAD is verified.
