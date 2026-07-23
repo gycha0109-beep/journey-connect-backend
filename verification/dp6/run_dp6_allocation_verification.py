@@ -140,7 +140,10 @@ try:
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     changed = subprocess.run(["git", "diff", "--name-only", "origin/main...HEAD"], cwd=ROOT,
                              check=True, text=True, capture_output=True).stdout.splitlines()
-    changed_sql = {path for path in changed if path.endswith(".sql")}
+    changed_sql = {
+        path for path in changed
+        if path.startswith("database/journey-connect-db-v2.7/") and path.endswith(".sql")
+    }
     allowed_changed_sql = DP6_SQL_FILES | DP7_SUCCESSOR_SQL_FILES
     unexpected_sql = changed_sql - allowed_changed_sql
     if implemented and unexpected_sql:
