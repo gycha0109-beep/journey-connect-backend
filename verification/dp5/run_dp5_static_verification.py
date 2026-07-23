@@ -17,6 +17,7 @@ MATRIX = ROOT / "docs/platform/data/DP-5-PROJECTION-MATRIX.md"
 HANDOFF = ROOT / "docs/platform/data/DP-5-HANDOFF.md"
 ALLOCATION = ROOT / "docs/platform/governance/SC-DP5-PROJECTION-ALLOCATION.md"
 DP6_ALLOCATION = ROOT / "docs/platform/governance/SC-DP6-QUALITY-ALLOCATION.md"
+DP7_ALLOCATION = ROOT / "docs/platform/governance/SC-DP7-CROSS-TRACK-INTEGRATION-ALLOCATION.md"
 
 DP5_SQL_FILES = {
     "database/journey-connect-db-v2.7/38_data_projection_snapshot_foundation.sql",
@@ -31,6 +32,13 @@ DP6_SQL_FILES = {
     "database/journey-connect-db-v2.7/45_data_quality_persistence_and_roles.sql",
     "database/journey-connect-db-v2.7/46_data_quality_rebuild_and_safe_views.sql",
     "database/journey-connect-db-v2.7/47_data_quality_validation.sql",
+}
+DP7_SQL_FILES = {
+    "database/journey-connect-db-v2.7/48_cross_track_integration_validation_foundation.sql",
+    "database/journey-connect-db-v2.7/49_cross_track_contract_mapping_and_boundary_evidence.sql",
+    "database/journey-connect-db-v2.7/50_cross_track_integration_verdict_and_conflict.sql",
+    "database/journey-connect-db-v2.7/51_cross_track_integration_persistence_roles_and_safe_view.sql",
+    "database/journey-connect-db-v2.7/52_cross_track_integration_validation.sql",
 }
 EVIDENCE = [
     "DP5_BASELINE.tsv", "DP5_CHANGED_FILES.tsv", "DP5_DB_OBJECTS.tsv",
@@ -52,9 +60,10 @@ for path in [DOC, MATRIX, HANDOFF, ALLOCATION, TEST, GOLDEN,
     if not path.is_file() or not path.read_text(encoding="utf-8").strip():
         fail(f"missing or empty DP-5 artifact: {path.relative_to(ROOT)}")
 
-# A later approved stage may add forward SQL, but DP-5 SQL 38..42 remains exact and protected.
+# Later approved stages may add forward SQL. DP-5 SQL 38..42 remains exact and protected.
 dp6_implemented = all((ROOT / path).is_file() for path in DP6_SQL_FILES)
-max_sql = 47 if dp6_implemented else 42
+dp7_implemented = all((ROOT / path).is_file() for path in DP7_SQL_FILES)
+max_sql = 52 if dp7_implemented else 47 if dp6_implemented else 42
 for number in range(1, max_sql + 1):
     matches = list(SQL_DIR.glob(f"{number:02d}_*.sql"))
     if len(matches) != 1:
@@ -69,8 +78,26 @@ if dp6_implemented:
     ):
         if marker not in dp6_allocation:
             fail(f"DP-6 allocation marker missing: {marker}")
+if dp7_implemented:
+    if not DP7_ALLOCATION.is_file():
+        fail("DP-7 implementation exists without SC allocation")
+    dp7_allocation = DP7_ALLOCATION.read_text(encoding="utf-8")
+    for marker in (
+        "APPROVED / MERGED", "Implementation authority: `GRANTED`",
+        "SQL `01..47` remains protected", "SQL `53+` remains unallocated",
+    ):
+        if marker not in dp7_allocation:
+            fail(f"DP-7 allocation marker missing: {marker}")
+    successor_sql = {
+        path.relative_to(ROOT).as_posix()
+        for path in SQL_DIR.glob("*.sql")
+        if path.name[:2].isdigit() and int(path.name[:2]) >= 48
+    }
+    if successor_sql != DP7_SQL_FILES:
+        fail(f"unexpected DP-7 successor SQL: {sorted(successor_sql)}")
+elif dp6_implemented:
     if list(SQL_DIR.glob("4[8-9]_*.sql")) or list(SQL_DIR.glob("[5-9][0-9]_*.sql")):
-        fail("SQL 48+ remains unallocated")
+        fail("SQL 48+ remains unallocated before DP-7 implementation authority")
 else:
     if list(SQL_DIR.glob("4[3-9]_*.sql")) or list(SQL_DIR.glob("[5-9][0-9]_*.sql")):
         fail("SQL 43+ is unallocated before DP-6 implementation authority")
@@ -173,13 +200,16 @@ try:
                    check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     changed = subprocess.run(["git", "diff", "--name-only", "origin/main...HEAD"], cwd=ROOT,
                              check=True, text=True, capture_output=True).stdout.splitlines()
-    changed_sql = {path for path in changed if path.endswith(".sql")}
+    changed_sql = {
+        path for path in changed
+        if path.startswith("database/journey-connect-db-v2.7/") and path.endswith(".sql")
+    }
     if changed_sql & DP5_SQL_FILES:
         fail(f"protected DP-5 SQL 38..42 changed: {sorted(changed_sql & DP5_SQL_FILES)}")
-    if dp6_implemented and changed_sql and changed_sql != DP6_SQL_FILES:
-        fail(f"DP-6 SQL diff must be exactly 43..47: {sorted(changed_sql)}")
-    if not dp6_implemented and changed_sql and changed_sql != DP5_SQL_FILES:
-        fail(f"unexpected SQL diff before DP-6: {sorted(changed_sql)}")
+    allowed_successor_sql = DP6_SQL_FILES | DP7_SQL_FILES if dp6_implemented else set()
+    unexpected_sql = changed_sql - allowed_successor_sql
+    if unexpected_sql:
+        fail(f"unexpected SQL after protected DP-5 range: {sorted(unexpected_sql)}")
     protected = [path for path in changed if path.startswith((
         "jc-recommendation-core/", "jc-intelligence-contracts/", "jc-search-contracts/",
         "jc-search-compatibility/", "jc-search-runtime/", "jc-search-integration/",
