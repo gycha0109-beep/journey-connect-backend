@@ -8,10 +8,14 @@ trap 'rm -rf "$work"' EXIT
 
 # SQL 47 is rollback-only. Reuse only its protected DP-5 fixture section and commit
 # that synthetic fixture for the concurrency probe.
+cat \
+  "$ROOT/verification/dp6/sql/47_data_quality_validation_part1.inc" \
+  "$ROOT/verification/dp6/sql/47_data_quality_validation_part2.inc" \
+  > "$work/setup.sql"
 awk '
   /^-- DP-6 valid FULL validation/ { print "COMMIT;"; exit }
   { print }
-' "$ROOT/database/journey-connect-db-v2.7/47_data_quality_validation.sql" > "$work/setup.sql"
+' "$ROOT/verification/dp6/sql/47_data_quality_validation_part3.inc" >> "$work/setup.sql"
 psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f "$work/setup.sql" >/dev/null
 
 psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 <<'SQL'
@@ -27,8 +31,6 @@ DECLARE
   v_item jsonb;
   v_code text;
   v_scope text;
-  v_status text;
-  v_reason text;
   v_threshold numeric;
   v_operator text;
   v_numerator bigint;
@@ -41,7 +43,7 @@ DECLARE
 BEGIN
   SELECT * INTO STRICT v_snapshot
   FROM public.data_projection_snapshot_v1
-  WHERE snapshot_ref='snapshot:dp5-profile';
+  WHERE snapshot_ref='snapshot:dp5-outcome';
   SELECT * INTO STRICT v_policy
   FROM public.data_quality_policy_evidence_v1
   WHERE quality_policy_version='data-quality-policy-v1';
@@ -57,17 +59,11 @@ BEGIN
       WHEN 'identity' THEN 'IDENTITY_INTEGRITY'
       WHEN 'exposure' THEN 'EXPOSURE_INTEGRITY'
       ELSE 'DETERMINISTIC_REBUILD' END;
-    IF v_code='exposure.binding' THEN
-      v_status:='NOT_APPLICABLE'; v_reason:='profile_projection';
-    ELSE
-      v_status:='PASS'; v_reason:=NULL;
-    END IF;
     v_item:=jsonb_build_object(
       'checkCode',v_code,'checkScope',v_scope,
-      'expectedValue',CASE WHEN v_status='PASS' THEN 'exact' ELSE 'not_applicable' END,
-      'observedValue',CASE WHEN v_status='PASS' THEN 'exact' ELSE 'not_applicable' END,
-      'differenceValue','0','severity','INFO','checkStatus',v_status,
-      'failureCode','','reasonCode',COALESCE(v_reason,''),'required',true);
+      'expectedValue','exact','observedValue','exact',
+      'differenceValue','0','severity','INFO','checkStatus','PASS',
+      'failureCode','','reasonCode','','required',true);
     v_item:=v_item||jsonb_build_object('evidenceFingerprint',
       public.data_quality_fingerprint_v1('data-quality-check-evidence-sha256-v1',jsonb_build_object(
         'checkCode',v_item->>'checkCode','scope',v_item->>'checkScope',
@@ -103,7 +99,7 @@ BEGIN
 
   SELECT COALESCE(jsonb_agg(projection_record_fingerprint ORDER BY projection_record_fingerprint),'[]'::jsonb)
     INTO v_record_fps
-  FROM public.data_recommendation_profile_input_projection_v1
+  FROM public.data_experiment_outcome_input_projection_v1
   WHERE snapshot_ref=v_snapshot.snapshot_id;
   v_rebuild:=jsonb_build_object('matched',true,'expectedRecordCount',v_snapshot.record_count,
     'observedRecordCount',v_snapshot.record_count,'expectedSubjectCount',v_snapshot.subject_count,
@@ -123,7 +119,7 @@ BEGIN
     public.data_quality_fingerprint_v1('data-quality-verdict-sha256-v1',v_verdict));
 
   SELECT disposition INTO v_disposition
-  FROM public.persist_data_quality_validation_v1(p_run_ref,'FULL','snapshot:dp5-profile',
+  FROM public.persist_data_quality_validation_v1(p_run_ref,'FULL','snapshot:dp5-outcome',
     'data-quality-validator-v1','data-quality-policy-v1','2026-07-22T00:00:00Z',v_input,
     v_checks,v_metrics,'[]'::jsonb,v_verdict,v_rebuild,'[]'::jsonb);
   RETURN v_disposition;
@@ -151,14 +147,14 @@ counts="$(psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -At -F ':' -c "
   SELECT
     (SELECT count(*) FROM public.data_quality_validation_run_v1 r
       JOIN public.data_projection_snapshot_v1 s ON s.snapshot_id=r.snapshot_ref
-      WHERE s.snapshot_ref='snapshot:dp5-profile'),
+      WHERE s.snapshot_ref='snapshot:dp5-outcome'),
     (SELECT count(*) FROM public.data_snapshot_quality_verdict_v1 v
       JOIN public.data_projection_snapshot_v1 s ON s.snapshot_id=v.snapshot_ref
-      WHERE s.snapshot_ref='snapshot:dp5-profile'),
+      WHERE s.snapshot_ref='snapshot:dp5-outcome'),
     (SELECT count(*) FROM public.data_quality_rebuild_comparison_v1 c
       JOIN public.data_quality_validation_run_v1 r ON r.validation_run_id=c.validation_run_ref
       JOIN public.data_projection_snapshot_v1 s ON s.snapshot_id=r.snapshot_ref
-      WHERE s.snapshot_ref='snapshot:dp5-profile'),
+      WHERE s.snapshot_ref='snapshot:dp5-outcome'),
     (SELECT count(*) FROM public.data_quality_validation_conflict_evidence_v1);
 ")"
 echo "DP-6 concurrency persisted counts: $counts"
