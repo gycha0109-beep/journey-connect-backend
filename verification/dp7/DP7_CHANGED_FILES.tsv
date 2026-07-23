@@ -1,4 +1,5 @@
 path	change_type	purpose
+.github/workflows/data-postgres-ci.yml	MODIFY	preserve PostgreSQL 15/18 post-merge DP-6 regression without SQL re-addition
 .github/workflows/dp7-allocation-ci.yml	ADD	exact-head allocation and contract regression gate
 docs/platform/governance/SC-DP7-CROSS-TRACK-INTEGRATION-ALLOCATION.md	ADD	SQL role policy allocation proposal
 docs/platform/governance/SC-DECISION-REGISTER.md	MODIFY	register DP-7 proposal and unresolved target contracts
@@ -11,6 +12,7 @@ docs/platform/data/DP-7-PRIVACY-RETENTION-MATRIX.md	ADD	privacy retention deleti
 docs/platform/data/DP-7-HANDOFF.md	ADD	allocation blocker and implementation handoff
 verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py	MODIFY	validate DP-7 proposal without weakening prior gates
 verification/dp6/run_dp6_allocation_verification.py	MODIFY	preserve DP-6 post-merge gate without requiring SQL re-addition
+verification/dp6/run_dp6_static_verification.py	MODIFY	preserve DP-6 post-merge static validation without requiring SQL re-addition
 verification/dp7/run_dp7_allocation_verification.py	ADD	allocation matrix and protected-diff verifier
 verification/dp7/DP7_BASELINE.tsv	ADD	authoritative repository baseline
 verification/dp7/DP7_CHANGED_FILES.tsv	ADD	machine-readable change inventory
