@@ -43,6 +43,7 @@ $$;
 
 GRANT EXECUTE ON FUNCTION public.dp7_fixture_request_v1(varchar,varchar,uuid,varchar,varchar,varchar,boolean,boolean,boolean,varchar,varchar)
   TO jc_data_integration_writer;
+GRANT SELECT ON TABLE dp7_fixture_refs TO jc_data_integration_writer;
 
 SET ROLE jc_data_integration_writer;
 DO $$
