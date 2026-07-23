@@ -1,6 +1,8 @@
-category	path_pattern	change	status
-sql	database/journey-connect-db-v2.7/43..47	added	IMPLEMENTED
-java	jc-data-contracts/src/main/java/com/jc/data/contract/v1/quality	added	IMPLEMENTED
-tests	jc-data-contracts/src/test/**/Dp6*	added	LOCAL_PASS
-ci	.github/workflows/*	extended	PENDING_CI
-protected_runtime	jc-backend/src/main + recommendation/search/intelligence	unchanged	PASS_STATIC
+category	path_pattern	change	status	evidence
+sql	database/journey-connect-db-v2.7/43..47	added	PASS_PG15_PG18	run_29973352951
+java	jc-data-contracts/src/main/java/com/jc/data/contract/v1/quality	added	PASS_JAVA21	run_29973352923
+tests	jc-data-contracts/src/test/**/Dp6*	added	PASS_JAVA21	run_29973352923
+postgresql_fixture	verification/dp6/sql/47_data_quality_validation_part*.inc	added	PASS_PG15_PG18	run_29973352951
+concurrency	verification/dp6/run_dp6_concurrency.sh	added	PASS_PG15_PG18	run_29973352951
+ci	.github/workflows/data-postgres-ci.yml_and_dp6-allocation-ci.yml	extended	PASS_IMPLEMENTATION_HEAD	runs_29973352951_29973353081
+protected_runtime	jc-backend/src/main_and_recommendation_search_intelligence	unchanged	PASS_EXACT_HEAD	runs_29973352939_29973352978
