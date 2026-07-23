@@ -8,13 +8,34 @@
 
 - main `c528f6fb0942389b70a348cb9aa672eb7819a392`
 - DP-7 head `affb561eeeb7b1eb9cabb44e5d29b9378194934d`
-- SQL `01..52`; `53+` absent/unallocated
+- SQL `01..52`; SQL `53+` absent/unallocated
 - DP-0~DP-7 technical roadmap complete
-- production not authorized
+- production `NOT_AUTHORIZED`
 
 ## Delivered
 
 Baseline and phase/object/contract/policy/fingerprint/retention inventories, authority closure, production gaps, Recommendation/Intelligence/Search/Operations/Reliability handoffs, activation gates, change policy, machine evidence and protected verifier.
+
+## Protected production state
+
+```text
+Production shadow: DISABLED
+Kill switch: ENABLED
+Sampling: 0 BPS
+Cohort: EMPTY
+Production Recommendation write: DISABLED
+Intelligence runtime activation: DISABLED
+Search indexing: DISABLED
+Search cutover: NOT_STARTED
+Worker: NOT_IMPLEMENTED
+Scheduler: DISABLED
+Replay: NOT_AUTHORIZED
+Backfill: NOT_AUTHORIZED
+Automatic rebuild: NOT_AUTHORIZED
+Automatic purge: DISABLED
+```
+
+The closure does not permit historical migration rewrite. SQL `01..52` is immutable and every future database behavior change requires an allocated forward migration.
 
 ## Validation truth
 
