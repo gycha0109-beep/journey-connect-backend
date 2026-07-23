@@ -145,5 +145,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dp6-postgresql-${{ matrix.postgres }}-evidence
-          path: verification/dp6/runtime/**
+          path: |
+            verification/dp6/runtime/**
+            database/journey-connect-db-v2.7/47_data_quality_validation.sql
           if-no-files-found: error
