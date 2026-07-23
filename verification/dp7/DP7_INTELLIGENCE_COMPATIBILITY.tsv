@@ -1,0 +1,8 @@
+scope	check	expected	observed	status	failure_code
+DATA_INTELLIGENCE_INPUT	generic input envelope	versioned immutable snapshot	intelligence-input-snapshot-v1 exists	CONDITIONALLY_COMPATIBLE	intelligence_contract_missing
+DATA_INTELLIGENCE_INPUT	Data-specific domain schema	approved target mapping	not found	UNVERIFIED	intelligence_contract_missing
+DATA_INTELLIGENCE_INPUT	lineage	preserved source provenance	mapping design requires reference	UNVERIFIED	intelligence_lineage_missing
+DATA_INTELLIGENCE_INPUT	privacy class	explicit policy mapping	PrivacyClass exists; mapping absent	UNVERIFIED	intelligence_privacy_violation
+DATA_INTELLIGENCE_INPUT	quality semantics	quality separate from confidence	separation documented	PASS_DESIGN	intelligence_quality_semantic_mismatch
+DATA_INTELLIGENCE_INPUT	runtime activation	none	prohibited by scope	PASS_PROTECTED	intelligence_runtime_activation_detected
+FULL	overall target compatibility	confirmed semantic contract	missing Data-specific target contract	INCONCLUSIVE	intelligence_contract_missing
