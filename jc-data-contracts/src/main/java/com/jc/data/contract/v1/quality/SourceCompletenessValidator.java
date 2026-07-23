@@ -17,16 +17,23 @@ public final class SourceCompletenessValidator {
         SourceCheckpoint checkpoint = context.checkpoint();
         LinkedHashMap<String, ProjectionSourceEvent> unique = new LinkedHashMap<>();
         boolean conflictingDuplicate = false;
+        boolean eventOutOfRange = false;
         for (ProjectionSourceEvent event : context.sourceEvents()) {
-            if (event.occurredAt().isBefore(checkpoint.eventTimeFrom())
-                    || !event.occurredAt().isBefore(checkpoint.eventTimeTo())
-                    || event.ingestedAt().isAfter(checkpoint.ingestedAtUpperBound())) {
+            boolean occurredOutOfRange = event.occurredAt().isBefore(checkpoint.eventTimeFrom())
+                    || !event.occurredAt().isBefore(checkpoint.eventTimeTo());
+            if (occurredOutOfRange) {
+                eventOutOfRange = true;
                 continue;
             }
-            String key = event.sourceEventRef() + '' + event.sourceFingerprint()
-                    + '' + (event.adapterEvidenceRef() == null ? "" : event.adapterEvidenceRef());
+            if (event.ingestedAt().isAfter(checkpoint.ingestedAtUpperBound())) {
+                continue;
+            }
+            String key = event.sourceEventRef() + '\u001f'
+                    + (event.adapterEvidenceRef() == null ? "" : event.adapterEvidenceRef());
             ProjectionSourceEvent previous = unique.putIfAbsent(key, event);
-            if (previous != null && !previous.equals(event)) conflictingDuplicate = true;
+            if (previous != null && !previous.equals(event)) {
+                conflictingDuplicate = true;
+            }
         }
         List<ProjectionSourceEvent> events = unique.values().stream()
                 .sorted(Comparator.comparing(ProjectionSourceEvent::occurredAt)
@@ -62,15 +69,18 @@ public final class SourceCompletenessValidator {
                     expectedMembers.keySet().toString(), actualMembers.keySet().toString(), true));
         }
 
-        boolean range = checkpoint.eventTimeFrom().isBefore(checkpoint.eventTimeTo())
-                && actual.stream().allMatch(source -> !source.occurredAt().isBefore(checkpoint.eventTimeFrom())
-                        && source.occurredAt().isBefore(checkpoint.eventTimeTo())
-                        && !source.ingestedAt().isAfter(checkpoint.ingestedAtUpperBound()));
-        checks.add(range ? QualityChecks.pass("source.range", DataQualityValidationScope.SOURCE_COMPLETENESS,
-                "all_members_in_range", "all_members_in_range", true)
-                : QualityChecks.fail("source.range", DataQualityValidationScope.SOURCE_COMPLETENESS,
-                "all_members_in_range", "out_of_range", "1", DataQualitySeverity.BLOCKER,
-                DataQualityFailure.SOURCE_RANGE_MISMATCH, true));
+        boolean checkpointRangeValid = checkpoint.eventTimeFrom().isBefore(checkpoint.eventTimeTo());
+        if (!checkpointRangeValid || eventOutOfRange) {
+            checks.add(QualityChecks.fail("source.range", DataQualityValidationScope.SOURCE_COMPLETENESS,
+                    "all_events_in_checkpoint_range", eventOutOfRange ? "event_out_of_range" : "invalid_checkpoint_range",
+                    "1", DataQualitySeverity.BLOCKER,
+                    eventOutOfRange ? DataQualityFailure.SOURCE_EVENT_OUT_OF_RANGE
+                            : DataQualityFailure.SOURCE_RANGE_MISMATCH,
+                    true));
+        } else {
+            checks.add(QualityChecks.pass("source.range", DataQualityValidationScope.SOURCE_COMPLETENESS,
+                    "all_events_in_checkpoint_range", "all_events_in_checkpoint_range", true));
+        }
 
         boolean contract = events.stream().allMatch(event -> checkpoint.sourceContractVersion().equals(event.sourceContractVersion()))
                 && events.stream().allMatch(event -> checkpoint.sourceSchemaVersion().equals(event.sourceSchemaVersion()));
@@ -87,7 +97,9 @@ public final class SourceCompletenessValidator {
             CheckpointSource member = expectedMembers.get(identity(new CheckpointSource(event.sourceEventRef(),
                     event.sourceFingerprint(), event.adapterEvidenceRef(), event.occurredAt(), event.ingestedAt())));
             if (member == null || !member.occurredAt().equals(event.occurredAt())
-                    || !member.ingestedAt().equals(event.ingestedAt())) timestamps = false;
+                    || !member.ingestedAt().equals(event.ingestedAt())) {
+                timestamps = false;
+            }
         }
         checks.add(timestamps ? QualityChecks.pass("source.timestamp", DataQualityValidationScope.SOURCE_COMPLETENESS,
                 "authoritative", "authoritative", true)
@@ -103,7 +115,8 @@ public final class SourceCompletenessValidator {
         return List.copyOf(checks);
     }
 
-    private static DataQualityCheckResult compareLong(String code, long expected, long observed, DataQualityFailure failure) {
+    private static DataQualityCheckResult compareLong(String code, long expected, long observed,
+            DataQualityFailure failure) {
         return expected == observed
                 ? QualityChecks.pass(code, DataQualityValidationScope.SOURCE_COMPLETENESS,
                         Long.toString(expected), Long.toString(observed), true)
@@ -122,7 +135,9 @@ public final class SourceCompletenessValidator {
 
     private static Map<String, CheckpointSource> byIdentity(List<CheckpointSource> sources) {
         LinkedHashMap<String, CheckpointSource> result = new LinkedHashMap<>();
-        for (CheckpointSource source : sources) result.put(identity(source), source);
+        for (CheckpointSource source : sources) {
+            result.put(identity(source), source);
+        }
         return result;
     }
 
