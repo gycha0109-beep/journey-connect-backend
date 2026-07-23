@@ -28,15 +28,15 @@ BEGIN
   SELECT snapshot_ref,quality_ref INTO v_snapshot,v_quality FROM dp7_fixture_refs;
   SELECT integration_run_id INTO v_run FROM public.data_cross_track_integration_run_v1
     WHERE integration_run_ref='integration_run:recommendation-profile';
-  BEGIN UPDATE public.data_cross_track_integration_run_v1 SET target_track='Search' WHERE integration_run_id=v_run;
+  BEGIN
+    UPDATE public.data_cross_track_integration_run_v1 SET target_track='Search' WHERE integration_run_id=v_run;
     RAISE EXCEPTION 'append-only UPDATE unexpectedly succeeded';
-  EXCEPTION WHEN raise_exception THEN
-    IF SQLERRM='append-only UPDATE unexpectedly succeeded' THEN RAISE; END IF;
+  EXCEPTION WHEN object_not_in_prerequisite_state THEN NULL;
   END;
-  BEGIN DELETE FROM public.data_cross_track_integration_check_result_v1 WHERE integration_run_ref=v_run;
+  BEGIN
+    DELETE FROM public.data_cross_track_integration_check_result_v1 WHERE integration_run_ref=v_run;
     RAISE EXCEPTION 'append-only DELETE unexpectedly succeeded';
-  EXCEPTION WHEN raise_exception THEN
-    IF SQLERRM='append-only DELETE unexpectedly succeeded' THEN RAISE; END IF;
+  EXCEPTION WHEN object_not_in_prerequisite_state THEN NULL;
   END;
 END;
 $$;
