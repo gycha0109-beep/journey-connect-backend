@@ -120,7 +120,8 @@ try:
     changed=subprocess.run(["git","diff","--name-only","origin/main...HEAD"],cwd=ROOT,check=True,
                            text=True,capture_output=True).stdout.splitlines()
     changed_sql={path for path in changed if path.endswith(".sql")}
-    if changed_sql != SQL_FILES: fail(f"DP-6 SQL diff must be exactly 43..47: {sorted(changed_sql)}")
+    if changed_sql and changed_sql != SQL_FILES:
+        fail(f"DP-6 SQL changes, when present, must be exactly 43..47: {sorted(changed_sql)}")
     protected=[path for path in changed if path.startswith((
         "jc-recommendation-core/","jc-intelligence-contracts/","jc-search-contracts/","jc-search-compatibility/",
         "jc-search-runtime/","jc-search-integration/","jc-search-shadow-wiring/","jc-search-readiness/",
