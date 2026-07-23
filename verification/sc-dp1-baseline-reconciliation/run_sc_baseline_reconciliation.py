@@ -18,6 +18,7 @@ REQUIRED = [
     "docs/platform/governance/SC-DP4-5-PERSISTENCE-ALLOCATION.md",
     "docs/platform/governance/SC-DP5-PROJECTION-ALLOCATION.md",
     "docs/platform/governance/SC-DP6-QUALITY-ALLOCATION.md",
+    "docs/platform/governance/SC-DP7-CROSS-TRACK-INTEGRATION-ALLOCATION.md",
     "docs/platform/governance/SC-HANDOFF.md",
     "docs/platform/data/DP-0-DATA-PLATFORM-CONTRACT-FOUNDATION.md",
     "docs/platform/data/DP-0-P2-BASELINE-ALIGNMENT.md",
@@ -33,13 +34,18 @@ REQUIRED = [
     "docs/platform/data/DP-6-DATA-QUALITY-AND-LINEAGE-VALIDATION-HARDENING.md",
     "docs/platform/data/DP-6-QUALITY-MATRIX.md",
     "docs/platform/data/DP-6-HANDOFF.md",
+    "docs/platform/data/DP-7-CROSS-TRACK-INTEGRATION-VALIDATION.md",
+    "docs/platform/data/DP-7-INTEGRATION-MATRIX.md",
+    "docs/platform/data/DP-7-AUTHORITY-MATRIX.md",
+    "docs/platform/data/DP-7-PRIVACY-RETENTION-MATRIX.md",
+    "docs/platform/data/DP-7-HANDOFF.md",
     "docs/platform/proposals/DP-0-TRACK-CHANGE-PROPOSAL.md",
 ]
 ALLOWED = (
     "docs/platform/governance/", "docs/platform/data/", "docs/platform/proposals/",
     "verification/sc-dp1-baseline-reconciliation/", "verification/dp1/", "verification/dp2/",
     "verification/dp3/", "verification/dp4/", "verification/dp4-5/", "verification/dp5/",
-    "verification/dp6/",
+    "verification/dp6/", "verification/dp7/",
     ".github/workflows/sc-baseline-reconciliation.yml",
     ".github/workflows/data-contract-ci.yml",
     ".github/workflows/data-postgres-ci.yml",
@@ -47,6 +53,7 @@ ALLOWED = (
     ".github/workflows/backend-pr-ci.yml",
     ".github/workflows/dp5-governance-finalize.yml",
     ".github/workflows/dp6-allocation-ci.yml",
+    ".github/workflows/dp7-allocation-ci.yml",
     "jc-backend/settings.gradle.kts",
     "jc-backend/src/test/java/com/jc/backend/search/shadow/production/IP12ProductionShadowStaticTest.java",
     "jc-data-contracts/",
@@ -67,7 +74,6 @@ DP45_SQL = {
     "database/journey-connect-db-v2.7/36_data_recommendation_adapter_shadow_persistence.sql",
     "database/journey-connect-db-v2.7/37_data_recommendation_adapter_shadow_validation.sql",
 }
-
 DP5_SQL = {
     "database/journey-connect-db-v2.7/38_data_projection_snapshot_foundation.sql",
     "database/journey-connect-db-v2.7/39_data_recommendation_profile_projection.sql",
@@ -75,7 +81,6 @@ DP5_SQL = {
     "database/journey-connect-db-v2.7/41_data_projection_persistence_roles.sql",
     "database/journey-connect-db-v2.7/42_data_projection_snapshot_validation.sql",
 }
-
 DP6_SQL = {
     "database/journey-connect-db-v2.7/43_data_quality_validation_foundation.sql",
     "database/journey-connect-db-v2.7/44_data_quality_metrics_and_verdict.sql",
@@ -163,6 +168,26 @@ for marker in (
     if marker not in allocation6:
         fail(f"DP-6 allocation marker missing: {marker}")
 
+allocation7 = (ROOT / "docs/platform/governance/SC-DP7-CROSS-TRACK-INTEGRATION-ALLOCATION.md").read_text(encoding="utf-8")
+for marker in (
+    "PROPOSED / MERGE REQUIRED",
+    "Implementation authority: `NOT GRANTED`",
+    "69b2f9619733e8e6068a23bb149c2aaf41f23fc9",
+    "48_cross_track_integration_validation_foundation.sql",
+    "49_cross_track_contract_mapping_and_boundary_evidence.sql",
+    "50_cross_track_integration_verdict_and_conflict.sql",
+    "51_cross_track_integration_persistence_roles_and_safe_view.sql",
+    "52_cross_track_integration_validation.sql",
+    "jc_data_integration_writer",
+    "jc_data_integration_reader",
+    "jc_data_integration_function_owner",
+    "data-cross-track-integration-policy-v1",
+    "No SQL `48+` is present",
+    "DP7_IMPLEMENTATION_BLOCKED_BY_SC_ALLOCATION",
+):
+    if marker not in allocation7:
+        fail(f"DP-7 allocation marker missing: {marker}")
+
 link_re = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 for rel in REQUIRED:
     path = ROOT / rel
@@ -180,6 +205,12 @@ for contract_id in (
     "recommendation-profile-input-v1", "experiment-outcome-input-v1",
     "data-projection-snapshot-v1", "data-quality-policy-v1",
     "data-quality-validation-input-sha256-v1", "data-quality-verdict-sha256-v1",
+    "data-cross-track-integration-policy-v1", "data-cross-track-integration-run-v1",
+    "data-cross-track-integration-check-v1", "data-cross-track-contract-mapping-v1",
+    "data-cross-track-authority-matrix-v1", "data-cross-track-privacy-retention-matrix-v1",
+    "data-cross-track-integration-verdict-v1", "integration-input-sha256-v1",
+    "integration-check-evidence-sha256-v1", "integration-mapping-sha256-v1",
+    "integration-verdict-sha256-v1", "cross-track-contract-matrix-sha256-v1",
 ):
     if contract_id not in registry:
         fail(f"contract registry missing {contract_id}")
@@ -189,7 +220,7 @@ for number in range(1, 48):
         fail(f"canonical SQL {number:02d} missing or duplicated")
 if list((ROOT / "database/journey-connect-db-v2.7").glob("4[8-9]_*.sql")) \
         or list((ROOT / "database/journey-connect-db-v2.7").glob("[5-9][0-9]_*.sql")):
-    fail("SQL 48+ remains unallocated")
+    fail("SQL 48+ must remain absent in the DP-7 allocation-only phase")
 
 try:
     subprocess.run(["git", "fetch", "origin", "main", "--depth=1"], cwd=ROOT,
@@ -203,10 +234,12 @@ try:
     all_approved_sql = DP2_SQL | DP3_SQL | DP45_SQL | DP5_SQL | DP6_SQL
     if changed_sql - all_approved_sql:
         fail(f"unapproved SQL changed: {sorted(changed_sql - all_approved_sql)}")
-    if changed_sql and changed_sql not in (DP2_SQL, DP3_SQL, DP45_SQL, DP5_SQL, DP6_SQL):
-        fail(f"SQL allocation must change exactly one approved implemented range: {sorted(changed_sql)}")
-    if any(rel.startswith(("jc-backend/src/main/", "jc-recommendation-core/", "jc-search-")) for rel in diff):
-        fail("production/recommendation/search source changed")
+    if changed_sql:
+        fail(f"DP-7 allocation-only PR cannot change SQL: {sorted(changed_sql)}")
+    if any(rel.startswith((
+            "jc-backend/src/main/", "jc-recommendation-core/", "jc-intelligence-contracts/",
+            "jc-search-", "jc-data-contracts/src/main/")) for rel in diff):
+        fail("production/Data/Recommendation/Intelligence/Search source changed")
 except (subprocess.CalledProcessError, FileNotFoundError):
     pass
 
@@ -221,4 +254,4 @@ for path in OUT.glob("*.tsv"):
     ]:
         fail(f"verification header invalid: {path}")
 
-print("SC baseline reconciliation static validation: PASS")
+print("SC baseline reconciliation with DP-7 allocation proposal: PASS")
