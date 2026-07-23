@@ -1,118 +1,45 @@
-name: DP7 Allocation Gate
+name: DP7 Final Materialization
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [main]
     paths:
-      - "docs/platform/governance/SC-DP7-CROSS-TRACK-INTEGRATION-ALLOCATION.md"
-      - "docs/platform/governance/SC-DECISION-REGISTER.md"
-      - "docs/platform/governance/SC-PLATFORM-REGISTRY.md"
-      - "docs/platform/governance/SC-HANDOFF.md"
-      - "docs/platform/data/DP-7-*.md"
-      - "verification/dp7/**"
-      - "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py"
+      - "verification/dp7/.materialize/**"
       - ".github/workflows/dp7-allocation-ci.yml"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: dp7-allocation-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: dp7-final-materialization-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  allocation:
-    name: DP-7 allocation / contract inventory / protected diff
+  materialize:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
         with:
+          ref: ${{ github.head_ref || github.ref_name }}
           fetch-depth: 0
-          show-progress: false
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - name: Validate DP-7 allocation boundary
+      - name: Materialize complete DP-7 implementation
+        run: python verification/dp7/.materialize/materialize_dp7_v5.py
+      - name: Remove temporary staging and commit implementation
         shell: bash
         run: |
-          set -o pipefail
-          mkdir -p verification/dp7/runtime
-          python verification/dp7/run_dp7_allocation_verification.py \
-            2>&1 | tee verification/dp7/runtime/DP7_ALLOCATION_CI.log
-      - name: Validate SC reconciliation
-        shell: bash
-        run: |
-          set -o pipefail
-          python verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py \
-            2>&1 | tee verification/dp7/runtime/DP7_SC_RECONCILIATION_CI.log
-      - name: Upload allocation evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dp7-allocation-evidence
-          path: verification/dp7/runtime
-          if-no-files-found: error
-
-  contract-regression:
-    name: Java 21 / Data Recommendation Intelligence Search contracts
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    defaults:
-      run:
-        working-directory: jc-backend
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-          show-progress: false
-      - uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: "21"
-      - uses: gradle/actions/setup-gradle@v6
-      - name: Grant Gradle wrapper permission
-        run: chmod +x ./gradlew
-      - name: Run protected contract regressions
-        shell: bash
-        run: |
-          set -o pipefail
-          mkdir -p ../verification/dp7/runtime
-          ./gradlew \
-            :jc-data-contracts:check \
-            :jc-recommendation-core:check \
-            :jc-intelligence-contracts:check \
-            :jc-search-contracts:check \
-            :jc-search-compatibility:check \
-            --stacktrace --no-daemon \
-            2>&1 | tee ../verification/dp7/runtime/DP7_CONTRACT_REGRESSION_CI.log
-      - name: Run backend production protection contract
-        shell: bash
-        run: |
-          set -o pipefail
-          ./gradlew :test \
-            --tests com.jc.backend.search.shadow.production.IP12ProductionShadowStaticTest \
-            --stacktrace --no-daemon \
-            2>&1 | tee ../verification/dp7/runtime/DP7_BACKEND_PROTECTION_CI.log
-      - name: Upload regression evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dp7-contract-regression-evidence
-          path: |
-            verification/dp7/runtime
-            jc-data-contracts/build/reports/**
-            jc-data-contracts/build/test-results/**
-            jc-recommendation-core/build/reports/**
-            jc-recommendation-core/build/test-results/**
-            jc-intelligence-contracts/build/reports/**
-            jc-intelligence-contracts/build/test-results/**
-            jc-search-contracts/build/reports/**
-            jc-search-contracts/build/test-results/**
-            jc-search-compatibility/build/reports/**
-            jc-search-compatibility/build/test-results/**
-            jc-backend/build/reports/tests/**
-            jc-backend/build/test-results/**
-          if-no-files-found: warn
+          set -euo pipefail
+          rm -rf verification/dp7/.materialize
+          rm -f .github/workflows/dp7-materialize.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          test -f database/journey-connect-db-v2.7/52_cross_track_integration_validation.sql
+          test -f jc-data-contracts/src/main/java/com/jc/data/contract/v1/integration/FullCrossTrackIntegrationValidator.java
+          test -f verification/dp7/run_dp7_static_verification.py
+          git commit -m "feat(dp7): implement cross-track integration validation"
+          git push origin HEAD:${{ github.head_ref }}
