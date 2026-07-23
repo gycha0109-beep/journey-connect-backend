@@ -2,7 +2,7 @@
 
 ## Status
 
-`IMPLEMENTATION CANDIDATE / EXACT-HEAD CI PENDING`
+`IMPLEMENTATION VERIFIED / PR NOT MERGED`
 
 Authoritative base: `c0f6b5dc8cc7089412a100989109b61315c062d0`. Implementation branch: `codex/dp-6-data-quality-validation`. PR: `#18`.
 
@@ -119,7 +119,11 @@ A review separated from the initial implementation found and corrected:
 9. the persistence boundary trusted caller-provided checks/metrics/verdict too broadly — it now validates required identities, fingerprints, thresholds, counts and authoritative observation before `VALIDATED`;
 10. the safe view used verdict insertion time as latest snapshot time — it now exposes the validated snapshot as-of time;
 11. zero-source late/conflict metrics synthesized a denominator of one — they now preserve the explicit zero-denominator policy;
-12. out-of-range source events could be filtered before range validation — they now fail with a stable out-of-range classification.
+12. out-of-range source events could be filtered before range validation — they now fail with a stable out-of-range classification;
+13. DP-6 function ownership lacked execute access to the exact immutable canonicalization chain — only the three required helper functions are granted;
+14. the original successful PostgreSQL fixture used an incomplete single-window profile while requesting `VALIDATED` — the valid path now uses a complete authoritative P2 outcome snapshot;
+15. earlier-stage concurrency fixtures polluted DP-6 logical identities — DP-6 concurrency now runs in a fresh independently migrated database;
+16. prior DP-5 and production-shadow static gates hard-coded SQL `42` as the terminal migration — they now protect SQL `01..42` while allowing only the SC-approved SQL `43..47`.
 
 ## Access and privacy
 
@@ -138,4 +142,13 @@ DP-6 does not mutate source, adapter evidence, checkpoint, projection, snapshot 
 
 ## Verification state
 
-Java 21 compilation with `-Xlint:all -Werror`, DP-1 through DP-5 contract regression and DP-6 contract fixtures are implemented. PostgreSQL 15/18 and complete exact-head protected CI remain pending until a final implementation HEAD is verified.
+The first complete implementation verification baseline is commit `c7f96d41fe4cbc18e60180776422ae3a58e8ae15`. The following GitHub Actions runs all completed with `success` on that exact SHA:
+
+- Data Contract CI: `29973352923` — Java 21, `-Xlint:all -Werror`, DP-1 through DP-6 contracts and Recommendation Java Core;
+- Data PostgreSQL CI: `29973352951` — PostgreSQL 15/18, SQL `01..47`, rollback fixtures and DP-2 through DP-6 concurrency;
+- Recommendation P0 Database CI: `29973352978` — PostgreSQL 15/18 and protected Recommendation regression;
+- Backend PR CI: `29973352939` — Backend/IP-12.5 protected readiness;
+- SC Baseline Reconciliation: `29973352891`;
+- DP6 Allocation Gate: `29973353081` — merged allocation, protected diff and implementation boundary.
+
+PR finalization must repeat the same workflows on the documentation/evidence final HEAD. PR body metadata, not a historical document line, records those final exact-head run IDs.
