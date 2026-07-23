@@ -46,7 +46,7 @@ jobs:
   data-processing:
     name: PostgreSQL ${{ matrix.postgres }} / DP-2 through DP-6
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 55
     strategy:
       fail-fast: false
       matrix:
@@ -131,15 +131,31 @@ jobs:
       - name: Run protected and DP-6 concurrency regressions
         shell: bash
         run: |
-          set -o pipefail
+          set -euo pipefail
           chmod +x verification/dp2/run_dp2_concurrency.sh verification/dp3/run_dp3_concurrency.sh \
             verification/dp4-5/run_dp45_concurrency.sh verification/dp5/run_dp5_concurrency.sh \
             verification/dp6/run_dp6_concurrency.sh
+
           verification/dp2/run_dp2_concurrency.sh 2>&1 | tee verification/dp6/runtime/DP2_CONCURRENCY_PG${{ matrix.postgres }}.log
           verification/dp3/run_dp3_concurrency.sh 2>&1 | tee verification/dp6/runtime/DP3_CONCURRENCY_PG${{ matrix.postgres }}.log
           verification/dp4-5/run_dp45_concurrency.sh 2>&1 | tee verification/dp6/runtime/DP45_CONCURRENCY_PG${{ matrix.postgres }}.log
           verification/dp5/run_dp5_concurrency.sh 2>&1 | tee verification/dp6/runtime/DP5_CONCURRENCY_PG${{ matrix.postgres }}.log
-          verification/dp6/run_dp6_concurrency.sh 2>&1 | tee verification/dp6/runtime/DP6_CONCURRENCY_PG${{ matrix.postgres }}.log
+
+          dp6_database="journey_connect_dp6_concurrency"
+          dp6_url="postgresql://postgres:postgres@localhost:5432/${dp6_database}"
+          dropdb --if-exists -h localhost -p 5432 -U postgres "$dp6_database"
+          createdb -h localhost -p 5432 -U postgres "$dp6_database"
+          dp6_setup_log="verification/dp6/runtime/DP6_CONCURRENCY_SETUP_PG${{ matrix.postgres }}.log"
+          : > "$dp6_setup_log"
+          for script in database/journey-connect-db-v2.7/{01..46}_*.sql; do
+            if [[ "$script" == *_smoke_test.sql || "$script" == *_validation.sql ]]; then
+              continue
+            fi
+            echo "APPLY $script" | tee -a "$dp6_setup_log"
+            psql "$dp6_url" -v ON_ERROR_STOP=1 -f "$script" 2>&1 | tee -a "$dp6_setup_log"
+          done
+          DATABASE_URL="$dp6_url" verification/dp6/run_dp6_concurrency.sh \
+            2>&1 | tee verification/dp6/runtime/DP6_CONCURRENCY_PG${{ matrix.postgres }}.log
       - name: Upload DP-6 PostgreSQL evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -148,5 +164,6 @@ jobs:
           path: |
             verification/dp6/runtime/**
             verification/dp6/run_dp6_concurrency.sh
+            verification/dp6/sql/47_data_quality_validation_part*.inc
             database/journey-connect-db-v2.7/4[3-7]_*.sql
           if-no-files-found: error
