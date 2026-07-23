@@ -11,6 +11,8 @@
 -- quality least privilege or PUBLIC denial failed
 -- ROLLBACK;
 \! cat verification/dp6/sql/47_data_quality_validation_part1.inc verification/dp6/sql/47_data_quality_validation_part2.inc > /tmp/dp6-validation-setup.sql
-\! cat verification/dp6/sql/47_data_quality_validation_part3.inc verification/dp6/sql/47_data_quality_validation_part4.inc > /tmp/dp6-validation-quality.sql
+\! awk '/^-- DP-6 valid FULL validation/ { exit } { print }' verification/dp6/sql/47_data_quality_validation_part3.inc >> /tmp/dp6-validation-setup.sql
+\! awk 'found || /^-- DP-6 valid FULL validation/ { found=1; print }' verification/dp6/sql/47_data_quality_validation_part3.inc > /tmp/dp6-validation-quality.sql
+\! cat verification/dp6/sql/47_data_quality_validation_part4.inc >> /tmp/dp6-validation-quality.sql
 \i /tmp/dp6-validation-setup.sql
 \i /tmp/dp6-validation-quality.sql
