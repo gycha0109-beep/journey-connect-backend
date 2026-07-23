@@ -100,7 +100,7 @@ DECLARE v_snapshot varchar; v_quality uuid; v_request jsonb; v_result record;
 BEGIN
   SELECT snapshot_ref,quality_ref INTO v_snapshot,v_quality FROM dp7_fixture_refs;
   v_request:=public.dp7_fixture_request_v1('integration_run:unsupported-schema',v_snapshot,v_quality,
-    'Recommendation','DATA_RECOMMENDATION_PROFILE','recommendation-profile-input-v1',true,true,false,
+    'Recommendation','FINGERPRINT_BOUNDARY','recommendation-profile-input-v1',true,true,false,
     'recommendation-profile-input-v2');
   v_request:=jsonb_set(v_request,'{checks,6,checkStatus}','"FAIL"'::jsonb);
   v_request:=jsonb_set(v_request,'{checks,6,severity}','"ERROR"'::jsonb);
