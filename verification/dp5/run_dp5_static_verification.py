@@ -16,13 +16,21 @@ DOC = ROOT / "docs/platform/data/DP-5-PROJECTION-AND-SNAPSHOT-FOUNDATION.md"
 MATRIX = ROOT / "docs/platform/data/DP-5-PROJECTION-MATRIX.md"
 HANDOFF = ROOT / "docs/platform/data/DP-5-HANDOFF.md"
 ALLOCATION = ROOT / "docs/platform/governance/SC-DP5-PROJECTION-ALLOCATION.md"
+DP6_ALLOCATION = ROOT / "docs/platform/governance/SC-DP6-QUALITY-ALLOCATION.md"
 
-SQL_FILES = {
+DP5_SQL_FILES = {
     "database/journey-connect-db-v2.7/38_data_projection_snapshot_foundation.sql",
     "database/journey-connect-db-v2.7/39_data_recommendation_profile_projection.sql",
     "database/journey-connect-db-v2.7/40_data_experiment_outcome_projection.sql",
     "database/journey-connect-db-v2.7/41_data_projection_persistence_roles.sql",
     "database/journey-connect-db-v2.7/42_data_projection_snapshot_validation.sql",
+}
+DP6_SQL_FILES = {
+    "database/journey-connect-db-v2.7/43_data_quality_validation_foundation.sql",
+    "database/journey-connect-db-v2.7/44_data_quality_metrics_and_verdict.sql",
+    "database/journey-connect-db-v2.7/45_data_quality_persistence_and_roles.sql",
+    "database/journey-connect-db-v2.7/46_data_quality_rebuild_and_safe_views.sql",
+    "database/journey-connect-db-v2.7/47_data_quality_validation.sql",
 }
 EVIDENCE = [
     "DP5_BASELINE.tsv", "DP5_CHANGED_FILES.tsv", "DP5_DB_OBJECTS.tsv",
@@ -38,17 +46,34 @@ EVIDENCE = [
 def fail(message: str) -> None:
     raise SystemExit(f"FAIL: {message}")
 
+
 for path in [DOC, MATRIX, HANDOFF, ALLOCATION, TEST, GOLDEN,
              DP5 / "run_dp5_concurrency.sh", *(DP5 / name for name in EVIDENCE)]:
     if not path.is_file() or not path.read_text(encoding="utf-8").strip():
         fail(f"missing or empty DP-5 artifact: {path.relative_to(ROOT)}")
 
-for number in range(1, 43):
+# A later approved stage may add forward SQL, but DP-5 SQL 38..42 remains exact and protected.
+dp6_implemented = all((ROOT / path).is_file() for path in DP6_SQL_FILES)
+max_sql = 47 if dp6_implemented else 42
+for number in range(1, max_sql + 1):
     matches = list(SQL_DIR.glob(f"{number:02d}_*.sql"))
     if len(matches) != 1:
         fail(f"canonical SQL {number:02d} expected exactly once, found {len(matches)}")
-if list(SQL_DIR.glob("4[3-9]_*.sql")) or list(SQL_DIR.glob("[5-9][0-9]_*.sql")):
-    fail("SQL 43+ is unallocated")
+if dp6_implemented:
+    if not DP6_ALLOCATION.is_file():
+        fail("DP-6 implementation exists without SC allocation")
+    dp6_allocation = DP6_ALLOCATION.read_text(encoding="utf-8")
+    for marker in (
+        "APPROVED / MERGED", "Implementation authority: `GRANTED`",
+        "SQL `01..42` remains protected and unchanged", "SQL `48+` remains unallocated",
+    ):
+        if marker not in dp6_allocation:
+            fail(f"DP-6 allocation marker missing: {marker}")
+    if list(SQL_DIR.glob("4[8-9]_*.sql")) or list(SQL_DIR.glob("[5-9][0-9]_*.sql")):
+        fail("SQL 48+ remains unallocated")
+else:
+    if list(SQL_DIR.glob("4[3-9]_*.sql")) or list(SQL_DIR.glob("[5-9][0-9]_*.sql")):
+        fail("SQL 43+ is unallocated before DP-6 implementation authority")
 
 allocation = ALLOCATION.read_text(encoding="utf-8")
 for marker in (
@@ -125,7 +150,8 @@ missing_java = [name for name in sorted(java_required) if not (JAVA / name).is_f
 if missing_java:
     fail(f"missing Java projection contracts: {missing_java}")
 java_text = "\n".join(path.read_text(encoding="utf-8") for path in JAVA.glob("*.java"))
-for forbidden in ("org.springframework", "jakarta.persistence", "java.sql", "System.currentTimeMillis", "Instant.now(", "UUID.randomUUID", "Math.random"):
+for forbidden in ("org.springframework", "jakarta.persistence", "java.sql", "System.currentTimeMillis",
+                  "Instant.now(", "UUID.randomUUID", "Math.random"):
     if forbidden in java_text:
         fail(f"forbidden Java dependency or nondeterminism: {forbidden}")
 for marker in (
@@ -148,8 +174,12 @@ try:
     changed = subprocess.run(["git", "diff", "--name-only", "origin/main...HEAD"], cwd=ROOT,
                              check=True, text=True, capture_output=True).stdout.splitlines()
     changed_sql = {path for path in changed if path.endswith(".sql")}
-    if changed_sql != SQL_FILES:
-        fail(f"DP-5 SQL diff must be exactly 38..42: {sorted(changed_sql)}")
+    if changed_sql & DP5_SQL_FILES:
+        fail(f"protected DP-5 SQL 38..42 changed: {sorted(changed_sql & DP5_SQL_FILES)}")
+    if dp6_implemented and changed_sql and changed_sql != DP6_SQL_FILES:
+        fail(f"DP-6 SQL diff must be exactly 43..47: {sorted(changed_sql)}")
+    if not dp6_implemented and changed_sql and changed_sql != DP5_SQL_FILES:
+        fail(f"unexpected SQL diff before DP-6: {sorted(changed_sql)}")
     protected = [path for path in changed if path.startswith((
         "jc-recommendation-core/", "jc-intelligence-contracts/", "jc-search-contracts/",
         "jc-search-compatibility/", "jc-search-runtime/", "jc-search-integration/",
@@ -158,10 +188,10 @@ try:
     ))]
     if protected:
         fail(f"protected production/Recommendation/Search source changed: {protected}")
-    old_sql = [path for path in changed_sql if int(Path(path).name[:2]) <= 37]
+    old_sql = [path for path in changed_sql if int(Path(path).name[:2]) <= 42]
     if old_sql:
-        fail(f"protected SQL 01..37 changed: {old_sql}")
+        fail(f"protected SQL 01..42 changed: {old_sql}")
 except (subprocess.CalledProcessError, FileNotFoundError):
     pass
 
-print("DP-5 implementation static verification: PASS")
+print("DP-5 protected implementation static verification: PASS")
