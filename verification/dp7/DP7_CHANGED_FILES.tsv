@@ -1,0 +1,33 @@
+path	change_type	purpose
+.github/workflows/dp7-allocation-ci.yml	ADD	exact-head allocation and contract regression gate
+docs/platform/governance/SC-DP7-CROSS-TRACK-INTEGRATION-ALLOCATION.md	ADD	SQL role policy allocation proposal
+docs/platform/governance/SC-DECISION-REGISTER.md	MODIFY	register DP-7 proposal and unresolved target contracts
+docs/platform/governance/SC-PLATFORM-REGISTRY.md	MODIFY	propose contract role and SQL entries
+docs/platform/governance/SC-HANDOFF.md	MODIFY	record DP-6 integration and DP-7 gate
+docs/platform/data/DP-7-CROSS-TRACK-INTEGRATION-VALIDATION.md	ADD	contract inventory and implementation-ready design
+docs/platform/data/DP-7-INTEGRATION-MATRIX.md	ADD	field semantic unit compatibility decisions
+docs/platform/data/DP-7-AUTHORITY-MATRIX.md	ADD	object ownership and validation authority
+docs/platform/data/DP-7-PRIVACY-RETENTION-MATRIX.md	ADD	privacy retention deletion and safe-view design
+docs/platform/data/DP-7-HANDOFF.md	ADD	allocation blocker and implementation handoff
+verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py	MODIFY	validate DP-7 proposal without weakening prior gates
+verification/dp7/run_dp7_allocation_verification.py	ADD	allocation matrix and protected-diff verifier
+verification/dp7/DP7_BASELINE.tsv	ADD	authoritative repository baseline
+verification/dp7/DP7_CHANGED_FILES.tsv	ADD	machine-readable change inventory
+verification/dp7/DP7_CONTRACT_INVENTORY.tsv	ADD	actual source and target contracts
+verification/dp7/DP7_INTEGRATION_MATRIX.tsv	ADD	machine-readable integration matrix
+verification/dp7/DP7_RECOMMENDATION_COMPATIBILITY.tsv	ADD	Recommendation findings
+verification/dp7/DP7_INTELLIGENCE_COMPATIBILITY.tsv	ADD	Intelligence findings
+verification/dp7/DP7_SEARCH_COMPATIBILITY.tsv	ADD	Search findings
+verification/dp7/DP7_IDENTITY_BOUNDARY.tsv	ADD	identity boundary
+verification/dp7/DP7_AUTHORITY_BOUNDARY.tsv	ADD	authority boundary
+verification/dp7/DP7_PRIVACY_BOUNDARY.tsv	ADD	privacy boundary
+verification/dp7/DP7_RETENTION_BOUNDARY.tsv	ADD	retention and deletion boundary
+verification/dp7/DP7_QUALITY_VERDICT_BOUNDARY.tsv	ADD	DP-6 verdict gate
+verification/dp7/DP7_FINGERPRINT_BOUNDARY.tsv	ADD	new fingerprint domains
+verification/dp7/DP7_DUPLICATE_CONFLICT.tsv	ADD	logical identity outcomes
+verification/dp7/DP7_CONCURRENCY.tsv	ADD	not-executed concurrency requirements
+verification/dp7/DP7_ROLE_GRANTS.tsv	ADD	proposed least-privilege roles
+verification/dp7/DP7_SAFE_VIEW.tsv	ADD	aggregate-only view field policy
+verification/dp7/DP7_PROTECTED_DIFF.tsv	ADD	protected path policy
+verification/dp7/DP7_VERIFICATION_STATUS.tsv	ADD	truthful execution status
+verification/dp7/DP7_DECISIONS.tsv	ADD	machine-readable decisions
