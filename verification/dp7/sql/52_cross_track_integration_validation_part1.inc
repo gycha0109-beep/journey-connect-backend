@@ -44,6 +44,7 @@ DECLARE
   v_mapping_fp varchar(64);
   v_matrix_fp varchar(64);
   v_input_fp varchar(64);
+  v_authority_results jsonb;
   v_target_prefix varchar;
   v_target_check jsonb;
   v_binding_fp varchar(64):=repeat('a',64);
@@ -113,6 +114,21 @@ BEGIN
     v_target_check);
   SELECT jsonb_agg(c||jsonb_build_object('evidenceFingerprint',public.data_cross_track_check_fingerprint_v1(c))
     ORDER BY (c->>'order')::integer,c->>'checkCode') INTO v_checks FROM jsonb_array_elements(v_checks)c;
+  SELECT COALESCE(jsonb_agg(jsonb_build_object(
+      'objectName',a->>'objectName',
+      'owningTrack',a->>'owningTrack',
+      'actorTrack',a->>'actorTrack',
+      'readAllowed',COALESCE((a->>'readAllowed')::boolean,false),
+      'writeAllowed',COALESCE((a->>'writeAllowed')::boolean,false),
+      'validationAllowed',COALESCE((a->>'validationAllowed')::boolean,false),
+      'productionAllowed',COALESCE((a->>'productionAllowed')::boolean,false),
+      'readAttempted',COALESCE((a->>'readAttempted')::boolean,false),
+      'writeAttempted',COALESCE((a->>'writeAttempted')::boolean,false),
+      'validationAttempted',COALESCE((a->>'validationAttempted')::boolean,false),
+      'productionAttempted',COALESCE((a->>'productionAttempted')::boolean,false))
+      ORDER BY a->>'objectName',a->>'owningTrack'),'[]'::jsonb)
+    INTO v_authority_results FROM jsonb_array_elements(v_authorities)a;
+
   v_input_fp:=public.data_integration_fingerprint_v1('integration-input-sha256-v1',jsonb_build_object(
     'sourceTrack','Data','targetTrack',p_target_track,'sourceContract',v_snapshot.projection_name,
     'sourceSchemaVersion',v_snapshot.projection_schema_version,'targetContract',p_target_contract,
@@ -121,4 +137,22 @@ BEGIN
     'sourceQualityVerdictFingerprint',v_quality.verdict_fingerprint,
     'mappingPolicyVersion','data-cross-track-mapping-policy-v1',
     'integrationPolicyVersion','data-cross-track-integration-policy-v1',
-    'identityBindingFingerprint',v_binding_fp,'mappingFingerprint',v_mapping_fp));
+    'identityBindingFingerprint',v_binding_fp,'mappingFingerprint',v_mapping_fp,
+    'authorityResults',v_authority_results,
+    'privacyResult',jsonb_build_object(
+      'sourcePrivacyClass',v_privacy->>'sourcePrivacyClass',
+      'targetPrivacyClass',v_privacy->>'targetPrivacyClass',
+      'rawPayloadPresent',COALESCE((v_privacy->>'rawPayloadPresent')::boolean,false),
+      'piiPresent',COALESCE((v_privacy->>'piiPresent')::boolean,false),
+      'rawTextPresent',COALESCE((v_privacy->>'rawTextPresent')::boolean,false),
+      'preciseLocationPresent',COALESCE((v_privacy->>'preciseLocationPresent')::boolean,false),
+      'aggregateOnly',COALESCE((v_privacy->>'aggregateOnly')::boolean,false),
+      'lineagePurposeBound',COALESCE((v_privacy->>'lineagePurposeBound')::boolean,false),
+      'reidentificationRisk',COALESCE((v_privacy->>'reidentificationRisk')::boolean,false)),
+    'retentionResult',jsonb_build_object(
+      'sourceRetentionDays',(v_retention->>'sourceRetentionDays')::integer,
+      'targetRetentionDays',(v_retention->>'targetRetentionDays')::integer,
+      'integrationEvidenceRetentionDays',(v_retention->>'integrationEvidenceRetentionDays')::integer,
+      'deletionSemanticsAligned',COALESCE((v_retention->>'deletionSemanticsAligned')::boolean,false),
+      'automaticPurgeEnabled',COALESCE((v_retention->>'automaticPurgeEnabled')::boolean,false),
+      'physicalDeleteEnabled',COALESCE((v_retention->>'physicalDeleteEnabled')::boolean,false))));

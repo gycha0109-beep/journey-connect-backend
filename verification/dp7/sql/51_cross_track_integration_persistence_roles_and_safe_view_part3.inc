@@ -19,7 +19,25 @@
     'mappingPolicyVersion',p_request->>'mappingPolicyVersion',
     'integrationPolicyVersion',p_request->>'integrationPolicyVersion',
     'identityBindingFingerprint',v_identity->>'bindingFingerprint',
-    'mappingFingerprint',v_mapping_fp));
+    'mappingFingerprint',v_mapping_fp,
+    'authorityResults',v_authority_results,
+    'privacyResult',jsonb_build_object(
+      'sourcePrivacyClass',v_privacy->>'sourcePrivacyClass',
+      'targetPrivacyClass',v_privacy->>'targetPrivacyClass',
+      'rawPayloadPresent',COALESCE((v_privacy->>'rawPayloadPresent')::boolean,false),
+      'piiPresent',COALESCE((v_privacy->>'piiPresent')::boolean,false),
+      'rawTextPresent',COALESCE((v_privacy->>'rawTextPresent')::boolean,false),
+      'preciseLocationPresent',COALESCE((v_privacy->>'preciseLocationPresent')::boolean,false),
+      'aggregateOnly',COALESCE((v_privacy->>'aggregateOnly')::boolean,false),
+      'lineagePurposeBound',COALESCE((v_privacy->>'lineagePurposeBound')::boolean,false),
+      'reidentificationRisk',COALESCE((v_privacy->>'reidentificationRisk')::boolean,false)),
+    'retentionResult',jsonb_build_object(
+      'sourceRetentionDays',(v_retention->>'sourceRetentionDays')::integer,
+      'targetRetentionDays',(v_retention->>'targetRetentionDays')::integer,
+      'integrationEvidenceRetentionDays',(v_retention->>'integrationEvidenceRetentionDays')::integer,
+      'deletionSemanticsAligned',COALESCE((v_retention->>'deletionSemanticsAligned')::boolean,false),
+      'automaticPurgeEnabled',COALESCE((v_retention->>'automaticPurgeEnabled')::boolean,false),
+      'physicalDeleteEnabled',COALESCE((v_retention->>'physicalDeleteEnabled')::boolean,false))));
   IF v_input_fp<>p_request->>'integrationInputFingerprint' THEN
     RAISE EXCEPTION 'integration_input_fingerprint mismatch.' USING ERRCODE='23514';
   END IF;
