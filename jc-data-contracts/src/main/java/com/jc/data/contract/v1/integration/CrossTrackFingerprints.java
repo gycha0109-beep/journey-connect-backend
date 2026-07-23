@@ -43,7 +43,10 @@ public final class CrossTrackFingerprints {
                 Map.entry("mappingPolicyVersion", context.definition().mappingPolicyVersion()),
                 Map.entry("integrationPolicyVersion", context.definition().integrationPolicyVersion()),
                 Map.entry("identityBindingFingerprint", context.identityBinding() == null ? "" : context.identityBinding().bindingFingerprint()),
-                Map.entry("mappingFingerprint", mapping(context.contractMapping()))));
+                Map.entry("mappingFingerprint", mapping(context.contractMapping())),
+                Map.entry("authorityResults", authorityResults(context.authorityRules())),
+                Map.entry("privacyResult", privacyResult(context.privacyRule())),
+                Map.entry("retentionResult", retentionResult(context.retentionRule()))));
     }
     public static String check(int order, String code, CrossTrackIntegrationScope scope, String source, String target,
             String expected, String observed, CrossTrackIntegrationSeverity severity,
@@ -99,6 +102,48 @@ public final class CrossTrackFingerprints {
     public static String contractMatrix(List<CrossTrackContractMapping> mappings) {
         List<String> values = mappings.stream().map(CrossTrackFingerprints::mapping).sorted().toList();
         return fingerprint(MATRIX_DOMAIN, Map.of("mappingFingerprints", values));
+    }
+    private static List<Map<String, Object>> authorityResults(List<CrossTrackAuthorityRule> rules) {
+        if (rules == null) return List.of();
+        return rules.stream()
+                .sorted(Comparator.comparing(CrossTrackAuthorityRule::objectName)
+                        .thenComparing(CrossTrackAuthorityRule::owningTrack))
+                .map(rule -> Map.<String, Object>ofEntries(
+                        Map.entry("objectName", rule.objectName()),
+                        Map.entry("owningTrack", rule.owningTrack()),
+                        Map.entry("actorTrack", rule.actorTrack()),
+                        Map.entry("readAllowed", rule.readAllowedTracks().contains(rule.actorTrack())),
+                        Map.entry("writeAllowed", rule.writeAllowedTracks().contains(rule.actorTrack())),
+                        Map.entry("validationAllowed", rule.validationAllowedTracks().contains(rule.actorTrack())),
+                        Map.entry("productionAllowed", rule.productionAuthority().equals(rule.actorTrack())),
+                        Map.entry("readAttempted", rule.readAttempted()),
+                        Map.entry("writeAttempted", rule.writeAttempted()),
+                        Map.entry("validationAttempted", rule.validationAttempted()),
+                        Map.entry("productionAttempted", rule.productionAttempted())))
+                .toList();
+    }
+    private static Map<String, Object> privacyResult(CrossTrackPrivacyRule rule) {
+        if (rule == null) return Map.of();
+        return Map.ofEntries(
+                Map.entry("sourcePrivacyClass", rule.sourcePrivacyClass()),
+                Map.entry("targetPrivacyClass", rule.targetPrivacyClass()),
+                Map.entry("rawPayloadPresent", rule.rawPayloadPresent()),
+                Map.entry("piiPresent", rule.piiPresent()),
+                Map.entry("rawTextPresent", rule.rawTextPresent()),
+                Map.entry("preciseLocationPresent", rule.preciseLocationPresent()),
+                Map.entry("aggregateOnly", rule.aggregateOnly()),
+                Map.entry("lineagePurposeBound", rule.lineagePurposeBound()),
+                Map.entry("reidentificationRisk", rule.reidentificationRisk()));
+    }
+    private static Map<String, Object> retentionResult(CrossTrackRetentionRule rule) {
+        if (rule == null) return Map.of();
+        return Map.ofEntries(
+                Map.entry("sourceRetentionDays", rule.sourceRetentionDays()),
+                Map.entry("targetRetentionDays", rule.targetRetentionDays()),
+                Map.entry("integrationEvidenceRetentionDays", rule.integrationEvidenceRetentionDays()),
+                Map.entry("deletionSemanticsAligned", rule.deletionSemanticsAligned()),
+                Map.entry("automaticPurgeEnabled", rule.automaticPurgeEnabled()),
+                Map.entry("physicalDeleteEnabled", rule.physicalDeleteEnabled()));
     }
     public static String fingerprint(String domain, Map<String, ?> fields) {
         StringBuilder output = new StringBuilder();
