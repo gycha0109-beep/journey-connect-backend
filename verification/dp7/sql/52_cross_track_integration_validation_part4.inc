@@ -10,7 +10,7 @@
   EXCEPTION WHEN check_violation THEN NULL; END;
 
   v_request:=public.dp7_fixture_request_v1('integration_run:search-invalid-document',v_snapshot,v_quality,
-    'Search','DATA_SEARCH_INPUT','search-document-projection-v1',true,true,false);
+    'Search','FINGERPRINT_BOUNDARY','search-document-projection-v1',true,true,false);
   v_request:=jsonb_set(v_request,'{checks,6,checkStatus}','"FAIL"'::jsonb);
   v_request:=jsonb_set(v_request,'{checks,6,severity}','"BLOCKER"'::jsonb);
   v_request:=jsonb_set(v_request,'{checks,6,failureCode}','"search_document_identity_mismatch"'::jsonb);
