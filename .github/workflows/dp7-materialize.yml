@@ -1,0 +1,44 @@
+name: DP7 Materialize Implementation
+
+on:
+  push:
+    branches:
+      - agent/dp7-cross-track-integration-implementation
+    paths:
+      - "verification/dp7/.materialize/**"
+      - ".github/workflows/dp7-materialize.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dp7-materialize-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Materialize implementation payload
+        run: python verification/dp7/.materialize/materialize_dp7_v5.py
+      - name: Commit implementation files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          git reset -- verification/dp7/.materialize .github/workflows/dp7-materialize.yml
+          if git diff --cached --quiet; then
+            echo "No implementation changes to commit."
+            exit 0
+          fi
+          git commit -m "feat(dp7): implement cross-track integration validation"
+          git push origin HEAD:agent/dp7-cross-track-integration-implementation
