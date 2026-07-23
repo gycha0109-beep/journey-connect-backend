@@ -2,6 +2,13 @@
 -- Target: PostgreSQL 15 and 18. Prerequisite: SQL 01..45.
 BEGIN;
 
+-- DP-6 fingerprint functions are SECURITY INVOKER. Grant only the immutable
+-- canonicalization chain they call; no table write or broad function privilege is added.
+GRANT EXECUTE ON FUNCTION public.digest(bytea,text),
+  public.data_event_canonical_json_v1(jsonb),
+  public.data_projection_fingerprint_v1(varchar,jsonb)
+  TO jc_data_quality_function_owner;
+
 CREATE TABLE public.data_quality_rebuild_comparison_v1 (
   rebuild_comparison_id uuid PRIMARY KEY DEFAULT public.gen_random_uuid(),
   validation_run_ref uuid NOT NULL UNIQUE REFERENCES public.data_quality_validation_run_v1(validation_run_id) ON DELETE RESTRICT,
