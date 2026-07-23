@@ -6,8 +6,8 @@
 |---|---|
 | 계약 ID | `sc-decision-register-v1` |
 | canonical path | `docs/platform/governance/SC-DECISION-REGISTER.md` |
-| 상태 | `ACTIVE` |
-| 기준 main HEAD | `05a25771cd99d87891504fc00890ab918b970acf` |
+| 상태 | `ACTIVE / DP-7 ALLOCATION PROPOSED` |
+| 기준 main HEAD | `69b2f9619733e8e6068a23bb149c2aaf41f23fc9` |
 | 갱신일 | `2026-07-23` |
 
 | Decision ID | 결정 | 상태 | 근거/제약 |
@@ -48,8 +48,15 @@
 | `SC-DP5-004` | P2 outcome exposure authority는 `recommendation_p2_experiment_exposure` | APPROVED | general exposure/impression 대체 금지 |
 | `SC-DP5-005` | projection/snapshot/lineage/validation/conflict evidence 90일 metadata | APPROVED / TECHNICAL BASELINE | purge 및 physical delete 비활성 |
 | `SC-DP5-006` | source timestamp, identity, as-of, lineage 및 outcome aggregation은 fail-closed authority 검증 대상 | APPROVED / IMPLEMENTED | independent review correction, exact-head gates PASS |
-| `SC-DP6-001` | SQL `43..47`을 Data quality/lineage validation에 배정 | APPROVED / MERGED | PR #17 merge `c0f6b5dc8cc7089412a100989109b61315c062d0`; SQL 01..42 보호 |
-| `SC-DP6-002` | `jc_data_quality_writer`, `jc_data_quality_reader`, `jc_data_quality_function_owner` | APPROVED / IMPLEMENTED ON PR #18 | execute-only / aggregate-safe-view-only / NOLOGIN owner |
-| `SC-DP6-003` | quality policy `data-quality-policy-v1` 및 100% completeness/fingerprint/rebuild 기준 | APPROVED / IMPLEMENTED ON PR #18 | zero denominator 명시 처리; threshold 임의 완화 금지 |
-| `SC-DP6-004` | snapshot quality verdict는 `VALIDATED / REJECTED / INCONCLUSIVE`만 허용 | APPROVED / IMPLEMENTED ON PR #18 | production/serving/cutover 의미 없음 |
-| `SC-DP6-005` | validation evidence 90일 metadata, append-only, purge 비활성 | APPROVED / IMPLEMENTED ON PR #18 | source/projection/snapshot/lineage 수정 금지 |
+| `SC-DP6-001` | SQL `43..47`을 Data quality/lineage validation에 배정 | APPROVED / IMPLEMENTED / MERGED | PR #17 allocation + PR #18 merge `69b2f9619733e8e6068a23bb149c2aaf41f23fc9`; SQL 01..42 보호 |
+| `SC-DP6-002` | `jc_data_quality_writer`, `jc_data_quality_reader`, `jc_data_quality_function_owner` | APPROVED / IMPLEMENTED | execute-only / aggregate-safe-view-only / NOLOGIN owner |
+| `SC-DP6-003` | quality policy `data-quality-policy-v1` 및 100% completeness/fingerprint/rebuild 기준 | APPROVED / IMPLEMENTED | zero denominator 명시 처리; threshold 임의 완화 금지 |
+| `SC-DP6-004` | snapshot quality verdict는 `VALIDATED / REJECTED / INCONCLUSIVE`만 허용 | APPROVED / IMPLEMENTED | production/serving/cutover 의미 없음 |
+| `SC-DP6-005` | validation evidence 90일 metadata, append-only, purge 비활성 | APPROVED / IMPLEMENTED | source/projection/snapshot/lineage 수정 금지 |
+| `SC-DP7-001` | SQL `48..52` cross-track run/check, boundary evidence, verdict/conflict, atomic persistence/roles/safe view, PG15/18 validation 배정 제안 | PROPOSED / MERGE REQUIRED | SQL 01..47 보호; allocation PR에는 SQL 48+ 없음 |
+| `SC-DP7-002` | `jc_data_integration_writer`, `jc_data_integration_reader`, `jc_data_integration_function_owner` 제안 | PROPOSED / NOT CREATED | allocation merge 전 role 생성 금지 |
+| `SC-DP7-003` | policy `data-cross-track-integration-policy-v1` 및 DP-7 contract/fingerprint IDs 제안 | PROPOSED / MERGE REQUIRED | compatibility evidence only; production authority 없음 |
+| `SC-DP7-004` | Recommendation profile/outcome은 조건부 호환, 현재 P1/P2 authority/cutover 비변경 | PROPOSED / DESIGN FINDING | P2 exposure/metric 의미 보호 |
+| `SC-DP7-005` | Data-specific Intelligence input mapping 부재 | UNRESOLVED / DP-7 INCONCLUSIVE | generic envelope만으로 semantic compatibility 선언 금지 |
+| `SC-DP7-006` | approved Data-to-Search input contract 부재 | UNRESOLVED / DP-7 INCONCLUSIVE | DP-5 profile/outcome를 Search document로 추정 금지 |
+| `SC-DP7-007` | DP-7 allocation 전 최종 판정 | `DP7_IMPLEMENTATION_BLOCKED_BY_SC_ALLOCATION` | SQL/Java/role/runtime 미구현; allocation-only PR |
