@@ -80,7 +80,7 @@
 
   SELECT count(*) INTO v_before FROM public.data_cross_track_integration_run_v1;
   v_request:=public.dp7_fixture_request_v1('integration_run:partial-rollback',v_snapshot,v_quality,
-    'Data','IDENTITY_BOUNDARY','data-cross-track-authority-matrix-v1',true,true,false);
+    'Data','AUTHORITY_BOUNDARY','data-cross-track-authority-matrix-v1',true,true,false);
   BEGIN
     PERFORM public.persist_data_cross_track_integration_v1(v_request);
     RAISE EXCEPTION 'partial transaction rollback unexpectedly succeeded';
