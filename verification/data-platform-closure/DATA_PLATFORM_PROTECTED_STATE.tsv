@@ -1,0 +1,12 @@
+control	expected	observed	status	owner	authoritative_commit	evidence_source	method
+SQL01_52	unchanged	closure diff none	CANDIDATE	SC	c528f6fb0942389b70a348cb9aa672eb7819a392	closure verifier	git diff
+SQL53_plus	absent	exact scan	CANDIDATE	SC	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7 verifier	file scan
+production_shadow	false	default false	VERIFIED	Operations	c528f6fb0942389b70a348cb9aa672eb7819a392	application-prod.yml	static
+kill_switch	true	default true	VERIFIED	Operations	c528f6fb0942389b70a348cb9aa672eb7819a392	application-prod.yml	static
+sampling	0	default 0	VERIFIED	Operations	c528f6fb0942389b70a348cb9aa672eb7819a392	application-prod.yml	static
+cohort	empty	empty default	VERIFIED	Operations	c528f6fb0942389b70a348cb9aa672eb7819a392	application-prod.yml	static
+explore	legacy	protected test	CANDIDATE	Search/Backend	c528f6fb0942389b70a348cb9aa672eb7819a392	IP12 test	CI
+recommendation_write	none	protected	CANDIDATE	Recommendation	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7	CI
+intelligence_runtime	disabled	no source diff	CANDIDATE	Intelligence	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7	CI
+search_index_cutover	none	no source diff	CANDIDATE	Search	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7	CI
+worker_recovery_lifecycle	none/disabled	handoff only	CANDIDATE	Ops/Rel	c528f6fb0942389b70a348cb9aa672eb7819a392	closure	static

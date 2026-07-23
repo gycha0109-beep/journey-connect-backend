@@ -1,0 +1,6 @@
+task	status	compatibility	objective	acceptance	owner	authoritative_commit	evidence_source	dependency
+SEARCH-DATA-1	PENDING	INCONCLUSIVE	input contract	grain/document/fields/privacy/deletion/lineage	Search	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7	owner decision
+SEARCH-DATA-2	PENDING	INCONCLUSIVE	document mapping	deterministic/no subject reinterpretation	Search	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff	SEARCH-DATA-1
+SEARCH-DATA-3	NOT_STARTED	INCONCLUSIVE	offline index	count/fingerprint/deletion/freshness/no traffic	Search	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff	SEARCH-DATA-2
+SEARCH-DATA-4	NOT_STARTED	INCONCLUSIVE	shadow query	legacy preserved/parity	Search/Rel	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff	offline index
+SEARCH-DATA-5	NOT_AUTHORIZED	INCONCLUSIVE	cutover	Ops/Rel/cohort/kill/rollback	Search/Ops/Rel	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff	gates

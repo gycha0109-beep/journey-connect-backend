@@ -1,0 +1,10 @@
+phase	objective	status	output	validation	authoritative_commit	owner	dependency
+DP-0	foundation	COMPLETE	contracts/docs	SC/static	c528f6fb0942389b70a348cb9aa672eb7819a392	Data	none
+DP-1	event validation	COMPLETE	Java contracts	Java21	c528f6fb0942389b70a348cb9aa672eb7819a392	Data	ingress
+DP-2	store/idempotency	COMPLETE	SQL29..31	PG15/18+concurrency	c528f6fb0942389b70a348cb9aa672eb7819a392	Data	worker
+DP-3	retry/quarantine	COMPLETE	SQL32..34	PG15/18+concurrency	c528f6fb0942389b70a348cb9aa672eb7819a392	Data	scheduler/replay
+DP-4	adapter	COMPLETE	Java adapter	Java/Recommendation	c528f6fb0942389b70a348cb9aa672eb7819a392	Data	adoption
+DP-4.5	adapter evidence	COMPLETE	SQL35..37	PG15/18+concurrency	c528f6fb0942389b70a348cb9aa672eb7819a392	Data	shadow
+DP-5	projection/snapshot	COMPLETE	SQL38..42	PG15/18+concurrency	c528f6fb0942389b70a348cb9aa672eb7819a392	Data	target contracts
+DP-6	quality	COMPLETE	SQL43..47	PG15/18+Java	c528f6fb0942389b70a348cb9aa672eb7819a392	Data	Reliability
+DP-7	integration	COMPLETE	SQL48..52	PG15/18+targets	c528f6fb0942389b70a348cb9aa672eb7819a392	Data	target adoption

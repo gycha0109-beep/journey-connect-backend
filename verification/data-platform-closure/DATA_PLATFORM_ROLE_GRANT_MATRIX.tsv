@@ -1,0 +1,11 @@
+role	capability	denied	status	owner	authoritative_commit	evidence_source	dependency
+jc_data_event_writer	event function	DDL/broad write	ACTIVE	Data	c528f6fb0942389b70a348cb9aa672eb7819a392	DP2	credential
+jc_data_event_reader	approved read	write	ACTIVE	Data	c528f6fb0942389b70a348cb9aa672eb7819a392	DP2	allowlist
+jc_data_retry_processor	retry procedures	broad write	ACTIVE_NO_SCHEDULER	Data/Ops	c528f6fb0942389b70a348cb9aa672eb7819a392	DP3	worker
+jc_data_quarantine_reviewer	review evidence	replay	ACTIVE	Data/Ops	c528f6fb0942389b70a348cb9aa672eb7819a392	DP3	workflow
+jc_data_replay_executor	reserved	execute	NO_EXECUTE	Rel/Ops	c528f6fb0942389b70a348cb9aa672eb7819a392	Registry	approval
+jc_data_adapter_evidence_writer	adapter function	direct table	ACTIVE	Data	c528f6fb0942389b70a348cb9aa672eb7819a392	DP45	consumer
+jc_data_projection_writer	projection functions	direct table	ACTIVE	Data	c528f6fb0942389b70a348cb9aa672eb7819a392	DP5	worker
+jc_data_quality_writer	quality function	direct table	ACTIVE	Data	c528f6fb0942389b70a348cb9aa672eb7819a392	DP6	worker
+jc_data_integration_writer	integration function	direct table	ACTIVE	Data	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7	worker
+PUBLIC	none	functions/views/raw	REVOKED	SC	c528f6fb0942389b70a348cb9aa672eb7819a392	grants	none

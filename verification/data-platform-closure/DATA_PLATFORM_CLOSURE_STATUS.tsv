@@ -1,0 +1,2 @@
+closure_id	authoritative_main	closure_pr_head	status	implemented	documented	verification_executed	verification_passed	production_ready	production_approved	owner	dependency
+data-platform-technical-closure-v1	c528f6fb0942389b70a348cb9aa672eb7819a392	SELF_HEAD	CANDIDATE_PENDING_EXACT_HEAD_CI	true	true	pending	pending	false	false	Data/SC	CI and user merge

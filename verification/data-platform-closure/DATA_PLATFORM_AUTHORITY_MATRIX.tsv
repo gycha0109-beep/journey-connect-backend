@@ -1,0 +1,11 @@
+object	owner	writer	readers	validation_authority	production_authority	mutation	activation	handoff_owner	authoritative_commit	evidence_source
+canonical_event	Data	event function	Data	Data	Operations	append_only	inactive	Operations	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL29
+projection_snapshot_lineage	Data	projection function	targets	Data	target+Ops	append_only	shadow	targets	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL38..42
+quality_verdict	Data	quality function	Rel/integration	Data	Reliability	append_only	evidence	Reliability	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL43..47
+integration_verdict	Data	integration function	target/SC	Data	target+Ops+Rel	append_only	evidence	targets	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL48..52
+recommendation_decision	Recommendation	protected path	approved	Recommendation	Recommendation+Ops	owner	protected	Recommendation	c528f6fb0942389b70a348cb9aa672eb7819a392	System Contract
+p2_exposure	Reliability semantic	protected path	P2/Data	Reliability	Reliability	append_only	protected	Reliability	c528f6fb0942389b70a348cb9aa672eb7819a392	System Contract
+intelligence_result	Intelligence	runtime	approved	Intelligence	Intelligence+Ops	owner	disabled	Intelligence	c528f6fb0942389b70a348cb9aa672eb7819a392	System Contract
+search_index	Search	pipeline	Search/Ops	Search	Search+Ops	rebuildable	disabled	Search	c528f6fb0942389b70a348cb9aa672eb7819a392	System Contract
+traffic	Operations	control plane	runtime/Rel	Operations	Operations	audited	disabled	Operations	c528f6fb0942389b70a348cb9aa672eb7819a392	prod config
+replay_backfill	Reliability/Ops	none	audit	Reliability	joint	none	unauthorized	Rel/Ops	c528f6fb0942389b70a348cb9aa672eb7819a392	SC Handoff

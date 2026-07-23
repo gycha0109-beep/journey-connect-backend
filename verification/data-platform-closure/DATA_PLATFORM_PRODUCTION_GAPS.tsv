@@ -1,0 +1,11 @@
+gap_id	domain	description	current_state	required_state	severity	blocking	owner	prerequisite	acceptance_criteria	authoritative_commit	evidence_source
+DPG-EXEC-01	execution	ingestion worker	absent	Operations runtime	BLOCKER	yes	Operations	event contract	worker tests	c528f6fb0942389b70a348cb9aa672eb7819a392	readiness gaps doc
+DPG-EXEC-02	execution	retry worker	SQL only	controlled worker	HIGH	yes	Operations	retry policy	lease/retry tests	c528f6fb0942389b70a348cb9aa672eb7819a392	readiness gaps doc
+DPG-EXEC-03	execution	projection/quality/integration workers	absent	isolated jobs	BLOCKER	yes	Operations	schedules	deterministic execution	c528f6fb0942389b70a348cb9aa672eb7819a392	readiness gaps doc
+DPG-REC-01	recovery	replay	unauthorized	bounded replay	BLOCKER	yes	Rel/Ops	privacy/identity	dryrun/audit/rollback	c528f6fb0942389b70a348cb9aa672eb7819a392	readiness gaps doc
+DPG-REC-02	recovery	backfill	unauthorized	bounded backfill	BLOCKER	yes	Rel/Ops	source authority	dedupe/resource/audit	c528f6fb0942389b70a348cb9aa672eb7819a392	readiness gaps doc
+DPG-LIFE-01	lifecycle	purge	metadata only	approved executor	HIGH	yes	Ops/Privacy	legal policy	dryrun/hold/audit	c528f6fb0942389b70a348cb9aa672eb7819a392	readiness gaps doc
+DPG-OBS-01	observability	dashboard/alerts	safe views	telemetry	BLOCKER	yes	Operations	SLI	dashboard/alerts	c528f6fb0942389b70a348cb9aa672eb7819a392	readiness gaps doc
+DPG-SEC-01	security	secrets/runtime roles	not operationalized	managed rotation	BLOCKER	yes	Ops/Security	environment	rotation/audit	c528f6fb0942389b70a348cb9aa672eb7819a392	readiness gaps doc
+DPG-REL-01	release	shadow authorization	disabled	explicit approval	BLOCKER	yes	Rel/Ops	gates2-6	scope/cohort/rollback	c528f6fb0942389b70a348cb9aa672eb7819a392	readiness gaps doc
+DPG-REL-02	release	parity/drift	not executed	accepted comparison	BLOCKER	yes	Target/Rel	shadow	reproducible report	c528f6fb0942389b70a348cb9aa672eb7819a392	readiness gaps doc

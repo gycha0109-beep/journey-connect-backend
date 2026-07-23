@@ -1,0 +1,5 @@
+task	status	compatibility	objective	acceptance	owner	authoritative_commit	evidence_source	dependency
+IP-DATA-1	PENDING	INCONCLUSIVE	input contract	domain/fields/semantics/version/identity/privacy/lineage/quality	Intelligence	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7	owner decision
+IP-DATA-2	PENDING	INCONCLUSIVE	feature mapping	owner/derivation/fingerprint/freshness/override	Intelligence	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff	IP-DATA-1
+IP-DATA-3	NOT_STARTED	INCONCLUSIVE	offline validation	no activation/deterministic/failure isolation	Intelligence	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff	IP-DATA-1/2
+IP-DATA-4	NOT_READY	INCONCLUSIVE	runtime readiness	Ops/Rel/model/observability/rollback	Intelligence/Ops/Rel	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff	gates

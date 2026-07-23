@@ -1,0 +1,6 @@
+policy	scope	status	owner	change_rule	production_effect	authoritative_commit	evidence_source	dependency
+data-retention-policy-v1	metadata	ACTIVE	Data/Privacy	new policy	none without executor	c528f6fb0942389b70a348cb9aa672eb7819a392	SQL29..52	Ops
+data-projection-retry-v1	retry	ACTIVE	Data	new version	none without scheduler	c528f6fb0942389b70a348cb9aa672eb7819a392	DP3	Ops
+projection policies v1	projection	ACTIVE	Data/targets	new version	shadow	c528f6fb0942389b70a348cb9aa672eb7819a392	DP5	targets
+data-quality-policy-v1	quality	ACTIVE	Data	new policy	not release	c528f6fb0942389b70a348cb9aa672eb7819a392	DP6	Rel
+data-cross-track-integration-policy-v1	compatibility	ACTIVE	Data	new policy	not activation	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7	targets

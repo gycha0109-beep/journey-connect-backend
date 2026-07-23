@@ -1,0 +1,7 @@
+item	value	authoritative_commit	evidence_source	verification_method	status	owner	remaining_dependency
+repository	gycha0109-beep/journey-connect-backend	c528f6fb0942389b70a348cb9aa672eb7819a392	GitHub metadata	connector inspection	VERIFIED	SC	none
+branch	main	c528f6fb0942389b70a348cb9aa672eb7819a392	GitHub commits	latest commit	VERIFIED	SC	none
+dp7_merge	PR#20	c528f6fb0942389b70a348cb9aa672eb7819a392	GitHub PR20	merged state	VERIFIED	Data	none
+sql_range	01..52	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7 verifier	exact file scan	VERIFIED	Data/SC	53+ unallocated
+main_push_ci	none	c528f6fb0942389b70a348cb9aa672eb7819a392	GitHub Actions	commit run lookup	NOT_AVAILABLE	Repository	closure PR CI
+production	disabled	c528f6fb0942389b70a348cb9aa672eb7819a392	application-prod.yml	static protection	VERIFIED	Operations	authorization

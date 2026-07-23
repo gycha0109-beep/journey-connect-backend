@@ -1,0 +1,9 @@
+decision	status	rationale	owner	authoritative_commit	evidence_source	dependency
+DP0_7	COMPLETE	merged baseline	Data/SC	c528f6fb0942389b70a348cb9aa672eb7819a392	phase inventory	closure merge
+production_ready	NO	gaps	Ops/Rel	c528f6fb0942389b70a348cb9aa672eb7819a392	gaps	gates2-9
+production_approved	NO	no authority	joint	c528f6fb0942389b70a348cb9aa672eb7819a392	activation	approval
+recommendation	CONDITIONALLY_COMPATIBLE	authority retained	Recommendation	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7	REC tasks
+intelligence	INCONCLUSIVE	mapping absent	Intelligence	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7	IP tasks
+search	INCONCLUSIVE	contract absent	Search	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7	Search tasks
+sql	IMMUTABLE_01_52	closure	SC	c528f6fb0942389b70a348cb9aa672eb7819a392	policy	53+ allocation
+track	CLOSE_AFTER_MERGE	separate future tracks	SC/user	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff	PR merge

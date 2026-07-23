@@ -1,0 +1,7 @@
+capability	current_state	required_state	data_dependency	security	observability	rollback	acceptance	owner	authoritative_commit	evidence_source
+worker_runtime	absent	bounded workers	idempotency/checkpoint/verdict	function roles	run/lag/failure	disable/resume	crash/load	Operations	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff
+scheduler	disabled	audited orchestration	jobs	audit	schedule/run	disable	overlap/recovery	Operations	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff
+deployment	absent	isolated env	artifacts	network/secrets	deploy health	artifact rollback	runbook	Operations	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff
+monitoring	safe views	dashboard/delivery	safe metrics	no raw IDs	SLI/alerts	HOLD	delivery/escalation	Operations	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff
+retention_purge	disabled	approved executor	metadata	privacy/hold	deleted/held	policy	dryrun/audit	Ops/Privacy	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff
+kill_sampling_cohort	disabled/0/empty	approval only	gates	approver split	exposure/cohort	kill	zero unauthorized	Operations	c528f6fb0942389b70a348cb9aa672eb7819a392	prod config

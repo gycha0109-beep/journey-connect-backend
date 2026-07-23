@@ -1,22 +1,25 @@
-name: DP6 Allocation Gate
+name: Data Platform Closure CI
 on:
   pull_request:
     branches: [main]
     paths:
-      - "docs/platform/governance/**"
-      - "docs/platform/data/DP-6-*.md"
       - "docs/platform/data/DATA-PLATFORM-*.md"
       - "docs/platform/data/HANDOFF-DATA-TO-*.md"
-      - "verification/dp6/**"
+      - "docs/platform/data/DP-7-HANDOFF.md"
+      - "docs/platform/governance/**"
       - "verification/data-platform-closure/**"
-      - "verification/sc-dp1-baseline-reconciliation/**"
-      - ".github/workflows/dp6-allocation-ci.yml"
+      - "verification/dp7/run_dp7_allocation_verification.py"
+      - "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py"
+      - ".github/workflows/data-platform-closure-ci.yml"
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: data-platform-closure-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
-  allocation:
-    name: DP-6 predecessor / closure protected diff
+  closure:
+    name: Closure documents / evidence / protected diff
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -26,6 +29,6 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - run: python verification/dp6/run_dp6_allocation_verification.py
       - run: python verification/data-platform-closure/run_data_platform_closure_verification.py
+      - run: python verification/dp7/run_dp7_allocation_verification.py
       - run: python verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py

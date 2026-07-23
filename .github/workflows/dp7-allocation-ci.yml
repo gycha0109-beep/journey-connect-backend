@@ -1,5 +1,4 @@
 name: DP7 Allocation Gate
-
 on:
   pull_request:
     branches: [main]
@@ -7,65 +6,38 @@ on:
       - "database/journey-connect-db-v2.7/4[8-9]_*.sql"
       - "database/journey-connect-db-v2.7/5[0-2]_*.sql"
       - "jc-data-contracts/**"
-      - "docs/platform/governance/SC-DP7-CROSS-TRACK-INTEGRATION-ALLOCATION.md"
-      - "docs/platform/governance/SC-DECISION-REGISTER.md"
-      - "docs/platform/governance/SC-PLATFORM-REGISTRY.md"
-      - "docs/platform/governance/SC-HANDOFF.md"
+      - "docs/platform/governance/**"
       - "docs/platform/data/DP-7-*.md"
+      - "docs/platform/data/DATA-PLATFORM-*.md"
+      - "docs/platform/data/HANDOFF-DATA-TO-*.md"
       - "verification/dp7/**"
-      - "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py"
+      - "verification/data-platform-closure/**"
+      - "verification/sc-dp1-baseline-reconciliation/**"
       - ".github/workflows/dp7-allocation-ci.yml"
   workflow_dispatch:
-
 permissions:
   contents: read
-
 concurrency:
   group: dp7-allocation-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
-
 jobs:
   implementation-boundary:
-    name: DP-7 allocation / implementation / protected diff
+    name: DP-7 implementation / closure protected diff
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-          show-progress: false
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - name: Validate approved allocation and implementation inventory
-        shell: bash
-        run: |
-          set -o pipefail
-          mkdir -p verification/dp7/runtime
-          python verification/dp7/run_dp7_allocation_verification.py \
-            2>&1 | tee verification/dp7/runtime/DP7_ALLOCATION_CI.log
-      - name: Validate DP-7 static contracts and production protection
-        shell: bash
-        run: |
-          set -o pipefail
-          python verification/dp7/run_dp7_static_verification.py \
-            2>&1 | tee verification/dp7/runtime/DP7_STATIC_CI.log
-      - name: Validate SC reconciliation
-        shell: bash
-        run: |
-          set -o pipefail
-          python verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py \
-            2>&1 | tee verification/dp7/runtime/DP7_SC_RECONCILIATION_CI.log
-      - name: Upload implementation evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dp7-implementation-evidence
-          path: verification/dp7/runtime
-          if-no-files-found: error
-
+      - run: python verification/dp7/run_dp7_allocation_verification.py
+      - run: python verification/dp7/run_dp7_static_verification.py
+      - run: python verification/data-platform-closure/run_data_platform_closure_verification.py
+      - run: python verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py
   contract-regression:
-    name: Java 21 / DP-7 and target-track contracts
+    name: Java 21 / Data and target-track contracts
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
@@ -75,52 +47,14 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-          show-progress: false
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
       - uses: gradle/actions/setup-gradle@v6
-      - name: Grant Gradle wrapper permission
-        run: chmod +x ./gradlew
-      - name: Run Data and target-track contract regressions
-        shell: bash
+      - run: chmod +x ./gradlew
+      - name: Run Data and target-track regressions
         run: |
-          set -o pipefail
-          mkdir -p ../verification/dp7/runtime
-          ./gradlew \
-            :jc-data-contracts:check \
-            :jc-recommendation-core:check \
-            :jc-intelligence-contracts:check \
-            :jc-search-contracts:check \
-            :jc-search-compatibility:check \
-            --stacktrace --no-daemon \
-            2>&1 | tee ../verification/dp7/runtime/DP7_CONTRACT_REGRESSION_CI.log
-      - name: Run backend production protection contract
-        shell: bash
-        run: |
-          set -o pipefail
-          ./gradlew :test \
-            --tests com.jc.backend.search.shadow.production.IP12ProductionShadowStaticTest \
-            --stacktrace --no-daemon \
-            2>&1 | tee ../verification/dp7/runtime/DP7_BACKEND_PROTECTION_CI.log
-      - name: Upload regression evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dp7-contract-regression-evidence
-          path: |
-            verification/dp7/runtime
-            jc-data-contracts/build/reports/**
-            jc-data-contracts/build/test-results/**
-            jc-recommendation-core/build/reports/**
-            jc-recommendation-core/build/test-results/**
-            jc-intelligence-contracts/build/reports/**
-            jc-intelligence-contracts/build/test-results/**
-            jc-search-contracts/build/reports/**
-            jc-search-contracts/build/test-results/**
-            jc-search-compatibility/build/reports/**
-            jc-search-compatibility/build/test-results/**
-            jc-backend/build/reports/tests/**
-            jc-backend/build/test-results/**
-          if-no-files-found: warn
+          ./gradlew :jc-data-contracts:check :jc-recommendation-core:check :jc-intelligence-contracts:check :jc-search-contracts:check :jc-search-compatibility:check --stacktrace --no-daemon
+      - name: Run backend production protection
+        run: ./gradlew :test --tests com.jc.backend.search.shadow.production.IP12ProductionShadowStaticTest --stacktrace --no-daemon

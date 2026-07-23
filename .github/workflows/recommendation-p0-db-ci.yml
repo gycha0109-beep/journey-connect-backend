@@ -1,5 +1,4 @@
 name: Recommendation P0 Database CI
-
 on:
   pull_request:
     paths:
@@ -13,72 +12,44 @@ on:
       - "jc-data-contracts/**"
       - "docs/platform/data/DP-4-*.md"
       - "docs/platform/data/DP-5-*.md"
+      - "docs/platform/data/DATA-PLATFORM-*.md"
+      - "docs/platform/data/HANDOFF-DATA-TO-*.md"
       - "verification/dp4/**"
       - "verification/dp5/**"
+      - "verification/data-platform-closure/**"
       - ".github/workflows/recommendation-p0-db-ci.yml"
   workflow_dispatch:
-
 permissions:
   contents: read
-
 concurrency:
   group: recommendation-p0-db-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
-
 jobs:
   canonical-database:
     name: Java/Testcontainers PostgreSQL ${{ matrix.postgres }}
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         postgres: ["15", "18"]
-
     defaults:
       run:
         working-directory: jc-backend
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-
-      - name: Set up Java 21
-        uses: actions/setup-java@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
-
-      - name: Grant execute permission for Gradle Wrapper
-        run: chmod +x ./gradlew
-
-      - name: Run Java source and SQL integrity gates
-        shell: bash
+      - uses: gradle/actions/setup-gradle@v6
+      - run: chmod +x ./gradlew
+      - name: Run source and SQL integrity gates
         run: |
-          set -o pipefail
-          ./gradlew p0Verification --stacktrace --no-daemon 2>&1 | tee ../verification/ip12-5/IP125_P0_STATIC_PG${{ matrix.postgres }}.log
+          ./gradlew p0Verification --stacktrace --no-daemon
           python ../verification/dp5/run_dp5_static_verification.py
-
-      - name: Run canonical PostgreSQL integration suite
-        shell: bash
+          python ../verification/data-platform-closure/run_data_platform_closure_verification.py
+      - name: Run canonical PostgreSQL suite
         env:
           JC_TEST_POSTGRES_IMAGE: postgres:${{ matrix.postgres }}-alpine
-        run: |
-          set -o pipefail
-          ./gradlew test --stacktrace --no-daemon 2>&1 | tee ../verification/ip12-5/IP125_POSTGRESQL_${{ matrix.postgres }}.log
-
-      - name: Upload PostgreSQL verification evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ip125-postgresql-${{ matrix.postgres }}-evidence
-          path: |
-            verification/ip12-5/IP125_P0_STATIC_PG${{ matrix.postgres }}.log
-            verification/ip12-5/IP125_POSTGRESQL_${{ matrix.postgres }}.log
-            jc-backend/build/test-results/**/*.xml
-            jc-backend/build/reports/tests/**
-          if-no-files-found: warn
+        run: ./gradlew test --stacktrace --no-daemon

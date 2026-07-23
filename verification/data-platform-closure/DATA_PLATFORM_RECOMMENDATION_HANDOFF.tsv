@@ -1,0 +1,5 @@
+task	status	compatibility	objective	acceptance	owner	approval	rollback	authoritative_commit	evidence_source
+REC-DATA-1	PENDING	CONDITIONALLY_COMPATIBLE	shadow validation	version/failclosed/no replacement	Recommendation	Rec+SC	disable read	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7
+REC-DATA-2	PENDING	CONDITIONALLY_COMPATIBLE	parity/drift	counts/identity/features/exposure/metrics/fingerprints	Rec/Rel	joint	current source	c528f6fb0942389b70a348cb9aa672eb7819a392	DP7
+REC-DATA-3	NOT_AUTHORIZED	CONDITIONALLY_COMPATIBLE	adoption decision	authority/privacy/SLO/migration/rollback	Recommendation	joint+SC	no adoption	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff
+REC-DATA-4	NOT_AUTHORIZED	CONDITIONALLY_COMPATIBLE	staged cutover	cohort/kill/threshold/evidence	Rec/Ops/Rel	joint	restore current	c528f6fb0942389b70a348cb9aa672eb7819a392	handoff

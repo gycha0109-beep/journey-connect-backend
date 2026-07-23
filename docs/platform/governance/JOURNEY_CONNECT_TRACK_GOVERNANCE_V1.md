@@ -1,39 +1,27 @@
 # Journey Connect Track Governance V1
 
-## 1. 문서 정보
+## 문서 정보
 
 | 항목 | 값 |
 |---|---|
-| 개정 | `V1.2 / SC DP-1 BASELINE RECONCILIATION` |
+| 개정 | `V1.3 / DATA PLATFORM TECHNICAL CLOSURE` |
 | 상태 | `ACTIVE` |
-| canonical DB | `journey-connect-db-v2.7/01..28` |
-| SC 기준 | [System Contract](JOURNEY_CONNECT_SYSTEM_CONTRACT_V1.md) |
+| authoritative main | `c528f6fb0942389b70a348cb9aa672eb7819a392` |
+| canonical DB | `journey-connect-db-v2.7/01..52` |
+| historical baseline | `journey-connect-db-v2.7/01..28` |
+| Data module/package | `jc-data-contracts` / `com.jc.data.contract.v1` |
 
-## 2. 책임
+## 책임
 
-### Data
+- Data: canonical event, idempotency, retry/quarantine evidence, checkpoint/projection/snapshot/lineage, quality/integration evidence, retention/privacy metadata.
+- Recommendation: current P1 source/decision and protected Recommendation artifacts.
+- Intelligence: model/runtime/result, feature semantics, confidence and activation.
+- Search: document identity/mapping/index/freshness/reindex/runtime/cutover.
+- Operations: workers, scheduler, deployment, secrets, DB access, monitoring, incident, retention/purge execution, kill switch/sampling/cohort operation.
+- Reliability: SLI/SLO/error budget, release/rollback, replay/backfill approval, DR and promotion evidence.
+- SC: registry, SQL sequence, authority/breaking-change and final conflict/go-no-go.
 
-Own: canonical platform event, validation, idempotency, retry/quarantine/replay, versioned datasets, quality, lineage, privacy technology policy.
-
-Not own: recommendation/search calculation, moderation decision, experiment metric/release, 다른 트랙 table write.
-
-### Intelligence
-
-Own: Recommendation/Search/Content/Trip runtime meaning, policy/model/prompt, run/snapshot/provenance. Existing P0/P1/P2 recommendation path is protected.
-
-### Operations
-
-Own: admin authorization, moderation/visibility/eligibility, operator audit, stop/hold/override controls.
-
-### Reliability
-
-Own: experiment definition/assignment semantics, metric/denominator/attribution, evaluation, release/rollback evidence. Current P2 physical path remains protected compatibility arrangement.
-
-### System Coordination
-
-Own: System Contract, registries, DB sequence, integration order, breaking-change decisions, final conflict/go-no-go classification.
-
-## 3. Authoritative execution sequence
+## Authoritative execution sequence
 
 ```text
 IP 기술 기준선 종결
@@ -43,66 +31,16 @@ IP 기술 기준선 종결
 → 교차 트랙 통합 검증
 ```
 
-과거 `DP-1/IP-1 병렬 진행`은 DB 비변경 작업이 기술적으로 병렬 가능하다는 **historical recommendation**이다. 현재 authoritative sequence보다 우선하지 않으며 DP-1 시작 기준을 변경하지 않는다.
+과거 `DP-1/IP-1 병렬 진행`은 DB 비변경 범위의 **historical recommendation**이며 production dependency를 덮어쓰지 않는다. Data closure 후 작업은 DP-8이 아니라 별도 track task다.
 
-## 4. DP-1 boundary
+## Closed Data boundary
 
-Allowed:
+DP-0~DP-7 technical roadmap은 complete다. SQL `01..52`는 immutable이고 `53+`는 unallocated다. Recommendation compatibility는 conditional, Intelligence/Search는 inconclusive다. Worker/scheduler/replay/backfill/rebuild/purge와 production activation은 closure 밖이다.
 
-- reserved `jc-data-contracts` / `com.jc.data.contract`
-- Java contract type/validator/canonicalization fixture/contract test
-- DB와 runtime 비변경
+## Change proposal gate
 
-Not allowed in this reconciliation:
+Common ID/version/canonicalization/fingerprint, identity/privacy/retention, DB sequence/role/grant, cross-track authority/read/write, quality/integration semantics, source/consumer cutover, production control은 SC proposal이 필요하다.
 
-- module/source 생성
-- event ingestion/runtime/persistence
-- SQL/new migration
-- identity mapping
-- projection cutover
+## Integration refusal
 
-## 5. DB governance
-
-- baseline `01..28`
-- SQL 27 Search derived projection + Operations eligibility
-- SQL 28 smoke test
-- DP-2 이후 SQL은 SC가 28 이후 배정
-- 한 PR에서 여러 트랙의 write contract를 혼합하지 않는다.
-- 기존 SQL을 수정하지 않고 forward migration을 원칙으로 한다.
-
-## 6. Branch/PR separation
-
-- PR #3: `codex/ip-12-5-readiness`, IP technical controls only
-- SC reconciliation: `codex/sc-dp1-baseline-reconciliation`, docs/registry/evidence only
-- PR #3 미병합 상태를 main authoritative state로 기록하지 않는다.
-- 사용자 명시 지시 없이 PR #3을 병합하지 않는다.
-
-## 7. Change proposal gate
-
-구현 전 SC proposal 필요:
-
-- 공통 ID/enum/time/version/canonicalization/fingerprint 변경
-- 다른 트랙 read/write 추가
-- event family/type 추가
-- snapshot/hash 또는 identity/privacy 변화
-- DB sequence/role/grant 변화
-- runtime source/consumer cutover
-
-## 8. Integration refusal
-
-- duplicate registry value
-- unversioned schema/policy/metric
-- direct cross-track write
-- SQL 미검증/sequence collision
-- P0/P1/P2 replay/golden regression
-- exposure authority/metric confusion
-- unauthorized identity mapping/cutover
-- docs/implementation mismatch
-- PR #3 operational HOLD를 traffic approval로 오해
-
-## 9. Canonical governance paths
-
-- Decision Register: [SC-DECISION-REGISTER.md](SC-DECISION-REGISTER.md)
-- RACI: [SC-RACI.md](SC-RACI.md)
-- Registry: [SC-PLATFORM-REGISTRY.md](SC-PLATFORM-REGISTRY.md)
-- Handoff: [SC-HANDOFF.md](SC-HANDOFF.md)
+Direct cross-track write, unversioned contract, authority/metric drift, unauthorized identity/cutover, unverified SQL, runtime을 문서 상태로 위장, unexecuted PASS, final head/workflow SHA mismatch를 거부한다.
