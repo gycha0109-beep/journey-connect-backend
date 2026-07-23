@@ -2,18 +2,19 @@
 
 ## Status
 
-- Decision: `PROPOSED / NON-AUTHORITATIVE UNTIL MERGED`
-- Implementation authority: `BLOCKED UNTIL THIS ALLOCATION IS MERGED`
-- Proposed allocation PR: `#17`
-- Authoritative proposal base: `05a25771cd99d87891504fc00890ab918b970acf`
-- DP-5 prerequisite: `SATISFIED / PR #16 MERGED`
-- Current DP-6 state: `DP6_IMPLEMENTATION_BLOCKED_BY_SC_ALLOCATION`
+- Decision: `APPROVED / MERGED`
+- Implementation authority: `GRANTED`
+- Allocation PR: `#17`
+- Allocation HEAD: `5399d7a136a2a6961292ec0eacbe6c47b7b407e0`
+- Allocation merge commit: `c0f6b5dc8cc7089412a100989109b61315c062d0`
+- Authoritative implementation base: `c0f6b5dc8cc7089412a100989109b61315c062d0`
+- Implementation PR: `#18`
+- DP-5 prerequisite: `SATISFIED / MAIN INTEGRATED`
+- Current DP-6 state: `IMPLEMENTATION CANDIDATE / MAIN MERGE PENDING`
 
-## System outcome
+## Authorized system outcome
 
-After this decision is merged, DP-6 may validate—without mutating—the integrity and quality of DP-5 checkpoints, projection records, snapshots and lineage against canonical Data events, approved DP-4.5 adapter evidence, explicit identity binding evidence and protected P2 exposure authority.
-
-Authorized direction after merge:
+DP-6 may validate, without mutating, whether DP-5 checkpoints, projection records, snapshots and lineage agree with canonical Data events, approved DP-4.5 adapter evidence, explicit identity binding evidence and protected P2 exposure authority.
 
 ```text
 canonical source + adapter evidence + checkpoint + projection + snapshot + lineage
@@ -22,126 +23,52 @@ canonical source + adapter evidence + checkpoint + projection + snapshot + linea
 → append-only snapshot quality verdict
 ```
 
-This allocation does not authorize source, projection, snapshot or lineage mutation; production Recommendation input/write; worker; scheduler; replay; backfill; automatic rebuild; purge; Search projection; production shadow activation; cutover or traffic.
+This authority does not permit source/projection/snapshot/lineage mutation, production Recommendation input or write, worker, scheduler, replay, backfill, automatic rebuild, purge, Search projection, production shadow activation, cutover or traffic.
 
-## SQL allocation proposed
+## SQL allocation
 
-### SQL 43
+- SQL 43: `43_data_quality_validation_foundation.sql` — validation run/status, check result, anomaly evidence and append-only controls.
+- SQL 44: `44_data_quality_metrics_and_verdict.sql` — versioned policy, metrics, snapshot verdict and late-arrival observation.
+- SQL 45: `45_data_quality_persistence_and_roles.sql` — atomic `NEW / DUPLICATE / CONFLICT`, authoritative reconciliation, roles and hardened functions.
+- SQL 46: `46_data_quality_rebuild_and_safe_views.sql` — rebuild comparison, conflict evidence and aggregate-only safe view.
+- SQL 47: `47_data_quality_validation.sql` — PostgreSQL 15/18 rollback-only validation.
 
-`43_data_quality_validation_foundation.sql`
+## Role allocation
 
-Responsibility:
+- `jc_data_quality_writer`: execute approved quality persistence function only; no direct table or cross-track write.
+- `jc_data_quality_reader`: select aggregate quality safe view only.
+- `jc_data_quality_function_owner`: `NOLOGIN`, `NOSUPERUSER`, `NOCREATEDB`, `NOCREATEROLE`, `NOREPLICATION`, `NOBYPASSRLS`, fixed-search-path function owner.
 
-- validation run and append-only status evidence;
-- validation check results;
-- anomaly evidence;
-- stable scope/status/severity/failure constraints;
-- retention metadata and append-only controls.
+## Quality policy
 
-### SQL 44
-
-`44_data_quality_metrics_and_verdict.sql`
-
-Responsibility:
-
-- versioned quality metrics and threshold results;
-- append-only snapshot quality verdicts;
-- late-arrival observations;
-- `VALIDATED / REJECTED / INCONCLUSIVE` only;
-- no production-readiness state.
-
-### SQL 45
-
-`45_data_quality_persistence_and_roles.sql`
-
-Responsibility:
-
-- atomic `NEW / DUPLICATE / CONFLICT` persistence;
-- validation logical-identity locking and uniqueness;
-- `QUALITY_VERDICT_CONFLICT` evidence;
-- writer/reader/function-owner role hardening;
-- fixed `search_path`, PUBLIC revoke and minimum grants.
-
-### SQL 46
-
-`46_data_quality_rebuild_and_safe_views.sql`
-
-Responsibility:
-
-- deterministic rebuild-comparison evidence;
-- source/checkpoint/projection/snapshot/lineage reconciliation helpers;
-- aggregate-only quality observability views;
-- prohibited identity and raw-lineage dimensions excluded.
-
-### SQL 47
-
-`47_data_quality_validation.sql`
-
-Responsibility:
-
-- PostgreSQL 15 and 18 rollback-only validation;
-- source, projection, snapshot, lineage, identity, exposure and rebuild checks;
-- threshold/verdict/late-arrival checks;
-- concurrency, append-only, role/grant, retention and protected-regression checks.
-
-## Role allocation proposed
-
-- `jc_data_quality_writer`: execute approved validation/verdict persistence functions only;
-- `jc_data_quality_reader`: aggregate safe-view `SELECT` only;
-- `jc_data_quality_function_owner`: `NOLOGIN`, `NOSUPERUSER`, `NOCREATEDB`, `NOCREATEROLE`, `NOREPLICATION`, `NOBYPASSRLS`; fixed-search-path function owner.
-
-No role receives direct canonical event, adapter evidence, projection, snapshot, lineage, Recommendation or P2 exposure writes.
-
-## Quality policy allocation proposed
-
-Policy: `data-quality-policy-v1`
-
-Required validation scopes:
-
-- `SOURCE_COMPLETENESS`;
-- `PROJECTION_COMPLETENESS`;
-- `SNAPSHOT_CONSISTENCY`;
-- `LINEAGE_INTEGRITY`;
-- `IDENTITY_INTEGRITY`;
-- `EXPOSURE_INTEGRITY` for experiment-outcome snapshots;
-- `DETERMINISTIC_REBUILD`;
-- `FULL` as the required composite verdict scope.
+Authoritative policy: `data-quality-policy-v1`.
 
 Required thresholds:
 
-- source completeness: `100%`;
-- projection coverage: `100%` for policy-eligible sources;
-- lineage completeness: `100%`;
-- orphan lineage: `0%`;
-- snapshot record/subject/source reconciliation: `100%`;
-- fingerprint match: `100%`;
-- identity binding validity: `100%` where identity binding is required;
-- P2 exposure binding validity: `100%` for experiment-outcome snapshots;
-- rebuild match: `100%`;
-- conflicted or rejected adapter evidence included: `0`;
+- source completeness, projection coverage, lineage completeness, snapshot record/subject/source reconciliation, fingerprint match, required identity validity, P2 exposure validity and deterministic rebuild match: `100%`;
+- orphan lineage, duplicate lineage, conflicted/rejected adapter inclusion and invalid P2 exposure inclusion: `0`;
 - zero denominators: explicit `NOT_APPLICABLE`, `UNDEFINED` or `POLICY_DEFINED_ZERO_CASE`; never implicit `100%`.
 
-Verdict rule:
+Verdict boundary:
 
-- any `BLOCKER` → `REJECTED`;
-- required check skipped or evidence insufficient → `INCONCLUSIVE`;
-- all required checks pass and thresholds are met → `VALIDATED`.
+- blocker or required failure → `REJECTED`;
+- required skipped check or incomplete evidence → `INCONCLUSIVE`;
+- all required checks and thresholds pass → `VALIDATED`.
 
-DP-6 `VALIDATED` means data-quality validation only. It is not production, serving, release or cutover approval.
+`VALIDATED` is Data quality evidence only, not production, serving, experiment release or cutover approval.
 
-## Fingerprint allocation proposed
-
-New semantic domains:
+## Fingerprint domains
 
 - `data-quality-validation-input-sha256-v1`;
 - `data-quality-check-evidence-sha256-v1`;
 - `data-quality-metric-sha256-v1`;
 - `data-quality-verdict-sha256-v1`;
-- `data-quality-rebuild-comparison-sha256-v1`.
+- `data-quality-rebuild-comparison-sha256-v1`;
+- `data-quality-late-arrival-observation-sha256-v1`.
 
-All produce lowercase 64-character SHA-256 hexadecimal from canonical, stably ordered semantic content. Execution time, DB row ID, random UUID, worker/build ID, locale, timezone, insertion order and physical row order are excluded.
+All are deterministic SHA-256 lowercase hexadecimal over canonical semantic inputs. Execution time, DB row ID, UUID, worker/build ID, locale, timezone, insertion order and physical row order are excluded.
 
-## Persistence identity proposed
+## Persistence identity
 
 ```text
 snapshot_ref
@@ -150,27 +77,22 @@ snapshot_ref
 + quality_policy_version
 ```
 
-- new identity → `NEW`;
-- same identity and same verdict fingerprint → `DUPLICATE`;
-- same identity and different verdict fingerprint → `CONFLICT / QUALITY_VERDICT_CONFLICT`.
+- no existing identity → `NEW`;
+- same identity, validation-input fingerprint and verdict fingerprint → `DUPLICATE`;
+- same identity with different input or verdict fingerprint → `CONFLICT / QUALITY_VERDICT_CONFLICT`.
 
-## Retention proposed
+## Retention
 
-Validation run/status, check result, metric, anomaly, verdict, late-arrival observation, rebuild comparison and conflict evidence use:
-
-- retention class: `data_quality_evidence_90d`;
-- policy version: `data-retention-policy-v1`;
-- technical baseline: `90 days`;
-- automatic purge and physical deletion: disabled.
+Validation run/status, check, metric, anomaly, verdict, late arrival, rebuild comparison and conflict evidence use `data_quality_evidence_90d`, `data-retention-policy-v1`, explicit `expires_at`, 90-day technical metadata and no automatic purge or physical delete.
 
 ## Protected boundary
 
 - SQL `01..42` remains protected and unchanged;
+- SQL `43..47` is allocated only to DP-6;
 - SQL `48+` remains unallocated;
-- no SQL `43..47` may be created before this allocation is merged;
 - DP-2 canonical events, DP-4.5 evidence and DP-5 checkpoint/projection/snapshot/lineage remain immutable;
-- Recommendation P0/P1/P2 authority and metric denominators remain unchanged;
+- Recommendation P0/P1/P2 authority and engagement/fallback denominators remain unchanged;
 - P2 exposure authority remains `recommendation_p2_experiment_exposure`;
-- identity namespaces remain distinct and automatic join remains prohibited;
+- identity namespaces remain distinct; automatic join and identity repository remain prohibited;
 - production worker/scheduler/replay/backfill/rebuild/purge/shadow/cutover remain unauthorized;
-- implementation and main merge require separate user approval.
+- main merge of implementation PR #18 requires explicit user approval.

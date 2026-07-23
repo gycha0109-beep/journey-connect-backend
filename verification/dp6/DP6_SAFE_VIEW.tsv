@@ -1,0 +1,6 @@
+dimension	exposed	restriction	status
+aggregate_counts_rates_policy_times	yes	no_identity_or_raw_evidence	IMPLEMENTED_PENDING_CI
+user_subject_actor_session_request_source_exposure_ids	no	prohibited	PASS_STATIC
+raw_payload_lineage_fingerprint_stack_token_error	no	prohibited	PASS_STATIC
+PUBLIC	no	revoked	IMPLEMENTED_PENDING_CI
+quality_reader	yes	select_only	IMPLEMENTED_PENDING_CI

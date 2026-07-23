@@ -1,11 +1,7 @@
 item	value	status
-main_head	05a25771cd99d87891504fc00890ab918b970acf	AUTHORITATIVE
-pr16	merged	PASS
-dp5_merge_commit	05a25771cd99d87891504fc00890ab918b970acf	PASS
-sql_01_42	protected_exactly_once	PASS
-sql_43_plus	unallocated_absent	PASS
-dp6_allocation	missing_on_authoritative_main	BLOCKER
-production_shadow	disabled	PROTECTED
-sampling_bps	0	PROTECTED
-cohort	empty	PROTECTED
-search_cutover	not_started	PROTECTED
+authoritative_main	c0f6b5dc8cc7089412a100989109b61315c062d0	PASS
+allocation_pr	17	MERGED
+implementation_pr	18	OPEN_DRAFT
+sql_01_42	protected	PASS_STATIC
+sql_43_47	allocated_and_implemented	PENDING_POSTGRESQL_CI
+sql_48_plus	absent	PASS_STATIC

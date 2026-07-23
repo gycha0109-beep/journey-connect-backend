@@ -48,8 +48,8 @@
 | `SC-DP5-004` | P2 outcome exposure authority는 `recommendation_p2_experiment_exposure` | APPROVED | general exposure/impression 대체 금지 |
 | `SC-DP5-005` | projection/snapshot/lineage/validation/conflict evidence 90일 metadata | APPROVED / TECHNICAL BASELINE | purge 및 physical delete 비활성 |
 | `SC-DP5-006` | source timestamp, identity, as-of, lineage 및 outcome aggregation은 fail-closed authority 검증 대상 | APPROVED / IMPLEMENTED | independent review correction, exact-head gates PASS |
-| `SC-DP6-001` | SQL `43..47`을 Data quality/lineage validation에 배정 | PROPOSED / NON-AUTHORITATIVE | allocation PR merge 전 SQL 생성 금지; SQL 01..42 보호 |
-| `SC-DP6-002` | `jc_data_quality_writer`, `jc_data_quality_reader`, `jc_data_quality_function_owner` | PROPOSED / NON-AUTHORITATIVE | execute-only / aggregate-safe-view-only / NOLOGIN owner |
-| `SC-DP6-003` | quality policy `data-quality-policy-v1` 및 100% completeness/fingerprint/rebuild 기준 | PROPOSED / NON-AUTHORITATIVE | zero denominator 명시 처리; threshold 임의 완화 금지 |
-| `SC-DP6-004` | snapshot quality verdict는 `VALIDATED / REJECTED / INCONCLUSIVE`만 허용 | PROPOSED / NON-AUTHORITATIVE | production/serving/cutover 의미 없음 |
-| `SC-DP6-005` | validation evidence 90일 metadata, append-only, purge 비활성 | PROPOSED / NON-AUTHORITATIVE | source/projection/snapshot/lineage 수정 금지 |
+| `SC-DP6-001` | SQL `43..47`을 Data quality/lineage validation에 배정 | APPROVED / MERGED | PR #17 merge `c0f6b5dc8cc7089412a100989109b61315c062d0`; SQL 01..42 보호 |
+| `SC-DP6-002` | `jc_data_quality_writer`, `jc_data_quality_reader`, `jc_data_quality_function_owner` | APPROVED / IMPLEMENTED ON PR #18 | execute-only / aggregate-safe-view-only / NOLOGIN owner |
+| `SC-DP6-003` | quality policy `data-quality-policy-v1` 및 100% completeness/fingerprint/rebuild 기준 | APPROVED / IMPLEMENTED ON PR #18 | zero denominator 명시 처리; threshold 임의 완화 금지 |
+| `SC-DP6-004` | snapshot quality verdict는 `VALIDATED / REJECTED / INCONCLUSIVE`만 허용 | APPROVED / IMPLEMENTED ON PR #18 | production/serving/cutover 의미 없음 |
+| `SC-DP6-005` | validation evidence 90일 metadata, append-only, purge 비활성 | APPROVED / IMPLEMENTED ON PR #18 | source/projection/snapshot/lineage 수정 금지 |

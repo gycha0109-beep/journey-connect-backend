@@ -1,0 +1,12 @@
+package com.jc.data.contract.v1.quality;
+
+public enum DataQualityValidationScope {
+    SOURCE_COMPLETENESS,
+    PROJECTION_COMPLETENESS,
+    SNAPSHOT_CONSISTENCY,
+    LINEAGE_INTEGRITY,
+    IDENTITY_INTEGRITY,
+    EXPOSURE_INTEGRITY,
+    DETERMINISTIC_REBUILD,
+    FULL
+}
