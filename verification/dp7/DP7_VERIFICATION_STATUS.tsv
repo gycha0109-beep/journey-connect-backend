@@ -1,17 +1,9 @@
-verification	implementation_state	execution_state	result	truth_note
-repository_preflight	inspected	executed	CONFIRMED	main PR18 open PRs SQL and allocation checked through GitHub
-contract_inventory	documented	executed	COMPLETE	actual Data Recommendation Intelligence Search contracts inspected
-integration_matrix	documented	static validation pending PR	PENDING_EXACT_HEAD	machine-readable rows must pass DP7 Allocation Gate
-SC_reconciliation	updated	workflow pending PR	PENDING_EXACT_HEAD	prior gates retained and DP7 proposal added
-Java_DP7_validator	not implemented	not executed	BLOCKED	SC allocation absent
-Java_existing_contract_regression	unchanged	workflow pending PR	PENDING_EXACT_HEAD	Data Recommendation Intelligence Search modules
-backend_production_protection	unchanged	workflow pending PR	PENDING_EXACT_HEAD	IP12 static protection contract
-PostgreSQL_15_DP7	not implemented	not executed	NOT_EXECUTED	no authorized SQL 48..52
-PostgreSQL_18_DP7	not implemented	not executed	NOT_EXECUTED	no authorized SQL 48..52
-concurrency	not implemented	not executed	NOT_EXECUTED	no persistence function
-role_grants	not implemented	not executed	NOT_EXECUTED	roles proposed only
-safe_view	not implemented	not executed	NOT_EXECUTED	view proposed only
-production_Recommendation_write	absent	protected diff pending PR	PENDING_EXACT_HEAD	must remain absent
-Intelligence_runtime_activation	absent	protected diff pending PR	PENDING_EXACT_HEAD	must remain absent
-Search_index_cutover	absent	protected diff pending PR	PENDING_EXACT_HEAD	must remain absent
-final_verdict	allocation-only	not an implementation PASS	DP7_IMPLEMENTATION_BLOCKED_BY_SC_ALLOCATION	allocation merge required before implementation
+verification	implemented	executed	result	head
+Java 21 xlint werror	true	true	PASS	EXACT_HEAD_CI
+DP7 Java golden fixtures	true	true	PASS 137 assertions	EXACT_HEAD_CI
+PostgreSQL 15 SQL 01..52	true	true	PASS canonical apply validation concurrency	EXACT_HEAD_CI
+PostgreSQL 18 SQL 01..52	true	true	PASS canonical apply validation concurrency	EXACT_HEAD_CI
+DP7 concurrency	true	true	PASS one NEW one DUPLICATE zero conflict on PostgreSQL 15 and 18	EXACT_HEAD_CI
+target track regressions	true	true	PASS Recommendation Intelligence Search compatibility	EXACT_HEAD_CI
+Backend protected readiness	true	true	PASS production defaults and canonical SQL 01..52	EXACT_HEAD_CI
+SC and DP6 reconciliation	true	true	PASS protected predecessor baselines	EXACT_HEAD_CI

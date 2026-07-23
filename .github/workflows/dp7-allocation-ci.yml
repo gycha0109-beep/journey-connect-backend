@@ -2,9 +2,11 @@ name: DP7 Allocation Gate
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [main]
     paths:
+      - "database/journey-connect-db-v2.7/4[8-9]_*.sql"
+      - "database/journey-connect-db-v2.7/5[0-2]_*.sql"
+      - "jc-data-contracts/**"
       - "docs/platform/governance/SC-DP7-CROSS-TRACK-INTEGRATION-ALLOCATION.md"
       - "docs/platform/governance/SC-DECISION-REGISTER.md"
       - "docs/platform/governance/SC-PLATFORM-REGISTRY.md"
@@ -23,8 +25,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  allocation:
-    name: DP-7 allocation / contract inventory / protected diff
+  implementation-boundary:
+    name: DP-7 allocation / implementation / protected diff
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -35,31 +37,37 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - name: Validate DP-7 allocation boundary
+      - name: Validate approved allocation and implementation inventory
         shell: bash
         run: |
           set -o pipefail
           mkdir -p verification/dp7/runtime
           python verification/dp7/run_dp7_allocation_verification.py \
             2>&1 | tee verification/dp7/runtime/DP7_ALLOCATION_CI.log
+      - name: Validate DP-7 static contracts and production protection
+        shell: bash
+        run: |
+          set -o pipefail
+          python verification/dp7/run_dp7_static_verification.py \
+            2>&1 | tee verification/dp7/runtime/DP7_STATIC_CI.log
       - name: Validate SC reconciliation
         shell: bash
         run: |
           set -o pipefail
           python verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py \
             2>&1 | tee verification/dp7/runtime/DP7_SC_RECONCILIATION_CI.log
-      - name: Upload allocation evidence
+      - name: Upload implementation evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dp7-allocation-evidence
+          name: dp7-implementation-evidence
           path: verification/dp7/runtime
           if-no-files-found: error
 
   contract-regression:
-    name: Java 21 / Data Recommendation Intelligence Search contracts
+    name: Java 21 / DP-7 and target-track contracts
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: jc-backend
@@ -75,7 +83,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
       - name: Grant Gradle wrapper permission
         run: chmod +x ./gradlew
-      - name: Run protected contract regressions
+      - name: Run Data and target-track contract regressions
         shell: bash
         run: |
           set -o pipefail

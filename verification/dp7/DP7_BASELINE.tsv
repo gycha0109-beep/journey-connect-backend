@@ -1,7 +1,7 @@
-item	expected	observed	status	evidence
-main_head	69b2f9619733e8e6068a23bb149c2aaf41f23fc9	69b2f9619733e8e6068a23bb149c2aaf41f23fc9	CONFIRMED	GitHub main commit
-pr18	merged	merged	CONFIRMED	PR #18
-pr18_head	0e9b09283bad61faa830db1019d421c6e906fc7c	0e9b09283bad61faa830db1019d421c6e906fc7c	CONFIRMED	PR #18 metadata
-sql_range	01..47 exact; 48+ absent	01..47 exact; 48+ absent	CONFIRMED	SC registry and production static contract
-allocation	DP-7 required	missing at work start	BLOCKER	SC Decision Register and Registry
-production_state	disabled/0 BPS/empty/no cutover	disabled/0 BPS/empty/no cutover	PROTECTED	application-prod.yml and IP12 static test
+item	value	status
+authoritative_main	d18c91a28b271c9f9891b522c6371017a3d0dd79	CONFIRMED
+allocation_pr	19 MERGED	CONFIRMED
+sql_allocation	48..52	AUTHORIZED
+sql_protected	01..47	PROTECTED
+sql_unallocated	53+	PROHIBITED
+implementation_branch	agent/dp7-cross-track-integration-implementation	CANDIDATE

@@ -1,7 +1,6 @@
-logical_field	contract_id	algorithm	include	exclude	status
-integration_input_fingerprint	integration-input-sha256-v1	SHA-256 lowercase hex	source/target contracts schemas snapshot and quality fingerprints	time row id UUID build locale timezone ordering	PROPOSED_NOT_IMPLEMENTED
-integration_check_evidence_fingerprint	integration-check-evidence-sha256-v1	SHA-256 lowercase hex	check code scope expected observed status severity failure	time row id UUID build locale timezone ordering	PROPOSED_NOT_IMPLEMENTED
-integration_mapping_fingerprint	integration-mapping-sha256-v1	SHA-256 lowercase hex	field semantics units authority identity privacy retention mapping policy	time row id UUID build locale timezone ordering	PROPOSED_NOT_IMPLEMENTED
-integration_verdict_fingerprint	integration-verdict-sha256-v1	SHA-256 lowercase hex	input mapping checks verdict boundary outcomes	time row id UUID build locale timezone ordering	PROPOSED_NOT_IMPLEMENTED
-cross_track_contract_matrix_fingerprint	cross-track-contract-matrix-sha256-v1	SHA-256 lowercase hex	canonical sorted matrix rows and policy version	physical row order insertion order build time	PROPOSED_NOT_IMPLEMENTED
-existing_fingerprint_reuse	prohibited	n/a	input reference only	redefinition or semantic reuse	PASS_DESIGN
+logical_field	domain	algorithm	excludes
+integration_input_fingerprint	integration-input-sha256-v1	SHA-256 lowercase hex	time row uuid build locale timezone ordering
+integration_check_evidence_fingerprint	integration-check-evidence-sha256-v1	SHA-256 lowercase hex	time row uuid build locale timezone ordering
+integration_mapping_fingerprint	integration-mapping-sha256-v1	SHA-256 lowercase hex	time row uuid build locale timezone ordering
+integration_verdict_fingerprint	integration-verdict-sha256-v1	SHA-256 lowercase hex	time row uuid build locale timezone ordering
+cross_track_contract_matrix_fingerprint	cross-track-contract-matrix-sha256-v1	SHA-256 lowercase hex	time row uuid build locale timezone ordering

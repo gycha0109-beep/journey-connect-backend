@@ -1,7 +1,6 @@
-check	expected	observed	status	failure_code
-raw_payload	absent	prohibited by design; no persistence added	PASS_PROTECTED	cross_track_raw_payload_exposure
-raw_pii	absent	email phone address token exact GPS prohibited	PASS_DESIGN	cross_track_pii_exposure
-subject_exposure	purpose-bound pseudonymous/restricted refs	matrix requires explicit binding	PASS_DESIGN	cross_track_privacy_class_mismatch
-lineage_access	restricted validator only	aggregate reader raw access prohibited	PASS_DESIGN	cross_track_lineage_access_violation
-safe_view	no reidentification dimensions	proposed allowlist only; view not implemented	NOT_EXECUTED	cross_track_reidentification_risk
-runtime_validation	executed privacy validator	not implemented	NOT_EXECUTED	cross_track_privacy_class_mismatch
+field_class	allowed_raw	allowed_safe_view	failure_code
+raw payload	false	false	cross_track_raw_payload_exposure
+PII	false	false	cross_track_pii_exposure
+precise location	false	false	cross_track_precise_location_exposure
+raw lineage	purpose bound only	false	cross_track_lineage_access_violation
+identity dimension	purpose bound only	false	cross_track_reidentification_risk

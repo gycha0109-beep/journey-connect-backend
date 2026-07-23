@@ -1,0 +1,5 @@
+condition	verdict
+blocker or required fail	INCOMPATIBLE
+required skipped or target missing	INCONCLUSIVE
+required pass plus nonblocking condition	CONDITIONALLY_COMPATIBLE
+all required pass and VALIDATED boundaries	COMPATIBLE

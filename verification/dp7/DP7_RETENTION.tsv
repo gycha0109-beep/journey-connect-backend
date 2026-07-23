@@ -1,0 +1,2 @@
+object_class	retention_class	policy	automatic_purge
+all DP-7 integration evidence	cross_track_integration_evidence_90d	data-retention-policy-v1	false

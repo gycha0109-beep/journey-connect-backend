@@ -3,35 +3,15 @@ name: Data PostgreSQL CI
 on:
   pull_request:
     paths:
-      - "database/journey-connect-db-v2.7/29_*.sql"
-      - "database/journey-connect-db-v2.7/30_*.sql"
-      - "database/journey-connect-db-v2.7/31_*.sql"
-      - "database/journey-connect-db-v2.7/32_*.sql"
-      - "database/journey-connect-db-v2.7/33_*.sql"
-      - "database/journey-connect-db-v2.7/34_*.sql"
-      - "database/journey-connect-db-v2.7/35_*.sql"
-      - "database/journey-connect-db-v2.7/36_*.sql"
-      - "database/journey-connect-db-v2.7/37_*.sql"
-      - "database/journey-connect-db-v2.7/38_*.sql"
-      - "database/journey-connect-db-v2.7/39_*.sql"
-      - "database/journey-connect-db-v2.7/40_*.sql"
-      - "database/journey-connect-db-v2.7/41_*.sql"
-      - "database/journey-connect-db-v2.7/42_*.sql"
-      - "database/journey-connect-db-v2.7/43_*.sql"
-      - "database/journey-connect-db-v2.7/44_*.sql"
-      - "database/journey-connect-db-v2.7/45_*.sql"
-      - "database/journey-connect-db-v2.7/46_*.sql"
-      - "database/journey-connect-db-v2.7/47_*.sql"
+      - "database/journey-connect-db-v2.7/[2-4][0-9]_*.sql"
+      - "database/journey-connect-db-v2.7/5[0-2]_*.sql"
       - "verification/dp2/**"
       - "verification/dp3/**"
       - "verification/dp4-5/**"
       - "verification/dp5/**"
       - "verification/dp6/**"
-      - "docs/platform/data/DP-2-*.md"
-      - "docs/platform/data/DP-3-*.md"
-      - "docs/platform/data/DP-4-5-*.md"
-      - "docs/platform/data/DP-5-*.md"
-      - "docs/platform/data/DP-6-*.md"
+      - "verification/dp7/**"
+      - "docs/platform/data/DP-[2-7]-*.md"
       - ".github/workflows/data-postgres-ci.yml"
   workflow_dispatch:
 
@@ -44,9 +24,9 @@ concurrency:
 
 jobs:
   data-processing:
-    name: PostgreSQL ${{ matrix.postgres }} / DP-2 through DP-6
+    name: PostgreSQL ${{ matrix.postgres }} / DP-2 through DP-7
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    timeout-minutes: 70
     strategy:
       fail-fast: false
       matrix:
@@ -58,8 +38,7 @@ jobs:
           POSTGRES_DB: journey_connect
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
+        ports: [5432:5432]
         options: >-
           --health-cmd "pg_isready -U postgres -d journey_connect"
           --health-interval 5s
@@ -76,43 +55,45 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq postgresql-client
-      - name: Run DP-5 and DP-6 static verification
+      - name: Run DP-5 through DP-7 static verification
         run: |
           python verification/dp5/run_dp5_static_verification.py
           python verification/dp6/run_dp6_allocation_verification.py
           python verification/dp6/run_dp6_static_verification.py
-      - name: Verify protected SQL and post-merge DP-6 integrity
+          python verification/dp7/run_dp7_allocation_verification.py
+          python verification/dp7/run_dp7_static_verification.py
+      - name: Verify protected SQL and DP-7 allocation
         shell: bash
         run: |
           set -euo pipefail
           git fetch origin main --depth=1
           protected_changes="$(git diff --name-only origin/main...HEAD -- database/journey-connect-db-v2.7 \
-            | grep -E '/(0[1-9]|1[0-9]|2[0-9]|3[0-9]|4[0-2])_.*\.sql$' || true)"
+            | grep -E '/(0[1-9]|1[0-9]|2[0-9]|3[0-9]|4[0-7])_.*\.sql$' || true)"
           if [[ -n "$protected_changes" ]]; then
-            printf 'Protected canonical SQL changed:\n%s\n' "$protected_changes" >&2
+            printf 'Protected canonical SQL 01..47 changed:\n%s\n' "$protected_changes" >&2
             exit 1
           fi
           changed_sql="$(git diff --name-only origin/main...HEAD -- database/journey-connect-db-v2.7 \
             | grep -E '\.sql$' | sort || true)"
           expected_sql="$(printf '%s\n' \
-            database/journey-connect-db-v2.7/43_data_quality_validation_foundation.sql \
-            database/journey-connect-db-v2.7/44_data_quality_metrics_and_verdict.sql \
-            database/journey-connect-db-v2.7/45_data_quality_persistence_and_roles.sql \
-            database/journey-connect-db-v2.7/46_data_quality_rebuild_and_safe_views.sql \
-            database/journey-connect-db-v2.7/47_data_quality_validation.sql | sort)"
+            database/journey-connect-db-v2.7/48_cross_track_integration_validation_foundation.sql \
+            database/journey-connect-db-v2.7/49_cross_track_contract_mapping_and_boundary_evidence.sql \
+            database/journey-connect-db-v2.7/50_cross_track_integration_verdict_and_conflict.sql \
+            database/journey-connect-db-v2.7/51_cross_track_integration_persistence_roles_and_safe_view.sql \
+            database/journey-connect-db-v2.7/52_cross_track_integration_validation.sql | sort)"
           if [[ -n "$changed_sql" && "$changed_sql" != "$expected_sql" ]]; then
-            printf 'DP-6 SQL diff mismatch.\nExpected either no SQL change or:\n%s\nObserved:\n%s\n' \
+            printf 'DP-7 SQL diff mismatch.\nExpected either no SQL change or:\n%s\nObserved:\n%s\n' \
               "$expected_sql" "$changed_sql" >&2
             exit 1
           fi
-      - name: Apply canonical state SQL through DP-6
+      - name: Apply canonical state SQL through DP-7
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p verification/dp6/runtime
-          log="verification/dp6/runtime/DP6_POSTGRESQL_${{ matrix.postgres }}.log"
+          mkdir -p verification/dp7/runtime
+          log="verification/dp7/runtime/DP7_POSTGRESQL_${{ matrix.postgres }}.log"
           : > "$log"
-          for script in database/journey-connect-db-v2.7/{01..46}_*.sql; do
+          for script in database/journey-connect-db-v2.7/{01..51}_*.sql; do
             if [[ "$script" == *_smoke_test.sql || "$script" == *_validation.sql ]]; then
               echo "SKIP ROLLBACK-ONLY $script" | tee -a "$log"
               continue
@@ -120,51 +101,62 @@ jobs:
             echo "APPLY $script" | tee -a "$log"
             psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$script" 2>&1 | tee -a "$log"
           done
-          for smoke in \
+          for validation in \
             database/journey-connect-db-v2.7/31_data_event_store_smoke_test.sql \
             database/journey-connect-db-v2.7/34_data_retry_quarantine_smoke_test.sql \
             database/journey-connect-db-v2.7/37_data_recommendation_adapter_shadow_validation.sql \
             database/journey-connect-db-v2.7/42_data_projection_snapshot_validation.sql \
-            database/journey-connect-db-v2.7/47_data_quality_validation.sql; do
-            echo "APPLY $smoke" | tee -a "$log"
-            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$smoke" 2>&1 | tee -a "$log"
+            database/journey-connect-db-v2.7/47_data_quality_validation.sql \
+            database/journey-connect-db-v2.7/52_cross_track_integration_validation.sql; do
+            echo "APPLY $validation" | tee -a "$log"
+            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$validation" 2>&1 | tee -a "$log"
           done
-      - name: Run protected and DP-6 concurrency regressions
+      - name: Run protected and DP-7 concurrency regressions
         shell: bash
         run: |
           set -euo pipefail
           chmod +x verification/dp2/run_dp2_concurrency.sh verification/dp3/run_dp3_concurrency.sh \
             verification/dp4-5/run_dp45_concurrency.sh verification/dp5/run_dp5_concurrency.sh \
-            verification/dp6/run_dp6_concurrency.sh
+            verification/dp6/run_dp6_concurrency.sh verification/dp7/run_dp7_concurrency.sh
+          verification/dp2/run_dp2_concurrency.sh 2>&1 | tee verification/dp7/runtime/DP2_CONCURRENCY_PG${{ matrix.postgres }}.log
+          verification/dp3/run_dp3_concurrency.sh 2>&1 | tee verification/dp7/runtime/DP3_CONCURRENCY_PG${{ matrix.postgres }}.log
+          verification/dp4-5/run_dp45_concurrency.sh 2>&1 | tee verification/dp7/runtime/DP45_CONCURRENCY_PG${{ matrix.postgres }}.log
+          verification/dp5/run_dp5_concurrency.sh 2>&1 | tee verification/dp7/runtime/DP5_CONCURRENCY_PG${{ matrix.postgres }}.log
 
-          verification/dp2/run_dp2_concurrency.sh 2>&1 | tee verification/dp6/runtime/DP2_CONCURRENCY_PG${{ matrix.postgres }}.log
-          verification/dp3/run_dp3_concurrency.sh 2>&1 | tee verification/dp6/runtime/DP3_CONCURRENCY_PG${{ matrix.postgres }}.log
-          verification/dp4-5/run_dp45_concurrency.sh 2>&1 | tee verification/dp6/runtime/DP45_CONCURRENCY_PG${{ matrix.postgres }}.log
-          verification/dp5/run_dp5_concurrency.sh 2>&1 | tee verification/dp6/runtime/DP5_CONCURRENCY_PG${{ matrix.postgres }}.log
-
-          dp6_database="journey_connect_dp6_concurrency"
-          dp6_url="postgresql://postgres:postgres@localhost:5432/${dp6_database}"
-          dropdb --if-exists -h localhost -p 5432 -U postgres "$dp6_database"
-          createdb -h localhost -p 5432 -U postgres "$dp6_database"
-          dp6_setup_log="verification/dp6/runtime/DP6_CONCURRENCY_SETUP_PG${{ matrix.postgres }}.log"
-          : > "$dp6_setup_log"
-          for script in database/journey-connect-db-v2.7/{01..46}_*.sql; do
-            if [[ "$script" == *_smoke_test.sql || "$script" == *_validation.sql ]]; then
-              continue
+          for phase in dp6 dp7; do
+            database="journey_connect_${phase}_concurrency"
+            url="postgresql://postgres:postgres@localhost:5432/${database}"
+            dropdb --if-exists -h localhost -p 5432 -U postgres "$database"
+            createdb -h localhost -p 5432 -U postgres "$database"
+            setup_log="verification/dp7/runtime/${phase^^}_CONCURRENCY_SETUP_PG${{ matrix.postgres }}.log"
+            : > "$setup_log"
+            upper=46
+            [[ "$phase" == "dp7" ]] && upper=51
+            for number in $(seq -w 1 "$upper"); do
+              for script in database/journey-connect-db-v2.7/${number}_*.sql; do
+                [[ -e "$script" ]] || continue
+                if [[ "$script" == *_smoke_test.sql || "$script" == *_validation.sql ]]; then continue; fi
+                echo "APPLY $script" | tee -a "$setup_log"
+                psql "$url" -v ON_ERROR_STOP=1 -f "$script" 2>&1 | tee -a "$setup_log"
+              done
+            done
+            if [[ "$phase" == "dp6" ]]; then
+              DATABASE_URL="$url" verification/dp6/run_dp6_concurrency.sh \
+                2>&1 | tee verification/dp7/runtime/DP6_CONCURRENCY_PG${{ matrix.postgres }}.log
+            else
+              DATABASE_URL="$url" verification/dp7/run_dp7_concurrency.sh \
+                2>&1 | tee verification/dp7/runtime/DP7_CONCURRENCY_PG${{ matrix.postgres }}.log
             fi
-            echo "APPLY $script" | tee -a "$dp6_setup_log"
-            psql "$dp6_url" -v ON_ERROR_STOP=1 -f "$script" 2>&1 | tee -a "$dp6_setup_log"
           done
-          DATABASE_URL="$dp6_url" verification/dp6/run_dp6_concurrency.sh \
-            2>&1 | tee verification/dp6/runtime/DP6_CONCURRENCY_PG${{ matrix.postgres }}.log
-      - name: Upload DP-6 PostgreSQL evidence
+      - name: Upload DP-7 PostgreSQL evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dp6-postgresql-${{ matrix.postgres }}-evidence
+          name: dp7-postgresql-${{ matrix.postgres }}-evidence
           path: |
-            verification/dp6/runtime/**
-            verification/dp6/run_dp6_concurrency.sh
-            verification/dp6/sql/47_data_quality_validation_part*.inc
-            database/journey-connect-db-v2.7/4[3-7]_*.sql
+            verification/dp7/runtime/**
+            verification/dp7/run_dp7_concurrency.sh
+            verification/dp7/sql/**
+            database/journey-connect-db-v2.7/4[8-9]_*.sql
+            database/journey-connect-db-v2.7/5[0-2]_*.sql
           if-no-files-found: error

@@ -80,6 +80,14 @@ val dp6DataQualityContractTest = tasks.register<JavaExec>("dp6DataQualityContrac
     dependsOn(tasks.testClasses)
 }
 
+val dp7CrossTrackIntegrationContractTest = tasks.register<JavaExec>("dp7CrossTrackIntegrationContractTest") {
+    group = "verification"
+    description = "Runs DP-7 cross-track compatibility, boundary, fingerprint and verdict contract checks."
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass.set("com.jc.data.contract.Dp7CrossTrackIntegrationContractTest")
+    dependsOn(tasks.testClasses)
+}
+
 tasks.check {
     dependsOn(
         dataContractTest,
@@ -89,5 +97,6 @@ tasks.check {
         dp5ProjectionContractTest,
         dp5ProjectionBoundaryContractTest,
         dp6DataQualityContractTest,
+        dp7CrossTrackIntegrationContractTest,
     )
 }

@@ -1,10 +1,6 @@
-scope	check	expected	observed	status	failure_code
-DATA_SEARCH_INPUT	approved Data input contract	exists	not found	UNVERIFIED	search_contract_missing
-DATA_SEARCH_INPUT	document identity	stable post document	search document uses post:<id>; DP-5 uses subject/exposure grain	INCOMPATIBLE	search_document_identity_mismatch
-DATA_SEARCH_INPUT	region semantics	document source region	DP-5 contains user-observed ranked regions	UNVERIFIED	search_region_semantic_mismatch
-DATA_SEARCH_INPUT	content semantics	document title/body terms	DP-5 contains aggregate content references	INCOMPATIBLE	search_content_semantic_mismatch
-DATA_SEARCH_INPUT	tag semantics	approved Search tag input	no approved target field/mapping	UNVERIFIED	search_tag_semantic_mismatch
-DATA_SEARCH_INPUT	fingerprint domain	separate canonical domain	Data and Search hashes are distinct	PASS_DESIGN	search_fingerprint_mismatch
-DATA_SEARCH_INPUT	index write	none	prohibited by scope	PASS_PROTECTED	search_production_index_write_detected
-DATA_SEARCH_INPUT	cutover	not started	unchanged	PASS_PROTECTED	search_cutover_violation
-FULL	overall target compatibility	confirmed Data input contract	missing contract; direct mapping incompatible	INCONCLUSIVE	search_contract_missing
+check	observed	result	failure_code
+search_projection	search-document-projection-v1 exists	PASS	
+data_input_contract	absent	SKIPPED	search_contract_missing
+direct_subject_document_mapping	prohibited	FAIL	search_document_identity_mismatch
+index_or_cutover	false	PASS	
+scope_verdict	INCONCLUSIVE	INCONCLUSIVE	search_contract_missing

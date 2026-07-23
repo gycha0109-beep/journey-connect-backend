@@ -1,11 +1,8 @@
-decision_id	decision	status	rationale
-DP7-D001	allocation-only because SQL 48+ and roles/policy are unassigned	FIXED	SC registry authority
-DP7-D002	propose SQL 48..52 and three least-privilege roles	PROPOSED	implementation prerequisite
-DP7-D003	Recommendation profile and outcome are conditionally compatible	DESIGN_FINDING	semantics align but runtime authority remains current
-DP7-D004	Intelligence compatibility is inconclusive	DESIGN_FINDING	Data-specific domain input mapping absent
-DP7-D005	Search compatibility is inconclusive	DESIGN_FINDING	approved Data input contract absent
-DP7-D006	direct DP-5 profile/outcome to Search document mapping is incompatible	FIXED	identity/grain/semantic mismatch
-DP7-D007	only exact snapshot-bound VALIDATED verdict may proceed	FIXED	fail-closed quality boundary
-DP7-D008	quality verdict is not confidence/readiness/approval	FIXED	authority preservation
-DP7-D009	unexecuted checks cannot be PASS	FIXED	completion truth rule
-DP7-D010	final allocation-phase verdict	DP7_IMPLEMENTATION_BLOCKED_BY_SC_ALLOCATION	no implementation authority
+decision	value
+authoritative_base	d18c91a28b271c9f9891b522c6371017a3d0dd79
+recommendation_profile	CONDITIONALLY_COMPATIBLE
+recommendation_outcome	CONDITIONALLY_COMPATIBLE
+intelligence	INCONCLUSIVE
+search	INCONCLUSIVE
+production_authority	NONE
+final_completion	REQUIRES_EXACT_HEAD_CI_AND_USER_MERGE_APPROVAL

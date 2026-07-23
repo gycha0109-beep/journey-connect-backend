@@ -27,6 +27,13 @@ SQL_FILES = {f"database/journey-connect-db-v2.7/{number:02d}_{name}.sql" for num
     (45,"data_quality_persistence_and_roles"),(46,"data_quality_rebuild_and_safe_views"),
     (47,"data_quality_validation"),
 )}
+DP7_SUCCESSOR_SQL_FILES = {f"database/journey-connect-db-v2.7/{number:02d}_{name}.sql" for number,name in (
+    (48,"cross_track_integration_validation_foundation"),
+    (49,"cross_track_contract_mapping_and_boundary_evidence"),
+    (50,"cross_track_integration_verdict_and_conflict"),
+    (51,"cross_track_integration_persistence_roles_and_safe_view"),
+    (52,"cross_track_integration_validation"),
+)}
 
 def fail(message: str) -> None:
     raise SystemExit(f"FAIL: {message}")
@@ -39,8 +46,13 @@ for path in [DOC,MATRIX,HANDOFF,ALLOCATION,TEST,GOLDEN,ROOT/"verification/dp6/ru
 for number in range(1,48):
     matches=list(SQL.glob(f"{number:02d}_*.sql"))
     if len(matches)!=1: fail(f"canonical SQL {number:02d} expected once, found {len(matches)}")
-if list(SQL.glob("4[8-9]_*.sql")) or list(SQL.glob("[5-9][0-9]_*.sql")):
-    fail("SQL 48+ remains unallocated")
+successor_sql={
+    path.relative_to(ROOT).as_posix()
+    for path in SQL.glob("*.sql")
+    if path.name[:2].isdigit() and int(path.name[:2])>=48
+}
+if successor_sql and successor_sql != DP7_SUCCESSOR_SQL_FILES:
+    fail(f"unexpected successor SQL after DP-6: {sorted(successor_sql)}")
 
 allocation=ALLOCATION.read_text(encoding="utf-8")
 for marker in ("APPROVED / MERGED","Implementation authority: `GRANTED`","43_data_quality_validation_foundation.sql",
@@ -119,9 +131,10 @@ try:
                    stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     changed=subprocess.run(["git","diff","--name-only","origin/main...HEAD"],cwd=ROOT,check=True,
                            text=True,capture_output=True).stdout.splitlines()
-    changed_sql={path for path in changed if path.endswith(".sql")}
-    if changed_sql and changed_sql != SQL_FILES:
-        fail(f"DP-6 SQL changes, when present, must be exactly 43..47: {sorted(changed_sql)}")
+    changed_sql={path for path in changed if path.startswith("database/journey-connect-db-v2.7/") and path.endswith(".sql")}
+    unexpected=changed_sql-(SQL_FILES|DP7_SUCCESSOR_SQL_FILES)
+    if unexpected:
+        fail(f"unexpected SQL outside approved DP-6/DP-7 ranges: {sorted(unexpected)}")
     protected=[path for path in changed if path.startswith((
         "jc-recommendation-core/","jc-intelligence-contracts/","jc-search-contracts/","jc-search-compatibility/",
         "jc-search-runtime/","jc-search-integration/","jc-search-shadow-wiring/","jc-search-readiness/",

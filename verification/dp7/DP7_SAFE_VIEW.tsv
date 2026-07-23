@@ -1,14 +1,8 @@
-field_or_dimension	allowed	reason	status
-source_track	yes	bounded aggregate dimension	PROPOSED
-target_track	yes	bounded aggregate dimension	PROPOSED
-integration_scope	yes	bounded aggregate dimension	PROPOSED
-contract_versions	yes	version observability	PROPOSED
-verdict	yes	aggregate compatibility state	PROPOSED
-failure_code_count	yes	aggregate diagnostics	PROPOSED
-validation_date_bucket	yes	coarse operations dimension	PROPOSED
-subject_user_session_request_id	no	reidentification risk	PROPOSED_EXCLUSION
-source_exposure_row_refs	no	restricted evidence identity	PROPOSED_EXCLUSION
-raw_expected_observed_values	no	payload/PII leakage risk	PROPOSED_EXCLUSION
-raw_lineage_or_mapping	no	restricted access	PROPOSED_EXCLUSION
-raw_fingerprint_dimensions	no	linkability risk	PROPOSED_EXCLUSION
-view_runtime	must be validated	not implemented	NOT_EXECUTED
+metric	exposed	raw_dimension
+run and terminal status counts	yes	no
+track scope verdict counts	yes	no
+failure severity counts	yes	no
+boundary violation counts	yes	no
+oldest inconclusive age	yes	no
+latest compatible validation time	yes	no
+identity snapshot exposure lineage fingerprint	no	prohibited

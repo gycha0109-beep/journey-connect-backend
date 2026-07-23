@@ -1,6 +1,6 @@
-case	expected	observed	status	requirement
-same_identity_same_fingerprint	exactly one NEW and remaining DUPLICATE	not executed	NOT_EXECUTED	SQL allocation and advisory-lock implementation required
-same_identity_different_fingerprint	exactly one NEW and remaining CONFLICT	not executed	NOT_EXECUTED	SQL allocation and unique logical identity required
-partial_transaction	run/check/verdict all commit or all rollback	not executed	NOT_EXECUTED	atomic persistence function required
-append_only_race	no update or overwrite	not executed	NOT_EXECUTED	trigger and grants required
-allocation_phase	no concurrency claim	no SQL or persistence exists	TRUTHFUL	implementation blocked
+check	mechanism	expected	execution
+same logical identity	advisory xact lock plus unique hash	exactly one NEW	PASS PostgreSQL 15 and 18
+loser result	existing fingerprint comparison	DUPLICATE	PASS exactly one DUPLICATE
+conflict result	existing evidence preserved	zero conflict for identical input	PASS zero conflict rows
+persisted run count	unique logical identity hash	one run	PASS one run row
+persisted verdict count	one verdict per run	one verdict	PASS one verdict row
