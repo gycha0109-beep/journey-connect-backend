@@ -71,9 +71,9 @@ def read_tsv(name: str) -> list[dict[str, str]]:
     width = len(reader.fieldnames)
     if any(len(row) != width for row in rows):
         fail(f"evidence column mismatch: {name}")
-    keys = [next(iter(row.values())) for row in rows]
-    if len(keys) != len(set(keys)):
-        fail(f"duplicate primary evidence key: {name}")
+    signatures = [tuple(row.get(field, "") for field in reader.fieldnames) for row in rows]
+    if len(signatures) != len(set(signatures)):
+        fail(f"duplicate evidence row: {name}")
     return rows
 
 
