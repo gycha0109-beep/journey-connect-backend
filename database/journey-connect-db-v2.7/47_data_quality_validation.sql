@@ -10,7 +10,7 @@
 -- quality function owner role is unsafe
 -- quality least privilege or PUBLIC denial failed
 -- ROLLBACK;
-\ir ../../verification/dp6/sql/47_data_quality_validation_part1.inc
-\ir ../../verification/dp6/sql/47_data_quality_validation_part2.inc
-\ir ../../verification/dp6/sql/47_data_quality_validation_part3.inc
-\ir ../../verification/dp6/sql/47_data_quality_validation_part4.inc
+\! cat verification/dp6/sql/47_data_quality_validation_part1.inc verification/dp6/sql/47_data_quality_validation_part2.inc > /tmp/dp6-validation-setup.sql
+\! cat verification/dp6/sql/47_data_quality_validation_part3.inc verification/dp6/sql/47_data_quality_validation_part4.inc > /tmp/dp6-validation-quality.sql
+\i /tmp/dp6-validation-setup.sql
+\i /tmp/dp6-validation-quality.sql
