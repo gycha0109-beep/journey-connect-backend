@@ -147,5 +147,6 @@ jobs:
           name: dp6-postgresql-${{ matrix.postgres }}-evidence
           path: |
             verification/dp6/runtime/**
-            database/journey-connect-db-v2.7/47_data_quality_validation.sql
+            verification/dp6/run_dp6_concurrency.sh
+            database/journey-connect-db-v2.7/4[3-7]_*.sql
           if-no-files-found: error
