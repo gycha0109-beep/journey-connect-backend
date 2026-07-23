@@ -62,6 +62,7 @@ ALLOWED_PREFIXES = (
     "docs/platform/governance/SC-DECISION-REGISTER.md",
     "docs/platform/governance/SC-PLATFORM-REGISTRY.md",
     "docs/platform/governance/SC-HANDOFF.md",
+    "verification/dp6/run_dp6_allocation_verification.py",
     "verification/dp7/",
     "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
 )
