@@ -92,7 +92,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          ./gradlew test \
+          ./gradlew :test \
             --tests com.jc.backend.search.shadow.production.IP12ProductionShadowStaticTest \
             --stacktrace --no-daemon \
             2>&1 | tee ../verification/dp7/runtime/DP7_BACKEND_PROTECTION_CI.log
