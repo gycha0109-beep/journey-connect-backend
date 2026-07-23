@@ -131,6 +131,7 @@ REVOKE ALL ON public.data_cross_track_integration_safe_metrics_v1 FROM PUBLIC;
 GRANT USAGE ON SCHEMA public TO jc_data_integration_writer,jc_data_integration_reader,jc_data_integration_function_owner;
 GRANT SELECT ON public.data_projection_snapshot_v1,public.data_snapshot_quality_verdict_v1,
   public.data_cross_track_integration_policy_v1 TO jc_data_integration_function_owner;
+GRANT EXECUTE ON FUNCTION public.data_projection_fingerprint_v1(varchar,jsonb) TO jc_data_integration_function_owner;
 GRANT SELECT,INSERT ON public.data_cross_track_integration_run_v1,
   public.data_cross_track_integration_status_evidence_v1,public.data_cross_track_integration_check_result_v1,
   public.data_cross_track_integration_anomaly_v1,public.data_cross_track_contract_mapping_evidence_v1,
