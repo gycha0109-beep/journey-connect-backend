@@ -53,6 +53,7 @@ ALLOWED = (
     "verification/dp6/run_dp6_allocation_verification.py",
     "verification/dp6/run_dp6_static_verification.py",
     "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
+    "jc-backend/src/test/java/com/jc/backend/search/shadow/production/IP12ProductionShadowStaticTest.java",
 )
 
 
