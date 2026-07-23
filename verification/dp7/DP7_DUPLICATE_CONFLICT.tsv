@@ -1,0 +1,7 @@
+case	logical_identity	input_fingerprint	verdict_fingerprint	expected	status
+new	absent	A	V1	NEW	DESIGNED_NOT_EXECUTED
+same_identity_same_fingerprints	present	A	V1	DUPLICATE	DESIGNED_NOT_EXECUTED
+same_identity_different_input	present	B	V1	CONFLICT	DESIGNED_NOT_EXECUTED
+same_identity_different_verdict	present	A	V2	CONFLICT	DESIGNED_NOT_EXECUTED
+conflict_code	present	different	different	CROSS_TRACK_INTEGRATION_VERDICT_CONFLICT	DESIGNED_NOT_EXECUTED
+append_only	existing evidence	n/a	n/a	no update	DESIGNED_NOT_EXECUTED
