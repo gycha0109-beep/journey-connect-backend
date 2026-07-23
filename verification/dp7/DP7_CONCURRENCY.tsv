@@ -1,4 +1,6 @@
 check	mechanism	expected	execution
-same logical identity	advisory xact lock plus unique hash	exactly one NEW	CI_REQUIRED
-loser result	existing fingerprint comparison	DUPLICATE	CI_REQUIRED
-conflict result	existing evidence preserved	CONFLICT	CI_REQUIRED
+same logical identity	advisory xact lock plus unique hash	exactly one NEW	PASS PostgreSQL 15 and 18
+loser result	existing fingerprint comparison	DUPLICATE	PASS exactly one DUPLICATE
+conflict result	existing evidence preserved	zero conflict for identical input	PASS zero conflict rows
+persisted run count	unique logical identity hash	one run	PASS one run row
+persisted verdict count	one verdict per run	one verdict	PASS one verdict row
