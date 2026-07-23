@@ -81,7 +81,7 @@ jobs:
           python verification/dp5/run_dp5_static_verification.py
           python verification/dp6/run_dp6_allocation_verification.py
           python verification/dp6/run_dp6_static_verification.py
-      - name: Verify protected SQL 01..42 unchanged
+      - name: Verify protected SQL and post-merge DP-6 integrity
         shell: bash
         run: |
           set -euo pipefail
@@ -100,8 +100,9 @@ jobs:
             database/journey-connect-db-v2.7/45_data_quality_persistence_and_roles.sql \
             database/journey-connect-db-v2.7/46_data_quality_rebuild_and_safe_views.sql \
             database/journey-connect-db-v2.7/47_data_quality_validation.sql | sort)"
-          if [[ "$changed_sql" != "$expected_sql" ]]; then
-            printf 'DP-6 SQL diff mismatch.\nExpected:\n%s\nObserved:\n%s\n' "$expected_sql" "$changed_sql" >&2
+          if [[ -n "$changed_sql" && "$changed_sql" != "$expected_sql" ]]; then
+            printf 'DP-6 SQL diff mismatch.\nExpected either no SQL change or:\n%s\nObserved:\n%s\n' \
+              "$expected_sql" "$changed_sql" >&2
             exit 1
           fi
       - name: Apply canonical state SQL through DP-6

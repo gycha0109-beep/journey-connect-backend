@@ -2,31 +2,90 @@
 
 ## Status
 
-`DP6_IMPLEMENTATION_CANDIDATE / MAIN_MERGE_PENDING`
+`DP-6 MAIN INTEGRATED / DP-7 ALLOCATION PROPOSED`
 
 ## Authoritative baseline
 
-- DP-5 merge commit: `05a25771cd99d87891504fc00890ab918b970acf`;
-- DP-6 allocation PR #17 merge commit: `c0f6b5dc8cc7089412a100989109b61315c062d0`;
-- DP-6 implementation PR: `#18`;
-- SQL `01..42`: protected;
-- SQL `43..47`: allocated to DP-6 and implemented on PR #18;
-- SQL `48+`: unallocated.
+- DP-6 implementation PR #18: merged;
+- DP-6 implementation HEAD: `0e9b09283bad61faa830db1019d421c6e906fc7c`;
+- DP-6 merge commit/current main: `69b2f9619733e8e6068a23bb149c2aaf41f23fc9`;
+- SQL `01..47`: implemented and protected;
+- SQL `48+`: unallocated on the work-start baseline and absent from the DP-7 allocation PR;
+- DP-7 implementation authority: not granted.
 
-## DP-6 candidate capability
+## DP-7 allocation proposal
 
-DP-6 adds validation-only reconciliation from canonical Data sources, DP-4.5 evidence and DP-5 immutable projection evidence to deterministic checks, metrics, rebuild comparisons and append-only `VALIDATED / REJECTED / INCONCLUSIVE` quality verdicts.
+DP-7 validates whether Data snapshots with exact DP-6 `VALIDATED` quality verdicts are compatible with Recommendation, Intelligence and Search contracts without modifying target-track authority or activating a runtime.
 
-It does not mutate source/projection evidence or authorize production Recommendation input/write, worker, scheduler, replay, backfill, automatic rebuild, purge, Search projection, shadow activation, cutover or traffic.
+Proposed SQL allocation after explicit merge:
 
-## Approved contracts
+```text
+48_cross_track_integration_validation_foundation.sql
+49_cross_track_contract_mapping_and_boundary_evidence.sql
+50_cross_track_integration_verdict_and_conflict.sql
+51_cross_track_integration_persistence_roles_and_safe_view.sql
+52_cross_track_integration_validation.sql
+```
 
-- policy: `data-quality-policy-v1`;
-- roles: `jc_data_quality_writer`, `jc_data_quality_reader`, `jc_data_quality_function_owner`;
-- SQL: `43_data_quality_validation_foundation.sql` through `47_data_quality_validation.sql`;
-- P2 exposure authority: `recommendation_p2_experiment_exposure`;
-- identity boundary: `subject:<opaque-id> != user:<numeric-id>`;
-- retention: `data_quality_evidence_90d`, automatic purge disabled.
+Proposed roles:
+
+```text
+jc_data_integration_writer
+jc_data_integration_reader
+jc_data_integration_function_owner
+```
+
+Proposed policy:
+
+```text
+data-cross-track-integration-policy-v1
+```
+
+These are proposal-only entries. No SQL, role, grant, function, view or Java DP-7 implementation is authorized by the branch alone.
+
+## Allocation-time target findings
+
+- Recommendation profile projection: `CONDITIONALLY_COMPATIBLE`; current P1 source remains authoritative.
+- Recommendation experiment outcome projection: `CONDITIONALLY_COMPATIBLE`; P2 exposure/dataset/metric authority remains unchanged.
+- Intelligence input: `INCONCLUSIVE`; generic snapshot envelope exists but Data-specific semantic input mapping is absent.
+- Search input: `INCONCLUSIVE`; no approved Data input contract exists and DP-5 profile/outcome grain is not a Search document.
+- Full integration: not executable before allocation; no runtime PASS may be claimed.
+
+## Required integration policy boundaries
+
+- only exact snapshot-bound DP-6 `VALIDATED` verdicts may proceed;
+- `REJECTED`, `INCONCLUSIVE`, missing, conflicted or unsupported quality verdicts fail closed;
+- `subject:<opaque-id>` and `user:<numeric-id>` remain separate;
+- quality status is not Intelligence confidence, Search readiness or production approval;
+- P2 engagement/fallback semantics and exposure authority remain exact;
+- target contract ambiguity yields `INCONCLUSIVE`;
+- target object write, runtime activation, Search index write and cutover are blockers;
+- unexecuted checks are never PASS.
+
+## Proposed persistence outcome
+
+Logical identity:
+
+```text
+source_snapshot_ref
++ source_track
++ target_track
++ source_contract
++ target_contract
++ integration_scope
++ validator_version
++ integration_policy_version
+```
+
+Outcome:
+
+```text
+NEW
+DUPLICATE
+CONFLICT / CROSS_TRACK_INTEGRATION_VERDICT_CONFLICT
+```
+
+Append-only evidence, atomic exact-one-NEW concurrency and aggregate-only reader access are implementation requirements after allocation.
 
 ## Protected state
 
@@ -36,10 +95,16 @@ Kill switch: true
 Effective sampling: 0 BPS
 Actual cohort: empty / 0%
 Search cutover: NOT STARTED
+/api/v1/explore authority: LEGACY
 Production traffic: NOT APPROVED
-Go/No-Go: NO_GO_FOR_TRAFFIC
+Recommendation production write: DISABLED
+Intelligence runtime activation by DP-7: PROHIBITED
+Worker/scheduler: ABSENT / DISABLED
+Replay/backfill/rebuild/purge: UNAUTHORIZED
 ```
 
-## Integration gate
+## Current gate
 
-PR #18 must pass exact-head PostgreSQL 15/18, Java 21, Recommendation, Backend/IP-12.5, SC reconciliation and protected-diff gates. It must not be merged without explicit user approval. DP-7 starts only from the eventual DP-6 implementation merge commit.
+`DP7_IMPLEMENTATION_BLOCKED_BY_SC_ALLOCATION`
+
+The allocation PR requires exact-head static allocation, protected-diff and current Data/Recommendation/Intelligence/Search/backend contract regressions. It must not be merged automatically. If explicitly merged, its merge commit becomes the only valid base for a separate DP-7 implementation PR.

@@ -129,8 +129,8 @@ try:
     changed = subprocess.run(["git", "diff", "--name-only", "origin/main...HEAD"], cwd=ROOT,
                              check=True, text=True, capture_output=True).stdout.splitlines()
     changed_sql = {path for path in changed if path.endswith(".sql")}
-    if implemented and changed_sql != DP6_SQL_FILES:
-        fail(f"DP-6 implementation SQL diff must be exactly 43..47: {sorted(changed_sql)}")
+    if implemented and changed_sql and changed_sql != DP6_SQL_FILES:
+        fail(f"DP-6 SQL changes, when present, must be exactly 43..47: {sorted(changed_sql)}")
     if not implemented and changed_sql:
         fail(f"allocation-only phase cannot change SQL: {sorted(changed_sql)}")
     protected_sql = [path for path in changed_sql if int(Path(path).name[:2]) <= 42]

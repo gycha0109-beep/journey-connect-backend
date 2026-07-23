@@ -1,0 +1,10 @@
+track	contract_or_object	version	status	authority	dp7_finding
+Data	recommendation-profile-input-v1	recommendation-profile-input-v1	SHADOW_ONLY	Data	conditional Recommendation mapping only
+Data	experiment-outcome-input-v1	experiment-outcome-input-v1	SHADOW_ONLY	Data with protected P2 exposure	conditional P2 dataset comparison only
+Data	data-projection-snapshot-v1	data-projection-snapshot-v1	ACTIVE	Data	immutable integration source
+Data	snapshot quality verdict	data-quality-policy-v1	ACTIVE	Data	VALIDATED only
+Recommendation	current P1 profile source	protected current schema	ACTIVE	Recommendation	must not be replaced
+Recommendation	recommendation-evaluation-dataset-v1	recommendation-evaluation-dataset-v1	ACTIVE	Reliability semantics/current P2 path	must not be replaced
+Intelligence	intelligence-input-snapshot-v1	intelligence-input-snapshot-v1	ACTIVE	Intelligence	generic envelope; domain mapping absent
+Search	search-document-projection-v1	search-document-projection-v1	ACTIVE	Search	Data input contract absent
+Search	legacy explore compatibility	legacy-explore compatibility v1	ACTIVE_NO_AUTHORITY	Search compatibility	no runtime/index/exposure authority

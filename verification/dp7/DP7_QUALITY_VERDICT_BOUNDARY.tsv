@@ -1,0 +1,11 @@
+check	expected	observed	status	failure_code
+allowed_status	VALIDATED only	boundary fixed	PASS_DESIGN	quality_verdict_rejected
+rejected	blocked	blocked by design	PASS_DESIGN	quality_verdict_rejected
+inconclusive	blocked	blocked by design	PASS_DESIGN	quality_verdict_inconclusive
+missing	blocked	blocked by design	PASS_DESIGN	quality_verdict_missing
+conflicted	blocked	blocked by design	PASS_DESIGN	quality_verdict_conflicted
+policy_version	data-quality-policy-v1 supported	exact support required	PASS_DESIGN	quality_policy_unsupported
+snapshot_binding	exact snapshot ref	exact match required	PASS_DESIGN	quality_snapshot_mismatch
+fingerprint	valid exact verdict fingerprint	exact validation required	PASS_DESIGN	quality_verdict_fingerprint_mismatch
+latest_selection	no arbitrary latest	logical identity resolution required	PASS_DESIGN	quality_verdict_conflicted
+runtime_validator	executed	not implemented	NOT_EXECUTED	quality_verdict_missing

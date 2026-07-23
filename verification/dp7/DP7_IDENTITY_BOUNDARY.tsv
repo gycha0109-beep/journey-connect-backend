@@ -1,0 +1,7 @@
+check	expected	observed	status	failure_code
+namespace_registry	subject and user separate	platform_subject_v1 and legacy_user_numeric_v1 active	PASS_DESIGN	cross_track_identity_namespace_mismatch
+binding_requirement	version/source/fingerprint/scope	required by DP-5/DP-6 and DP-7 design	PASS_DESIGN	cross_track_identity_binding_missing
+automatic_join	prohibited	no identity repository or join added	PASS_PROTECTED	cross_track_identity_authority_violation
+search_document_identity	not user identity	post:<id> explicitly separate	PASS_DESIGN	cross_track_identity_namespace_mismatch
+intelligence_entity_identity	not inferred as user	generic entity/subject types remain distinct	PASS_DESIGN	cross_track_identity_scope_mismatch
+runtime_validation	executed validator	not implemented	NOT_EXECUTED	cross_track_identity_binding_invalid
