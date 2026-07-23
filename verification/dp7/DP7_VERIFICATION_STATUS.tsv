@@ -1,7 +1,9 @@
 verification	implemented	executed	result	head
-Java 21 xlint werror	true	true	PASS	LOCAL_CANDIDATE
-DP7 Java golden fixtures	true	true	PASS 137 assertions	LOCAL_CANDIDATE
-PostgreSQL 15 SQL 01..52	true	false	CI_PENDING	PR_HEAD_REQUIRED
-PostgreSQL 18 SQL 01..52	true	false	CI_PENDING	PR_HEAD_REQUIRED
-DP7 concurrency	true	false	CI_PENDING	PR_HEAD_REQUIRED
-target track regressions	true	false	CI_PENDING	PR_HEAD_REQUIRED
+Java 21 xlint werror	true	true	PASS	EXACT_HEAD_CI
+DP7 Java golden fixtures	true	true	PASS 137 assertions	EXACT_HEAD_CI
+PostgreSQL 15 SQL 01..52	true	true	PASS canonical apply validation concurrency	EXACT_HEAD_CI
+PostgreSQL 18 SQL 01..52	true	true	PASS canonical apply validation concurrency	EXACT_HEAD_CI
+DP7 concurrency	true	true	PASS one NEW one DUPLICATE zero conflict on PostgreSQL 15 and 18	EXACT_HEAD_CI
+target track regressions	true	true	PASS Recommendation Intelligence Search compatibility	EXACT_HEAD_CI
+Backend protected readiness	true	true	PASS production defaults and canonical SQL 01..52	EXACT_HEAD_CI
+SC and DP6 reconciliation	true	true	PASS protected predecessor baselines	EXACT_HEAD_CI
