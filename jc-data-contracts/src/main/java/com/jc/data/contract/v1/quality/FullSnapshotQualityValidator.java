@@ -1,6 +1,7 @@
 package com.jc.data.contract.v1.quality;
 
-import com.jc.data.contract.v1.projection.AdapterEvidenceState;
+import com.jc.data.contract.v1.projection.ExperimentExposureBinding;
+import com.jc.data.contract.v1.projection.ExperimentOutcomeInputProjection;
 import com.jc.data.contract.v1.projection.ProjectionDefinition;
 import com.jc.data.contract.v1.projection.ProjectionLineage;
 import com.jc.data.contract.v1.projection.ProjectionRecord;
@@ -12,6 +13,8 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class FullSnapshotQualityValidator {
     private static final List<DataQualityValidationScope> ORDER = List.of(
@@ -100,47 +103,107 @@ public final class FullSnapshotQualityValidator {
         long duplicateLineage = context.lineage().size() - context.lineage().stream()
                 .map(lineage -> lineage.projectionRecordRef() + "|" + lineage.sourceEventRef() + "|" + lineage.sourceFingerprint())
                 .distinct().count();
-        long duplicateSource = conflictingDuplicateSourceCount(context.sourceEvents());
-        long identityRequired = context.sourceEvents().stream().filter(event -> event.identityRef().startsWith("user:")).map(ProjectionSourceEvent::identityRef).distinct().count();
-        long identityValid = identityRequired == 0 ? 0 : context.identityBindings().stream()
-                .filter(evidence -> evidence.binding().bindingFingerprint().equals(evidence.authoritativeFingerprint()))
-                .map(evidence -> evidence.binding().sourceIdentityRef()).distinct().count();
-        boolean outcome = ProjectionDefinition.OUTCOME_NAME.equals(context.projectionDefinition().projectionName());
-        long exposureRequired = outcome ? context.projectionRecords().size() : 0;
-        long exposureValid = outcome ? context.exposureEvidence().stream().filter(e -> e.authoritative()
-                && !e.generalExposure() && e.fallbackAuthorityMatched()).count() : 0;
+        long conflictingSource = conflictingDuplicateSourceCount(context.sourceEvents());
+
+        Set<String> lineageSources = context.lineage().stream()
+                .map(lineage -> lineage.sourceEventRef() + "|" + lineage.sourceFingerprint())
+                .collect(Collectors.toSet());
+        Set<String> requiredUsers = context.sourceEvents().stream()
+                .filter(event -> lineageSources.contains(event.sourceEventRef() + "|" + event.sourceFingerprint()))
+                .map(ProjectionSourceEvent::identityRef)
+                .filter(identity -> identity.startsWith("user:"))
+                .collect(Collectors.toSet());
+        long identityValid = requiredUsers.stream().filter(user -> validIdentityBinding(context, user)).count();
+
+        List<ExperimentOutcomeInputProjection> outcomes = context.projectionRecords().stream()
+                .filter(ExperimentOutcomeInputProjection.class::isInstance)
+                .map(ExperimentOutcomeInputProjection.class::cast)
+                .toList();
+        boolean outcomeProjection = ProjectionDefinition.OUTCOME_NAME.equals(
+                context.projectionDefinition().projectionName());
+        long exposureRequired = outcomeProjection ? outcomes.size() : 0;
+        long exposureValid = outcomeProjection
+                ? outcomes.stream().filter(record -> validExposureBinding(context, record)).count() : 0;
+
         long fingerprintPass = checks.stream().filter(check -> check.checkCode().contains("fingerprint")
                 && check.checkStatus() == DataQualityCheckStatus.PASS).count();
         long fingerprintTotal = checks.stream().filter(check -> check.checkCode().contains("fingerprint")).count();
+        long projectionCovered = Math.min(rebuild.observedRecordCount(), rebuild.expectedRecordCount());
         List<DataQualityMetric> result = new ArrayList<>();
-        result.add(calculator.calculate("source_completeness_rate", Math.min(actualCheckpointMembers, checkpointCount), checkpointCount, policy));
-        result.add(calculator.calculate("projection_coverage_rate", rebuild.expectedRecordCount() - Math.max(0, rebuild.expectedRecordCount() - rebuild.observedRecordCount()), rebuild.expectedRecordCount(), policy));
-        result.add(calculator.calculate("lineage_completeness_rate", Math.min(recordsWithLineage, context.projectionRecords().size()), context.projectionRecords().size(), policy));
+        result.add(calculator.calculate("source_completeness_rate",
+                Math.min(actualCheckpointMembers, checkpointCount), checkpointCount, policy));
+        result.add(calculator.calculate("projection_coverage_rate", projectionCovered,
+                rebuild.expectedRecordCount(), policy));
+        result.add(calculator.calculate("lineage_completeness_rate",
+                Math.min(recordsWithLineage, context.projectionRecords().size()),
+                context.projectionRecords().size(), policy));
         result.add(calculator.calculate("lineage_orphan_rate", orphan, context.lineage().size(), policy));
-        result.add(calculator.calculate("duplicate_source_rate", duplicateSource, context.sourceEvents().size(), policy));
-        result.add(calculator.calculate("duplicate_lineage_rate", duplicateLineage, context.lineage().size(), policy));
-        result.add(binary(calculator, "snapshot_record_reconciliation_rate", checks, "snapshot.record_count", policy));
-        result.add(binary(calculator, "snapshot_subject_reconciliation_rate", checks, "snapshot.subject_count", policy));
-        result.add(binary(calculator, "snapshot_source_reconciliation_rate", checks, "snapshot.source_count", policy));
+        result.add(calculator.calculate("duplicate_source_rate", conflictingSource,
+                context.sourceEvents().size(), policy));
+        result.add(calculator.calculate("duplicate_lineage_rate", duplicateLineage,
+                context.lineage().size(), policy));
+        result.add(binary(calculator, "snapshot_record_reconciliation_rate", checks,
+                "snapshot.record_count", policy));
+        result.add(binary(calculator, "snapshot_subject_reconciliation_rate", checks,
+                "snapshot.subject_count", policy));
+        result.add(binary(calculator, "snapshot_source_reconciliation_rate", checks,
+                "snapshot.source_count", policy));
         result.add(calculator.calculate("fingerprint_match_rate", fingerprintPass, fingerprintTotal, policy));
-        result.add(calculator.calculate("identity_binding_valid_rate", identityValid, identityRequired, policy));
-        result.add(calculator.calculate("exposure_binding_valid_rate", Math.min(exposureValid, exposureRequired),
-                exposureRequired, policy));
-        result.add(calculator.calculate("late_arrival_rate", late.size(), Math.max(1, context.sourceEvents().size()), policy));
-        result.add(calculator.calculate("conflict_rate", conflictingDuplicateSourceCount(context.sourceEvents()),
-                Math.max(1, context.sourceEvents().size()), policy));
+        result.add(calculator.calculate("identity_binding_valid_rate", identityValid, requiredUsers.size(), policy));
+        result.add(calculator.calculate("exposure_binding_valid_rate", exposureValid, exposureRequired, policy));
+        result.add(calculator.calculate("late_arrival_rate", late.size(), context.sourceEvents().size(), policy));
+        result.add(calculator.calculate("conflict_rate", conflictingSource, context.sourceEvents().size(), policy));
         result.add(calculator.calculate("rebuild_match_rate", rebuild.matched() ? 1 : 0, 1, policy));
         return result.stream().sorted(Comparator.comparing(DataQualityMetric::metricName)).toList();
+    }
+
+    private static boolean validIdentityBinding(DataQualityValidationContext context, String user) {
+        List<IdentityBindingEvidence> matches = context.identityBindings().stream()
+                .filter(evidence -> evidence.binding().sourceIdentityRef().equals(user)).toList();
+        if (matches.size() != 1) {
+            return false;
+        }
+        IdentityBindingEvidence evidence = matches.getFirst();
+        return evidence.binding().bindingFingerprint().equals(evidence.authoritativeFingerprint())
+                && evidence.sourceCheckpointRef().equals(context.checkpoint().checkpointRef())
+                && ("journey-connect".equals(evidence.binding().bindingScope())
+                    || context.projectionDefinition().targetContractVersion().equals(
+                            evidence.binding().bindingScope()))
+                && evidence.binding().targetSubjectRef().equals(evidence.projectionSubjectRef())
+                && context.projectionRecords().stream().anyMatch(record -> record.subjectRef()
+                        .equals(evidence.projectionSubjectRef()));
+    }
+
+    private static boolean validExposureBinding(DataQualityValidationContext context,
+            ExperimentOutcomeInputProjection record) {
+        List<P2ExposureEvidence> matches = context.exposureEvidence().stream()
+                .filter(evidence -> evidence.binding().exposureRef().equals(record.exposureRef())).toList();
+        if (matches.size() != 1) {
+            return false;
+        }
+        P2ExposureEvidence evidence = matches.getFirst();
+        ExperimentExposureBinding binding = evidence.binding();
+        return evidence.authoritative() && !evidence.generalExposure()
+                && evidence.fallbackAuthorityMatched()
+                && ExperimentExposureBinding.AUTHORITY.equals(binding.authorityId())
+                && binding.targetSubjectRef().equals(record.subjectRef())
+                && binding.variantRef().equals(record.variantRef())
+                && binding.experimentRef().equals(record.experimentRef())
+                && binding.experimentVersion().equals(record.experimentVersion())
+                && binding.exposedAt().equals(record.exposedAt())
+                && binding.fallbackObserved() == record.fallbackObserved();
     }
 
     private static long conflictingDuplicateSourceCount(List<ProjectionSourceEvent> events) {
         Map<String, ProjectionSourceEvent> seen = new LinkedHashMap<>();
         long conflicts = 0;
         for (ProjectionSourceEvent event : events) {
-            String key = event.sourceEventRef() + "|" + event.sourceFingerprint() + "|"
+            String key = event.sourceEventRef() + "|"
                     + (event.adapterEvidenceRef() == null ? "" : event.adapterEvidenceRef());
             ProjectionSourceEvent previous = seen.putIfAbsent(key, event);
-            if (previous != null && !previous.equals(event)) conflicts++;
+            if (previous != null && !previous.equals(event)) {
+                conflicts++;
+            }
         }
         return conflicts;
     }
@@ -157,5 +220,4 @@ public final class FullSnapshotQualityValidator {
         return new SnapshotQualityVerdictEvaluator().evaluate(context.snapshot().snapshotRef(), validationRunRef,
                 context.qualityPolicy(), checks, metrics);
     }
-
 }
