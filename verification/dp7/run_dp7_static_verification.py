@@ -47,7 +47,6 @@ for marker in (
     "data_cross_track_integration_policy_v1", "data_cross_track_integration_run_v1",
     "data_cross_track_integration_status_evidence_v1", "data_cross_track_integration_check_result_v1",
     "data_cross_track_integration_anomaly_v1", "data-cross-track-integration-policy-v1",
-    "integration-input-sha256-v1", "integration-check-evidence-sha256-v1",
 ):
     if marker not in sql48:
         fail(f"SQL 48 marker missing: {marker}")
@@ -74,6 +73,13 @@ for marker in (
 ):
     if marker not in sql51:
         fail(f"SQL 51 marker missing: {marker}")
+for marker in (
+    "integration-input-sha256-v1", "integration-check-evidence-sha256-v1",
+    "integration-mapping-sha256-v1", "integration-verdict-sha256-v1",
+    "cross-track-contract-matrix-sha256-v1",
+):
+    if marker not in "\n".join((sql48, sql49, sql50, sql51)):
+        fail(f"DP-7 fingerprint domain missing: {marker}")
 for marker in (
     "Recommendation conditional NEW failed", "Intelligence missing domain mapping",
     "Search missing contract", "Integration CONFLICT failed", "Partial DP-7 insert was not rolled back",
