@@ -2,90 +2,71 @@
 
 ## Status
 
-- Decision: `PROPOSED / MERGE REQUIRED`
-- Implementation authority: `NOT GRANTED`
-- Allocation branch: `codex/sc-dp7-integration-allocation`
-- Authoritative baseline: `69b2f9619733e8e6068a23bb149c2aaf41f23fc9`
-- DP-6 implementation PR: `#18 / MERGED`
-- DP-6 implementation HEAD: `0e9b09283bad61faa830db1019d421c6e906fc7c`
-- DP-6 merge commit: `69b2f9619733e8e6068a23bb149c2aaf41f23fc9`
-- Current DP-7 state: `DP7_IMPLEMENTATION_BLOCKED_BY_SC_ALLOCATION`
+- Decision: `APPROVED / MERGED`
+- Implementation authority: `GRANTED`
+- Allocation PR: `#19 / MERGED`
+- Allocation HEAD: `50e5ab25d60422907181eeaaa3a6b9b638877378`
+- Authoritative allocation main: `d18c91a28b271c9f9891b522c6371017a3d0dd79`
+- Implementation branch: `agent/dp7-cross-track-integration-implementation`
+- Implementation state: `IMPLEMENTATION CANDIDATE / MAIN MERGE PENDING`
+
+The merge of PR #19 activated the entry rule of the allocation proposal. This document now records the approved boundary; it does not itself claim that the implementation PR has been merged.
 
 ## Purpose
 
-This proposal allocates the physical persistence boundary required for DP-7 to validate, without activating, whether Data Platform snapshots and DP-6 quality verdicts are compatible with Recommendation, Intelligence and Search contracts.
+DP-7 may persist validation-only evidence that determines whether a Data projection snapshot with an exact DP-6 `VALIDATED` quality verdict is compatible with a Recommendation, Intelligence or Search contract.
 
 ```text
-Data projection/snapshot
-+ DP-6 VALIDATED quality verdict
-+ target-track contract
-+ identity/authority/privacy/retention policy
-→ deterministic compatibility checks
-→ append-only integration evidence
+Data snapshot + exact quality verdict + target contract + boundary policy
+→ deterministic checks
+→ append-only evidence
 → COMPATIBLE / INCOMPATIBLE / CONDITIONALLY_COMPATIBLE / INCONCLUSIVE
 ```
 
-`COMPATIBLE` remains validation evidence only. It is not production, serving, runtime, traffic, release or cutover authority.
+None of these verdicts grants serving, traffic, runtime, production write, Search indexing or cutover authority.
 
-## Current authoritative blocker
+## Approved SQL allocation
 
-The current Platform Registry assigns SQL `01..47` and explicitly marks SQL `48+` as unallocated. No DP-7 integration writer, reader, function-owner role or integration policy is assigned. Therefore this PR must not add SQL, database objects or Java implementation code.
+- SQL 48: `48_cross_track_integration_validation_foundation.sql`
+- SQL 49: `49_cross_track_contract_mapping_and_boundary_evidence.sql`
+- SQL 50: `50_cross_track_integration_verdict_and_conflict.sql`
+- SQL 51: `51_cross_track_integration_persistence_roles_and_safe_view.sql`
+- SQL 52: `52_cross_track_integration_validation.sql`
 
-## Proposed SQL allocation
+SQL `01..47` remains protected and unchanged. SQL `53+` remains unallocated.
 
-The following sequence becomes implementation authority only after this proposal is reviewed and merged:
+## Approved roles
 
-- SQL 48: `48_cross_track_integration_validation_foundation.sql` — append-only integration run/status/check foundation.
-- SQL 49: `49_cross_track_contract_mapping_and_boundary_evidence.sql` — mapping, identity, authority, privacy and retention evidence.
-- SQL 50: `50_cross_track_integration_verdict_and_conflict.sql` — verdict, fingerprint and conflict evidence.
-- SQL 51: `51_cross_track_integration_persistence_roles_and_safe_view.sql` — atomic `NEW / DUPLICATE / CONFLICT`, roles, hardened functions and aggregate-only safe view.
-- SQL 52: `52_cross_track_integration_validation.sql` — PostgreSQL 15/18 rollback-only validation.
+- `jc_data_integration_writer`: execute only `persist_data_cross_track_integration_v1(jsonb)`.
+- `jc_data_integration_reader`: select only `data_cross_track_integration_safe_metrics_v1`.
+- `jc_data_integration_function_owner`: `NOLOGIN`, `NOSUPERUSER`, `NOCREATEDB`, `NOCREATEROLE`, `NOREPLICATION`, `NOBYPASSRLS`; fixed `search_path`; minimum source reads and integration-evidence inserts.
 
-SQL `01..47` remains protected. No SQL `48+` is present in this allocation-only PR.
+Writer direct table writes, reader raw evidence reads and PUBLIC access are prohibited.
 
-## Proposed role allocation
+## Approved contracts and policy
 
-- `jc_data_integration_writer`: execute the approved atomic DP-7 persistence function only; no direct table or cross-track write.
-- `jc_data_integration_reader`: select the aggregate DP-7 safe view only.
-- `jc_data_integration_function_owner`: `NOLOGIN`, `NOSUPERUSER`, `NOCREATEDB`, `NOCREATEROLE`, `NOREPLICATION`, `NOBYPASSRLS`; fixed `search_path`; minimum grants.
+- `data-cross-track-integration-policy-v1`
+- `data-cross-track-integration-run-v1`
+- `data-cross-track-integration-check-v1`
+- `data-cross-track-contract-mapping-v1`
+- `data-cross-track-authority-matrix-v1`
+- `data-cross-track-privacy-retention-matrix-v1`
+- `data-cross-track-integration-verdict-v1`
+- conflict code: `CROSS_TRACK_INTEGRATION_VERDICT_CONFLICT`
 
-These roles are proposed names only until this allocation is merged. They must not be created by this PR.
+## Approved fingerprint domains
 
-## Proposed contracts and policy
-
-- integration policy: `data-cross-track-integration-policy-v1`;
-- integration run contract: `data-cross-track-integration-run-v1`;
-- integration check contract: `data-cross-track-integration-check-v1`;
-- contract mapping contract: `data-cross-track-contract-mapping-v1`;
-- authority matrix contract: `data-cross-track-authority-matrix-v1`;
-- privacy/retention matrix contract: `data-cross-track-privacy-retention-matrix-v1`;
-- integration verdict contract: `data-cross-track-integration-verdict-v1`;
-- conflict code: `CROSS_TRACK_INTEGRATION_VERDICT_CONFLICT`.
-
-Allowed verdicts are exactly:
-
-```text
-COMPATIBLE
-INCOMPATIBLE
-CONDITIONALLY_COMPATIBLE
-INCONCLUSIVE
-```
-
-Production-oriented verdict names are prohibited.
-
-## Proposed fingerprint domains
-
-| Logical field | Versioned fingerprint contract |
+| Logical evidence | Domain |
 |---|---|
-| `integration_input_fingerprint` | `integration-input-sha256-v1` |
-| `integration_check_evidence_fingerprint` | `integration-check-evidence-sha256-v1` |
-| `integration_mapping_fingerprint` | `integration-mapping-sha256-v1` |
-| `integration_verdict_fingerprint` | `integration-verdict-sha256-v1` |
-| `cross_track_contract_matrix_fingerprint` | `cross-track-contract-matrix-sha256-v1` |
+| integration input | `integration-input-sha256-v1` |
+| check evidence | `integration-check-evidence-sha256-v1` |
+| contract mapping | `integration-mapping-sha256-v1` |
+| integration verdict | `integration-verdict-sha256-v1` |
+| contract matrix | `cross-track-contract-matrix-sha256-v1` |
 
-All use SHA-256 lowercase hexadecimal, 64 characters, over canonical semantic inputs. Execution time, database row IDs, random UUIDs, build IDs, locale, timezone, insertion order and physical row order are excluded.
+No additional DP-7 fingerprint domain is authorized. Execution time, row ID, random UUID, build ID, locale, timezone, insertion order and physical row order are excluded.
 
-## Logical identity and persistence outcome
+## Logical identity and atomic outcome
 
 ```text
 source_snapshot_ref
@@ -98,70 +79,28 @@ source_snapshot_ref
 + integration_policy_version
 ```
 
-- absent identity → `NEW`;
-- same identity and same input/verdict fingerprints → `DUPLICATE`;
-- same identity and different input or verdict fingerprint → `CONFLICT / CROSS_TRACK_INTEGRATION_VERDICT_CONFLICT`.
+- absent identity → `NEW`
+- same identity and same input/verdict → `DUPLICATE`
+- same identity with different input or verdict → `CONFLICT`
 
-No existing evidence row may be updated. Concurrent identical requests must yield exactly one `NEW` after implementation.
+The approved persistence function must use a deterministic logical hash, transaction advisory lock and unique constraint. Conflict evidence is appended; the existing verdict is never rewritten.
 
-## Quality verdict boundary
+## Quality boundary
 
-Only a DP-6 `VALIDATED` verdict bound to the exact source snapshot, supported `data-quality-policy-v1` and valid verdict fingerprint may proceed toward compatibility. `REJECTED`, `INCONCLUSIVE`, missing, conflicted, unsupported or snapshot-mismatched verdicts fail closed.
+Only an exact, authoritative, non-conflicted DP-6 `VALIDATED` verdict under `data-quality-policy-v1` may be persisted as an integration candidate. Missing, rejected, inconclusive, conflicted, unsupported, snapshot-mismatched or malformed verdicts are blocked before integration evidence creation.
 
-A quality verdict is not Recommendation approval, Intelligence confidence, Search readiness or production authorization.
+## Target-track findings retained
 
-## Target-track contract findings at allocation time
-
-### Recommendation
-
-- `recommendation-profile-input-v1` contains deterministic 7/30/90-day profile facts compatible with a future Recommendation read adapter, but the current P1 source remains authoritative and no cutover is approved.
-- `experiment-outcome-input-v1` preserves authoritative P2 exposure, seven-day click/like/save/share outcomes and fallback semantics, but it does not replace `recommendation-evaluation-dataset-v1`.
-- Allocation-time classification: `CONDITIONALLY_COMPATIBLE` for validation design; runtime authority unchanged.
-
-### Intelligence
-
-- `intelligence-input-snapshot-v1` provides a generic immutable envelope and privacy class.
-- No approved Data-specific Intelligence domain input mapping identifies which Data projection schema is a valid Intelligence feature/context payload.
-- Allocation-time classification: `INCONCLUSIVE`; DP-7 must not invent or activate a target contract.
-
-### Search
-
-- `search-document-projection-v1` is an existing Search-owned projection built from protected post, region and Operations eligibility authority.
-- DP-5 profile/outcome snapshots do not have Search document grain or content semantics, and no approved Data-to-Search input contract exists.
-- Allocation-time classification: `INCONCLUSIVE` for Data-to-Search integration; direct profile/outcome-to-document mapping is `INCOMPATIBLE`.
-
-## Authority preservation
-
-- canonical event, adapter evidence, checkpoint, projection, snapshot and quality verdict: Data authority;
-- Recommendation decision and P2 exposure: Recommendation/Reliability authority as already governed;
-- Intelligence runtime/model/result: Intelligence authority;
-- Search document/index/runtime and cutover: Search/Intelligence authority;
-- DP-7: compatibility evidence only.
-
-DP-7 may not create or modify target-track authoritative objects.
-
-## Privacy and retention proposal
-
-- raw payload, raw query/text, token, email, phone, address, exact location and unrestricted identity mapping are prohibited;
-- only purpose-bound pseudonymous references and aggregate-safe observations may be persisted;
-- integration evidence retention class: `cross_track_integration_evidence_90d`;
-- retention policy: `data-retention-policy-v1`;
-- explicit `expires_at` required;
-- automatic purge and physical deletion remain disabled;
-- target retention may not silently exceed source authority retention.
+- Data → Recommendation profile: `CONDITIONALLY_COMPATIBLE`; current P1 authority remains.
+- Data → Recommendation experiment outcome: `CONDITIONALLY_COMPATIBLE`; authoritative P2 exposure and current evaluation dataset remain.
+- Data → Intelligence: `INCONCLUSIVE` while no Data-specific Intelligence domain mapping exists.
+- Data → Search: `INCONCLUSIVE` while no approved Data-to-Search input contract exists; subject/exposure records are not Search documents.
 
 ## Protected boundary
 
-- SQL `01..47`: unchanged;
-- SQL `48+`: absent in this PR;
-- no Java DP-7 contracts or validators;
-- no database roles, tables, functions, views or grants;
-- no Recommendation write or metric change;
-- no Intelligence runtime/model execution;
-- no Search projection/index write, traffic routing or cutover;
+- no Recommendation decision/result/write or metric change;
+- no P2 assignment/exposure mutation;
+- no Intelligence model/result/runtime activation;
+- no Search document generation/index write/routing/cutover;
 - no worker, scheduler, replay, backfill, rebuild, purge or identity repository;
-- production shadow remains disabled, kill switch enabled, sampling `0 BPS`, cohort empty and `/api/v1/explore` legacy authority preserved.
-
-## Entry rule
-
-If this allocation PR is merged, its merge commit becomes the sole authoritative base for a separate DP-7 implementation PR. That implementation may use only SQL `48..52`, the proposed roles and policy after their status is changed to approved by the merge. No implementation may be inferred from this proposal alone.
+- production shadow remains disabled, kill switch enabled, sampling `0 BPS`, cohort empty and `/api/v1/explore` legacy authority unchanged.

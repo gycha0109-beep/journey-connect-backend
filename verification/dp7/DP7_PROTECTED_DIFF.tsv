@@ -1,10 +1,8 @@
-boundary	allowed_change	disallowed_change	current_design_status
-canonical_sql	none	SQL 01..47 modification or SQL 48+ addition	REQUIRED_GATE
-Data_implementation	none in allocation PR	jc-data-contracts Java DP-7 implementation	REQUIRED_GATE
-Recommendation	none	core/backend/schema/metric/exposure change	REQUIRED_GATE
-Intelligence	none	contract/runtime/model activation change	REQUIRED_GATE
-Search	none	contract/projection/runtime/index/cutover change	REQUIRED_GATE
-backend_production	none	/api/v1/explore authority or production config change	REQUIRED_GATE
-governance	dp7 proposal/register/registry/handoff	unrelated allocation or authority change	ALLOWED
-documentation	dp7 docs and evidence	production-ready claim	ALLOWED_WITH_TRUTH_RULE
-workflow	dp7 allocation and regression gate	traffic/runtime activation	ALLOWED
+path	policy
+database SQL 01..47	unchanged
+database SQL 48..52	exact additions
+database SQL 53+	absent
+Recommendation production source	unchanged
+Intelligence production source	unchanged
+Search production source	unchanged
+backend production config and api explore	unchanged

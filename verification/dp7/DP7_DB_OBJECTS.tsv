@@ -1,0 +1,15 @@
+object_name	object_type	authority	append_only
+data_cross_track_integration_policy_v1	table	Data DP-7	yes
+data_cross_track_integration_run_v1	table	Data DP-7	yes
+data_cross_track_integration_status_evidence_v1	table	Data DP-7	yes
+data_cross_track_integration_check_result_v1	table	Data DP-7	yes
+data_cross_track_contract_mapping_evidence_v1	table	Data DP-7	yes
+data_cross_track_identity_evidence_v1	table	Data DP-7	yes
+data_cross_track_authority_evidence_v1	table	Data DP-7	yes
+data_cross_track_privacy_evidence_v1	table	Data DP-7	yes
+data_cross_track_retention_evidence_v1	table	Data DP-7	yes
+data_cross_track_quality_verdict_binding_v1	table	Data DP-7	yes
+data_cross_track_integration_verdict_v1	table	Data DP-7	yes
+data_cross_track_integration_conflict_evidence_v1	table	Data DP-7	yes
+persist_data_cross_track_integration_v1	function	Data DP-7	not applicable
+data_cross_track_integration_safe_metrics_v1	view	aggregate reader	not applicable

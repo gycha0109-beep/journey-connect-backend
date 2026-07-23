@@ -1,10 +1,8 @@
-object	owner	validation_authority	dp7_write_authority	status	failure_code
-canonical_event	Data	read evidence after approval	none	PROTECTED	cross_track_write_authority_violation
-projection_snapshot	Data	read immutable snapshot	none	PROTECTED	cross_track_write_authority_violation
-quality_verdict	Data	read exact verdict	none	PROTECTED	cross_track_validation_authority_violation
-Recommendation_decision	Recommendation	contract reference only	none	PROTECTED	recommendation_authority_violation
-P2_exposure	Reliability semantic/current P2 path	exact authority validation	none	PROTECTED	recommendation_authority_violation
-Intelligence_result	Intelligence	contract reference only	none	PROTECTED	intelligence_authority_violation
-Search_document_index	Search	contract reference only	none	PROTECTED	search_authority_violation
-production_traffic	Operations/System Coordination	protected-state validation	none	PROTECTED	cross_track_production_authority_violation
-integration_evidence	Data DP-7 after allocation	DP-7	proposed function only	NOT_IMPLEMENTED	cross_track_validation_authority_violation
+object	owner	dp7_write	dp7_production
+canonical event	Data	false	false
+quality verdict	Data quality	false	false
+Recommendation decision	Recommendation	false	false
+P2 exposure	Recommendation Reliability	false	false
+Intelligence result	Intelligence	false	false
+Search document index	Search	false	false
+integration evidence	Data DP-7	atomic function	false

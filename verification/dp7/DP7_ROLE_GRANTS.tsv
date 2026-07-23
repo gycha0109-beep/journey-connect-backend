@@ -1,7 +1,5 @@
-role	proposed_authority	forbidden	status
-jc_data_integration_writer	execute approved atomic persistence function	direct table write; target-track write; raw evidence read	PROPOSED_NOT_CREATED
-jc_data_integration_reader	select aggregate safe view only	raw run/check/mapping/verdict/lineage access	PROPOSED_NOT_CREATED
-jc_data_integration_function_owner	own hardened functions; NOLOGIN	LOGIN SUPERUSER CREATEDB CREATEROLE REPLICATION BYPASSRLS	PROPOSED_NOT_CREATED
-PUBLIC	none	function execute and safe-view select	PROPOSED_REVOKE_NOT_EXECUTED
-existing_Data_roles	unchanged	DP-7 authority acquisition	PROTECTED
-Recommendation_Intelligence_Search_roles	unchanged	grant to DP-7 writer	PROTECTED
+role	allowed	denied
+jc_data_integration_writer	execute persistence function	direct table write and DDL
+jc_data_integration_reader	select aggregate safe view	raw evidence and write
+jc_data_integration_function_owner	minimum source read and evidence insert	login superuser broad owner
+PUBLIC	none	function view and raw evidence
