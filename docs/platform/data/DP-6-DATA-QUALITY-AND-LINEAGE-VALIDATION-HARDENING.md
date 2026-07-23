@@ -52,7 +52,13 @@ The coordinator reruns the actual DP-5 profile or outcome projection engine from
 Implemented in `jc-data-contracts` under `com.jc.data.contract.v1.quality`:
 
 - immutable validation, check, metric, threshold, policy, anomaly, verdict, rebuild, late-arrival and persistence-outcome contracts;
-- source, projection, snapshot, lineage, identity, exposure and deterministic-rebuild validators;
+- `SourceCompletenessValidator`;
+- `ProjectionCompletenessValidator`;
+- `SnapshotConsistencyValidator`;
+- `LineageIntegrityValidator`;
+- `IdentityIntegrityValidator`;
+- `ExposureIntegrityValidator`;
+- `DeterministicRebuildValidator`;
 - `FullSnapshotQualityValidator` deterministic coordinator;
 - deterministic quality fingerprints and `NEW / DUPLICATE / CONFLICT` decision.
 
