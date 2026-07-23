@@ -84,7 +84,11 @@ for number in range(1, 53):
         fail(f"canonical SQL {number:02d} expected exactly once, found {len(matches)}")
 if list(SQL_DIR.glob("5[3-9]_*.sql")) or list(SQL_DIR.glob("[6-9][0-9]_*.sql")):
     fail("SQL 53+ remains unallocated")
-actual_dp7_sql = {str(path.relative_to(ROOT)).replace('\\', '/') for path in SQL_DIR.glob("{48,49,50,51,52}_*.sql")}
+actual_dp7_sql = {
+    str(path.relative_to(ROOT)).replace('\\', '/')
+    for number in range(48, 53)
+    for path in SQL_DIR.glob(f"{number:02d}_*.sql")
+}
 if actual_dp7_sql != DP7_SQL:
     fail(f"DP-7 SQL allocation mismatch: {sorted(actual_dp7_sql)}")
 
