@@ -5,14 +5,14 @@
 | 항목 | 값 |
 |---|---|
 | 계약 ID | `sc-platform-registry-v1` |
-| 상태 | `ACTIVE / DP-6 ALLOCATION PROPOSED` |
+| 상태 | `ACTIVE / DP-6 MAIN INTEGRATED / DP-7 ALLOCATION PROPOSED` |
 
 ## Module/package
 
 | Module | Package root | Owner | Status |
 |---|---|---|---|
 | `jc-intelligence-contracts` | `com.jc.intelligence.contract` | Intelligence | ACTIVE |
-| `jc-data-contracts` | `com.jc.data.contract.v1` | Data | ACTIVE / DP-5 MAIN INTEGRATED; DP-6 QUALITY PACKAGE PROPOSED |
+| `jc-data-contracts` | `com.jc.data.contract.v1` | Data | ACTIVE / DP-6 MAIN INTEGRATED; DP-7 INTEGRATION PACKAGE PROPOSED |
 
 ## Identity schemes
 
@@ -53,13 +53,25 @@
 | `data-projection-record-sha256-v1` | DP-5 MAIN INTEGRATED |
 | `data-projection-snapshot-sha256-v1` | DP-5 MAIN INTEGRATED |
 | `data-projection-lineage-sha256-v1` | DP-5 MAIN INTEGRATED |
-| `data-quality-policy-v1` | APPROVED / IMPLEMENTED ON PR #18 |
-| `data-quality-validation-input-sha256-v1` | APPROVED / IMPLEMENTED ON PR #18 |
-| `data-quality-check-evidence-sha256-v1` | APPROVED / IMPLEMENTED ON PR #18 |
-| `data-quality-metric-sha256-v1` | APPROVED / IMPLEMENTED ON PR #18 |
-| `data-quality-verdict-sha256-v1` | APPROVED / IMPLEMENTED ON PR #18 |
-| `data-quality-rebuild-comparison-sha256-v1` | APPROVED / IMPLEMENTED ON PR #18 |
-| `data-quality-late-arrival-observation-sha256-v1` | APPROVED / IMPLEMENTED ON PR #18 |
+| `data-quality-policy-v1` | ACTIVE / DP-6 MAIN INTEGRATED |
+| `data-quality-validation-input-sha256-v1` | ACTIVE / DP-6 MAIN INTEGRATED |
+| `data-quality-check-evidence-sha256-v1` | ACTIVE / DP-6 MAIN INTEGRATED |
+| `data-quality-metric-sha256-v1` | ACTIVE / DP-6 MAIN INTEGRATED |
+| `data-quality-verdict-sha256-v1` | ACTIVE / DP-6 MAIN INTEGRATED |
+| `data-quality-rebuild-comparison-sha256-v1` | ACTIVE / DP-6 MAIN INTEGRATED |
+| `data-quality-late-arrival-observation-sha256-v1` | ACTIVE / DP-6 MAIN INTEGRATED |
+| `data-cross-track-integration-policy-v1` | PROPOSED / DP-7 ALLOCATION MERGE REQUIRED |
+| `data-cross-track-integration-run-v1` | PROPOSED / DP-7 ALLOCATION MERGE REQUIRED |
+| `data-cross-track-integration-check-v1` | PROPOSED / DP-7 ALLOCATION MERGE REQUIRED |
+| `data-cross-track-contract-mapping-v1` | PROPOSED / DP-7 ALLOCATION MERGE REQUIRED |
+| `data-cross-track-authority-matrix-v1` | PROPOSED / DP-7 ALLOCATION MERGE REQUIRED |
+| `data-cross-track-privacy-retention-matrix-v1` | PROPOSED / DP-7 ALLOCATION MERGE REQUIRED |
+| `data-cross-track-integration-verdict-v1` | PROPOSED / DP-7 ALLOCATION MERGE REQUIRED |
+| `integration-input-sha256-v1` | PROPOSED / DP-7 ALLOCATION MERGE REQUIRED |
+| `integration-check-evidence-sha256-v1` | PROPOSED / DP-7 ALLOCATION MERGE REQUIRED |
+| `integration-mapping-sha256-v1` | PROPOSED / DP-7 ALLOCATION MERGE REQUIRED |
+| `integration-verdict-sha256-v1` | PROPOSED / DP-7 ALLOCATION MERGE REQUIRED |
+| `cross-track-contract-matrix-sha256-v1` | PROPOSED / DP-7 ALLOCATION MERGE REQUIRED |
 
 ## Data DB roles
 
@@ -76,9 +88,12 @@
 | `jc_data_projection_writer` | execute DP-5 atomic persistence only | ACTIVE / DP-5 MAIN INTEGRATED |
 | `jc_data_projection_reader` | select DP-5 aggregate safe view only | ACTIVE / DP-5 MAIN INTEGRATED |
 | `jc_data_projection_function_owner` | NOLOGIN DP-5 function owner | ACTIVE / DP-5 MAIN INTEGRATED |
-| `jc_data_quality_writer` | approved DP-6 validation/verdict function only | IMPLEMENTED ON PR #18 |
-| `jc_data_quality_reader` | aggregate quality safe-view SELECT only | IMPLEMENTED ON PR #18 |
-| `jc_data_quality_function_owner` | NOLOGIN DP-6 function owner | IMPLEMENTED ON PR #18 |
+| `jc_data_quality_writer` | approved DP-6 validation/verdict function only | ACTIVE / DP-6 MAIN INTEGRATED |
+| `jc_data_quality_reader` | aggregate quality safe-view SELECT only | ACTIVE / DP-6 MAIN INTEGRATED |
+| `jc_data_quality_function_owner` | NOLOGIN DP-6 function owner | ACTIVE / DP-6 MAIN INTEGRATED |
+| `jc_data_integration_writer` | proposed DP-7 atomic persistence execute-only boundary | PROPOSED / NOT CREATED |
+| `jc_data_integration_reader` | proposed DP-7 aggregate safe-view SELECT only | PROPOSED / NOT CREATED |
+| `jc_data_integration_function_owner` | proposed NOLOGIN DP-7 function owner | PROPOSED / NOT CREATED |
 
 ## DB sequence
 
@@ -101,11 +116,16 @@
 | `40` | experiment outcome input projection | ACTIVE / DP-5 MAIN INTEGRATED |
 | `41` | atomic persistence/roles/safe view | ACTIVE / DP-5 MAIN INTEGRATED |
 | `42` | DP-5 PostgreSQL 15/18 validation | ACTIVE / DP-5 MAIN INTEGRATED |
-| `43` | quality validation run/check/anomaly foundation | IMPLEMENTED ON PR #18 |
-| `44` | quality metrics/verdict/late-arrival evidence | IMPLEMENTED ON PR #18 |
-| `45` | atomic quality persistence and roles | IMPLEMENTED ON PR #18 |
-| `46` | rebuild comparison and safe aggregate views | IMPLEMENTED ON PR #18 |
-| `47` | DP-6 PostgreSQL 15/18 validation | IMPLEMENTED ON PR #18 |
-| `48+` | unallocated | SC ASSIGNMENT REQUIRED |
+| `43` | quality validation run/check/anomaly foundation | ACTIVE / DP-6 MAIN INTEGRATED |
+| `44` | quality metrics/verdict/late-arrival evidence | ACTIVE / DP-6 MAIN INTEGRATED |
+| `45` | atomic quality persistence and roles | ACTIVE / DP-6 MAIN INTEGRATED |
+| `46` | rebuild comparison and safe aggregate views | ACTIVE / DP-6 MAIN INTEGRATED |
+| `47` | DP-6 PostgreSQL 15/18 validation | ACTIVE / DP-6 MAIN INTEGRATED |
+| `48` | proposed cross-track integration run/check foundation | PROPOSED / NOT ALLOCATED UNTIL MERGE |
+| `49` | proposed mapping and authority/privacy/retention evidence | PROPOSED / NOT ALLOCATED UNTIL MERGE |
+| `50` | proposed integration verdict and conflict evidence | PROPOSED / NOT ALLOCATED UNTIL MERGE |
+| `51` | proposed atomic persistence, roles and aggregate safe view | PROPOSED / NOT ALLOCATED UNTIL MERGE |
+| `52` | proposed PostgreSQL 15/18 DP-7 validation | PROPOSED / NOT ALLOCATED UNTIL MERGE |
+| `53+` | unallocated | SC ASSIGNMENT REQUIRED |
 
-DP-6 entries are authoritative from PR #17 merge `c0f6b5dc8cc7089412a100989109b61315c062d0`. SQL `43..47` and quality roles are implemented on PR #18; SQL `48+` remains unallocated.
+The proposed SQL `48..52`, roles and contract IDs are not implementation authority until the DP-7 allocation PR is explicitly reviewed and merged. This allocation-only PR must contain no SQL `48+`, role creation or Java DP-7 implementation.
