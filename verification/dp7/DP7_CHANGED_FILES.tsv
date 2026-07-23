@@ -10,6 +10,7 @@ docs/platform/data/DP-7-AUTHORITY-MATRIX.md	ADD	object ownership and validation 
 docs/platform/data/DP-7-PRIVACY-RETENTION-MATRIX.md	ADD	privacy retention deletion and safe-view design
 docs/platform/data/DP-7-HANDOFF.md	ADD	allocation blocker and implementation handoff
 verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py	MODIFY	validate DP-7 proposal without weakening prior gates
+verification/dp6/run_dp6_allocation_verification.py	MODIFY	preserve DP-6 post-merge gate without requiring SQL re-addition
 verification/dp7/run_dp7_allocation_verification.py	ADD	allocation matrix and protected-diff verifier
 verification/dp7/DP7_BASELINE.tsv	ADD	authoritative repository baseline
 verification/dp7/DP7_CHANGED_FILES.tsv	ADD	machine-readable change inventory
