@@ -15,7 +15,7 @@ Data technical baseline closed
 
 | Gate | Objective | Owner | Prerequisites | Evidence | Approval | Rollback | Status |
 |---|---|---|---|---|---|---|---|
-| `GATE-1` | technical closure | Data/SC | DP0~7 merged | closure pack+CI | SC/user | docs revert | COMPLETE CANDIDATE |
+| `GATE-1` | technical closure | Data/SC | DP0~7 merged | closure pack+exact-head CI | SC/user | docs revert | PR_READY_FOR_USER_APPROVAL |
 | `GATE-2` | contract readiness | target/SC | handoffs | approved contracts | target+SC | current sources | PARTIAL |
 | `GATE-3` | runtime readiness | Operations | workers/scheduler/deploy | runtime tests | Operations | disable | NOT_READY |
 | `GATE-4` | observability | Ops/Reliability | signals | dashboard/alerts | joint | HOLD | NOT_READY |
@@ -25,4 +25,4 @@ Data technical baseline closed
 | `GATE-8` | consumer adoption | target | parity | migration/rollback | target+Rel+SC | current source | NOT_AUTHORIZED |
 | `GATE-9` | production cutover | joint | staged evidence | promotion pack | joint go/no-go | rollback | NOT_AUTHORIZED |
 
-GATE-1 becomes authoritative COMPLETE only after closure PR merge.
+GATE-1 becomes authoritative `COMPLETE` only after user-approved closure PR merge and post-merge verification. Gates 2–9 remain independent and cannot be inferred from technical closure.
