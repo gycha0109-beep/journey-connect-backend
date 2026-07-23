@@ -29,17 +29,18 @@ jobs:
           python-version: "3.13"
       - name: Materialize complete DP-7 implementation
         run: python verification/dp7/.materialize/materialize_dp7_v5.py
-      - name: Remove temporary staging and commit implementation
+      - name: Commit implementation without workflow mutations
         shell: bash
         run: |
           set -euo pipefail
           rm -rf verification/dp7/.materialize
-          rm -f .github/workflows/dp7-materialize.yml
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add --all
+          git restore --source=HEAD -- .github/workflows
           test -f database/journey-connect-db-v2.7/52_cross_track_integration_validation.sql
           test -f jc-data-contracts/src/main/java/com/jc/data/contract/v1/integration/FullCrossTrackIntegrationValidator.java
           test -f verification/dp7/run_dp7_static_verification.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          git status --short
           git commit -m "feat(dp7): implement cross-track integration validation"
           git push origin HEAD:${{ github.head_ref }}
