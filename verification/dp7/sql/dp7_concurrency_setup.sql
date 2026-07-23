@@ -21,6 +21,7 @@ DECLARE
   v_mapping jsonb;
   v_identity jsonb;
   v_authorities jsonb;
+  v_authority_results jsonb;
   v_privacy jsonb;
   v_retention jsonb;
   v_checks jsonb;
@@ -59,6 +60,18 @@ BEGIN
       'readAttempted',true,'writeAttempted',false,'validationAttempted',true,'productionAttempted',false));
   v_privacy:='{"sourcePrivacyClass":"pseudonymous","targetPrivacyClass":"pseudonymous","rawPayloadPresent":false,"piiPresent":false,"rawTextPresent":false,"preciseLocationPresent":false,"aggregateOnly":true,"lineagePurposeBound":true,"reidentificationRisk":false}'::jsonb;
   v_retention:='{"sourceRetentionDays":90,"targetRetentionDays":90,"integrationEvidenceRetentionDays":90,"deletionSemanticsAligned":true,"automaticPurgeEnabled":false,"physicalDeleteEnabled":false}'::jsonb;
+  SELECT COALESCE(jsonb_agg(jsonb_build_object(
+      'objectName',a->>'objectName','owningTrack',a->>'owningTrack','actorTrack',a->>'actorTrack',
+      'readAllowed',COALESCE((a->>'readAllowed')::boolean,false),
+      'writeAllowed',COALESCE((a->>'writeAllowed')::boolean,false),
+      'validationAllowed',COALESCE((a->>'validationAllowed')::boolean,false),
+      'productionAllowed',COALESCE((a->>'productionAllowed')::boolean,false),
+      'readAttempted',COALESCE((a->>'readAttempted')::boolean,false),
+      'writeAttempted',COALESCE((a->>'writeAttempted')::boolean,false),
+      'validationAttempted',COALESCE((a->>'validationAttempted')::boolean,false),
+      'productionAttempted',COALESCE((a->>'productionAttempted')::boolean,false))
+      ORDER BY a->>'objectName',a->>'owningTrack'),'[]'::jsonb)
+    INTO v_authority_results FROM jsonb_array_elements(v_authorities)a;
 
   v_target_prefix:=CASE p_target_track WHEN 'Recommendation' THEN 'recommendation'
     WHEN 'Intelligence' THEN 'intelligence' WHEN 'Search' THEN 'search' ELSE 'data' END;
@@ -104,7 +117,24 @@ BEGIN
     'sourceQualityVerdictFingerprint',v_quality.verdict_fingerprint,
     'mappingPolicyVersion','data-cross-track-mapping-policy-v1',
     'integrationPolicyVersion','data-cross-track-integration-policy-v1',
-    'identityBindingFingerprint',v_binding_fp,'mappingFingerprint',v_mapping_fp));
+    'identityBindingFingerprint',v_binding_fp,'mappingFingerprint',v_mapping_fp,
+    'authorityResults',v_authority_results,
+    'privacyResult',jsonb_build_object(
+      'sourcePrivacyClass',v_privacy->>'sourcePrivacyClass','targetPrivacyClass',v_privacy->>'targetPrivacyClass',
+      'rawPayloadPresent',COALESCE((v_privacy->>'rawPayloadPresent')::boolean,false),
+      'piiPresent',COALESCE((v_privacy->>'piiPresent')::boolean,false),
+      'rawTextPresent',COALESCE((v_privacy->>'rawTextPresent')::boolean,false),
+      'preciseLocationPresent',COALESCE((v_privacy->>'preciseLocationPresent')::boolean,false),
+      'aggregateOnly',COALESCE((v_privacy->>'aggregateOnly')::boolean,false),
+      'lineagePurposeBound',COALESCE((v_privacy->>'lineagePurposeBound')::boolean,false),
+      'reidentificationRisk',COALESCE((v_privacy->>'reidentificationRisk')::boolean,false)),
+    'retentionResult',jsonb_build_object(
+      'sourceRetentionDays',(v_retention->>'sourceRetentionDays')::integer,
+      'targetRetentionDays',(v_retention->>'targetRetentionDays')::integer,
+      'integrationEvidenceRetentionDays',(v_retention->>'integrationEvidenceRetentionDays')::integer,
+      'deletionSemanticsAligned',COALESCE((v_retention->>'deletionSemanticsAligned')::boolean,false),
+      'automaticPurgeEnabled',COALESCE((v_retention->>'automaticPurgeEnabled')::boolean,false),
+      'physicalDeleteEnabled',COALESCE((v_retention->>'physicalDeleteEnabled')::boolean,false))));
   RETURN jsonb_build_object(
     'integrationRunRef',p_run_ref,'integrationScope',p_scope,'sourceTrack','Data','targetTrack',p_target_track,
     'sourceContract',v_snapshot.projection_name,'sourceSchemaVersion',v_snapshot.projection_schema_version,
