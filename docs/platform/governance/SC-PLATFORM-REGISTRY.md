@@ -53,12 +53,13 @@
 | `data-projection-record-sha256-v1` | DP-5 MAIN INTEGRATED |
 | `data-projection-snapshot-sha256-v1` | DP-5 MAIN INTEGRATED |
 | `data-projection-lineage-sha256-v1` | DP-5 MAIN INTEGRATED |
-| `data-quality-policy-v1` | PROPOSED / NON-AUTHORITATIVE UNTIL ALLOCATION MERGE |
-| `data-quality-validation-input-sha256-v1` | PROPOSED / NON-AUTHORITATIVE |
-| `data-quality-check-evidence-sha256-v1` | PROPOSED / NON-AUTHORITATIVE |
-| `data-quality-metric-sha256-v1` | PROPOSED / NON-AUTHORITATIVE |
-| `data-quality-verdict-sha256-v1` | PROPOSED / NON-AUTHORITATIVE |
-| `data-quality-rebuild-comparison-sha256-v1` | PROPOSED / NON-AUTHORITATIVE |
+| `data-quality-policy-v1` | APPROVED / IMPLEMENTED ON PR #18 |
+| `data-quality-validation-input-sha256-v1` | APPROVED / IMPLEMENTED ON PR #18 |
+| `data-quality-check-evidence-sha256-v1` | APPROVED / IMPLEMENTED ON PR #18 |
+| `data-quality-metric-sha256-v1` | APPROVED / IMPLEMENTED ON PR #18 |
+| `data-quality-verdict-sha256-v1` | APPROVED / IMPLEMENTED ON PR #18 |
+| `data-quality-rebuild-comparison-sha256-v1` | APPROVED / IMPLEMENTED ON PR #18 |
+| `data-quality-late-arrival-observation-sha256-v1` | APPROVED / IMPLEMENTED ON PR #18 |
 
 ## Data DB roles
 
@@ -75,9 +76,9 @@
 | `jc_data_projection_writer` | execute DP-5 atomic persistence only | ACTIVE / DP-5 MAIN INTEGRATED |
 | `jc_data_projection_reader` | select DP-5 aggregate safe view only | ACTIVE / DP-5 MAIN INTEGRATED |
 | `jc_data_projection_function_owner` | NOLOGIN DP-5 function owner | ACTIVE / DP-5 MAIN INTEGRATED |
-| `jc_data_quality_writer` | approved DP-6 validation/verdict functions only | PROPOSED / NOT CREATED |
-| `jc_data_quality_reader` | aggregate quality safe-view SELECT only | PROPOSED / NOT CREATED |
-| `jc_data_quality_function_owner` | NOLOGIN DP-6 function owner | PROPOSED / NOT CREATED |
+| `jc_data_quality_writer` | approved DP-6 validation/verdict function only | IMPLEMENTED ON PR #18 |
+| `jc_data_quality_reader` | aggregate quality safe-view SELECT only | IMPLEMENTED ON PR #18 |
+| `jc_data_quality_function_owner` | NOLOGIN DP-6 function owner | IMPLEMENTED ON PR #18 |
 
 ## DB sequence
 
@@ -100,11 +101,11 @@
 | `40` | experiment outcome input projection | ACTIVE / DP-5 MAIN INTEGRATED |
 | `41` | atomic persistence/roles/safe view | ACTIVE / DP-5 MAIN INTEGRATED |
 | `42` | DP-5 PostgreSQL 15/18 validation | ACTIVE / DP-5 MAIN INTEGRATED |
-| `43` | quality validation run/check/anomaly foundation | PROPOSED / NON-AUTHORITATIVE |
-| `44` | quality metrics/verdict/late-arrival evidence | PROPOSED / NON-AUTHORITATIVE |
-| `45` | atomic quality persistence and roles | PROPOSED / NON-AUTHORITATIVE |
-| `46` | rebuild comparison and safe aggregate views | PROPOSED / NON-AUTHORITATIVE |
-| `47` | DP-6 PostgreSQL 15/18 validation | PROPOSED / NON-AUTHORITATIVE |
+| `43` | quality validation run/check/anomaly foundation | IMPLEMENTED ON PR #18 |
+| `44` | quality metrics/verdict/late-arrival evidence | IMPLEMENTED ON PR #18 |
+| `45` | atomic quality persistence and roles | IMPLEMENTED ON PR #18 |
+| `46` | rebuild comparison and safe aggregate views | IMPLEMENTED ON PR #18 |
+| `47` | DP-6 PostgreSQL 15/18 validation | IMPLEMENTED ON PR #18 |
 | `48+` | unallocated | SC ASSIGNMENT REQUIRED |
 
-Proposed DP-6 entries become authoritative only after the SC allocation PR is merged. Until then SQL `43+` and the proposed roles must remain absent.
+DP-6 entries are authoritative from PR #17 merge `c0f6b5dc8cc7089412a100989109b61315c062d0`. SQL `43..47` and quality roles are implemented on PR #18; SQL `48+` remains unallocated.

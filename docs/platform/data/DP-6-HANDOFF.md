@@ -2,83 +2,65 @@
 
 ## Status
 
-`DP6_IMPLEMENTATION_BLOCKED_BY_SC_ALLOCATION`
+`IMPLEMENTATION VERIFIED / PR NOT MERGED`
 
 ## Baseline
 
-- authoritative main: `05a25771cd99d87891504fc00890ab918b970acf`;
-- DP-5 implementation PR #16: merged;
-- DP-5 merge commit: `05a25771cd99d87891504fc00890ab918b970acf`;
-- SQL `01..42`: protected and present exactly once;
-- SQL `43+`: unallocated and absent;
-- Data quality roles: unallocated and absent.
+- authoritative main and allocation merge: `c0f6b5dc8cc7089412a100989109b61315c062d0`;
+- allocation PR: `#17`, merged;
+- implementation PR: `#18`;
+- implementation branch: `codex/dp-6-data-quality-validation`;
+- SQL `01..42`: protected and unchanged;
+- SQL `43..47`: implemented on PR #18;
+- SQL `48+`: unallocated.
 
-## Completed in this decision stage
+## Implemented
 
-- repository and DP-5 baseline reconciliation;
-- quality-validation scope and invariant design;
-- quality matrix with severity, metric, threshold and verdict impact;
-- stable failure taxonomy;
-- deterministic fingerprint domains;
-- quality policy `data-quality-policy-v1` proposal;
-- SQL `43..47` proposal;
-- quality writer/reader/function-owner role proposal;
-- append-only evidence and retention design;
-- protected-diff verifier and machine-readable allocation evidence;
-- SC decision PR.
+- pure Java quality contracts, deterministic fingerprints and full validation coordinator;
+- source, projection, snapshot, lineage, identity, P2 exposure and rebuild validators;
+- explicit zero-denominator metrics and fail-closed verdict evaluation;
+- append-only run/status/check/metric/anomaly/verdict/late/rebuild/conflict persistence;
+- atomic `NEW / DUPLICATE / CONFLICT` with exact-one-NEW concurrency enforcement;
+- writer/reader/function-owner least privilege;
+- privacy-safe aggregate view;
+- PostgreSQL 15/18 rollback fixture and isolated concurrency harness;
+- protected Java, Recommendation, Backend and SC gates.
 
-## Not implemented
+## Independent review corrections
 
-Because SC allocation is not yet authoritative, this PR intentionally does not add:
+- conflicting identity binding contracts fail closed;
+- source/check identities and fingerprint domains are deduplicated and strengthened;
+- ratio metric bounds and Java/PostgreSQL decimal agreement are enforced;
+- orphan versus missing lineage classifications are separated;
+- out-of-checkpoint adapter evidence does not create a false failure;
+- `VALIDATED` persistence requires authoritative database reconciliation, required evidence, exact thresholds and fingerprint/count verification;
+- safe-view latest validated time uses snapshot as-of;
+- zero denominators are preserved rather than replaced with a synthetic denominator;
+- out-of-range source events are detected before filtering;
+- DP-6 function owner receives only the exact immutable fingerprint-helper execute grants;
+- successful PostgreSQL validation uses a complete authoritative outcome snapshot;
+- DP-6 concurrency executes in a fresh database to prevent prior-stage fixture contamination;
+- DP-5 and production protection gates preserve SQL `01..42` while allowing only allocated SQL `43..47`.
 
-- SQL `43..47`;
-- Java quality contracts or validators;
-- database roles, functions, tables or views;
-- PostgreSQL DP-6 runtime fixtures;
-- quality persistence, concurrency or verdict execution.
+## Verification
 
-No unexecuted runtime validation is reported as PASS.
+Complete implementation verification baseline: `c7f96d41fe4cbc18e60180776422ae3a58e8ae15`.
 
-## Proposed implementation after allocation merge
+| Workflow | Run ID | Result |
+|---|---:|---|
+| Data Contract CI | `29973352923` | `success` |
+| Data PostgreSQL CI | `29973352951` | `success` on PostgreSQL 15 and 18 |
+| Recommendation P0 Database CI | `29973352978` | `success` on PostgreSQL 15 and 18 |
+| Backend PR CI | `29973352939` | `success` |
+| SC Baseline Reconciliation | `29973352891` | `success` |
+| DP6 Allocation Gate | `29973353081` | `success` |
 
-1. Pure Java quality contracts in `jc-data-contracts`.
-2. Source, projection, snapshot, lineage, identity and exposure validators.
-3. Deterministic rebuild validator and golden fixtures.
-4. SQL `43..47` append-only persistence, metrics, verdicts, late-arrival evidence, roles and safe views.
-5. PostgreSQL 15/18 NEW/DUPLICATE/CONFLICT, concurrency and permissions validation.
-6. DP-2 through DP-5, Recommendation, Backend/IP-12.5 and SC protected regression.
+The PR-final documentation/evidence HEAD must repeat these required workflows. Final exact-head run IDs are recorded in the PR body after that rerun; historical runs are not substituted for the final merge gate.
 
 ## Protected state
 
-- canonical Data events unchanged;
-- DP-4.5 adapter evidence unchanged;
-- DP-5 checkpoints, projection records, snapshots and lineage unchanged;
-- Recommendation P0/P1/P2 authority unchanged;
-- P2 exposure authority remains `recommendation_p2_experiment_exposure`;
-- engagement and fallback metric denominators unchanged;
-- identity namespaces remain separate;
-- production Recommendation write remains disabled;
-- worker remains unimplemented;
-- scheduler remains disabled;
-- replay/backfill/automatic rebuild remain unauthorized;
-- production shadow remains disabled;
-- kill switch remains enabled;
-- sampling remains `0 BPS`;
-- cohort remains empty;
-- Search cutover remains not started.
-
-## Required decision
-
-Merge of the SC allocation PR is required before DP-6 implementation starts. The allocation merge commit becomes the authoritative DP-6 implementation base.
+Canonical Data events, DP-4.5 evidence, DP-5 checkpoint/projection/snapshot/lineage, Recommendation P0/P1/P2 source and P2 denominators remain unchanged. Production Recommendation writes, worker, scheduler, replay, backfill, automatic rebuild, purge, production shadow, traffic and Search cutover remain disabled or unauthorized.
 
 ## DP-7 entry
 
-DP-7 is not available. It requires:
-
-1. this SC allocation merged;
-2. a separate DP-6 implementation PR;
-3. DP-6 Java and PostgreSQL 15/18 validation complete;
-4. exact-head protected regressions complete;
-5. DP-6 implementation merged to `main`.
-
-Current outcome: `DP6_IMPLEMENTATION_BLOCKED_BY_SC_ALLOCATION`.
+DP-7 technical entry conditions are satisfied by the implementation and verification. Actual DP-7 work remains blocked until PR #18 is explicitly merged to `main`. The PR #18 merge commit becomes the next Data Platform baseline.

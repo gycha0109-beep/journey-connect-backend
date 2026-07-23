@@ -1,0 +1,13 @@
+sql	object	type	purpose	status
+43	data_quality_validation_run_v1	table	immutable validation identity	IMPLEMENTED
+43	data_quality_validation_status_evidence_v1	table	append-only status	IMPLEMENTED
+43	data_quality_validation_check_result_v1	table	append-only checks	IMPLEMENTED
+43	data_quality_anomaly_evidence_v1	table	append-only anomalies	IMPLEMENTED
+44	data_quality_policy_evidence_v1	table	versioned quality policy	IMPLEMENTED
+44	data_quality_metric_v1	table	versioned metrics	IMPLEMENTED
+44	data_snapshot_quality_verdict_v1	table	snapshot quality verdict	IMPLEMENTED
+44	data_quality_late_arrival_observation_v1	table	late arrival evidence	IMPLEMENTED
+45	persist_data_quality_validation_v1	function	atomic NEW_DUPLICATE_CONFLICT	IMPLEMENTED
+46	data_quality_rebuild_comparison_v1	table	rebuild evidence	IMPLEMENTED
+46	data_quality_validation_conflict_evidence_v1	table	conflict evidence	IMPLEMENTED
+46	data_quality_safe_metrics_v1	view	aggregate-only observability	IMPLEMENTED

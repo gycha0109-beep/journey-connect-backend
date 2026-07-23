@@ -54,7 +54,13 @@ class IP12ProductionShadowStaticTest {
                 .filter(name -> name.matches("^[0-9]{2}_.*\\.sql$"))
                 .sorted()
                 .toList();
-        assertThat(canonicalSql).hasSize(42);
+        assertThat(canonicalSql).hasSize(47);
+        for (int number = 1; number <= 47; number++) {
+            String prefix = String.format(java.util.Locale.ROOT, "%02d_", number);
+            assertThat(canonicalSql.stream().filter(name -> name.startsWith(prefix)).toList())
+                    .as("canonical SQL %s must exist exactly once", prefix)
+                    .hasSize(1);
+        }
         assertThat(canonicalSql).contains(
                 "29_data_platform_event_store.sql",
                 "30_data_event_idempotency_roles.sql",
@@ -69,6 +75,12 @@ class IP12ProductionShadowStaticTest {
                 "39_data_recommendation_profile_projection.sql",
                 "40_data_experiment_outcome_projection.sql",
                 "41_data_projection_persistence_roles.sql",
-                "42_data_projection_snapshot_validation.sql");
+                "42_data_projection_snapshot_validation.sql",
+                "43_data_quality_validation_foundation.sql",
+                "44_data_quality_metrics_and_verdict.sql",
+                "45_data_quality_persistence_and_roles.sql",
+                "46_data_quality_rebuild_and_safe_views.sql",
+                "47_data_quality_validation.sql");
+        assertThat(canonicalSql).noneMatch(name -> name.matches("^(4[8-9]|[5-9][0-9])_.*\\.sql$"));
     }
 }

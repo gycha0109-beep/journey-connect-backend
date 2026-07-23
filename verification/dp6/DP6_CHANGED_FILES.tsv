@@ -1,15 +1,8 @@
-path_class	allowed	observed_status
-docs/platform/governance/SC-DP6-QUALITY-ALLOCATION.md	yes	ADDED
-docs/platform/governance/SC-DECISION-REGISTER.md	yes	PLANNED_UPDATE
-docs/platform/governance/SC-PLATFORM-REGISTRY.md	yes	PLANNED_UPDATE
-docs/platform/governance/SC-HANDOFF.md	yes	PLANNED_UPDATE
-docs/platform/data/DP-6-*.md	yes	ADDED
-verification/dp6/**	yes	ADDED
-verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py	yes	PLANNED_UPDATE
-.github/workflows/dp6-allocation-ci.yml	yes	PLANNED_ADD
-database/journey-connect-db-v2.7/*.sql	no	UNCHANGED
-jc-data-contracts/**	no	UNCHANGED
-jc-backend/src/main/**	no	UNCHANGED
-jc-recommendation-core/**	no	UNCHANGED
-jc-search-*/**	no	UNCHANGED
-jc-intelligence-contracts/**	no	UNCHANGED
+category	path_pattern	change	status	evidence
+sql	database/journey-connect-db-v2.7/43..47	added	PASS_PG15_PG18	run_29973352951
+java	jc-data-contracts/src/main/java/com/jc/data/contract/v1/quality	added	PASS_JAVA21	run_29973352923
+tests	jc-data-contracts/src/test/**/Dp6*	added	PASS_JAVA21	run_29973352923
+postgresql_fixture	verification/dp6/sql/47_data_quality_validation_part*.inc	added	PASS_PG15_PG18	run_29973352951
+concurrency	verification/dp6/run_dp6_concurrency.sh	added	PASS_PG15_PG18	run_29973352951
+ci	.github/workflows/data-postgres-ci.yml_and_dp6-allocation-ci.yml	extended	PASS_IMPLEMENTATION_HEAD	runs_29973352951_29973353081
+protected_runtime	jc-backend/src/main_and_recommendation_search_intelligence	unchanged	PASS_EXACT_HEAD	runs_29973352939_29973352978
