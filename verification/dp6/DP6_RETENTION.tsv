@@ -1,9 +1,10 @@
-evidence_class	class	policy	days	purge	status
-validation_run_status	data_quality_evidence_90d	data-retention-policy-v1	90	disabled	IMPLEMENTED_PENDING_CI
-check	data_quality_evidence_90d	data-retention-policy-v1	90	disabled	IMPLEMENTED_PENDING_CI
-metric	data_quality_evidence_90d	data-retention-policy-v1	90	disabled	IMPLEMENTED_PENDING_CI
-anomaly	data_quality_evidence_90d	data-retention-policy-v1	90	disabled	IMPLEMENTED_PENDING_CI
-verdict	data_quality_evidence_90d	data-retention-policy-v1	90	disabled	IMPLEMENTED_PENDING_CI
-late_arrival	data_quality_evidence_90d	data-retention-policy-v1	90	disabled	IMPLEMENTED_PENDING_CI
-rebuild_comparison	data_quality_evidence_90d	data-retention-policy-v1	90	disabled	IMPLEMENTED_PENDING_CI
-conflict	data_quality_evidence_90d	data-retention-policy-v1	90	disabled	IMPLEMENTED_PENDING_CI
+evidence_class	class	policy	days	purge	status	evidence
+validation_run_status	data_quality_evidence_90d	data-retention-policy-v1	90	disabled	PASS_PG15_PG18	run_29973352951
+check	data_quality_evidence_90d	data-retention-policy-v1	90	disabled	PASS_PG15_PG18	run_29973352951
+metric	data_quality_evidence_90d	data-retention-policy-v1	90	disabled	PASS_PG15_PG18	run_29973352951
+anomaly	data_quality_evidence_90d	data-retention-policy-v1	90	disabled	PASS_PG15_PG18	run_29973352951
+verdict	data_quality_evidence_90d	data-retention-policy-v1	90	disabled	PASS_PG15_PG18	run_29973352951
+late_arrival	data_quality_evidence_90d	data-retention-policy-v1	90	disabled	PASS_PG15_PG18	run_29973352951
+rebuild_comparison	data_quality_evidence_90d	data-retention-policy-v1	90	disabled	PASS_PG15_PG18	run_29973352951
+conflict	data_quality_evidence_90d	data-retention-policy-v1	90	disabled	PASS_PG15_PG18	run_29973352951
+automatic_purge	absent	data-retention-policy-v1	not_applicable	disabled	PASS_PG15_PG18	run_29973352951_SQL47
