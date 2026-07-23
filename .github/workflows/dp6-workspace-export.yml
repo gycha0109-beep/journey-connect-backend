@@ -32,7 +32,7 @@ jobs:
           ref: codex/dp-6-data-quality-validation
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Reconstruct and push implementation files
+      - name: Reconstruct and push non-workflow implementation files
         shell: bash
         run: |
           set -euo pipefail
@@ -66,6 +66,11 @@ jobs:
           gzip -t "$archive"
           tar -xzf "$archive"
 
+          # GitHub's workflow token cannot create, update, or delete workflow files.
+          # Preserve the current workflow tree; workflow finalization is performed by
+          # an authenticated repository commit after the implementation is recovered.
+          git checkout -- .github/workflows
+
           rm -rf verification/dp6/.transport
           rm -f verification/dp6/DP6_APPLY_DIAGNOSTIC.txt
           rm -f verification/dp6/DP6_APPLY_DIAGNOSTIC_2.txt
@@ -76,5 +81,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "feat(dp6): implement data quality and lineage validation"
+          git commit -m "feat(dp6): recover data quality implementation"
           git push origin "HEAD:${TARGET_BRANCH}"
