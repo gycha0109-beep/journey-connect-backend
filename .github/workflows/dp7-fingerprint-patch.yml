@@ -1,0 +1,125 @@
+name: DP7 Boundary Fingerprint Patch
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/dp7-fingerprint-patch.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Patch PostgreSQL input fingerprints
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          part3 = Path('verification/dp7/sql/51_cross_track_integration_persistence_roles_and_safe_view_part3.inc')
+          text = part3.read_text(encoding='utf-8')
+          old = """    'identityBindingFingerprint',v_identity->>'bindingFingerprint',
+              'mappingFingerprint',v_mapping_fp));
+          """
+          new = """    'identityBindingFingerprint',v_identity->>'bindingFingerprint',
+              'mappingFingerprint',v_mapping_fp,
+              'authorityResults',v_authority_results,
+              'privacyResult',jsonb_build_object(
+                'sourcePrivacyClass',v_privacy->>'sourcePrivacyClass',
+                'targetPrivacyClass',v_privacy->>'targetPrivacyClass',
+                'rawPayloadPresent',COALESCE((v_privacy->>'rawPayloadPresent')::boolean,false),
+                'piiPresent',COALESCE((v_privacy->>'piiPresent')::boolean,false),
+                'rawTextPresent',COALESCE((v_privacy->>'rawTextPresent')::boolean,false),
+                'preciseLocationPresent',COALESCE((v_privacy->>'preciseLocationPresent')::boolean,false),
+                'aggregateOnly',COALESCE((v_privacy->>'aggregateOnly')::boolean,false),
+                'lineagePurposeBound',COALESCE((v_privacy->>'lineagePurposeBound')::boolean,false),
+                'reidentificationRisk',COALESCE((v_privacy->>'reidentificationRisk')::boolean,false)),
+              'retentionResult',jsonb_build_object(
+                'sourceRetentionDays',(v_retention->>'sourceRetentionDays')::integer,
+                'targetRetentionDays',(v_retention->>'targetRetentionDays')::integer,
+                'integrationEvidenceRetentionDays',(v_retention->>'integrationEvidenceRetentionDays')::integer,
+                'deletionSemanticsAligned',COALESCE((v_retention->>'deletionSemanticsAligned')::boolean,false),
+                'automaticPurgeEnabled',COALESCE((v_retention->>'automaticPurgeEnabled')::boolean,false),
+                'physicalDeleteEnabled',COALESCE((v_retention->>'physicalDeleteEnabled')::boolean,false))));
+          """
+          if old not in text:
+              raise SystemExit('part3 input fingerprint anchor missing')
+          part3.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          part1 = Path('verification/dp7/sql/52_cross_track_integration_validation_part1.inc')
+          text = part1.read_text(encoding='utf-8')
+          old = "  v_input_fp varchar(64);\n  v_target_prefix varchar;\n"
+          new = "  v_input_fp varchar(64);\n  v_authority_results jsonb;\n  v_target_prefix varchar;\n"
+          if old not in text:
+              raise SystemExit('part1 declaration anchor missing')
+          text = text.replace(old, new, 1)
+          old = "  v_input_fp:=public.data_integration_fingerprint_v1('integration-input-sha256-v1',jsonb_build_object(\n"
+          new = """  SELECT COALESCE(jsonb_agg(jsonb_build_object(
+                'objectName',a->>'objectName',
+                'owningTrack',a->>'owningTrack',
+                'actorTrack',a->>'actorTrack',
+                'readAllowed',COALESCE((a->>'readAllowed')::boolean,false),
+                'writeAllowed',COALESCE((a->>'writeAllowed')::boolean,false),
+                'validationAllowed',COALESCE((a->>'validationAllowed')::boolean,false),
+                'productionAllowed',COALESCE((a->>'productionAllowed')::boolean,false),
+                'readAttempted',COALESCE((a->>'readAttempted')::boolean,false),
+                'writeAttempted',COALESCE((a->>'writeAttempted')::boolean,false),
+                'validationAttempted',COALESCE((a->>'validationAttempted')::boolean,false),
+                'productionAttempted',COALESCE((a->>'productionAttempted')::boolean,false))
+                ORDER BY a->>'objectName',a->>'owningTrack'),'[]'::jsonb)
+              INTO v_authority_results FROM jsonb_array_elements(v_authorities)a;
+
+            v_input_fp:=public.data_integration_fingerprint_v1('integration-input-sha256-v1',jsonb_build_object(
+          """
+          if old not in text:
+              raise SystemExit('part1 input fingerprint anchor missing')
+          text = text.replace(old, new, 1)
+          old = "    'identityBindingFingerprint',v_binding_fp,'mappingFingerprint',v_mapping_fp));\n"
+          new = """    'identityBindingFingerprint',v_binding_fp,'mappingFingerprint',v_mapping_fp,
+              'authorityResults',v_authority_results,
+              'privacyResult',jsonb_build_object(
+                'sourcePrivacyClass',v_privacy->>'sourcePrivacyClass',
+                'targetPrivacyClass',v_privacy->>'targetPrivacyClass',
+                'rawPayloadPresent',COALESCE((v_privacy->>'rawPayloadPresent')::boolean,false),
+                'piiPresent',COALESCE((v_privacy->>'piiPresent')::boolean,false),
+                'rawTextPresent',COALESCE((v_privacy->>'rawTextPresent')::boolean,false),
+                'preciseLocationPresent',COALESCE((v_privacy->>'preciseLocationPresent')::boolean,false),
+                'aggregateOnly',COALESCE((v_privacy->>'aggregateOnly')::boolean,false),
+                'lineagePurposeBound',COALESCE((v_privacy->>'lineagePurposeBound')::boolean,false),
+                'reidentificationRisk',COALESCE((v_privacy->>'reidentificationRisk')::boolean,false)),
+              'retentionResult',jsonb_build_object(
+                'sourceRetentionDays',(v_retention->>'sourceRetentionDays')::integer,
+                'targetRetentionDays',(v_retention->>'targetRetentionDays')::integer,
+                'integrationEvidenceRetentionDays',(v_retention->>'integrationEvidenceRetentionDays')::integer,
+                'deletionSemanticsAligned',COALESCE((v_retention->>'deletionSemanticsAligned')::boolean,false),
+                'automaticPurgeEnabled',COALESCE((v_retention->>'automaticPurgeEnabled')::boolean,false),
+                'physicalDeleteEnabled',COALESCE((v_retention->>'physicalDeleteEnabled')::boolean,false))));
+          """
+          if old not in text:
+              raise SystemExit('part1 boundary fingerprint anchor missing')
+          part1.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+      - name: Commit SQL fingerprint patch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git restore --source=HEAD -- .github/workflows
+          grep -q "'authorityResults',v_authority_results" verification/dp7/sql/51_cross_track_integration_persistence_roles_and_safe_view_part3.inc
+          grep -q "'retentionResult',jsonb_build_object" verification/dp7/sql/52_cross_track_integration_validation_part1.inc
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add verification/dp7/sql/51_cross_track_integration_persistence_roles_and_safe_view_part3.inc verification/dp7/sql/52_cross_track_integration_validation_part1.inc
+          git commit -m "fix(dp7): bind boundary policies in PostgreSQL fingerprint"
+          git push origin HEAD:${{ github.head_ref }}
