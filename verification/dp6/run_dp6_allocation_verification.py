@@ -36,6 +36,13 @@ DP6_SQL_FILES = {
     "database/journey-connect-db-v2.7/46_data_quality_rebuild_and_safe_views.sql",
     "database/journey-connect-db-v2.7/47_data_quality_validation.sql",
 }
+DP7_SUCCESSOR_SQL_FILES = {
+    "database/journey-connect-db-v2.7/48_cross_track_integration_validation_foundation.sql",
+    "database/journey-connect-db-v2.7/49_cross_track_contract_mapping_and_boundary_evidence.sql",
+    "database/journey-connect-db-v2.7/50_cross_track_integration_verdict_and_conflict.sql",
+    "database/journey-connect-db-v2.7/51_cross_track_integration_persistence_roles_and_safe_view.sql",
+    "database/journey-connect-db-v2.7/52_cross_track_integration_validation.sql",
+}
 QUALITY_REQUIRED = {
     "DataQualityValidationDefinition.java", "DataQualityValidationRun.java",
     "DataQualityValidationScope.java", "DataQualityValidationStatus.java",
@@ -80,8 +87,13 @@ if implemented:
         matches = list(SQL_DIR.glob(f"{number:02d}_*.sql"))
         if len(matches) != 1:
             fail(f"canonical SQL {number:02d} expected exactly once, found {len(matches)}")
-    if list(SQL_DIR.glob("4[8-9]_*.sql")) or list(SQL_DIR.glob("[5-9][0-9]_*.sql")):
-        fail("SQL 48+ remains unallocated")
+    successor_sql = {
+        path.relative_to(ROOT).as_posix()
+        for path in SQL_DIR.glob("*.sql")
+        if path.name[:2].isdigit() and int(path.name[:2]) >= 48
+    }
+    if successor_sql and successor_sql != DP7_SUCCESSOR_SQL_FILES:
+        fail(f"unexpected successor SQL after DP-6: {sorted(successor_sql)}")
     missing_java = sorted(name for name in QUALITY_REQUIRED if not (QUALITY_JAVA / name).is_file())
     if missing_java:
         fail(f"missing DP-6 Java implementation: {missing_java}")
@@ -129,8 +141,10 @@ try:
     changed = subprocess.run(["git", "diff", "--name-only", "origin/main...HEAD"], cwd=ROOT,
                              check=True, text=True, capture_output=True).stdout.splitlines()
     changed_sql = {path for path in changed if path.endswith(".sql")}
-    if implemented and changed_sql and changed_sql != DP6_SQL_FILES:
-        fail(f"DP-6 SQL changes, when present, must be exactly 43..47: {sorted(changed_sql)}")
+    allowed_changed_sql = DP6_SQL_FILES | DP7_SUCCESSOR_SQL_FILES
+    unexpected_sql = changed_sql - allowed_changed_sql
+    if implemented and unexpected_sql:
+        fail(f"unexpected SQL outside approved DP-6/DP-7 ranges: {sorted(unexpected_sql)}")
     if not implemented and changed_sql:
         fail(f"allocation-only phase cannot change SQL: {sorted(changed_sql)}")
     protected_sql = [path for path in changed_sql if int(Path(path).name[:2]) <= 42]
