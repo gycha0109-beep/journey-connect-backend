@@ -2,7 +2,7 @@
 
 ## Status
 
-`DATA PLATFORM TECHNICAL CLOSURE CANDIDATE / MAIN MERGE PENDING`
+`DATA_PLATFORM_TECHNICAL_CLOSURE_COMPLETE / PR MERGE PENDING`
 
 ## Baseline
 
@@ -44,9 +44,10 @@ The closure does not permit historical migration rewrite. SQL `01..52` is immuta
 | main merge workflow | `NOT_AVAILABLE` |
 | main vs DP-7 verified tree | `VERIFIED_IDENTICAL` |
 | PR #20 exact-head gates | `PASS` |
-| closure PR exact-head gates | `REQUIRED` |
+| closure candidate exact-head gates | `PASS` |
+| final evidence-head gates | `REQUIRED BEFORE READY` |
 | local merge-commit run | `NOT_EXECUTED` |
 
-No unexecuted check is PASS.
+No unexecuted check is PASS. Technical closure does not mean production readiness or production approval.
 
-After exact-head CI the PR may become Ready for review. User approval is required for merge. After merge, Data technical implementation closes; subsequent work is separate tracks, not DP-8.
+After final evidence-head CI the PR may become Ready for review. User approval is required for merge. After merge, the Data Platform technical track is formally archived; subsequent work belongs to Recommendation Consumer Adoption, Intelligence Data Contract, Search Data Contract, Operations Runtime Enablement and Reliability Production Readiness, not DP-8.
