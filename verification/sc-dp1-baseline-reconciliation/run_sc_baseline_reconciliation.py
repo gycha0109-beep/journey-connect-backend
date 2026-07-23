@@ -17,6 +17,7 @@ REQUIRED_EXACT = [
     GOV / "JOURNEY_CONNECT_TRACK_GOVERNANCE_V1.md",
     GOV / "SC-DECISION-REGISTER.md", GOV / "SC-RACI.md",
     GOV / "SC-PLATFORM-REGISTRY.md", GOV / "SC-HANDOFF.md",
+    GOV / "SC-DATA-PLATFORM-TECHNICAL-CLOSURE.md",
     GOV / "SC-DP1-BASELINE-RECONCILIATION.md", GOV / "SC-DP3-ENTRY-DECISIONS.md",
     GOV / "SC-DP4-5-PERSISTENCE-ALLOCATION.md", GOV / "SC-DP5-PROJECTION-ALLOCATION.md",
     GOV / "SC-DP6-QUALITY-ALLOCATION.md", GOV / "SC-DP7-CROSS-TRACK-INTEGRATION-ALLOCATION.md",
@@ -99,11 +100,19 @@ registry_ids = (
     "data-cross-track-integration-verdict-v1", "integration-input-sha256-v1",
     "integration-check-evidence-sha256-v1", "integration-mapping-sha256-v1",
     "integration-verdict-sha256-v1", "cross-track-contract-matrix-sha256-v1",
-    "data-platform-technical-baseline-v1", "data-platform-change-policy-v1",
 )
 missing = [item for item in registry_ids if item not in registry]
 if missing:
     fail(f"registry IDs missing: {missing}")
+
+closure_decision = (GOV / "SC-DATA-PLATFORM-TECHNICAL-CLOSURE.md").read_text(encoding="utf-8")
+for closure_id in (
+    "data-platform-technical-baseline-v1", "data-platform-authority-closure-v1",
+    "data-platform-production-readiness-gaps-v1",
+    "data-platform-production-activation-dependencies-v1", "data-platform-change-policy-v1",
+):
+    if closure_id not in closure_decision:
+        fail(f"closure contract ID missing: {closure_id}")
 
 link_re = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 for path in REQUIRED_EXACT + CLOSURE_DOCS:
