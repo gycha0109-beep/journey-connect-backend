@@ -59,11 +59,12 @@
   SELECT count(*) INTO v_before FROM public.data_cross_track_integration_run_v1;
   v_request:=public.dp7_fixture_request_v1('integration_run:partial-rollback',v_snapshot,v_quality,
     'Data','IDENTITY_BOUNDARY','data-cross-track-authority-matrix-v1',true,true,false);
-  v_request:=jsonb_set(v_request,'{authorities}',(v_request->'authorities')||jsonb_build_array((v_request->'authorities')->0));
+  v_request:=jsonb_set(v_request,'{authorities}',(v_request->'authorities')||jsonb_build_array(
+    jsonb_set((v_request->'authorities')->0,'{objectName}','null'::jsonb)));
   BEGIN
     PERFORM public.persist_data_cross_track_integration_v1(v_request);
     RAISE EXCEPTION 'partial transaction rollback unexpectedly succeeded';
-  EXCEPTION WHEN unique_violation THEN NULL;
+  EXCEPTION WHEN not_null_violation THEN NULL;
   END;
   IF (SELECT count(*) FROM public.data_cross_track_integration_run_v1)<>v_before THEN
     RAISE EXCEPTION 'Partial DP-7 insert was not rolled back.';
