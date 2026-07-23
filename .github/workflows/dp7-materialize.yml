@@ -42,5 +42,3 @@ jobs:
           fi
           git commit -m "feat(dp7): implement cross-track integration validation"
           git push origin HEAD:agent/dp7-cross-track-integration-implementation
-
-# materialization-trigger: complete-payload-v1
