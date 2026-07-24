@@ -64,6 +64,8 @@ This sequence is not an automatic release plan. Contract work may be prepared be
 
 `RP` remains reserved for Reliability Platform and must not mean Recommendation Platform.
 
+RP remains reserved for Reliability Platform.
+
 ### RCA-0 ownership
 
 | Lane | Responsible | Accountable | Required approval |
