@@ -1,0 +1,17 @@
+path	kind	status
+docs/platform/governance/sc-next-track/SC-4-RCA-1B-ENTRY-AUTHORIZATION-AND-EXECUTION-BOUNDARY.md	master	REQUIRED
+docs/platform/governance/sc-next-track/23-SC-RCA1B-EXECUTION-ENVIRONMENT-DECISION.md	decision	REQUIRED
+docs/platform/governance/sc-next-track/24-SC-RCA1B-POSTGRESQL-VERSION-AND-COMPATIBILITY-DECISION.md	decision	REQUIRED
+docs/platform/governance/sc-next-track/25-SC-RCA1B-DB-READ-ONLY-EXECUTION-CONTRACT.md	decision	REQUIRED
+docs/platform/governance/sc-next-track/26-SC-RCA1B-ROLE-GRANT-AND-SQL-ALLOCATION-DECISION.md	decision	REQUIRED
+docs/platform/governance/sc-next-track/27-SC-RCA1B-ALLOWED-QUERY-BOUNDARY.md	decision	REQUIRED
+docs/platform/governance/sc-next-track/28-SC-RCA1B-REPRODUCIBLE-DATASET-DECISION.md	decision	REQUIRED
+docs/platform/governance/sc-next-track/29-SC-RCA1B-IDENTITY-PRIVACY-DECISION.md	decision	REQUIRED
+docs/platform/governance/sc-next-track/30-SC-RCA1B-P1-DB-RECONCILIATION-AUTHORITY-AND-EQUIVALENCE.md	decision	REQUIRED
+docs/platform/governance/sc-next-track/31-SC-RCA1B-P2-DB-RECONCILIATION-AUTHORITY-AND-EQUIVALENCE.md	decision	REQUIRED
+docs/platform/governance/sc-next-track/32-SC-RCA1B-CHECKPOINT-FRESHNESS-LINEAGE-DECISION.md	decision	REQUIRED
+docs/platform/governance/sc-next-track/33-SC-RCA1B-EVIDENCE-REDACTION-RETENTION-POLICY.md	decision	REQUIRED
+docs/platform/governance/sc-next-track/34-SC-RCA1B-OPERATIONS-RELIABILITY-PREREQUISITE-MATRIX.md	decision	REQUIRED
+docs/platform/governance/sc-next-track/35-SC-RCA1B-VERIFICATION-PLAN.md	decision	REQUIRED
+docs/platform/governance/sc-next-track/36-SC-RCA1B-EXIT-CRITERIA-AND-RCA2-HANDOFF.md	decision	REQUIRED
+docs/platform/governance/sc-next-track/37-RCA-1B-IMPLEMENTATION-HANDOFF-PROMPT.md	handoff	REQUIRED

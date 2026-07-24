@@ -1,0 +1,8 @@
+query_id	lane	purpose	status
+P1_AUTHORITATIVE_REFERENCE_V1	P1	current authoritative P1 reference	APPROVED
+P1_DATA_CANDIDATE_V1	P1	Data candidate P1 projection	APPROVED
+P2_AUTHORITATIVE_EXPOSURE_OUTCOME_V1	P2	protected P2 exposure/outcome reference	APPROVED
+P2_DATA_CANDIDATE_V1	P2	Data candidate P2 projection	APPROVED
+SOURCE_CHECKPOINT_V1	COMMON	bounded checkpoint metadata	APPROVED
+SOURCE_LINEAGE_V1	COMMON	bounded lineage fingerprint	APPROVED
+BOUNDED_ROW_COUNT_V1	COMMON	fixture-scoped row count	APPROVED

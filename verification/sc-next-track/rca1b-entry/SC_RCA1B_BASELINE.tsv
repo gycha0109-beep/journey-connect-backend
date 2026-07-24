@@ -1,0 +1,12 @@
+key	value	status
+work_start_sha	b2e7a5c316c6f6ee543ccedf35bca65353ab3aa4	PASS
+rca1_exact_final_head	38896b2a37180633870282e9d9e305d9c9fbbf8a	PASS
+rca1_merge_commit	b2e7a5c316c6f6ee543ccedf35bca65353ab3aa4	PASS
+rca1_completion	RCA1_OFFLINE_SHADOW_RECONCILIATION_COMPLETE	PASS
+p1_result	RECONCILED_WITH_EXPECTED_GAPS	PASS
+p2_result	RECONCILED_WITH_MIGRATION_GAPS	PASS
+identity_mode	SYNTHETIC_ONLY	PASS
+canonical_sql	01..52_PROTECTED	PASS
+sql_53_plus	UNALLOCATED	PASS
+production_activation	NOT_AUTHORIZED	PASS
+current_authority	CURRENT_P1_P2_AUTHORITY_UNCHANGED	PASS

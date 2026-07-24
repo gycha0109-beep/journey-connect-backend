@@ -5,41 +5,64 @@
 | Field | Value |
 |---|---|
 | contract ID | `sc-raci-v1` |
-| status | `ACTIVE / SC-3 RCA-1 ALIGNED` |
-| authoritative main | `f802a105e46a62718616acaa7a3db6c172e7ed10` |
-| RCA-0 exact-final-head | `d33f7e152d0e40999ed8dc3f16c0a3f0bb980a9d` |
+| status | `ACTIVE / SC-4 RCA-1B ALIGNED` |
+| authoritative main | `b2e7a5c316c6f6ee543ccedf35bca65353ab3aa4` |
+| RCA-1 exact-final-head | `38896b2a37180633870282e9d9e305d9c9fbbf8a` |
 
-| Area | Responsible | Accountable | Consulted | Informed |
-|---|---|---|---|---|
-| Data candidate contracts/checkpoint/lineage | Data | Data | Intelligence/Reliability/SC | Operations |
-| P1 comparison implementation | Intelligence | Intelligence | Data/SC | Reliability/Operations |
-| P1 expected-gap interpretation and acceptance | Intelligence | Intelligence | Data/SC | Reliability |
-| P2 comparison implementation | Intelligence lead permitted | Reliability | Data/SC | Operations |
-| P2 exposure/window/event/fallback acceptance | Reliability | Reliability | Intelligence/Data/SC | Operations |
-| P2 dedupe/hash/release protection | Reliability | Reliability | SC/Intelligence | Operations |
-| RCA-1 evidence taxonomy and integrity | Intelligence + Reliability | SC | Data/Privacy | Operations |
-| synthetic fixture identity | implementation team | SC | Data/Privacy | Operations |
-| real identity mapping | `UNRESOLVED OWNER` | SC | Data/Intelligence/Reliability/Privacy/Security | Operations |
-| phase entry/exit and registry | SC | SC | all tracks | team |
-| Model A execution environment | implementation CI | SC | Operations | team |
-| Model B read-only environment | Operations | Operations + SC | Data/Intelligence/Reliability/Security | team |
-| Model C runtime dark read | Operations + Intelligence | SC | Reliability/Security/Privacy | team |
-| production release/rollback | Reliability + Operations | SC | Intelligence/Security/Privacy | team |
+## RCA-1B RACI
 
-## RCA-1 responsibility rules
+| Area | Responsible | Accountable | Consulted | Informed | Approval state |
+|---|---|---|---|---|---|
+| P1 authoritative/candidate query and dimensions | Intelligence | Intelligence | Data/SC | Reliability/Operations | `BLOCKING_APPROVAL` |
+| P1 expected-gap interpretation and exit | Intelligence | Intelligence | Data/SC | Reliability | `BLOCKING_APPROVAL` |
+| P2 exposure/window/event/fallback query | Reliability/shared implementation permitted | Reliability | Intelligence/Data/SC | Operations | `BLOCKING_APPROVAL` |
+| P2 migration-gap acceptance and evidence integrity | Reliability | Reliability | Intelligence/Data/SC | Operations/Privacy | `BLOCKING_APPROVAL` |
+| candidate object/checkpoint/lineage inventory | Data | Data | Intelligence/Reliability/SC | Operations | `REQUIRED` |
+| deterministic synthetic seed interpretation | Data + lane owners | Data | Operations/Privacy/SC | team | `REQUIRED` |
+| CI PostgreSQL 15/18 environment | Operations | Operations | Data/SC | team | `BLOCKING_APPROVAL` |
+| credential/network/read-only role boundary | Operations | Operations | Security/SC | lane owners | `BLOCKING_APPROVAL` |
+| timeout/row/resource/teardown | Operations | Operations | SC | team | `BLOCKING_APPROVAL` |
+| synthetic identity and raw-data prohibition | Privacy/Security | Privacy/Security | SC/lane owners | Operations | `BLOCKING_APPROVAL` |
+| evidence redaction and retention | Privacy/Security + Reliability | Privacy/Security | Operations/SC | team | `BLOCKING_APPROVAL` |
+| query registry, phase entry/exit and SQL allocation | SC | SC | all tracks | team | `BLOCKING_APPROVAL` |
+| RCA-2 runtime dark read | NOT ALLOCATED IN RCA-1B | SC | Operations/Reliability/Privacy | team | `NOT_AUTHORIZED` |
+| production release/rollback | NOT ALLOCATED IN RCA-1B | SC | all tracks | team | `NOT_AUTHORIZED` |
 
-- P1 and P2 produce separate verdicts.
-- Intelligence may lead shared pure Java implementation but cannot approve P2 semantics.
-- Reliability approval is required for P2 mismatch acceptance and evidence integrity.
-- Operations is not an execution prerequisite for Model A; it remains consulted for production-control protection.
-- a real identity mapping owner is not assigned by this phase.
-- System Coordination controls entry, exit, breaking changes and authority transfer.
+## Responsibility rules
+
+- P1 and P2 produce separate verdicts and mismatch inventories.
+- Intelligence cannot approve P2 semantics; Reliability cannot transfer P1 authority.
+- Operations approval is mandatory because RCA-1B introduces DB credentials and execution, despite being ephemeral and non-production.
+- Privacy/Security approval is mandatory before any DB artifact is accepted.
+- Data candidate projections remain non-authoritative.
+- System Coordination controls entry, exit, breaking changes, SQL allocation and authority transfer.
+- Physical implementation location does not transfer semantic ownership.
+
+## Environment and DB boundary
+
+```text
+RCA1B_EXECUTION_ENVIRONMENT=CI_EPHEMERAL_POSTGRESQL
+POSTGRESQL_VERSION_MATRIX=15,18
+TRANSACTION_READ_ONLY=REQUIRED
+PRODUCTION_DB=FORBIDDEN
+DB_WRITE=FORBIDDEN
+```
+
+The bootstrap owner is not the reconciliation identity. `rca1b_readonly` is ephemeral test-only and has explicit least-privilege grants. Persistent roles/grants are not allocated.
+
+## Identity and evidence boundary
+
+```text
+IDENTITY_MODE=SYNTHETIC_ONLY
+RAW_RESULT_RETENTION=NONE
+CI_EVIDENCE_RETENTION_DAYS=90
+```
+
+Actual identity owner remains unresolved and is not silently assigned.
 
 ## Restrictions
 
-- `UNRESOLVED OWNER` must not be silently assigned.
-- physical location does not transfer semantic authority.
-- Data candidate projections remain non-authoritative.
+- `RP` means Reliability Platform and is reserved for Reliability Platform.
 - RCA is a workstream, not a platform.
-- `RP` means Reliability Platform.
-- no DB, runtime, production or authority-transfer responsibility is allocated to RCA-1 Model A.
+- no production DB, runtime, traffic, actual identity mapping, canonical SQL or authority-transfer responsibility is allocated by SC-4.
+- no blocking approval is inferred from SC-4 documentation; the RCA-1B implementation PR must collect exact-head evidence.
