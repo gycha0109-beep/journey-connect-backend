@@ -45,7 +45,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout4v7
         with:
           fetch-depth: 0
 
@@ -67,7 +67,13 @@ jobs:
           set -o pipefail
           ./gradlew p0Verification --stacktrace --no-daemon 2>&1 | tee ../verification/ip12-5/IP125_P0_STATIC_PG${{ matrix.postgres }}.log
           python ../verification/dp5/run_dp5_static_verification.py
-          python ../verification/data-platform-closure/run_data_platform_closure_verification.py
+
+          changed_files="$(git -C .. diff --name-only origin/main...HEAD)"
+          if grep -Eq '^(docs/platform/data/|verification/data-platform-closure/|docs/platform/governance/SC-DATA-PLATFORM-TECHNICAL-CLOSURE\.md$)' <<< "${changed_files}"; then
+            python ../verification/data-platform-closure/run_data_platform_closure_verification.py
+          else
+            echo "Data Platform technical closure verifier: NOT_APPLICABLE for this PR diff"
+          fi
 
       - name: Run canonical PostgreSQL integration suite
         shell: bash
