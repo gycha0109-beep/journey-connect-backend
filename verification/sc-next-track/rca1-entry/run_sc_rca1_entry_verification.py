@@ -62,13 +62,18 @@ def fixture(rel: str) -> int:
     with (ROOT/rel).open(encoding="utf-8",newline="") as f: data=list(csv.DictReader(f,delimiter="\t"))
     need(len({x["scenario"] for x in data})==len(data),f"fixture duplicate {rel}"); return len(data)
 
+def restore_full_history() -> None:
+    shallow_file = ROOT / ".git/shallow"
+    command = ("git","fetch","--unshallow","origin") if shallow_file.exists() else ("git","fetch","origin","main")
+    sh(*command,check=False)
+
 def main() -> int:
     OUT.mkdir(parents=True,exist_ok=True); checks=[]; failures=[]; head="UNKNOWN"
     def rec(name,fn,cmd):
         try: checks.append({"check":name,"status":"PASS","command":cmd,"detail":fn() or "verified"})
         except Exception as e: failures.append(f"{name}: {e}"); checks.append({"check":name,"status":"FAIL","command":cmd,"detail":str(e)})
     try:
-        head=sh("git","rev-parse","HEAD"); sh("git","fetch","origin","main","--depth=2",check=False)
+        head=sh("git","rev-parse","HEAD"); restore_full_history()
         def baseline():
             need(sh("git","rev-parse","origin/main")==MAIN,"origin/main moved")
             need("Merge pull request #23" in sh("git","show","-s","--format=%s",MAIN),"PR23 merge absent")
