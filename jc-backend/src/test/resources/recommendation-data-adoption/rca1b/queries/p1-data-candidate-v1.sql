@@ -3,7 +3,7 @@ SELECT
   p.activity_window_days AS window_days,
   p.interaction_counts ->> 'segment' AS exact_value,
   p.interaction_counts ->> 'total' AS derived_value,
-  CASE WHEN p.engagement_signals ? 'optional'
+  CASE WHEN p.engagement_signals ?? 'optional'
        THEN 'VALUE:' || (p.engagement_signals ->> 'optional')
        ELSE 'NULL' END AS null_semantics,
   CASE WHEN jsonb_array_length(p.recent_tag_refs) = 0 THEN ''
