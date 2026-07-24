@@ -1,1 +1,97 @@
-bmFtZTogUmVjb21tZW5kYXRpb24gUDAgRGF0YWJhc2UgQ0kKCm9uOgogIHB1bGxfcmVxdWVzdDoKICAgIHBhdGhzOgogICAgICAtICJkYXRhYmFzZS9qb3VybmV5LWNvbm5lY3QtZGItdjEuOS8qKiIKICAgICAgLSAiZGF0YWJhc2Uvam91cm5leS1jb25uZWN0LWRiLXYyLjAvKioiCiAgICAgIC0gImRhdGFiYXNlL2pvdXJuZXktY29ubmVjdC1kYi12Mi4xLyoqIgogICAgICAtICJkYXRhYmFzZS9qb3VybmV5LWNvbm5lY3QtZGItdjIuNy8qKiIKICAgICAgLSAiamMtYmFja2VuZC9zcmMvbWFpbi8qKiIKICAgICAgLSAiamMtYmFja2VuZC9zcmMvdGVzdC8qKiIKICAgICAgLSAiamMtYmFja2VuZC9idWlsZC5ncmFkbGUua3RzIgogICAgICAtICJqYy1kYXRhLWNvbnRyYWN0cy8qKiIKICAgICAgLSAiZG9jcy9wbGF0Zm9ybS9kYXRhL0RQLTQtKi5tZCIKICAgICAgLSAiZG9jcy9wbGF0Zm9ybS9kYXRhL0RQLTUtKi5tZCIKICAgICAgLSAiZG9jcy9wbGF0Zm9ybS9kYXRhL0RBVEEtUExBVEZPUk0tKi5tZCIKICAgICAgLSAiZG9jcy9wbGF0Zm9ybS9kYXRhL0hBTkRPRkYtREFUQS1UTy0qLm1kIgogICAgICAtICJ2ZXJpZmljYXRpb24vZHA0LyoqIgogICAgICAtICJ2ZXJpZmljYXRpb24vZHA1LyoqIgogICAgICAtICJ2ZXJpZmljYXRpb24vZGF0YS1wbGF0Zm9ybS1jbG9zdXJlLyoqIgogICAgICAtICIuZ2l0aHViL3dvcmtmbG93cy9yZWNvbW1lbmRhdGlvbi1wMC1kYi1jaS55bWwiCiAgd29ya2Zsb3dfZGlzcGF0Y2g6CgpwZXJtaXNzaW9uczoKICBjb250ZW50czogcmVhZAoKY29uY3VycmVuY3k6CiAgZ3JvdXA6IHJlY29tbWVuZGF0aW9uLXAwLWRiLSR7eyBnaXRodWIuZXZlbnQucHVsbF9yZXF1ZXN0Lm51bWJlciB8fCBnaXRodWIucmVmIH19CiAgY2FuY2VsLWluLXByb2dyZXNzOiB0cnVlCgpqb2JzOgogIGNhbm9uaWNhbC1kYXRhYmFzZToKICAgIG5hbWU6IEphdmEvVGVzdGNvbnRhaW5lcnMgUG9zdGdyZVNRTCAke3sgbWF0cml4LnBvc3RncmVzIH19CiAgICBydW5zLW9uOiB1YnVudHUtbGF0ZXN0CiAgICB0aW1lb3V0LW1pbnV0ZXM6IDI1CgogICAgc3RyYXRlZ3k6CiAgICAgIGZhaWwtZmFzdDogZmFsc2UKICAgICAgbWF0cml4OgogICAgICAgIHBvc3RncmVzOiBbIjE1IiwgIjE4Il0KCiAgICBkZWZhdWx0czoKICAgICAgcnVuOgogICAgICAgIHdvcmtpbmctZGlyZWN0b3J5OiBqYy1iYWNrZW5kCgogICAgc3RlcHM6CiAgICAgIC0gbmFtZTogQ2hlY2tvdXQgcmVwb3NpdG9yeQogICAgICAgIHVzZXM6IGFjdGlvbnMvY2hlY2tvdXQ0djcKICAgICAgICB3aXRoOgogICAgICAgICAgZmV0Y2gtZGVwdGg6IDAKCiAgICAgIC0gbmFtZTogU2V0IHVwIEphdmEgMjEKICAgICAgICB1c2VzOiBhY3Rpb25zL3NldHVwLWphdmFAdjUKICAgICAgICB3aXRoOgogICAgICAgICAgZGlzdHJpYnV0aW9uOiB0ZW11cmluCiAgICAgICAgICBqYXZhLXZlcnNpb246ICIyMSIKCiAgICAgIC0gbmFtZTogU2V0IHVwIEdyYWRsZQogICAgICAgIHVzZXM6IGdyYWRsZS9hY3Rpb25zL3NldHVwLWdyYWRsZUB2NgoKICAgICAgLSBuYW1lOiBHcmFudCBleGVjdXRlIHBlcm1pc3Npb24gZm9yIEdyYWRsZSBXcmFwcGVyCiAgICAgICAgcnVuOiBjaG1vZCAreCAuL2dyYWRsZXcKCiAgICAgIC0gbmFtZTogUnVuIEphdmEgc291cmNlIGFuZCBTUUwgaW50ZWdyaXR5IGdhdGVzCiAgICAgICAgc2hlbGw6IGJhc2gKICAgICAgICBydW46IHwKICAgICAgICAgIHNldCAtbyBwaXBlZmFpbAogICAgICAgICAgLi9ncmFkbGV3IHAwVmVyaWZpY2F0aW9uIC0tc3RhY2t0cmFjZSAtLW5vLWRhZW1vbiAyPiYxIHwgdGVlIC4uL3ZlcmlmaWNhdGlvbi9pcDEyLTUvSVAxMjVfUDBfU1RBVElDX1BHJHt7IG1hdHJpeC5wb3N0Z3JlcyB9fS5sb2cKICAgICAgICAgIHB5dGhvbiAuLi92ZXJpZmljYXRpb24vZHA1L3J1bl9kcDVfc3RhdGljX3ZlcmlmaWNhdGlvbi5weQoKICAgICAgICAgIGNoYW5nZWRfZmlsZXM9IiQoZ2l0IC1DIC4uIGRpZmYgLS1uYW1lLW9ubHkgb3JpZ2luL21haW4uLi5IRUFEKSIKICAgICAgICAgIGlmIGdyZXAgLUVxICdeKGRvY3MvcGxhdGZvcm0vZGF0YS98dmVyaWZpY2F0aW9uL2RhdGEtcGxhdGZvcm0tY2xvc3VyZS98ZG9jcy9wbGF0Zm9ybS9nb3Zlcm5hbmNlL1NDLURBVEEtUExBVEZPUk0tVEVDSE5JQ0FMLUNMT1NVUkVcLm1kJCknIDw8PCAiJHtjaGFuZ2VkX2ZpbGVzfSI7IHRoZW4KICAgICAgICAgICAgcHl0aG9uIC4uL3ZlcmlmaWNhdGlvbi9kYXRhLXBsYXRmb3JtLWNsb3N1cmUvcnVuX2RhdGFfcGxhdGZvcm1fY2xvc3VyZV92ZXJpZmljYXRpb24ucHkKICAgICAgICAgIGVsc2UKICAgICAgICAgICAgZWNobyAiRGF0YSBQbGF0Zm9ybSB0ZWNobmljYWwgY2xvc3VyZSB2ZXJpZmllcjogTk9UX0FQUExJQ0FCTEUgZm9yIHRoaXMgUFIgZGlmZiIKICAgICAgICAgIGZpCgogICAgICAtIG5hbWU6IFJ1biBjYW5vbmljYWwgUG9zdGdyZVNRTCBpbnRlZ3JhdGlvbiBzdWl0ZQogICAgICAgIHNoZWxsOiBiYXNoCiAgICAgICAgZW52OgogICAgICAgICAgSkNfVEVTVF9QT1NUR1JFU19JTUFHRTogcG9zdGdyZXM6JHt7IG1hdHJpeC5wb3N0Z3JlcyB9fS1hbHBpbmUKICAgICAgICBydW46IHwKICAgICAgICAgIHNldCAtbyBwaXBlZmFpbAogICAgICAgICAgLi9ncmFkbGV3IHRlc3QgLS1zdGFja3RyYWNlIC0tbm8tZGFlbW9uIDI+JjEgfCB0ZWUgLi4vdmVyaWZpY2F0aW9uL2lwMTItNS9JUDEyNV9QT1NUR1JFU1FMXyR7eyBtYXRyaXgucG9zdGdyZXMgfX0ubG9nCgogICAgICAtIG5hbWU6IFVwbG9hZCBQb3N0Z3JlU1FMIHZlcmlmaWNhdGlvbiBldmlkZW5jZQogICAgICAgIGlmOiBhbHdheXMoKQogICAgICAgIHVzZXM6IGFjdGlvbnMvdXBsb2FkLWFydGlmYWN0QHY0CiAgICAgICAgd2l0aDoKICAgICAgICAgIG5hbWU6IGRhdGEtcGxhdGZvcm0tY2xvc3VyZS1wb3N0Z3Jlc3FsLWJhY2tlbmQtJHt7IG1hdHJpeC5wb3N0Z3JlcyB9fS1ldmlkZW5jZQogICAgICAgICAgcGF0aDogfAogICAgICAgICAgICB2ZXJpZmljYXRpb24vaXAxMi01L0lQMTI1X1AwX1NUQVRJQ19QRyR7eyBtYXRyaXgucG9zdGdyZXMgfX0ubG9nCiAgICAgICAgICAgIHZlcmlmaWNhdGlvbi9pcDEyLTUvSVAxMjVfUE9TVEdSRVNRTF8ke3sgbWF0cml4LnBvc3RncmVzIH19LmxvZwogICAgICAgICAgICB2ZXJpZmljYXRpb24vZGF0YS1wbGF0Zm9ybS1jbG9zdXJlL3J1bnRpbWUvKioKICAgICAgICAgICAgamMtYmFja2VuZC9idWlsZC90ZXN0LXJlc3VsdHMvKiovKi54bWwKICAgICAgICAgICAgamMtYmFja2VuZC9idWlsZC9yZXBvcnRzL3Rlc3RzLyoqCiAgICAgICAgICBpZi1uby1maWxlcy1mb3VuZDogd2Fybgo=
+name: Recommendation P0 Database CI
+
+on:
+  pull_request:
+    paths:
+      - "database/journey-connect-db-v1.9/**"
+      - "database/journey-connect-db-v2.0/**"
+      - "database/journey-connect-db-v2.1/**"
+      - "database/journey-connect-db-v2.7/**"
+      - "jc-backend/src/main/**"
+      - "jc-backend/src/test/**"
+      - "jc-backend/build.gradle.kts"
+      - "jc-data-contracts/**"
+      - "docs/platform/data/DP-4-*.md"
+      - "docs/platform/data/DP-5-*.md"
+      - "docs/platform/data/DATA-PLATFORM-*.md"
+      - "docs/platform/data/HANDOFF-DATA-TO-*.md"
+      - "verification/dp4/**"
+      - "verification/dp5/**"
+      - "verification/data-platform-closure/**"
+      - ".github/workflows/recommendation-p0-db-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: recommendation-p0-db-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  canonical-database:
+    name: Java/Testcontainers PostgreSQL ${{ matrix.postgres }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    strategy:
+      fail-fast: false
+      matrix:
+        postgres: ["15", "18"]
+
+    defaults:
+      run:
+        working-directory: jc-backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout4v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Grant execute permission for Gradle Wrapper
+        run: chmod +x ./gradlew
+
+      - name: Run Java source and SQL integrity gates
+        shell: bash
+        run: |
+          set -o pipefail
+          ./gradlew p0Verification --stacktrace --no-daemon 2>&1 | tee ../verification/ip12-5/IP125_P0_STATIC_PG${{ matrix.postgres }}.log
+          python ../verification/dp5/run_dp5_static_verification.py
+
+          changed_files="$(git -C .. diff --name-only origin/main...HEAD)"
+          if grep -Eq '^(docs/platform/data/|verification/data-platform-closure/|docs/platform/governance/SC-DATA-PLATFORM-TECHNICAL-CLOSURE\.md$)' <<< "${changed_files}"; then
+            python ../verification/data-platform-closure/run_data_platform_closure_verification.py
+          else
+            echo "Data Platform technical closure verifier: NOT_APPLICABLE for this PR diff"
+          fi
+
+      - name: Run canonical PostgreSQL integration suite
+        shell: bash
+        env:
+          JC_TEST_POSTGRES_IMAGE: postgres:${{ matrix.postgres }}-alpine
+        run: |
+          set -o pipefail
+          ./gradlew test --stacktrace --no-daemon 2>&1 | tee ../verification/ip12-5/IP125_POSTGRESQL_${{ matrix.postgres }}.log
+
+      - name: Upload PostgreSQL verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-platform-closure-postgresql-backend-${{ matrix.postgres }}-evidence
+          path: |
+            verification/ip12-5/IP125_P0_STATIC_PG${{ matrix.postgres }}.log
+            verification/ip12-5/IP125_POSTGRESQL_${{ matrix.postgres }}.log
+            verification/data-platform-closure/runtime/**
+            jc-backend/build/test-results/**/*.xml
+            jc-backend/build/reports/tests/**
+          if-no-files-found: warn
