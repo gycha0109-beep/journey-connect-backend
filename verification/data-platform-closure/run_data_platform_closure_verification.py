@@ -193,7 +193,13 @@ allowed = set(
         "verification/dp7/run_dp7_allocation_verification.py",
         "verification/dp7/run_dp7_static_verification.py",
         "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
+        "docs/platform/governance/SC-RACI.md",
+        "docs/platform/governance/SC-2-POST-DP-CLOSURE-NEXT-TRACK-BASELINE-RECONCILIATION.md",
     ]
+)
+allowed_prefixes = (
+    "docs/platform/governance/sc-next-track/",
+    "verification/sc-next-track/",
 )
 subprocess.run(
     ["git", "fetch", "origin", "main", "--depth=1"],
@@ -211,6 +217,8 @@ changed = subprocess.run(
 ).stdout.splitlines()
 for rel in filter(None, changed):
     if rel.startswith("verification/data-platform-closure/"):
+        continue
+    if any(rel.startswith(prefix) for prefix in allowed_prefixes):
         continue
     if rel not in allowed:
         fail(f"unexpected diff: {rel}")
