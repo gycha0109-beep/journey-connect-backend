@@ -4,181 +4,164 @@
 
 | Field | Value |
 |---|---|
-| revision | `V1.4 / SC-3 RCA-1 ENTRY` |
-| status | `ACTIVE` |
-| authoritative main | `f802a105e46a62718616acaa7a3db6c172e7ed10` |
-| RCA-0 exact-final-head | `d33f7e152d0e40999ed8dc3f16c0a3f0bb980a9d` |
+| revision | `V1.5 / SC-4 RCA-1B ENTRY` |
+| status | `ACTIVE / RCA1_COMPLETE / RCA1B_ENTRY_AUTHORIZED` |
+| authoritative main | `b2e7a5c316c6f6ee543ccedf35bca65353ab3aa4` |
+| RCA-1 exact-final-head | `38896b2a37180633870282e9d9e305d9c9fbbf8a` |
 | canonical DB | `journey-connect-db-v2.7/01..52` |
 | SQL `53+` | `UNALLOCATED` |
-| system contract | [Journey Connect System Contract V1](JOURNEY_CONNECT_SYSTEM_CONTRACT_V1.md) |
 
 ## 2. Track responsibilities
 
 ### Data Platform
 
-Owns Data candidate projections, checkpoint/lineage metadata and Data contract interpretation. Data does not decide Recommendation profile semantics, P2 metric semantics or authority transfer.
-
-Status: `TECHNICALLY CLOSED`.
+Owns candidate projection schema, checkpoint, lineage and reproducible fixture interpretation. Data does not approve P1/P2 semantic authority transfer.
 
 ### Intelligence Platform
 
-Owns P1 semantic comparison, expected-gap interpretation, feature vocabulary, decay/saturation meaning and P1 reconciliation acceptance. Current P1 source/result remain protected.
+Owns P1 reference query, exact/derived/window semantics, expected gaps and P1 DB reconciliation exit.
 
 ### Reliability Platform
 
-Owns P2 exposure/outcome/metric semantics, dedupe/hash/release protection, P2 mismatch acceptance and reconciliation result integrity. `RP` remains reserved for Reliability Platform.
+Owns P2 exposure/outcome/metric semantics, dedupe/hash/release protection, P2 query acceptance and evidence integrity. `RP` is reserved for Reliability Platform.
 
 ### Operations Platform
 
-Owns runtime environment, credentials, feature flags, scheduler, monitoring, rollback and production controls. Operations execution is `NOT_REQUIRED` for Model A, consulted for protection checks, required for any future Model B environment and mandatory for Model C.
+Owns CI ephemeral PostgreSQL, credentials, network isolation, read-only role, timeout/resource limits, teardown and artifact lifecycle. Operations is a blocking approval for RCA-1B.
+
+### Privacy/Security
+
+Owns synthetic-only identity, redaction, secret handling, raw-row prohibition and retention. Approval is blocking.
 
 ### System Coordination
 
-Owns scope, registry, authority, breaking-change classification, phase entry/exit and cross-track decisions.
+Owns phase entry/exit, registry, breaking changes, SQL allocation and prohibition of authority transfer.
 
-## 3. Current authoritative sequence
+## 3. Authoritative sequence
 
 ```text
 Data Platform technical closure [COMPLETE]
 → RCA-0 Recommendation Data Consumer Contract & Fixture Alignment [COMPLETE / MERGED]
-→ RCA-1 Recommendation Data Shadow Reconciliation [ENTRY AUTHORIZED / MODEL A]
-→ optional RCA-1B Non-production Read-only Reconciliation [DEFERRED / SEPARATE SC APPROVAL]
+→ RCA-1 Recommendation Data Shadow Reconciliation [COMPLETE / MODEL A]
+→ RCA-1B Recommendation Data Non-production Read-only Reconciliation [ENTRY AUTHORIZED]
 → RCA-2 Controlled Runtime Dark Read [NOT AUTHORIZED]
-→ Operations Runtime Enablement
-→ Reliability Production Readiness
-→ production activation gates
 ```
 
-This sequence is not a release plan.
+This is not a production release plan.
 
-## 4. RCA workstream
+## 4. Workstream naming
 
-`RCA` means Recommendation Consumer Adoption. It is a cross-track workstream, not a new platform.
+`RCA` means Recommendation Consumer Adoption and is a cross-track workstream. `RP` remains reserved for Reliability Platform and must not mean Recommendation Platform. Classification: `JOINT_INTELLIGENCE_RELIABILITY_ADOPTION`.
 
-`RP` remains reserved for Reliability Platform and must not mean Recommendation Platform.
-
-Official classification: `JOINT_INTELLIGENCE_RELIABILITY_ADOPTION`.
-
-## 5. RCA-1 ownership
-
-| Lane / control | Responsible | Accountable | Required approval |
-|---|---|---|---|
-| P1 comparison implementation | Intelligence | Intelligence | SC |
-| P1 acceptance | Intelligence | Intelligence | SC |
-| P2 comparison implementation | Intelligence lead permitted | Reliability | Reliability + SC |
-| P2 acceptance and evidence integrity | Reliability | Reliability | SC |
-| Data contract interpretation | Data | Data | affected lane owner |
-| synthetic identity fixture | implementation team | SC | no real identity owner required |
-| registry, entry and exit | SC | SC | affected tracks |
-| runtime execution | Operations | Operations | outside RCA-1 Model A |
-
-Physical code location does not transfer semantic ownership.
-
-## 6. RCA-1 execution model
+## 5. RCA-1 historical completion
 
 ```text
+RCA1_OFFLINE_SHADOW_RECONCILIATION_COMPLETE
 RCA1_EXECUTION_MODEL=MODEL_A_OFFLINE_DETERMINISTIC_RECONCILIATION
+P1_RESULT=RECONCILED_WITH_EXPECTED_GAPS
+P2_RESULT=RECONCILED_WITH_MIGRATION_GAPS
 IDENTITY_MODE=SYNTHETIC_ONLY
 ```
 
-Model A is `APPROVED`.
+Historical RCA-0/RCA-1 implementation, fixtures and evidence remain unchanged.
 
-Model B is `DEFERRED`; it requires a non-production PostgreSQL environment, read-only role, transaction read-only, statement timeout, row limit, no migration, reproducible test data and Operations credential approval.
+## 6. RCA-1B execution model
 
-Model C is `BLOCKED` in RCA-1 and assigned to RCA-2.
+```text
+RCA1B_ENTRY_AUTHORIZED
+RCA1B_EXECUTION_ENVIRONMENT=CI_EPHEMERAL_POSTGRESQL
+POSTGRESQL_VERSION_MATRIX=15,18
+RCA1B_DATASET_MODE=DETERMINISTIC_SYNTHETIC_DATABASE_FIXTURE
+IDENTITY_MODE=SYNTHETIC_ONLY
+TRANSACTION_READ_ONLY=REQUIRED
+DB_WRITE=FORBIDDEN
+PRODUCTION_DB=FORBIDDEN
+```
 
-## 7. RCA-1 allowed
+Environment B is deferred. Production replica/derived Environment C is blocked. RCA-2 remains separately gated.
 
-- pure Java/offline comparison types and deterministic normalization;
-- recorded authoritative snapshots and Data candidate fixtures;
-- RCA-0 fixture extension without changing RCA-0 expected classifications;
-- lane-specific comparison and result taxonomy;
-- synthetic fixture identity;
-- redacted machine-readable evidence and offline counters;
-- source/core/SQL/config protected regressions;
-- implementation in a separate PR after SC-3 merge.
+## 7. RCA-1B ownership
 
-## 8. RCA-1 forbidden
+| Boundary | Responsible | Accountable | Approval |
+|---|---|---|---|
+| P1 query and result | Intelligence | Intelligence | `BLOCKING_APPROVAL` |
+| P2 query and result | Reliability/shared implementation permitted | Reliability | `BLOCKING_APPROVAL` |
+| candidate/checkpoint/lineage | Data | Data | `REQUIRED` |
+| environment/credentials/resource | Operations | Operations | `BLOCKING_APPROVAL` |
+| identity/redaction/retention | Privacy/Security | Privacy/Security | `BLOCKING_APPROVAL` |
+| entry/exit/registry/SQL/authority | SC | SC | `BLOCKING_APPROVAL` |
 
-- P1/P2 source replacement;
-- Spring, repository, DB query, worker, scheduler, listener or feature-flag wiring;
-- SQL, migration, DB role or grant;
-- real identity mapping;
-- fake aggregate-to-event reconstruction;
-- canonical P2 dataset/hash recalculation or release evidence modification;
-- runtime dark read;
-- production traffic, cutover, source deprecation or authority transfer.
+Physical code location does not transfer semantic authority.
 
-## 9. Lane separation
+## 8. Read-only and resource governance
 
-P1 and P2 must produce independent lane verdicts and independent mismatch inventories. A combined green status cannot conceal a lane failure.
+```text
+TRANSACTION_ISOLATION=REPEATABLE_READ
+AUTOCOMMIT=DISABLED
+STATEMENT_TIMEOUT_MS=5000
+LOCK_TIMEOUT_MS=1000
+IDLE_IN_TRANSACTION_TIMEOUT_MS=5000
+MAX_RESULT_ROWS_PER_QUERY=1000
+MAX_RECONCILIATION_CASES=10000
+MAX_EXECUTION_DURATION_SECONDS=900
+PARALLEL_QUERY=DISABLED
+RETRY_POLICY=NONE
+```
 
-P1 non-comparable dimensions must be expected-gap classifications. P2 exposure/window/fallback mismatches are failures, while stale assignment, persisted dedupe and canonical hash remain migration-protected unless a future phase is approved.
+A separate ephemeral test login is required. Owner/superuser use, write grant, RLS bypass, DDL/DML, temp objects, migration and unbounded queries are prohibited.
 
-## 10. Database governance
+## 9. Query governance
 
-- SQL `01..52` is protected and immutable;
-- SQL `53+` remains unallocated;
-- RCA-1 Model A: `DB_CHANGE=NONE`, `SQL_ALLOCATION=NOT_REQUIRED`;
-- no new table, view, role or grant;
-- a discovered DB requirement blocks that sub-scope with `RCA1_ENTRY_BLOCKED_BY_SQL_ALLOCATION`.
+Only explicit version-controlled query IDs and SHA-256 fingerprints may execute. Queries must be prepared, parameterized, bounded and deterministically ordered. Production data, actual identity mapping, canonical dataset rows, release evidence and unrestricted raw rows are outside the allowlist.
 
-## 11. Verification governance
+## 10. Dataset and identity governance
 
-Required for the SC-3 governance PR:
+Use canonical SQL `01..52` in an ephemeral container plus deterministic noncanonical test-only seed. Dataset B is deferred; production-derived data is blocked. Identity remains synthetic-only with fail-closed absence, invalidity, expiry, deletion, mismatch, unauthorized purpose and unauthorized caller.
 
-- exact authoritative work-start SHA;
-- PR #23 merge and RCA-0 exact-final-head ancestry/tree;
-- RCA-0 handoff/contracts/12 P1/21 P2 fixtures;
-- current P1/P2 authority markers;
-- SQL `01..52`, SQL `53+` absence and production defaults;
-- single Model A and synthetic-only decisions;
-- complete lane taxonomies and evidence/privacy policy;
-- governance-only diff and unchanged historical RCA-0 evidence;
-- exact final PR-head verifier execution.
+## 11. Lane separation
 
-Unexecuted PostgreSQL, shadow comparison, runtime, canary, load, replay and production checks are not PASS.
+P1 and P2 produce independent DB verdicts and mismatch inventories. P1 expected semantic gaps remain explicit. P2 exact exposure/window/event/fallback protection remains mandatory; stale assignment and persisted dedupe remain migration-required. A combined PASS cannot hide a lane failure.
 
-## 12. Entry and exit
+## 12. Checkpoint, lineage and evidence
+
+Exact parity requires equal checkpoint, equal snapshot time and matching lineage. Deterministic fixture lag is zero. Evidence is redacted, query-fingerprinted and retained at most 90 days; database/raw results live only for the job.
+
+## 13. DB and SQL governance
+
+```text
+DB_CHANGE=NONE
+SQL_ALLOCATION=NOT_REQUIRED
+NEW_TABLE_REQUIRED=NO
+NEW_VIEW_REQUIRED=NO
+NEW_ROLE_REQUIRED=YES_EPHEMERAL_TEST_ONLY
+NEW_GRANT_REQUIRED=YES_EPHEMERAL_TEST_ONLY
+TEST_FIXTURE_SQL_REQUIRED=YES_NONCANONICAL_TEST_ONLY
+SQL_53_PLUS=UNALLOCATED
+```
+
+No canonical migration is authorized.
+
+## 14. Entry and exit
 
 Entry verdict:
 
 ```text
-RCA1_ENTRY_AUTHORIZED
+RCA1B_ENTRY_AUTHORIZED
 IMPLEMENTATION_REQUIRES_SEPARATE_PR
 ```
 
-Exit requires both lane executions, classified differences, enforced synthetic identity boundary, unchanged authority, no production traffic and no authority transfer.
+Exit requires independent P1/P2 database results, read-only/checkpoint/lineage/identity enforcement, cross-version equivalence, all blocking approvals, unchanged authority and no production DB/traffic.
 
-## 13. PR and branch separation
+## 15. Integration refusal
 
-- SC-3 governance/allocation PR is separate from RCA-1 implementation;
-- implementation uses a new branch after SC-3 merge;
-- current branch recommendation: `agent/sc-rca1-entry-authorization`;
-- no main direct push;
-- no merge without explicit user approval.
+Reject any implementation that uses production endpoints/data, owner/superuser, write privilege, dynamic/unbounded SQL, actual identity mapping, canonical dataset/release access, SQL `53+`, runtime wiring, combined lane masking or authority-transfer language.
 
-## 14. Integration refusal
+## 16. Canonical governance paths
 
-Reject implementation or integration if any of these occur:
-
-- `RP` naming conflict;
-- P1/P2 source or evidence change;
-- P2 exposure/window/event/fallback meaning change;
-- aggregate-to-event fabrication;
-- real identity join;
-- SQL change or SQL `53+` allocation;
-- runtime wiring;
-- production config change;
-- unexecuted check reported as PASS;
-- reconciliation represented as runtime/production/cutover readiness;
-- authority transfer marker.
-
-## 15. Canonical governance paths
-
-- [SC Decision Register](SC-DECISION-REGISTER.md)
-- [SC RACI](SC-RACI.md)
-- [SC Platform Registry](SC-PLATFORM-REGISTRY.md)
+- [System Contract](JOURNEY_CONNECT_SYSTEM_CONTRACT_V1.md)
+- [Decision Register](SC-DECISION-REGISTER.md)
+- [Platform Registry](SC-PLATFORM-REGISTRY.md)
+- [RACI](SC-RACI.md)
 - [SC Handoff](SC-HANDOFF.md)
-- [SC-3 master decision](sc-next-track/SC-3-RCA-1-ENTRY-AUTHORIZATION-AND-BASELINE-ALLOCATION.md)
-- [RCA-1 implementation prompt](sc-next-track/22-RCA-1-IMPLEMENTATION-HANDOFF-PROMPT.md)
+- [SC-4 master](sc-next-track/SC-4-RCA-1B-ENTRY-AUTHORIZATION-AND-EXECUTION-BOUNDARY.md)
+- [RCA-1B implementation prompt](sc-next-track/37-RCA-1B-IMPLEMENTATION-HANDOFF-PROMPT.md)
