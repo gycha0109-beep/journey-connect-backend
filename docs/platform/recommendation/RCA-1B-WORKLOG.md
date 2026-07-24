@@ -1,58 +1,84 @@
 # RCA-1B Worklog
 
 ## Scope
-Cumulative implementation and verification record for RCA-1B.
+Cumulative implementation, correction, verification and self-review record for RCA-1B.
 
 ## Current Baseline
-Work-start: `d07091bff54a3bfdae10d8fb6f3008923d69d455`; PR #26/SC-4 and PR #25/RCA-1 merge/tree baselines verified before changes.
+Work-start: `d07091bff54a3bfdae10d8fb6f3008923d69d455`; PR #26/SC-4 and PR #25/RCA-1 merge/tree baselines were verified before changes. Canonical SQL `01..52` remained protected and SQL `53+` remained absent.
 
 ## Implementation
-Phase 1: repository and authority investigation. Phase 2: seven-query registry/fingerprints. Phase 3: bootstrap role/seed. Phase 4: Testcontainers runner/evidence. Phase 5: independent verifier/cross-version CI. Phase 6: documents and review packages.
+1. Repository and authority investigation.
+2. Seven-query registry, canonical byte policy and fingerprint inventory.
+3. Ephemeral bootstrap role/grant and deterministic synthetic seed.
+4. Testcontainers PostgreSQL 15/18 runner, read-only transaction enforcement, permission-negative suite and evidence writer.
+5. Independent verifier, cross-version comparator and protected regression workflow.
+6. Nineteen implementation/result/handoff documents and five blocking-review packages.
+7. Exact-head CI correction and final self-review.
 
 ## Authority
-No production authority or source ownership changed.
+No production authority, source ownership, runtime wiring, DB writer, P1/P2 semantics or release authority changed.
 
 ## Dependencies
-GitHub repository, Java 21, Gradle, Testcontainers, PostgreSQL 15/18, Python 3.13.
+GitHub repository, Java 21, Gradle, Testcontainers, PostgreSQL 15/18, Python 3.13 and existing canonical SQL/verification fragments.
 
 ## Execution Environment
-Local work performed static syntax/review only; actual database execution is reserved for exact-head CI.
+Each matrix job starts one isolated ephemeral container, initializes UTC/C locale, applies canonical SQL `01..52`, seeds deterministic fixtures, reconnects through `rca1b_readonly`, generates evidence and destroys the container. PostgreSQL 15 and 18 use version-appropriate tmpfs data paths.
 
 ## DB Access Boundary
-Implemented ephemeral owner bootstrap and readonly reconnect; no production credentials or routes.
+The bootstrap owner is limited to schema/role/seed setup. Reconciliation never uses the owner connection. Catalog attributes, explicit allowlist, no write/sequence/privileged-function rights and server-visible read-only repeatable-read state are verified.
 
 ## Query Boundary
-Exactly seven static resources with SHA-256 inventory and fail-closed lookup.
+Exactly seven static resources with unique SHA-256 inventory, prepared parameters, deterministic order, SQL/JDBC/application row limits and fail-closed ID/fingerprint lookup. PostgreSQL JSONB `?` is JDBC-escaped as `??`; no dynamic SQL was introduced.
 
 ## Dataset
-Version-controlled synthetic seed with 66 scenarios, 1001-row probe, idempotency and duplicate assertions.
+Version-controlled synthetic seed with 66 scenarios and a 1001-row probe. The seed is idempotent and verifies duplicate exposure, duplicate outcome and duplicate P1-row constraints.
 
 ## Identity/Privacy
-Synthetic-only, fail-closed states, hashed/redacted evidence.
+Synthetic-only, fail-closed identity states, redacted deterministic references and evidence scans for raw identity/query/row/credential material.
 
 ## P1 Result
-Expected baseline: reconciled with existing semantic gaps; actual result pending CI at document creation.
+`RECONCILED_WITH_EXPECTED_GAPS`; comparable fields and 7/30/90 windows reconcile with zero baseline mismatch. Ordering, event grain, explicit preference, transform policy and fingerprint semantics remain expected/protected gaps.
 
 ## P2 Result
-Expected baseline: reconciled with migration gaps; actual result pending CI at document creation.
+`RECONCILED_WITH_MIGRATION_GAPS`; authoritative experiment exposure, assignment/version/variant, subject/session/run binding, 604800-second boundary, engagement event allowlist and bound fallback reconcile. Stale-unexposed assignment and persisted one-observation dedupe remain migration-required.
 
 ## Checkpoint/Lineage
-Zero-lag explicit fixture timestamps and lineage fingerprints implemented.
+Zero-lag explicit fixture timestamps, monotonic checkpoint ordering, equal snapshot capture and equal lineage fingerprints were enforced.
 
 ## Evidence
-JSON/TSV writer, counters, role/server state, negative tests, review packages and exact-head verifier implemented.
+Fixed-order JSON/TSV evidence, counters, role/server state, permission-negative results, query inventory, review package and teardown evidence. Runtime evidence records the exact tested head. CI retention is 90 days; DB state exists only for the container lifetime.
 
 ## Verification
-Commands: targeted Gradle test for each matrix, per-version verifier, cross-version comparator, RCA-0/RCA-1 runners, core check, `verifyIp125`. Results are recorded only after CI.
+Executed commands and stages:
+- targeted Gradle database test for PostgreSQL 15 and 18;
+- per-version independent verifier;
+- normalized cross-version comparator;
+- immutable RCA-0 and RCA-1 fixture runners;
+- Recommendation core check;
+- backend/IP-12.5 protected readiness;
+- standalone Recommendation P0, RCA-0 and Backend PR workflows.
+
+Pre-documentation validation run `30120132626` passed PostgreSQL 15, PostgreSQL 18, cross-version equivalence and the full protected-regression job. Standalone runs `30120132640`, `30120132722` and `30120132672` also passed. Because this worklog update changes the head, the final documentation head must rerun the complete suite and only that result is final evidence.
+
+## Corrections and Self-review
+- Scoped the targeted Gradle test to the backend root project.
+- Kept Testcontainers on the repository-provided dependency/classpath.
+- Added PostgreSQL 18 data-layout handling without persistent volume.
+- Isolated historical rollback-only SQL 28 and SQL 42 validation conflicts in the test harness without modifying canonical SQL.
+- Staged SQL 51 implementation fragments at their original relative paths.
+- Corrected the deterministic seed user-column reference.
+- Escaped the PostgreSQL JSONB existence operator for JDBC and synchronized its fingerprint.
+- Bound the exact PR head into the forked test JVM.
+- Confirmed no production source/config, canonical SQL, RCA-0/RCA-1 asset or Recommendation core change.
 
 ## Compatibility
-No production compatibility claim.
+PostgreSQL 15/18 normalized evidence equivalence is required and was demonstrated on the pre-documentation validation head. No production compatibility, runtime readiness or source-replacement claim is made.
 
 ## Risks
-Canonical schema constraints, privilege semantics and SQLSTATE differences must be validated by CI and corrected on a new exact head if needed.
+Production query plans, traffic, credentials, latency, load, actual identity mapping and operational approval remain unexecuted. P1 expected semantic gaps and P2 migration-required dimensions remain open by design.
 
 ## Exit Criteria
-All required exact-head CI succeeds and self-review finds no protected boundary violation.
+The exact final documentation head must pass both matrix jobs, both per-version verifiers, cross-version equivalence, RCA-0/RCA-1/Core/Backend/IP-12.5 regressions and standalone protection workflows. Review packages remain `PENDING_USER_REVIEW`.
 
 ## Handoff
-Every correction requires all matrix and protected regressions to rerun; no prior-head evidence is final.
+Do not mark Ready or merge without explicit user approval. RCA-2 requires separate System Coordination authorization. Final PR head and final workflow IDs are recorded in the Draft PR body after the last exact-head run.
