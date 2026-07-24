@@ -1,0 +1,12 @@
+path	kind	required
+docs/platform/governance/sc-next-track/SC-3-RCA-1-ENTRY-AUTHORIZATION-AND-BASELINE-ALLOCATION.md	MASTER	true
+docs/platform/governance/sc-next-track/13-SC-RCA1-EXECUTION-MODEL-DECISION.md	DECISION	true
+docs/platform/governance/sc-next-track/14-SC-RCA1-P1-RECONCILIATION-AUTHORITY-AND-EQUIVALENCE.md	DECISION	true
+docs/platform/governance/sc-next-track/15-SC-RCA1-P2-RECONCILIATION-AUTHORITY-AND-EQUIVALENCE.md	DECISION	true
+docs/platform/governance/sc-next-track/16-SC-RCA1-IDENTITY-MAPPING-GOVERNANCE.md	DECISION	true
+docs/platform/governance/sc-next-track/17-SC-RCA1-EVIDENCE-AND-PRIVACY-POLICY.md	DECISION	true
+docs/platform/governance/sc-next-track/18-SC-RCA1-OPERATIONS-RELIABILITY-PREREQUISITE-MATRIX.md	DECISION	true
+docs/platform/governance/sc-next-track/19-SC-RCA1-DB-SQL-IMPACT-DECISION.md	DECISION	true
+docs/platform/governance/sc-next-track/20-SC-RCA1-VERIFICATION-PLAN.md	DECISION	true
+docs/platform/governance/sc-next-track/21-SC-RCA1-EXIT-CRITERIA-AND-RCA2-HANDOFF.md	DECISION	true
+docs/platform/governance/sc-next-track/22-RCA-1-IMPLEMENTATION-HANDOFF-PROMPT.md	HANDOFF_PROMPT	true

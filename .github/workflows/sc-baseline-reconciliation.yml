@@ -7,6 +7,7 @@ on:
       - "docs/platform/data/**"
       - "docs/platform/proposals/**"
       - "verification/sc-dp1-baseline-reconciliation/**"
+      - "verification/sc-next-track/**"
       - "verification/data-platform-closure/**"
       - ".github/workflows/sc-baseline-reconciliation.yml"
   workflow_dispatch:
@@ -17,15 +18,23 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - name: Validate SC baseline reconciliation
+      - name: Validate SC baseline through RCA-1 entry
         run: python verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py
       - name: Validate Data Platform technical closure
         run: python verification/data-platform-closure/run_data_platform_closure_verification.py
+      - name: Upload SC RCA-1 entry evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sc-rca1-entry-evidence
+          path: verification/sc-next-track/rca1-entry/runtime/**
+          if-no-files-found: warn
