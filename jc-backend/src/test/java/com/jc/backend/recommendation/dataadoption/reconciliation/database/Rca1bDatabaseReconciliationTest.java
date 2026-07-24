@@ -230,6 +230,8 @@ class Rca1bDatabaseReconciliationTest {
                 runSearchProjectionSmokeCompatibility(container, target);
             } else if (number == 42) {
                 runProjectionSnapshotValidationCompatibility(container, target);
+            } else if (number == 51) {
+                runCrossTrackPersistenceWrapper(container, root, target);
             } else {
                 execPsql(container, target, List.of());
             }
@@ -248,6 +250,18 @@ class Rca1bDatabaseReconciliationTest {
     private static void runProjectionSnapshotValidationCompatibility(PostgreSQLContainer<?> container, String target) throws Exception {
         execPsql(container, target, List.of(
                 "-c", "BEGIN; ALTER TABLE public.recommendation_snapshot DROP CONSTRAINT recommendation_snapshot_content_uq"));
+    }
+
+    private static void runCrossTrackPersistenceWrapper(
+            PostgreSQLContainer<?> container, Path root, String target) throws Exception {
+        Path includeDirectory = root.resolve("verification/dp7/sql");
+        for (int part = 1; part <= 4; part++) {
+            String name = "51_cross_track_integration_persistence_roles_and_safe_view_part" + part + ".inc";
+            Path source = includeDirectory.resolve(name);
+            assertTrue(Files.isRegularFile(source), "missing SQL 51 include " + name);
+            container.copyFileToContainer(MountableFile.forHostPath(source), "/verification/dp7/sql/" + name);
+        }
+        execPsql(container, target, List.of());
     }
 
     private static void applyResource(PostgreSQLContainer<?> container, String resource, List<String> variables) throws Exception {
