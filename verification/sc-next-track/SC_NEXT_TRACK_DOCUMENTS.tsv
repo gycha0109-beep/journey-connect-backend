@@ -1,0 +1,13 @@
+ordinal	path	purpose	status
+1	docs/platform/governance/sc-next-track/01-SC-POST-DP-CLOSURE-AUTHORITATIVE-BASELINE.md	authoritative baseline	REQUIRED
+2	docs/platform/governance/sc-next-track/02-SC-NEXT-TRACK-OWNERSHIP-DECISION.md	ownership	REQUIRED
+3	docs/platform/governance/sc-next-track/03-SC-NEXT-TRACK-NAMING-AND-PHASE-ALLOCATION.md	naming and phase	REQUIRED
+4	docs/platform/governance/sc-next-track/04-SC-RECOMMENDATION-CONSUMER-ADOPTION-SCOPE-DECISION.md	scope	REQUIRED
+5	docs/platform/governance/sc-next-track/05-SC-EXISTING-P1-P2-AUTHORITY-PROTECTION-DECISION.md	P1/P2 authority	REQUIRED
+6	docs/platform/governance/sc-next-track/06-SC-DATA-TO-RECOMMENDATION-CONTRACT-DEPENDENCY-MAP.md	dependency map	REQUIRED
+7	docs/platform/governance/sc-next-track/07-SC-IDENTITY-PRIVACY-DEPENDENCY-DECISION.md	identity/privacy	REQUIRED
+8	docs/platform/governance/sc-next-track/08-SC-OPERATIONS-RELIABILITY-PREREQUISITE-MATRIX.md	prerequisites	REQUIRED
+9	docs/platform/governance/sc-next-track/09-SC-SQL-ALLOCATION-DECISION.md	SQL decision	REQUIRED
+10	docs/platform/governance/sc-next-track/10-SC-PRODUCTION-ACTIVATION-IMPACT-ASSESSMENT.md	production impact	REQUIRED
+11	docs/platform/governance/sc-next-track/11-SC-CROSS-TRACK-VERIFICATION-PLAN.md	verification plan	REQUIRED
+12	docs/platform/governance/sc-next-track/12-RCA-0-IMPLEMENTATION-HANDOFF-PROMPT.md	implementation handoff	REQUIRED

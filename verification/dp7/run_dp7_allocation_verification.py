@@ -53,16 +53,22 @@ ALLOWED = (
     "docs/platform/governance/SC-DP7-CROSS-TRACK-INTEGRATION-ALLOCATION.md",
     "docs/platform/governance/SC-DATA-PLATFORM-TECHNICAL-CLOSURE.md",
     "docs/platform/governance/SC-DECISION-REGISTER.md", "docs/platform/governance/SC-PLATFORM-REGISTRY.md",
-    "docs/platform/governance/SC-HANDOFF.md", "docs/platform/governance/JOURNEY_CONNECT_SYSTEM_CONTRACT_V1.md",
+    "docs/platform/governance/SC-HANDOFF.md", "docs/platform/governance/SC-RACI.md",
+    "docs/platform/governance/SC-2-POST-DP-CLOSURE-NEXT-TRACK-BASELINE-RECONCILIATION.md",
+    "docs/platform/governance/sc-next-track/",
+    "docs/platform/governance/JOURNEY_CONNECT_SYSTEM_CONTRACT_V1.md",
     "docs/platform/governance/JOURNEY_CONNECT_TRACK_GOVERNANCE_V1.md", "verification/dp7/",
-    "verification/data-platform-closure/", "verification/dp5/run_dp5_static_verification.py",
+    "verification/data-platform-closure/", "verification/sc-next-track/",
+    "verification/dp5/run_dp5_static_verification.py",
     "verification/dp6/run_dp6_allocation_verification.py", "verification/dp6/run_dp6_static_verification.py",
     "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
     "jc-backend/src/test/java/com/jc/backend/search/shadow/production/IP12ProductionShadowStaticTest.java",
 )
 
+
 def fail(message: str) -> None:
     raise SystemExit(f"FAIL: {message}")
+
 
 for path in (ALLOCATION, FOUNDATION, HANDOFF, REGISTRY, *(DP7 / name for name in EVIDENCE)):
     if not path.is_file() or not path.read_text(encoding="utf-8").strip():

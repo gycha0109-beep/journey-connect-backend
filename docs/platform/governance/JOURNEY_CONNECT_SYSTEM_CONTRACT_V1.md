@@ -1,199 +1,231 @@
 # Journey Connect System Contract V1
 
-## 1. 문서 정보
+## 1. Document identity
 
-| 항목 | 값 |
+| Field | Value |
 |---|---|
-| 계약 ID | `jc-system-contract-v1` |
-| 개정 | `V1.2 / SC DP-1 BASELINE RECONCILIATION` |
-| 상태 | `ACTIVE / DP1_BASELINE_ESTABLISHED` |
-| canonical DB | `journey-connect-db-v2.7/01..28` |
-| DP-1 Baseline SHA | `9d84f630e87d54f780e332eead0c1f8df6a51d0b` |
-| 기준일 | 2026-07-21 |
+| contract ID | `jc-system-contract-v1` |
+| revision | `V1.3 / SC-2 POST-DP-CLOSURE` |
+| status | `ACTIVE / DATA_PLATFORM_TECHNICAL_CLOSURE_ALIGNED` |
+| authoritative main | `95dad33fd56a54d69e2497c11dc4e2e77d8d3a77` |
+| verified closure head | `478a15929db43b1b3d3fde4648a5027a36ee75da` |
+| canonical DB | `journey-connect-db-v2.7/01..52` |
+| SQL `53+` | `UNALLOCATED` |
+| date | `2026-07-24` |
 
-이 문서는 Data, Intelligence, Operations, Reliability와 System Coordination의 공통 식별자, 시간, 버전, source authority, DB sequence와 보호 기준선을 고정한다.
+This contract governs shared identity, time, version, source authority, exposure, database sequence and breaking changes across Data, Intelligence, Operations, Reliability and System Coordination.
 
-## 2. 현재 authoritative 상태
+## 2. Authoritative state
 
-### Main
+- PR #21 is merged by normal merge commit at `95dad33fd56a54d69e2497c11dc4e2e77d8d3a77`.
+- The closure head and merge commit have identical file trees.
+- Data Platform DP-0 through DP-7 is technically closed.
+- Closure exact-head CI belongs to `478a15929db43b1b3d3fde4648a5027a36ee75da`.
+- main push CI is not available and merge-commit local checkout was not executed.
+- technical closure is not production readiness or production approval.
 
-- PR #3 merge commit: `f38cf56b34ff23fbd5cb20b9013444a8cb2d29f4`
-- PR #4 merge commit: `9d84f630e87d54f780e332eead0c1f8df6a51d0b`
-- official DP-1 Baseline SHA: `9d84f630e87d54f780e332eead0c1f8df6a51d0b`
-- PR #3 protected IP-12.5 controls are current main authority.
-- decision: `IP-12.5 HOLD_OPERATIONAL_INPUTS_PENDING`
-- P0/P1/P2 technical baseline은 보호한다.
-- canonical SQL은 `01..28`이다.
+```text
+PRODUCTION_ACTIVATION: NOT_AUTHORIZED
+```
 
-PR #3 병합은 production pilot/traffic/Search cutover 승인이 아니다.
-
-보호 상태:
+Protected state:
 
 ```text
 Production shadow: DISABLED
-Kill switch: true
-Effective sampling: 0 BPS
-Actual cohort: empty / 0%
-Search cutover: NOT STARTED
-Production traffic: NOT APPROVED
-Go/No-Go: NO_GO_FOR_TRAFFIC
+Kill switch: ENABLED
+Sampling: 0 BPS
+Cohort: EMPTY
+Production Recommendation write: DISABLED
+Intelligence runtime activation: DISABLED
+Search indexing: DISABLED
+Search cutover: NOT_STARTED
+Worker: NOT_IMPLEMENTED
+Scheduler: DISABLED
+Replay: NOT_AUTHORIZED
+Backfill: NOT_AUTHORIZED
+Automatic rebuild: NOT_AUTHORIZED
+Automatic purge: DISABLED
 ```
 
-## 3. 트랙 경계
+## 3. Track boundary
 
-| 영역 | semantic owner | Data 권한 |
+| Area | Semantic owner | Physical arrangement / restriction |
 |---|---|---|
-| canonical raw platform event, ingestion, retry, quarantine, replay, lineage | Data | own |
-| recommendation score/rank/profile/run/general exposure | Intelligence | approved read only |
-| P2 assignment/experiment exposure/metric/release | Reliability | approved read only; physical P2 path 보호 |
-| visibility/moderation/eligibility/audit | Operations | approved read only |
-| contract/identity/exposure registry 및 DB sequence | SC | proposal only |
-| Search derived projection | Intelligence/Search | direct write 금지 |
+| canonical platform event, ingestion, idempotency, retry, quarantine, replay contracts, projection, quality and lineage | Data | approved Data functions/roles only |
+| recommendation profile, score, rank, diversity, exploration, policy and run meaning | Intelligence | current recommendation packages and `jc-recommendation-core` protected |
+| experiment assignment, P2 exposure, metric, evaluation, release and rollback meaning | Reliability | current recommendation P2 package/role is protected compatibility arrangement |
+| moderation, visibility, eligibility, operator audit, deployment, secrets and runtime execution | Operations | may not rewrite historical run/snapshot/Data evidence |
+| contract, identity, exposure and sequence registries; integration order; authority transfer | System Coordination | approval authority, not feature implementation monopoly |
 
-타 트랙 table direct `INSERT/UPDATE/DELETE`를 금지한다.
+Tracks must not directly write another track's tables.
 
-## 4. DB baseline과 SQL 27/28
+## 4. Canonical DB and SQL sequence
 
-- canonical baseline: `database/journey-connect-db-v2.7/01..28`
-- SQL `25..26`: protected P2 evaluation/release
-- SQL `27`: Search document projection + Operations eligibility
-- SQL `28`: SQL 27 smoke test
-- DP-1은 SQL을 생성·수정하지 않는다.
-- DP-2 이후 신규 SQL 번호와 target DB version은 SC가 `28` 이후로 별도 배정한다.
+- canonical directory: `database/journey-connect-db-v2.7`;
+- SQL `01..52`: immutable closed baseline;
+- SQL `25..26`: protected Recommendation P2 evaluation/release;
+- SQL `27..28`: protected Search projection and Operations eligibility baseline;
+- SQL `29..52`: closed Data Platform implementation and validation;
+- SQL `53+`: unallocated;
+- every new DB behavior requires an SC-allocated forward migration;
+- historical SQL rewrite is prohibited;
+- Flyway activation is not implied;
+- PostgreSQL 15/18 verification is required for any future DB phase.
 
-Ownership:
+## 5. Identity
 
-- `search_document_projection_v1`: Search-owned rebuildable derived projection. Canonical source/Data authority가 아니다.
-- `search_document_operational_eligibility_v1`: Operations semantic authority. Missing row는 fail-closed다.
-- Data는 두 객체에 direct write하지 않는다.
+Cross-track entity references use `<entity-type>:<source-id>`.
 
-## 5. 식별자
+Identity schemes:
 
-- cross-track entity: `<entity-type>:<source-id>`
-- 신규 pseudonymous actor: `subject:<opaque-id>`
-- protected legacy P2 subject: `user:<numeric-id>`
-
-```text
-subject:<opaque-id> != user:<numeric-id>
-```
-
-자동 변환, 문자열 추론, anonymous/other-subject fallback, 실제 join, P2 row/hash rewrite를 금지한다. 연결은 별도 승인된 `IdentityMappingReadPort`, 단일 write owner, purpose binding, access audit, version, invalidation/deletion 정책이 필요하다. Owner는 현재 미결정이다.
-
-## 6. 시간
-
-- Java/Kotlin: `Instant`
-- DB: `TIMESTAMPTZ`
-- JSON: UTC ISO-8601 `Z`
-- 결정론적 계산은 명시적 `referenceTime`을 사용한다.
-
-## 7. Version contract
-
-| 필드 | 의미 | 예 |
+| Scheme | Wire | Status |
 |---|---|---|
-| `contractVersion` | 교차 트랙 의미 계약 | `platform-event-v1` |
-| `schemaVersion` | payload/snapshot 구조 | `user-behavior-event-v1` |
-| `canonicalizationVersion` | canonical bytes 규칙 | `platform-event-canonical-json-v1` |
-| `producerVersion` | 논리 producer 구현 계약 | `jc-backend-event-producer-v1` |
-| `consumerVersion` | consumer compatibility 구현 | `data-event-consumer-v1` |
-| `producerBuildId` | 실제 build/commit | `git:<40-hex-sha>` |
+| `platform_subject_v1` | `subject:<opaque-id>` | ACTIVE |
+| `legacy_user_numeric_v1` | `user:<numeric-id>` | PROTECTED COMPATIBILITY |
 
-서로 같은 의미로 사용하지 않는다. `latest`, `current`, `default`를 영속 version 값으로 사용하지 않는다.
+The schemes are not equal. Automatic conversion, string inference, anonymous fallback and P2 row/hash rewrite are prohibited.
 
-Compatibility results:
+A physical identity mapping requires a single write owner, purpose binding, read allowlist, access audit, version, effective/invalidation times, deletion policy, retention policy and replay behavior. The physical owner remains unresolved.
 
-```text
-COMPATIBLE
-COMPATIBLE_WITH_IGNORED_OPTIONAL_FIELDS
-INCOMPATIBLE_SCHEMA
-INCOMPATIBLE_REQUIRED_ENUM
-UNSUPPORTED_CONSUMER_VERSION
-MIGRATION_REQUIRED
-```
+## 6. Time
 
-- unknown optional field: 동일 major와 meaning-preserving addition일 때 ignore 가능
-- unknown required field/enum: fail closed
-- unsupported schema/consumer: consume 금지
-- dual-read: reconciliation, observability, rollback가 있을 때 한시 허용
-- dual-write: 기본 금지; atomicity/dedupe/rollback/full regression 승인 필요
-- cutover: reconciliation, replay/backfill, consumer support, owner/SC approval 필요
-- superseded version과 evidence는 보존한다.
+- Java/Kotlin cross-track time: `Instant`;
+- DB: `TIMESTAMPTZ`;
+- JSON: UTC ISO-8601 `Z`;
+- deterministic computation uses explicit `referenceTime`;
+- offset-less local time is prohibited at cross-track boundaries.
 
-## 8. Command와 canonical event
+## 7. Versioning
 
-- `ClientEventCommandV1`: untrusted ingress
-- `PlatformEventEnvelopeV1`: server-resolved canonical evidence
+Meaning changes require a new explicit version. Persisted `latest`, `current` and `default` identifiers are prohibited.
 
-Client가 최종 결정할 수 없는 값:
+Version dimensions include:
 
-- canonical eventId/family/type/fingerprint
-- authoritative actor/permission/session binding
-- receivedAt/producer identity/version/build
+- `contractVersion`;
+- `schemaVersion`;
+- `policyVersion`;
+- `metricDefinitionVersion`;
+- `canonicalizationVersion`;
+- `modelVersion`;
+- `promptVersion`;
+- `producerVersion` / `consumerVersion`;
+- `producerBuildId` / `evaluatorBuildId`.
 
-## 9. Canonical JSON
+Unknown optional fields may be ignored only when the contract permits meaning-preserving addition. Unknown required fields, required enums or unsupported versions fail closed.
 
-`platform-event-canonical-json-v1`:
+## 8. Contract registry
 
-- UTF-8
-- object key deterministic lexical ordering
-- array order preserves contract meaning
-- normalized number representation; NaN/Infinity 금지
-- timestamps UTC `Z`
-- required null/optional omission 규칙을 schema가 명시
-- empty array와 absent field 구분
-- whitespace/locale/Map insertion order 비의존
-- secret, raw identity, token 제외
-- transport-only receipt headers, retry counter, network metadata 제외
+Existing Data and Intelligence contracts remain registered in `SC-PLATFORM-REGISTRY.md`.
 
-기존 P0 canonicalization/fingerprint를 재사용하거나 변경하지 않는다.
+Post-closure RCA reservations:
 
-## 10. Idempotency, fingerprint, evidence
-
-```text
-same key + same fingerprint = DUPLICATE
-same key + different fingerprint = CONFLICT / IDEMPOTENCY_CONFLICT
-```
-
-Scope, TTL, concurrent insert와 persistence ordering은 DP-1/DP-2에서 승인된 계약대로 구현한다.
-
-신규 Data fingerprint의 algorithm, output encoding, exact inclusion set 및 timestamp/build 포함 여부는 `SC DECISION REQUIRED`다. 따라서 DP-1 fingerprint 구현은 해당 decision 전 중단한다.
-
-Raw event, attempt, quarantine, replay, snapshot, lineage, evaluation과 audit evidence는 append-only다. 정정은 superseding record/new version으로 한다.
-
-## 11. Source authority 보호
-
-- P0/P1 behavior: `recommendation_behavior_event`
-- general recommendation exposure: `recommendation_exposure_event` + candidates
-- P2 experiment exposure/denominator: `recommendation_p2_experiment_exposure`
-- P2 fallback: bound `recommendation_run.run_status`
-- Search projection: derived, not canonical
-
-`recommendation-profile-input-v1`과 `experiment-outcome-input-v1`은 shadow-only이며 승인 전 runtime authority가 아니다.
-
-## 12. DP-1 reservation과 시작 기준
-
-| 항목 | 값 | 상태 |
+| ID | Status | Meaning |
 |---|---|---|
-| module | `jc-data-contracts` | RESERVED / NOT IMPLEMENTED |
-| package | `com.jc.data.contract` | RESERVED / NOT IMPLEMENTED |
+| `RCA` | RESERVED | Recommendation Consumer Adoption workstream; not a platform |
+| `RCA-0` | CONDITIONAL ENTRY | Recommendation Data Consumer Contract & Fixture Alignment |
+| `recommendation-data-consumer-alignment-v1` | RESERVED | workstream alignment contract |
+| `recommendation-profile-input-consumer-v1` | RESERVED | P1-facing consumer boundary |
+| `experiment-outcome-input-consumer-v1` | RESERVED | P2-facing consumer boundary |
+| `recommendation-data-consumer-fixture-v1` | RESERVED | deterministic fixture contract |
 
-DP-1 start baseline은 다음 둘을 모두 포함하는 최초 main HEAD다.
+`RP` means Reliability Platform and must not be used for Recommendation Platform.
 
-1. merged PR #3 protected IP-12.5 controls
-2. merged SC baseline reconciliation changes
+## 9. Source authority
 
-```text
-DP-1 Baseline SHA:
-9d84f630e87d54f780e332eead0c1f8df6a51d0b
-```
+| Meaning | Authoritative source |
+|---|---|
+| P0/P1 behavior fact | `recommendation_behavior_event` |
+| current P1 profile source | `RecommendationP1ProfileSource` path |
+| current P1 result | `recommendation_p1_profile_snapshot` |
+| general Recommendation exposure | `recommendation_exposure_event` and candidate rows |
+| behavior impression | recommendation behavior `impression`; not P2 denominator |
+| P2 assignment | `recommendation_p2_experiment_assignment` |
+| P2 experiment exposure | `recommendation_p2_experiment_exposure` |
+| P2 dataset | `recommendation-evaluation-dataset-v1` |
+| P2 fallback | bound exposed `recommendation_run.run_status` |
+| Data profile candidate | `recommendation-profile-input-v1`, non-authoritative |
+| Data outcome candidate | `experiment-outcome-input-v1`, non-authoritative |
+| Search projection | Search-owned derived projection, not Data authority |
 
-이 작업에서는 DP-1 구현을 시작하지 않았다.
+General exposure, behavior impression and P2 experiment exposure must not be merged into one denominator.
 
-## 13. 절대 금지
+## 10. P1/P2 protection
 
-- SQL 01..28 또는 production runtime 변경
-- shadow activation, kill-switch 해제, sampling/account hash 생성
-- Search cutover 또는 `/api/v1/explore` authority 변경
-- P0/P1/P2 metric/exposure/fingerprint/canonical bytes/evidence 변경
-- 타 트랙 direct write
-- identity mapping 구현/join
-- shadow projection authoritative 승격
+Without a new contract/dataset version, reconciliation, replay plan, full regression and SC approval, no track may:
+
+- replace `RecommendationP1ProfileSource`;
+- rewrite P1 snapshots;
+- change P2 assignment/exposure/dataset/evaluation/gate/release writes;
+- change P2 engagement event set, seven-day attribution, fallback or denominator;
+- rewrite canonical bytes, hashes, row identities or release evidence;
+- promote a Data projection to authority.
+
+## 11. RCA-0 boundary
+
+Official classification: `JOINT_INTELLIGENCE_RELIABILITY_ADOPTION`.
+
+Official phase: `RCA-0 Recommendation Data Consumer Contract & Fixture Alignment`.
+
+Allowed:
+
+- immutable consumer contract types;
+- strict validators and compatibility classifiers;
+- deterministic fixtures;
+- P1/P2 semantic mapping evidence;
+- no-runtime tests and protected regressions.
+
+Prohibited:
+
+- DB/SQL change;
+- Spring/runtime/repository wiring;
+- Data projection DB reads;
+- real identity mapping;
+- shadow reconciliation;
+- production write, traffic or authority change.
+
+RCA-0 entry is conditional on explicit merge of the SC-2 decision PR.
+
+## 12. Production activation gates
+
+| Gate | Objective | Status after Data closure |
+|---|---|---|
+| GATE-1 | Data technical closure | COMPLETE |
+| GATE-2 | target consumer contract readiness | PARTIAL |
+| GATE-3 | runtime execution plane | NOT_READY |
+| GATE-4 | observability | NOT_READY |
+| GATE-5 | security/deployment access | PARTIAL |
+| GATE-6 | SLI/SLO, recovery and release reliability | NOT_READY |
+| GATE-7 | production shadow authorization | NOT_AUTHORIZED |
+| GATE-8 | consumer adoption | NOT_AUTHORIZED |
+| GATE-9 | production cutover | NOT_AUTHORIZED |
+
+RCA-0 may contribute contract evidence only. It does not complete GATE-2 or advance GATE-3 through GATE-9.
+
+## 13. Breaking changes
+
+The following always require SC review and a new version or migration plan:
+
+- identity scheme or mapping behavior;
+- event/fingerprint/canonicalization semantics;
+- source or exposure authority;
+- Recommendation profile or P2 dataset source;
+- metric numerator, denominator or attribution;
+- DB sequence, role or grant;
+- moderation/eligibility behavior;
+- runtime source enablement, write or traffic cutover.
+
+## 14. Completion rule
+
+A track phase is complete only when scope, owner, versions, privacy, protected authority, tests, exact tested SHA, rollback/forward-fix and handoff are documented. Unexecuted checks are never PASS.
+
+## 15. Absolute prohibitions
+
+- SQL `01..52` rewrite;
+- unallocated SQL `53+` use;
+- cross-track direct write;
+- hidden source cutover;
+- automatic identity join;
+- P1/P2 evidence rewrite;
+- exposure-source conflation;
+- production activation inferred from technical completion;
+- main direct push or merge without explicit user approval.

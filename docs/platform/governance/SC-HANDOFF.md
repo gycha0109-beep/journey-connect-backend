@@ -2,109 +2,147 @@
 
 ## Status
 
-`DP-6 MAIN INTEGRATED / DP-7 ALLOCATION PROPOSED`
+`DATA_PLATFORM_TECHNICAL_CLOSURE_COMPLETE / RCA-0 ENTRY CONDITIONALLY AUTHORIZED`
 
 ## Authoritative baseline
 
-- DP-6 implementation PR #18: merged;
-- DP-6 implementation HEAD: `0e9b09283bad61faa830db1019d421c6e906fc7c`;
-- DP-6 merge commit/current main: `69b2f9619733e8e6068a23bb149c2aaf41f23fc9`;
-- SQL `01..47`: implemented and protected;
-- SQL `48+`: unallocated on the work-start baseline and absent from the DP-7 allocation PR;
-- DP-7 implementation authority: not granted.
+- repository: `gycha0109-beep/journey-connect-backend`;
+- authoritative main: `95dad33fd56a54d69e2497c11dc4e2e77d8d3a77`;
+- verified closure head: `478a15929db43b1b3d3fde4648a5027a36ee75da`;
+- closure head versus merge commit: zero changed files;
+- SQL `01..52`: implemented and protected;
+- SQL `53+`: absent and unallocated;
+- Data Platform DP-0 through DP-7: technically closed;
+- production activation: not authorized.
 
-## DP-7 allocation proposal
-
-DP-7 validates whether Data snapshots with exact DP-6 `VALIDATED` quality verdicts are compatible with Recommendation, Intelligence and Search contracts without modifying target-track authority or activating a runtime.
-
-Proposed SQL allocation after explicit merge:
-
-```text
-48_cross_track_integration_validation_foundation.sql
-49_cross_track_contract_mapping_and_boundary_evidence.sql
-50_cross_track_integration_verdict_and_conflict.sql
-51_cross_track_integration_persistence_roles_and_safe_view.sql
-52_cross_track_integration_validation.sql
-```
-
-Proposed roles:
-
-```text
-jc_data_integration_writer
-jc_data_integration_reader
-jc_data_integration_function_owner
-```
-
-Proposed policy:
-
-```text
-data-cross-track-integration-policy-v1
-```
-
-These are proposal-only entries. No SQL, role, grant, function, view or Java DP-7 implementation is authorized by the branch alone.
-
-## Allocation-time target findings
-
-- Recommendation profile projection: `CONDITIONALLY_COMPATIBLE`; current P1 source remains authoritative.
-- Recommendation experiment outcome projection: `CONDITIONALLY_COMPATIBLE`; P2 exposure/dataset/metric authority remains unchanged.
-- Intelligence input: `INCONCLUSIVE`; generic snapshot envelope exists but Data-specific semantic input mapping is absent.
-- Search input: `INCONCLUSIVE`; no approved Data input contract exists and DP-5 profile/outcome grain is not a Search document.
-- Full integration: not executable before allocation; no runtime PASS may be claimed.
-
-## Required integration policy boundaries
-
-- only exact snapshot-bound DP-6 `VALIDATED` verdicts may proceed;
-- `REJECTED`, `INCONCLUSIVE`, missing, conflicted or unsupported quality verdicts fail closed;
-- `subject:<opaque-id>` and `user:<numeric-id>` remain separate;
-- quality status is not Intelligence confidence, Search readiness or production approval;
-- P2 engagement/fallback semantics and exposure authority remain exact;
-- target contract ambiguity yields `INCONCLUSIVE`;
-- target object write, runtime activation, Search index write and cutover are blockers;
-- unexecuted checks are never PASS.
-
-## Proposed persistence outcome
-
-Logical identity:
-
-```text
-source_snapshot_ref
-+ source_track
-+ target_track
-+ source_contract
-+ target_contract
-+ integration_scope
-+ validator_version
-+ integration_policy_version
-```
-
-Outcome:
-
-```text
-NEW
-DUPLICATE
-CONFLICT / CROSS_TRACK_INTEGRATION_VERDICT_CONFLICT
-```
-
-Append-only evidence, atomic exact-one-NEW concurrency and aggregate-only reader access are implementation requirements after allocation.
+Closure exact-head workflow success belongs to the closure head. Main push CI is not available and merge-commit local checkout was not executed. Neither is PASS.
 
 ## Protected state
 
 ```text
 Production shadow: DISABLED
-Kill switch: true
-Effective sampling: 0 BPS
-Actual cohort: empty / 0%
-Search cutover: NOT STARTED
-/api/v1/explore authority: LEGACY
-Production traffic: NOT APPROVED
-Recommendation production write: DISABLED
-Intelligence runtime activation by DP-7: PROHIBITED
-Worker/scheduler: ABSENT / DISABLED
-Replay/backfill/rebuild/purge: UNAUTHORIZED
+Kill switch: ENABLED
+Sampling: 0 BPS
+Cohort: EMPTY
+Production Recommendation write: DISABLED
+Intelligence runtime activation: DISABLED
+Search indexing: DISABLED
+Search cutover: NOT_STARTED
+Worker: NOT_IMPLEMENTED
+Scheduler: DISABLED
+Replay: NOT_AUTHORIZED
+Backfill: NOT_AUTHORIZED
+Automatic rebuild: NOT_AUTHORIZED
+Automatic purge: DISABLED
 ```
+
+## Next official workstream
+
+```text
+JOINT_INTELLIGENCE_RELIABILITY_ADOPTION
+```
+
+Official workstream: `Recommendation Consumer Adoption (RCA)`.
+
+RCA is not a platform. `RP` remains Reliability Platform.
+
+## Official first phase
+
+```text
+RCA-0 Recommendation Data Consumer Contract & Fixture Alignment
+```
+
+Classification:
+
+```text
+FIRST_IMPLEMENTATION_SCOPE: CONTRACT_AND_FIXTURE
+DB_CHANGE: NOT_REQUIRED
+SQL_ALLOCATION: NOT_REQUIRED
+PRODUCTION_IMPACT: NONE
+PRODUCTION_ACTIVATION: NOT_AUTHORIZED
+ENTRY: NEXT_TRACK_ENTRY_CONDITIONALLY_AUTHORIZED
+```
+
+Condition: this SC-2 reconciliation PR must be explicitly reviewed and merged before RCA-0 implementation begins.
+
+## Ownership
+
+- P1 profile consumer meaning: Intelligence;
+- P2 experiment outcome/exposure/metric compatibility: Reliability;
+- shared implementation lead: Intelligence permitted;
+- registry, breaking change and authority transfer: SC;
+- runtime execution and controls: Operations, outside RCA-0.
+
+Physical code location does not transfer semantic ownership.
+
+## RCA-0 allowed
+
+- consumer-side immutable contract types;
+- strict version/schema/required-field validators;
+- deterministic P1/P2 fixtures;
+- lane-specific compatibility classification;
+- synthetic identity binding or unimplemented port reference;
+- protected source/SQL/config regressions;
+- non-production verifier and machine-readable evidence.
+
+## RCA-0 forbidden
+
+- `RecommendationP1ProfileSource` or `RecommendationP2ObservationSource` replacement;
+- Spring/runtime/repository/worker/scheduler wiring;
+- Data projection production reads;
+- SQL `01..52` change or SQL `53+` creation;
+- identity mapping implementation;
+- P1/P2 write, metric, exposure, dataset, hash or release change;
+- shadow reconciliation, production write, traffic cutover or authority transfer.
+
+## Compatibility baseline
+
+| Lane | Current verdict | Authority |
+|---|---|---|
+| Data profile to Recommendation | `CONDITIONALLY_COMPATIBLE` | current P1 source retained |
+| Data outcome to Recommendation/Reliability | `CONDITIONALLY_COMPATIBLE` | current P2 exposure/dataset/metric retained |
+| Data to generic Intelligence | `INCONCLUSIVE` | Data-specific semantic contract required |
+| Data to Search | `INCONCLUSIVE` | Data-to-Search contract required |
+
+## Identity and privacy
+
+`subject:<opaque-id>` and `user:<numeric-id>` remain distinct. RCA-0 can test synthetic mappings but cannot implement or use a real mapping repository. Missing or mismatched identity fails closed.
+
+## Operations and Reliability prerequisites
+
+Operations runtime, deployment, secrets and monitoring are not prerequisites for RCA-0 contract-and-fixture work. Reliability approval is mandatory for P2 fixture semantics. GATE-3 through GATE-9 remain unchanged.
+
+## Documents
+
+- [SC-2 reconciliation](SC-2-POST-DP-CLOSURE-NEXT-TRACK-BASELINE-RECONCILIATION.md)
+- [post-closure baseline](sc-next-track/01-SC-POST-DP-CLOSURE-AUTHORITATIVE-BASELINE.md)
+- [ownership decision](sc-next-track/02-SC-NEXT-TRACK-OWNERSHIP-DECISION.md)
+- [naming and phase](sc-next-track/03-SC-NEXT-TRACK-NAMING-AND-PHASE-ALLOCATION.md)
+- [scope decision](sc-next-track/04-SC-RECOMMENDATION-CONSUMER-ADOPTION-SCOPE-DECISION.md)
+- [P1/P2 protection](sc-next-track/05-SC-EXISTING-P1-P2-AUTHORITY-PROTECTION-DECISION.md)
+- [dependency map](sc-next-track/06-SC-DATA-TO-RECOMMENDATION-CONTRACT-DEPENDENCY-MAP.md)
+- [identity/privacy](sc-next-track/07-SC-IDENTITY-PRIVACY-DEPENDENCY-DECISION.md)
+- [Operations/Reliability matrix](sc-next-track/08-SC-OPERATIONS-RELIABILITY-PREREQUISITE-MATRIX.md)
+- [SQL decision](sc-next-track/09-SC-SQL-ALLOCATION-DECISION.md)
+- [production impact](sc-next-track/10-SC-PRODUCTION-ACTIVATION-IMPACT-ASSESSMENT.md)
+- [verification plan](sc-next-track/11-SC-CROSS-TRACK-VERIFICATION-PLAN.md)
+- [RCA-0 implementation prompt](sc-next-track/12-RCA-0-IMPLEMENTATION-HANDOFF-PROMPT.md)
+
+## Follow-up order
+
+1. merge SC-2 after explicit user approval;
+2. implement RCA-0 in a separate branch and PR;
+3. propose RCA-1 shadow reconciliation only after RCA-0 findings;
+4. continue Intelligence Data Contract;
+5. continue Search Data Contract;
+6. implement Operations Runtime Enablement;
+7. establish Reliability Production Readiness;
+8. evaluate production activation gates.
 
 ## Current gate
 
-`DP7_IMPLEMENTATION_BLOCKED_BY_SC_ALLOCATION`
+```text
+NEXT_TRACK_ENTRY_CONDITIONALLY_AUTHORIZED
+```
 
-The allocation PR requires exact-head static allocation, protected-diff and current Data/Recommendation/Intelligence/Search/backend contract regressions. It must not be merged automatically. If explicitly merged, its merge commit becomes the only valid base for a separate DP-7 implementation PR.
+No implementation or merge is authorized before explicit user approval of the SC-2 PR.

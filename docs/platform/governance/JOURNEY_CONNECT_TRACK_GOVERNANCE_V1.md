@@ -1,108 +1,192 @@
 # Journey Connect Track Governance V1
 
-## 1. 문서 정보
+## 1. Document identity
 
-| 항목 | 값 |
+| Field | Value |
 |---|---|
-| 개정 | `V1.2 / SC DP-1 BASELINE RECONCILIATION` |
-| 상태 | `ACTIVE` |
-| canonical DB | `journey-connect-db-v2.7/01..28` |
-| SC 기준 | [System Contract](JOURNEY_CONNECT_SYSTEM_CONTRACT_V1.md) |
+| revision | `V1.3 / SC-2 POST-DP-CLOSURE` |
+| status | `ACTIVE` |
+| authoritative main | `95dad33fd56a54d69e2497c11dc4e2e77d8d3a77` |
+| canonical DB | `journey-connect-db-v2.7/01..52` |
+| SQL `53+` | `UNALLOCATED` |
+| system contract | [Journey Connect System Contract V1](JOURNEY_CONNECT_SYSTEM_CONTRACT_V1.md) |
 
-## 2. 책임
+## 2. Track responsibilities
 
-### Data
+### Data Platform
 
-Own: canonical platform event, validation, idempotency, retry/quarantine/replay, versioned datasets, quality, lineage, privacy technology policy.
+Owns canonical platform events, ingestion and idempotency contracts, retry/quarantine/replay contracts, Data projections/snapshots, quality, lineage and Data-side cross-track validation evidence.
 
-Not own: recommendation/search calculation, moderation decision, experiment metric/release, 다른 트랙 table write.
+Does not own Recommendation calculation, Search ranking, moderation decisions, experiment metrics/releases or production activation.
 
-### Intelligence
+Status: `TECHNICALLY CLOSED`.
 
-Own: Recommendation/Search/Content/Trip runtime meaning, policy/model/prompt, run/snapshot/provenance. Existing P0/P1/P2 recommendation path is protected.
+### Intelligence Platform
 
-### Operations
+Owns Recommendation profile/ranking/policy semantics, Search retrieval/ranking, Content Analysis, Trip Planning, model/prompt/policy versions and Intelligence run/snapshot/provenance.
 
-Own: admin authorization, moderation/visibility/eligibility, operator audit, stop/hold/override controls.
+Current P0/P1/P2 Recommendation packages and `jc-recommendation-core` remain protected.
 
-### Reliability
+### Operations Platform
 
-Own: experiment definition/assignment semantics, metric/denominator/attribution, evaluation, release/rollback evidence. Current P2 physical path remains protected compatibility arrangement.
+Owns admin authorization, moderation/visibility/eligibility, operator audit, deployment, secrets, DB runtime access, worker/scheduler execution, monitoring delivery and lifecycle execution.
+
+Operations may not rewrite historical Data or Recommendation evidence.
+
+### Reliability Platform
+
+Owns experiment definition/assignment semantics, authoritative exposure meaning, metrics, denominator/attribution, evaluation, SLI/SLO, release evidence, SHADOW/CANARY/LIVE/HOLD/ROLLBACK decisions, replay/backfill approval and recovery gates.
+
+Current P2 physical implementation remains a protected compatibility arrangement.
 
 ### System Coordination
 
-Own: System Contract, registries, DB sequence, integration order, breaking-change decisions, final conflict/go-no-go classification.
+Owns the System Contract, contract/identity/exposure registries, SQL sequence allocation, integration order, breaking changes, common gates, final conflict classification and authority-transfer approval.
 
-## 3. Authoritative execution sequence
+## 3. Current authoritative sequence
 
 ```text
-IP 기술 기준선 종결
-→ DP
-→ OP
-→ RP
-→ 교차 트랙 통합 검증
+Data Platform technical closure [COMPLETE]
+→ RCA-0 Recommendation Data Consumer Contract & Fixture Alignment
+→ RCA-1 shadow reconciliation proposal [separate SC approval required]
+→ Intelligence Data Contract
+→ Search Data Contract
+→ Operations Runtime Enablement
+→ Reliability Production Readiness
+→ production activation gates
 ```
 
-과거 `DP-1/IP-1 병렬 진행`은 DB 비변경 작업이 기술적으로 병렬 가능하다는 **historical recommendation**이다. 현재 authoritative sequence보다 우선하지 않으며 DP-1 시작 기준을 변경하지 않는다.
+This sequence is not an automatic release plan. Contract work may be prepared before Operations/Reliability production readiness, but runtime activation and traffic remain gated.
 
-## 4. DP-1 boundary
+## 4. RCA workstream
 
-Allowed:
+`RCA` means Recommendation Consumer Adoption. It is a cross-track workstream, not a new platform.
 
-- reserved `jc-data-contracts` / `com.jc.data.contract`
-- Java contract type/validator/canonicalization fixture/contract test
-- DB와 runtime 비변경
+`RP` remains reserved for Reliability Platform and must not mean Recommendation Platform.
 
-Not allowed in this reconciliation:
+RP remains reserved for Reliability Platform.
 
-- module/source 생성
-- event ingestion/runtime/persistence
-- SQL/new migration
-- identity mapping
-- projection cutover
+### RCA-0 ownership
 
-## 5. DB governance
+| Lane | Responsible | Accountable | Required approval |
+|---|---|---|---|
+| P1 profile consumer | Intelligence | Intelligence | SC |
+| P2 outcome consumer | Intelligence implementation lead permitted | Reliability | Reliability + SC |
+| registry and authority | SC | SC | affected tracks |
+| runtime operations | Operations | Operations | outside RCA-0 |
 
-- baseline `01..28`
-- SQL 27 Search derived projection + Operations eligibility
-- SQL 28 smoke test
-- DP-2 이후 SQL은 SC가 28 이후 배정
-- 한 PR에서 여러 트랙의 write contract를 혼합하지 않는다.
-- 기존 SQL을 수정하지 않고 forward migration을 원칙으로 한다.
+### RCA-0 allowed
 
-## 6. Branch/PR separation
+- consumer-side immutable contract types;
+- strict validators and compatibility classification;
+- deterministic fixtures and test-only mappings;
+- read-only evidence and protected regressions;
+- no DB and no runtime wiring.
 
-- PR #3: `codex/ip-12-5-readiness`, IP technical controls only
-- SC reconciliation: `codex/sc-dp1-baseline-reconciliation`, docs/registry/evidence only
-- PR #3 미병합 상태를 main authoritative state로 기록하지 않는다.
-- 사용자 명시 지시 없이 PR #3을 병합하지 않는다.
+### RCA-0 forbidden
 
-## 7. Change proposal gate
+- source replacement or production Data reads;
+- Spring bean/repository/worker/scheduler registration;
+- SQL or role/grant changes;
+- identity mapping implementation;
+- shadow reconciliation or runtime enablement;
+- production write, traffic, cutover or authority transfer.
 
-구현 전 SC proposal 필요:
+## 5. Database governance
 
-- 공통 ID/enum/time/version/canonicalization/fingerprint 변경
-- 다른 트랙 read/write 추가
-- event family/type 추가
-- snapshot/hash 또는 identity/privacy 변화
-- DB sequence/role/grant 변화
-- runtime source/consumer cutover
+- SQL `01..52` is protected and immutable;
+- SQL `53+` requires SC allocation before implementation;
+- tracks must not create independent migration numbers or DB versions;
+- forward migration is required for future DB behavior;
+- every DB bundle must include owner, writer, reader, grants, retention, privacy, rollback/forward-fix and PostgreSQL 15/18 validation;
+- existing P1/P2 tables, roles and grants are High-risk protected paths.
 
-## 8. Integration refusal
+RCA-0 classification: `DB_CHANGE_NOT_REQUIRED`.
 
-- duplicate registry value
-- unversioned schema/policy/metric
-- direct cross-track write
-- SQL 미검증/sequence collision
-- P0/P1/P2 replay/golden regression
-- exposure authority/metric confusion
-- unauthorized identity mapping/cutover
-- docs/implementation mismatch
-- PR #3 operational HOLD를 traffic approval로 오해
+## 6. Change proposal gate
 
-## 9. Canonical governance paths
+A proposal is required before:
 
-- Decision Register: [SC-DECISION-REGISTER.md](SC-DECISION-REGISTER.md)
-- RACI: [SC-RACI.md](SC-RACI.md)
-- Registry: [SC-PLATFORM-REGISTRY.md](SC-PLATFORM-REGISTRY.md)
-- Handoff: [SC-HANDOFF.md](SC-HANDOFF.md)
+- new common ID/enum/time/version;
+- source or exposure authority change;
+- identity mapping implementation;
+- another track read/write path;
+- snapshot/hash/canonicalization change;
+- SQL/role/grant allocation;
+- runtime source enablement or cutover;
+- moderation/eligibility change;
+- metric, attribution or release-state change.
+
+Process:
+
+```text
+proposal
+→ SC impact decision
+→ registry/sequence reservation
+→ implementation
+→ track verification
+→ cross-track contract test
+→ handoff
+→ integration approval
+```
+
+## 7. PR and branch separation
+
+- one PR must not mix independent track write authorities;
+- governance/allocation PRs are separate from implementation PRs;
+- RCA-0 may contain both lane fixtures only because it changes no source or write authority; lane evidence and approvals must remain separate;
+- main direct push is prohibited for system-track changes;
+- no PR is merged without explicit user approval.
+
+Recommended branch:
+
+```text
+agent/rca0-recommendation-data-consumer-contracts
+```
+
+## 8. Required verification
+
+### Data
+
+Schema/version, idempotency, lineage, quality, integration and protected SQL.
+
+### Intelligence / P1
+
+Current source non-regression, deterministic consumer validation, missing-semantics classification and no fake aggregate-to-event conversion.
+
+### Reliability / P2
+
+Exact assignment/exposure/run/subject/session semantics, seven-day click/like/save/share attribution, fallback binding, dataset/hash/release protection.
+
+### Operations
+
+For RCA-0, only protected production-config diff. Runtime tests are not applicable and must not be reported as PASS.
+
+### Common
+
+Exact tested SHA, registry uniqueness, identity fail-closed, no cross-track writes, no SQL `53+`, no production activation.
+
+## 9. Integration refusal
+
+Reject integration when any of the following occurs:
+
+- duplicate or ambiguous registry ID;
+- `RP` reused for Recommendation;
+- current P1/P2 source or evidence changed;
+- P2 exposure/metric meaning altered;
+- Data aggregate inferred to be current P1 event stream;
+- real identity join without an approved owner/policy;
+- SQL `01..52` change or SQL `53+` use;
+- runtime wiring in RCA-0;
+- production control difference;
+- unexecuted check represented as PASS;
+- fixture compatibility represented as runtime or production readiness.
+
+## 10. Canonical governance paths
+
+- [SC Decision Register](SC-DECISION-REGISTER.md)
+- [SC RACI](SC-RACI.md)
+- [SC Platform Registry](SC-PLATFORM-REGISTRY.md)
+- [SC Handoff](SC-HANDOFF.md)
+- [SC-2 Reconciliation](SC-2-POST-DP-CLOSURE-NEXT-TRACK-BASELINE-RECONCILIATION.md)
+- [RCA-0 implementation prompt](sc-next-track/12-RCA-0-IMPLEMENTATION-HANDOFF-PROMPT.md)

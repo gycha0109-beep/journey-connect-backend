@@ -1,26 +1,32 @@
 # SC RACI
 
-## 문서 정보
+## Document identity
 
-| 항목 | 값 |
+| Field | Value |
 |---|---|
-| 계약 ID | `sc-raci-v1` |
-| canonical path | `docs/platform/governance/SC-RACI.md` |
-| 상태 | `ACTIVE` |
+| contract ID | `sc-raci-v1` |
+| status | `ACTIVE / SC-2 RCA-0 ALIGNED` |
+| authoritative main | `95dad33fd56a54d69e2497c11dc4e2e77d8d3a77` |
 
-| 영역 | Responsible | Accountable | Consulted | Informed |
+| Area | Responsible | Accountable | Consulted | Informed |
 |---|---|---|---|---|
-| Data contract | Data | SC | IP/RP/OP | Backend |
-| DB sequence | SC | SC | Data/IP/OP/RP | Backend |
-| Search projection | IP/Search | SC | Operations/Data | Backend |
-| Operational eligibility | Operations | SC | Search/Data | Backend |
+| Data contract and canonical evidence | Data | SC | Intelligence/Reliability/Operations | Backend |
+| DB sequence | SC | SC | Data/Intelligence/Operations/Reliability | Backend |
+| Search projection | Intelligence/Search | SC | Operations/Data | Backend |
+| operational eligibility | Operations | SC | Search/Data | Backend |
+| P1 profile consumer meaning | Intelligence | Intelligence | Data/SC | Reliability/Operations |
 | P2 experiment authority | Reliability | SC | Intelligence/Data | Operations |
-| Identity mapping | `UNRESOLVED OWNER` | SC | Data/IP/RP/Privacy | Operations |
-| DP-1 contract module | Data | SC | IP/RP/OP/Backend | Team |
-| production pilot approval | Operations/Reliability | SC | IP/Security/Privacy | Team |
+| RCA-0 shared fixture implementation | Intelligence lead | SC | Reliability for P2, Data | Operations |
+| RCA-0 P2 semantic fixture approval | Reliability | Reliability | Intelligence/Data/SC | Operations |
+| identity mapping | `UNRESOLVED OWNER` | SC | Data/Intelligence/Reliability/Privacy/Security | Operations |
+| Operations runtime execution | Operations | Operations | Data/Intelligence/Reliability/SC | Team |
+| production release/rollback | Reliability + Operations | SC | Intelligence/Security/Privacy | Team |
 
-## 제한
+## Restrictions
 
-- `UNRESOLVED OWNER`를 Data, IP, RP 또는 Operations로 임의 배정하지 않는다.
-- physical writer와 semantic owner가 다르면 SC compatibility arrangement가 필요하다.
-- Data는 Search projection, operational eligibility, P2 experiment evidence에 direct write하지 않는다.
+- `UNRESOLVED OWNER` must not be silently assigned to Data, Intelligence, Reliability or Operations.
+- physical writer and semantic owner may differ only under an SC-approved compatibility arrangement.
+- Data must not write Search projection, operational eligibility or P2 experiment evidence.
+- RCA is a workstream, not a platform.
+- `RP` means Reliability Platform.
+- RCA-0 has no DB, runtime, production or authority-transfer responsibility.
