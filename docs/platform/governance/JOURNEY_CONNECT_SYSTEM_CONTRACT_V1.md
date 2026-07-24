@@ -5,24 +5,27 @@
 | Field | Value |
 |---|---|
 | contract ID | `jc-system-contract-v1` |
-| revision | `V1.3 / SC-2 POST-DP-CLOSURE` |
-| status | `ACTIVE / DATA_PLATFORM_TECHNICAL_CLOSURE_ALIGNED` |
-| authoritative main | `95dad33fd56a54d69e2497c11dc4e2e77d8d3a77` |
-| verified closure head | `478a15929db43b1b3d3fde4648a5027a36ee75da` |
+| revision | `V1.4 / SC-3 RCA-1 ENTRY` |
+| status | `ACTIVE / RCA0_MERGED / RCA1_ENTRY_AUTHORIZED` |
+| authoritative main | `f802a105e46a62718616acaa7a3db6c172e7ed10` |
+| RCA-0 exact-final-head | `d33f7e152d0e40999ed8dc3f16c0a3f0bb980a9d` |
 | canonical DB | `journey-connect-db-v2.7/01..52` |
 | SQL `53+` | `UNALLOCATED` |
 | date | `2026-07-24` |
 
-This contract governs shared identity, time, version, source authority, exposure, database sequence and breaking changes across Data, Intelligence, Operations, Reliability and System Coordination.
+This contract governs identity, time, version, source authority, exposure, database sequence, cross-track reconciliation and breaking changes across Data, Intelligence, Operations, Reliability and System Coordination.
 
 ## 2. Authoritative state
 
-- PR #21 is merged by normal merge commit at `95dad33fd56a54d69e2497c11dc4e2e77d8d3a77`.
-- The closure head and merge commit have identical file trees.
-- Data Platform DP-0 through DP-7 is technically closed.
-- Closure exact-head CI belongs to `478a15929db43b1b3d3fde4648a5027a36ee75da`.
-- main push CI is not available and merge-commit local checkout was not executed.
-- technical closure is not production readiness or production approval.
+- PR #23 is merged into `main` at `f802a105e46a62718616acaa7a3db6c172e7ed10`.
+- RCA-0 exact-final-head is `d33f7e152d0e40999ed8dc3f16c0a3f0bb980a9d` and its tree is identical to the merge commit tree.
+- `RCA0_CONTRACT_AND_FIXTURE_COMPLETE`.
+- `DATA_PLATFORM_TECHNICAL_CLOSURE_COMPLETE`.
+- Data Platform DP-0~DP-7 remains technically closed.
+- SQL `01..52` remains immutable and protected.
+- SQL `53+` remains absent and unallocated.
+- current P1/P2 authority remains unchanged.
+- technical completion is not runtime or production approval.
 
 ```text
 PRODUCTION_ACTIVATION: NOT_AUTHORIZED
@@ -51,11 +54,12 @@ Automatic purge: DISABLED
 
 | Area | Semantic owner | Physical arrangement / restriction |
 |---|---|---|
-| canonical platform event, ingestion, idempotency, retry, quarantine, replay contracts, projection, quality and lineage | Data | approved Data functions/roles only |
-| recommendation profile, score, rank, diversity, exploration, policy and run meaning | Intelligence | current recommendation packages and `jc-recommendation-core` protected |
-| experiment assignment, P2 exposure, metric, evaluation, release and rollback meaning | Reliability | current recommendation P2 package/role is protected compatibility arrangement |
-| moderation, visibility, eligibility, operator audit, deployment, secrets and runtime execution | Operations | may not rewrite historical run/snapshot/Data evidence |
-| contract, identity, exposure and sequence registries; integration order; authority transfer | System Coordination | approval authority, not feature implementation monopoly |
+| canonical event, ingestion, Data projections, quality and lineage | Data | approved Data functions/roles only |
+| P1 profile, Recommendation score/rank/policy/run meaning | Intelligence | current Recommendation package and `jc-recommendation-core` protected |
+| P2 experiment exposure, outcome, metric, evaluation and release meaning | Reliability | current P2 physical package/role remains protected |
+| deployment, credentials, runtime execution, monitoring and production controls | Operations | not required for RCA-1 Model A |
+| registry, entry/exit, breaking change and authority transfer | System Coordination | approval authority |
+| RCA implementation | joint Intelligence/Reliability adoption | no authority transfer implied |
 
 Tracks must not directly write another track's tables.
 
@@ -64,168 +68,221 @@ Tracks must not directly write another track's tables.
 - canonical directory: `database/journey-connect-db-v2.7`;
 - SQL `01..52`: immutable closed baseline;
 - SQL `25..26`: protected Recommendation P2 evaluation/release;
-- SQL `27..28`: protected Search projection and Operations eligibility baseline;
-- SQL `29..52`: closed Data Platform implementation and validation;
+- SQL `27..28`: protected Search/Operations baseline;
+- SQL `29..52`: closed Data Platform baseline;
 - SQL `53+`: unallocated;
-- every new DB behavior requires an SC-allocated forward migration;
-- historical SQL rewrite is prohibited;
-- Flyway activation is not implied;
-- PostgreSQL 15/18 verification is required for any future DB phase.
+- RCA-1 Model A requires no DB object, SQL, role or grant;
+- any discovered DB need blocks that sub-scope pending a separate SC allocation;
+- historical SQL rewrite is prohibited.
 
 ## 5. Identity
-
-Cross-track entity references use `<entity-type>:<source-id>`.
-
-Identity schemes:
 
 | Scheme | Wire | Status |
 |---|---|---|
 | `platform_subject_v1` | `subject:<opaque-id>` | ACTIVE |
 | `legacy_user_numeric_v1` | `user:<numeric-id>` | PROTECTED COMPATIBILITY |
 
-The schemes are not equal. Automatic conversion, string inference, anonymous fallback and P2 row/hash rewrite are prohibited.
+The schemes are not equal. RCA-1 uses `SYNTHETIC_ONLY` identity binding.
 
-A physical identity mapping requires a single write owner, purpose binding, read allowlist, access audit, version, effective/invalidation times, deletion policy, retention policy and replay behavior. The physical owner remains unresolved.
+```text
+IDENTITY_MAPPING_OWNER: NOT_REQUIRED_FOR_MODEL_A_SYNTHETIC_ONLY
+REAL_IDENTITY_MAPPING_OWNER: DEFERRED
+IDENTITY_MAPPING_AUTHORITY: NONE
+IDENTITY_MAPPING_STORAGE: STATIC_TEST_FIXTURE_ONLY
+IDENTITY_MAPPING_RETENTION: FIXTURE_VERSION_LIFETIME
+IDENTITY_MAPPING_DELETION: REMOVE_WITH_FIXTURE_VERSION
+IDENTITY_MAPPING_INVALIDATION: FIXTURE_VERSION_INVALIDATION_ONLY
+IDENTITY_MAPPING_AUDIT: HASHED_CASE_AND_CLASSIFICATION_ONLY
+IDENTITY_MAPPING_PURPOSE_BINDING: RCA1_OFFLINE_RECONCILIATION_ONLY
+IDENTITY_MAPPING_LOGGING_POLICY: NO_RAW_ID_OR_MAPPING_PAIR
+IDENTITY_MAPPING_FAILURE_POLICY: FAIL_CLOSED
+```
 
-## 6. Time
+Absent, invalid, expired, deleted, mismatched, unauthorized-purpose and unauthorized-caller cases fail closed. Anonymous, nearest-user, alternate-subject fallback, raw ID logging and P2 row/hash rewrite are prohibited.
 
-- Java/Kotlin cross-track time: `Instant`;
-- DB: `TIMESTAMPTZ`;
-- JSON: UTC ISO-8601 `Z`;
-- deterministic computation uses explicit `referenceTime`;
-- offset-less local time is prohibited at cross-track boundaries.
+## 6. Time and versioning
 
-## 7. Versioning
+- cross-track time uses `Instant`, `TIMESTAMPTZ` and UTC ISO-8601 `Z`;
+- deterministic comparison uses explicit reference time;
+- persisted `latest`, `current` and `default` version identifiers are prohibited;
+- unknown required fields/enums and unsupported versions fail closed;
+- normalization and verifier versions are recorded in evidence.
 
-Meaning changes require a new explicit version. Persisted `latest`, `current` and `default` identifiers are prohibited.
-
-Version dimensions include:
-
-- `contractVersion`;
-- `schemaVersion`;
-- `policyVersion`;
-- `metricDefinitionVersion`;
-- `canonicalizationVersion`;
-- `modelVersion`;
-- `promptVersion`;
-- `producerVersion` / `consumerVersion`;
-- `producerBuildId` / `evaluatorBuildId`.
-
-Unknown optional fields may be ignored only when the contract permits meaning-preserving addition. Unknown required fields, required enums or unsupported versions fail closed.
-
-## 8. Contract registry
-
-Existing Data and Intelligence contracts remain registered in `SC-PLATFORM-REGISTRY.md`.
-
-Post-closure RCA reservations:
+## 7. Contract and phase registry
 
 | ID | Status | Meaning |
 |---|---|---|
-| `RCA` | RESERVED | Recommendation Consumer Adoption workstream; not a platform |
-| `RCA-0` | CONDITIONAL ENTRY | Recommendation Data Consumer Contract & Fixture Alignment |
-| `recommendation-data-consumer-alignment-v1` | RESERVED | workstream alignment contract |
-| `recommendation-profile-input-consumer-v1` | RESERVED | P1-facing consumer boundary |
-| `experiment-outcome-input-consumer-v1` | RESERVED | P2-facing consumer boundary |
-| `recommendation-data-consumer-fixture-v1` | RESERVED | deterministic fixture contract |
+| `RCA` | ACTIVE WORKSTREAM | Recommendation Consumer Adoption; not a platform |
+| `RCA-0` | COMPLETE / MERGED | Recommendation Data Consumer Contract & Fixture Alignment |
+| `RCA-1` | ENTRY AUTHORIZED | Recommendation Data Shadow Reconciliation |
+| `recommendation-data-consumer-alignment-v1` | ACTIVE | RCA-0 alignment contract |
+| `recommendation-profile-input-consumer-v1` | ACTIVE | P1 consumer boundary |
+| `experiment-outcome-input-consumer-v1` | ACTIVE | P2 consumer boundary |
+| `recommendation-data-consumer-fixture-v1` | ACTIVE | deterministic fixture contract |
+| `recommendation-shadow-reconciliation-v1` | RESERVED | RCA-1 offline reconciliation |
+| `recommendation-shadow-reconciliation-evidence-v1` | RESERVED | redacted offline evidence |
+| `recommendation-shadow-reconciliation-fixture-v1` | RESERVED | deterministic reconciliation cases |
 
-`RP` means Reliability Platform and must not be used for Recommendation Platform.
+`RP` means Reliability Platform and must not be used for Recommendation Platform or the RCA workstream.
 
-## 9. Source authority
+## 8. Source authority
 
 | Meaning | Authoritative source |
 |---|---|
-| P0/P1 behavior fact | `recommendation_behavior_event` |
-| current P1 profile source | `RecommendationP1ProfileSource` path |
-| current P1 result | `recommendation_p1_profile_snapshot` |
-| general Recommendation exposure | `recommendation_exposure_event` and candidate rows |
-| behavior impression | recommendation behavior `impression`; not P2 denominator |
-| P2 assignment | `recommendation_p2_experiment_assignment` |
+| P1 source | `RecommendationP1ProfileSource` |
+| P1 result | `recommendation_p1_profile_snapshot` |
+| P2 source | `RecommendationP2ObservationSource` |
 | P2 experiment exposure | `recommendation_p2_experiment_exposure` |
 | P2 dataset | `recommendation-evaluation-dataset-v1` |
-| P2 fallback | bound exposed `recommendation_run.run_status` |
-| Data profile candidate | `recommendation-profile-input-v1`, non-authoritative |
-| Data outcome candidate | `experiment-outcome-input-v1`, non-authoritative |
-| Search projection | Search-owned derived projection, not Data authority |
+| P2 metrics | `engagement_rate`, `fallback_rate` |
+| Data P1 candidate | `recommendation-profile-input-v1`, non-authoritative |
+| Data P2 candidate | `experiment-outcome-input-v1`, non-authoritative |
 
-General exposure, behavior impression and P2 experiment exposure must not be merged into one denominator.
+General exposure, behavior impression, P2 exposure, `view`, `hide` and `report` are not interchangeable.
 
-## 10. P1/P2 protection
+## 9. RCA-1 execution authorization
 
-Without a new contract/dataset version, reconciliation, replay plan, full regression and SC approval, no track may:
+Official phase:
 
-- replace `RecommendationP1ProfileSource`;
-- rewrite P1 snapshots;
-- change P2 assignment/exposure/dataset/evaluation/gate/release writes;
-- change P2 engagement event set, seven-day attribution, fallback or denominator;
-- rewrite canonical bytes, hashes, row identities or release evidence;
-- promote a Data projection to authority.
+```text
+RCA-1 Recommendation Data Shadow Reconciliation
+RCA1_EXECUTION_MODEL=MODEL_A_OFFLINE_DETERMINISTIC_RECONCILIATION
+IDENTITY_MODE=SYNTHETIC_ONLY
+CLASSIFICATION=JOINT_INTELLIGENCE_RELIABILITY_ADOPTION
+```
 
-## 11. RCA-0 boundary
+Approved purpose: compare recorded authoritative P1/P2 snapshots with Data candidate projections in deterministic, non-production reference cases and classify differences at field, semantic and authority levels.
 
-Official classification: `JOINT_INTELLIGENCE_RELIABILITY_ADOPTION`.
+RCA-1 does not prove runtime readiness, production readiness, cutover readiness, complete equivalence, traffic safety or authority transfer.
 
-Official phase: `RCA-0 Recommendation Data Consumer Contract & Fixture Alignment`.
+Model B is `DEFERRED` to a separately approved non-production read-only phase. Model C is `BLOCKED` in RCA-1 and transferred to `RCA-2 Controlled Runtime Dark Read`.
+
+## 10. P1 reconciliation contract
+
+P1 is a separate lane. Required dimensions:
+
+```text
+EXACT_FIELD_PARITY
+DERIVED_VALUE_PARITY
+AGGREGATE_WINDOW_PARITY
+ORDERING_NOT_COMPARABLE
+EVENT_GRAIN_MISSING
+EXPLICIT_PREFERENCE_MISSING
+TRANSFORM_POLICY_MISSING
+FINGERPRINT_SEMANTICS_PROTECTED
+IDENTITY_BLOCKED
+```
+
+Exact and deterministic-derived comparable dimensions have zero mismatch tolerance in Model A. Ordering, event grain, explicit preferences, transform policy and current fingerprint semantics use categorical classification, not percentage thresholds. Aggregate projection must never be converted into a fake event stream.
+
+P1 PASS means comparable fields match, expected gaps are explicitly classified, no unexpected mismatch exists and current P1 authority is unchanged. It is not full profile-source equivalence.
+
+## 11. P2 reconciliation contract
+
+P2 is a separate lane. Required dimensions:
+
+```text
+EXPOSURE_REFERENCE_PARITY
+ASSIGNMENT_PARITY
+SUBJECT_SESSION_RUN_PARITY
+OUTCOME_WINDOW_PARITY
+ENGAGEMENT_EVENT_PARITY
+FALLBACK_BINDING_PARITY
+STALE_UNEXPOSED_ASSIGNMENT_GAP
+OBSERVATION_DEDUPE_GAP
+CANONICAL_DATASET_HASH_PROTECTED
+RELEASE_EVIDENCE_PROTECTED
+IDENTITY_BLOCKED
+```
+
+Exact equality is required for exposure reference, assignment/version, synthetic subject/session/run binding, `604800`-second window, click/like/save/share event set and bound-run fallback.
+
+One-observation identity is `(experimentRef, experimentVersion, subjectRef)` with exposure/run/session consistency. Stale-unexposed behavior, persisted dedupe equivalence and canonical dataset bytes/hash remain migration-protected dimensions. RCA-1 does not recalculate canonical P2 dataset bytes/hash and does not compare or modify release evidence.
+
+P2 PASS carries marker:
+
+```text
+P2_SHADOW_RECONCILIATION_ONLY
+CURRENT_P2_AUTHORITY_UNCHANGED
+NO_AUTHORITY_TRANSFER
+```
+
+## 12. Reconciliation result taxonomy
 
 Allowed:
 
-- immutable consumer contract types;
-- strict validators and compatibility classifiers;
-- deterministic fixtures;
-- P1/P2 semantic mapping evidence;
-- no-runtime tests and protected regressions.
+```text
+MATCH_EXACT
+MATCH_DERIVED
+EXPECTED_SEMANTIC_GAP
+MIGRATION_REQUIRED
+IDENTITY_MAPPING_REQUIRED
+IDENTITY_SCHEME_MISMATCH
+SOURCE_CHECKPOINT_MISMATCH
+SOURCE_STALE
+LINEAGE_MISMATCH
+EXPOSURE_AUTHORITY_MISMATCH
+OUTCOME_WINDOW_MISMATCH
+FALLBACK_BINDING_MISMATCH
+PROTECTED_AUTHORITY_DIFFERENCE
+RECONCILIATION_INCONCLUSIVE
+```
 
-Prohibited:
+Forbidden:
 
-- DB/SQL change;
-- Spring/runtime/repository wiring;
-- Data projection DB reads;
-- real identity mapping;
-- shadow reconciliation;
-- production write, traffic or authority change.
+```text
+RUNTIME_READY
+PRODUCTION_READY
+CUTOVER_READY
+AUTHORITATIVE
+AUTHORITY_TRANSFERRED
+```
 
-RCA-0 entry is conditional on explicit merge of the SC-2 decision PR.
+## 13. Evidence, observability and failure
 
-## 12. Production activation gates
+Evidence may contain synthetic references, hashed fixture identifiers, contract/version, comparison dimension, classification, normalized safe values, checkpoint metadata, lineage fingerprint, evidence timestamp and verifier version.
 
-| Gate | Objective | Status after Data closure |
-|---|---|---|
-| GATE-1 | Data technical closure | COMPLETE |
-| GATE-2 | target consumer contract readiness | PARTIAL |
-| GATE-3 | runtime execution plane | NOT_READY |
-| GATE-4 | observability | NOT_READY |
-| GATE-5 | security/deployment access | PARTIAL |
-| GATE-6 | SLI/SLO, recovery and release reliability | NOT_READY |
-| GATE-7 | production shadow authorization | NOT_AUTHORIZED |
-| GATE-8 | consumer adoption | NOT_AUTHORIZED |
-| GATE-9 | production cutover | NOT_AUTHORIZED |
+Raw user/subject IDs, email, access token, session secret, raw behavioral payload, unrestricted event history, identity mapping source, production content and P2 canonical dataset rows are prohibited.
 
-RCA-0 may contribute contract evidence only. It does not complete GATE-2 or advance GATE-3 through GATE-9.
+Committed governance evidence is retained in Git history. Generated CI evidence is redacted and retained no longer than 90 days.
 
-## 13. Breaking changes
+Offline counters are verification summaries, not production metrics or SLOs:
 
-The following always require SC review and a new version or migration plan:
+`reconciliation_case_count`, `p1_exact_match_count`, `p1_expected_gap_count`, `p1_unexpected_mismatch_count`, `p2_exact_match_count`, `p2_migration_required_count`, `p2_authority_mismatch_count`, `identity_blocked_count`, `checkpoint_mismatch_count`, `lineage_mismatch_count`, `inconclusive_count`.
 
-- identity scheme or mapping behavior;
-- event/fingerprint/canonicalization semantics;
-- source or exposure authority;
-- Recommendation profile or P2 dataset source;
-- metric numerator, denominator or attribution;
-- DB sequence, role or grant;
-- moderation/eligibility behavior;
-- runtime source enablement, write or traffic cutover.
+Fail-closed conditions stop execution and discard generated candidate evidence. No runtime rollback exists in Model A.
 
-## 14. Completion rule
+## 14. Production activation gates
 
-A track phase is complete only when scope, owner, versions, privacy, protected authority, tests, exact tested SHA, rollback/forward-fix and handoff are documented. Unexecuted checks are never PASS.
+GATE-1 Data technical closure remains COMPLETE. RCA-0 is COMPLETE. RCA-1 Model A contributes offline comparison evidence only.
 
-## 15. Absolute prohibitions
+GATE-3 through GATE-9 remain unchanged and not authorized. No feature flag, scheduler, worker, DB credential, runtime dark read, production traffic or authority transfer is authorized.
 
-- SQL `01..52` rewrite;
-- unallocated SQL `53+` use;
-- cross-track direct write;
-- hidden source cutover;
-- automatic identity join;
-- P1/P2 evidence rewrite;
-- exposure-source conflation;
-- production activation inferred from technical completion;
+## 15. Completion rule
+
+RCA-1 completes only when both lanes execute separately and satisfy:
+
+```text
+P1_RECONCILIATION_EXECUTED
+P1_DIFFERENCES_CLASSIFIED
+P2_RECONCILIATION_EXECUTED
+P2_DIFFERENCES_CLASSIFIED
+IDENTITY_BOUNDARY_ENFORCED
+PROTECTED_AUTHORITY_UNCHANGED
+NO_PRODUCTION_TRAFFIC
+NO_AUTHORITY_TRANSFER
+```
+
+Completion does not mean runtime adoption, production adoption, cutover authorization, source deprecation or Data authority.
+
+## 16. Absolute prohibitions
+
+- SQL `01..52` rewrite or SQL `53+` use;
+- Java/Kotlin production source change in the SC-3 governance PR;
+- P1/P2 source, dataset, metric, hash or release change;
+- aggregate-to-event fabrication;
+- real identity mapping or raw identity evidence;
+- Spring/repository/runtime/feature-flag/scheduler/worker wiring;
+- runtime dark read or production traffic;
+- authority transfer inferred from reconciliation;
 - main direct push or merge without explicit user approval.

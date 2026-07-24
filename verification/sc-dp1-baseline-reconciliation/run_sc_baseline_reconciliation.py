@@ -21,51 +21,21 @@ REQUIRED = [
     GOV / "SC-HANDOFF.md",
     GOV / "SC-DATA-PLATFORM-TECHNICAL-CLOSURE.md",
     GOV / "SC-2-POST-DP-CLOSURE-NEXT-TRACK-BASELINE-RECONCILIATION.md",
-    GOV / "SC-DP1-BASELINE-RECONCILIATION.md",
-    GOV / "SC-DP3-ENTRY-DECISIONS.md",
-    GOV / "SC-DP4-5-PERSISTENCE-ALLOCATION.md",
-    GOV / "SC-DP5-PROJECTION-ALLOCATION.md",
-    GOV / "SC-DP6-QUALITY-ALLOCATION.md",
-    GOV / "SC-DP7-CROSS-TRACK-INTEGRATION-ALLOCATION.md",
+    GOV / "sc-next-track/SC-3-RCA-1-ENTRY-AUTHORIZATION-AND-BASELINE-ALLOCATION.md",
     DATA / "DP-0-DATA-PLATFORM-CONTRACT-FOUNDATION.md",
     DATA / "DP-0-P2-BASELINE-ALIGNMENT.md",
     DATA / "DP-0-HANDOFF.md",
     DATA / "DATA-PLATFORM-ARCHITECTURE-V1.md",
-    DATA / "PLATFORM-EVENT-CONTRACT-V1.md",
-    DATA / "BEHAVIOR-EVENT-TAXONOMY-V1.md",
-    DATA / "EVENT-IDEMPOTENCY-AND-FINGERPRINT-V1.md",
-    DATA / "EVENT-RETRY-QUARANTINE-REPLAY-V1.md",
-    DATA / "DATA-LINEAGE-AND-SNAPSHOT-V1.md",
-    DATA / "DATA-RETENTION-AND-PRIVACY-V1.md",
-    DATA / "P0-RECOMMENDATION-EVENT-ADAPTER-V1.md",
     DATA / "DP-5-PROJECTION-AND-SNAPSHOT-FOUNDATION.md",
-    DATA / "DP-5-PROJECTION-MATRIX.md",
-    DATA / "DP-5-HANDOFF.md",
     DATA / "DP-6-DATA-QUALITY-AND-LINEAGE-VALIDATION-HARDENING.md",
-    DATA / "DP-6-QUALITY-MATRIX.md",
-    DATA / "DP-6-HANDOFF.md",
     DATA / "DP-7-CROSS-TRACK-INTEGRATION-VALIDATION.md",
-    DATA / "DP-7-INTEGRATION-MATRIX.md",
-    DATA / "DP-7-AUTHORITY-MATRIX.md",
-    DATA / "DP-7-PRIVACY-RETENTION-MATRIX.md",
-    DATA / "DP-7-HANDOFF.md",
     DATA / "DATA-PLATFORM-TECHNICAL-BASELINE-V1.md",
     DATA / "DATA-PLATFORM-AUTHORITY-CLOSURE-V1.md",
-    DATA / "DATA-PLATFORM-PRODUCTION-READINESS-GAPS-V1.md",
-    DATA / "DATA-PLATFORM-PRODUCTION-ACTIVATION-DEPENDENCIES-V1.md",
-    DATA / "DATA-PLATFORM-CHANGE-POLICY-V1.md",
     DATA / "DATA-PLATFORM-CLOSURE-HANDOFF.md",
-    DATA / "HANDOFF-DATA-TO-RECOMMENDATION-V1.md",
-    DATA / "HANDOFF-DATA-TO-INTELLIGENCE-V1.md",
-    DATA / "HANDOFF-DATA-TO-SEARCH-V1.md",
-    DATA / "HANDOFF-DATA-TO-OPERATIONS-V1.md",
-    DATA / "HANDOFF-DATA-TO-RELIABILITY-V1.md",
 ]
-
 
 def fail(message: str) -> None:
     raise SystemExit(f"FAIL: {message}")
-
 
 for path in REQUIRED:
     if not path.is_file() or not path.read_text(encoding="utf-8").strip():
@@ -73,10 +43,12 @@ for path in REQUIRED:
 
 system_contract = (GOV / "JOURNEY_CONNECT_SYSTEM_CONTRACT_V1.md").read_text(encoding="utf-8")
 for marker in (
-    "V1.3 / SC-2 POST-DP-CLOSURE",
+    "V1.4 / SC-3 RCA-1 ENTRY",
+    "f802a105e46a62718616acaa7a3db6c172e7ed10",
+    "d33f7e152d0e40999ed8dc3f16c0a3f0bb980a9d",
     "journey-connect-db-v2.7/01..52",
-    "SQL `53+`",
-    "RCA-0 Recommendation Data Consumer Contract & Fixture Alignment",
+    "RCA1_ENTRY_AUTHORIZED",
+    "MODEL_A_OFFLINE_DETERMINISTIC_RECONCILIATION",
     "PRODUCTION_ACTIVATION: NOT_AUTHORIZED",
 ):
     if marker not in system_contract:
@@ -85,22 +57,20 @@ for marker in (
 governance = (GOV / "JOURNEY_CONNECT_TRACK_GOVERNANCE_V1.md").read_text(encoding="utf-8")
 for marker in (
     "Data Platform technical closure [COMPLETE]",
-    "RCA-0 Recommendation Data Consumer Contract & Fixture Alignment",
-    "RP remains reserved for Reliability Platform",
-    "DB_CHANGE_NOT_REQUIRED",
+    "RCA-0 Recommendation Data Consumer Contract & Fixture Alignment [COMPLETE / MERGED]",
+    "RCA-1 Recommendation Data Shadow Reconciliation",
+    "reserved for Reliability Platform",
+    "DB_CHANGE=NONE",
 ):
     if marker not in governance:
         fail(f"governance marker missing: {marker}")
 
 registry = (GOV / "SC-PLATFORM-REGISTRY.md").read_text(encoding="utf-8")
 for marker in (
-    "ACTIVE / DATA_PLATFORM_CLOSED / RCA-0 RESERVED",
-    "data-cross-track-integration-policy-v1",
+    "ACTIVE / RCA0_COMPLETE / RCA1_ENTRY_AUTHORIZED",
     "recommendation-data-consumer-alignment-v1",
-    "recommendation-profile-input-consumer-v1",
-    "experiment-outcome-input-consumer-v1",
-    "recommendation-data-consumer-fixture-v1",
-    "`48..52`",
+    "recommendation-shadow-reconciliation-v1",
+    "`29..52`",
     "`53+`",
 ):
     if marker not in registry:
@@ -118,9 +88,11 @@ for path in OUT.glob("*.tsv"):
     if not rows:
         fail(f"empty historical SC evidence: {path.name}")
 
-next_track_verifier = ROOT / "verification/sc-next-track/run_sc_next_track_reconciliation.py"
-if not next_track_verifier.is_file():
-    fail("next-track verifier missing")
-subprocess.run([sys.executable, str(next_track_verifier)], cwd=ROOT, check=True)
+historical = ROOT / "verification/sc-next-track/run_sc_next_track_reconciliation.py"
+rca1 = ROOT / "verification/sc-next-track/rca1-entry/run_sc_rca1_entry_verification.py"
+for verifier in (historical, rca1):
+    if not verifier.is_file():
+        fail(f"verifier missing: {verifier.relative_to(ROOT)}")
+    subprocess.run([sys.executable, str(verifier)], cwd=ROOT, check=True)
 
-print("SC baseline reconciliation through Data closure and RCA-0 allocation: PASS")
+print("SC baseline reconciliation through RCA-0 merge and RCA-1 entry authorization: PASS")

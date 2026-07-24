@@ -1,0 +1,11 @@
+field	value
+work_start_sha	f802a105e46a62718616acaa7a3db6c172e7ed10
+rca0_exact_final_head	d33f7e152d0e40999ed8dc3f16c0a3f0bb980a9d
+entry	RCA1_ENTRY_AUTHORIZED
+execution_model	MODEL_A_OFFLINE_DETERMINISTIC_RECONCILIATION
+identity_mode	SYNTHETIC_ONLY
+db_change	NONE
+sql_allocation	NOT_REQUIRED
+runtime_wiring	NOT_AUTHORIZED
+production_activation	NOT_AUTHORIZED
+verification	PENDING_EXACT_PR_HEAD

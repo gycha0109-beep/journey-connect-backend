@@ -4,9 +4,10 @@
 
 | Field | Value |
 |---|---|
-| revision | `V1.3 / SC-2 POST-DP-CLOSURE` |
+| revision | `V1.4 / SC-3 RCA-1 ENTRY` |
 | status | `ACTIVE` |
-| authoritative main | `95dad33fd56a54d69e2497c11dc4e2e77d8d3a77` |
+| authoritative main | `f802a105e46a62718616acaa7a3db6c172e7ed10` |
+| RCA-0 exact-final-head | `d33f7e152d0e40999ed8dc3f16c0a3f0bb980a9d` |
 | canonical DB | `journey-connect-db-v2.7/01..52` |
 | SQL `53+` | `UNALLOCATED` |
 | system contract | [Journey Connect System Contract V1](JOURNEY_CONNECT_SYSTEM_CONTRACT_V1.md) |
@@ -15,48 +16,40 @@
 
 ### Data Platform
 
-Owns canonical platform events, ingestion and idempotency contracts, retry/quarantine/replay contracts, Data projections/snapshots, quality, lineage and Data-side cross-track validation evidence.
-
-Does not own Recommendation calculation, Search ranking, moderation decisions, experiment metrics/releases or production activation.
+Owns Data candidate projections, checkpoint/lineage metadata and Data contract interpretation. Data does not decide Recommendation profile semantics, P2 metric semantics or authority transfer.
 
 Status: `TECHNICALLY CLOSED`.
 
 ### Intelligence Platform
 
-Owns Recommendation profile/ranking/policy semantics, Search retrieval/ranking, Content Analysis, Trip Planning, model/prompt/policy versions and Intelligence run/snapshot/provenance.
-
-Current P0/P1/P2 Recommendation packages and `jc-recommendation-core` remain protected.
-
-### Operations Platform
-
-Owns admin authorization, moderation/visibility/eligibility, operator audit, deployment, secrets, DB runtime access, worker/scheduler execution, monitoring delivery and lifecycle execution.
-
-Operations may not rewrite historical Data or Recommendation evidence.
+Owns P1 semantic comparison, expected-gap interpretation, feature vocabulary, decay/saturation meaning and P1 reconciliation acceptance. Current P1 source/result remain protected.
 
 ### Reliability Platform
 
-Owns experiment definition/assignment semantics, authoritative exposure meaning, metrics, denominator/attribution, evaluation, SLI/SLO, release evidence, SHADOW/CANARY/LIVE/HOLD/ROLLBACK decisions, replay/backfill approval and recovery gates.
+Owns P2 exposure/outcome/metric semantics, dedupe/hash/release protection, P2 mismatch acceptance and reconciliation result integrity. `RP` remains reserved for Reliability Platform.
 
-Current P2 physical implementation remains a protected compatibility arrangement.
+### Operations Platform
+
+Owns runtime environment, credentials, feature flags, scheduler, monitoring, rollback and production controls. Operations execution is `NOT_REQUIRED` for Model A, consulted for protection checks, required for any future Model B environment and mandatory for Model C.
 
 ### System Coordination
 
-Owns the System Contract, contract/identity/exposure registries, SQL sequence allocation, integration order, breaking changes, common gates, final conflict classification and authority-transfer approval.
+Owns scope, registry, authority, breaking-change classification, phase entry/exit and cross-track decisions.
 
 ## 3. Current authoritative sequence
 
 ```text
 Data Platform technical closure [COMPLETE]
-→ RCA-0 Recommendation Data Consumer Contract & Fixture Alignment
-→ RCA-1 shadow reconciliation proposal [separate SC approval required]
-→ Intelligence Data Contract
-→ Search Data Contract
+→ RCA-0 Recommendation Data Consumer Contract & Fixture Alignment [COMPLETE / MERGED]
+→ RCA-1 Recommendation Data Shadow Reconciliation [ENTRY AUTHORIZED / MODEL A]
+→ optional RCA-1B Non-production Read-only Reconciliation [DEFERRED / SEPARATE SC APPROVAL]
+→ RCA-2 Controlled Runtime Dark Read [NOT AUTHORIZED]
 → Operations Runtime Enablement
 → Reliability Production Readiness
 → production activation gates
 ```
 
-This sequence is not an automatic release plan. Contract work may be prepared before Operations/Reliability production readiness, but runtime activation and traffic remain gated.
+This sequence is not a release plan.
 
 ## 4. RCA workstream
 
@@ -64,129 +57,128 @@ This sequence is not an automatic release plan. Contract work may be prepared be
 
 `RP` remains reserved for Reliability Platform and must not mean Recommendation Platform.
 
-RP remains reserved for Reliability Platform.
+Official classification: `JOINT_INTELLIGENCE_RELIABILITY_ADOPTION`.
 
-### RCA-0 ownership
+## 5. RCA-1 ownership
 
-| Lane | Responsible | Accountable | Required approval |
+| Lane / control | Responsible | Accountable | Required approval |
 |---|---|---|---|
-| P1 profile consumer | Intelligence | Intelligence | SC |
-| P2 outcome consumer | Intelligence implementation lead permitted | Reliability | Reliability + SC |
-| registry and authority | SC | SC | affected tracks |
-| runtime operations | Operations | Operations | outside RCA-0 |
+| P1 comparison implementation | Intelligence | Intelligence | SC |
+| P1 acceptance | Intelligence | Intelligence | SC |
+| P2 comparison implementation | Intelligence lead permitted | Reliability | Reliability + SC |
+| P2 acceptance and evidence integrity | Reliability | Reliability | SC |
+| Data contract interpretation | Data | Data | affected lane owner |
+| synthetic identity fixture | implementation team | SC | no real identity owner required |
+| registry, entry and exit | SC | SC | affected tracks |
+| runtime execution | Operations | Operations | outside RCA-1 Model A |
 
-### RCA-0 allowed
+Physical code location does not transfer semantic ownership.
 
-- consumer-side immutable contract types;
-- strict validators and compatibility classification;
-- deterministic fixtures and test-only mappings;
-- read-only evidence and protected regressions;
-- no DB and no runtime wiring.
+## 6. RCA-1 execution model
 
-### RCA-0 forbidden
+```text
+RCA1_EXECUTION_MODEL=MODEL_A_OFFLINE_DETERMINISTIC_RECONCILIATION
+IDENTITY_MODE=SYNTHETIC_ONLY
+```
 
-- source replacement or production Data reads;
-- Spring bean/repository/worker/scheduler registration;
-- SQL or role/grant changes;
-- identity mapping implementation;
-- shadow reconciliation or runtime enablement;
-- production write, traffic, cutover or authority transfer.
+Model A is `APPROVED`.
 
-## 5. Database governance
+Model B is `DEFERRED`; it requires a non-production PostgreSQL environment, read-only role, transaction read-only, statement timeout, row limit, no migration, reproducible test data and Operations credential approval.
+
+Model C is `BLOCKED` in RCA-1 and assigned to RCA-2.
+
+## 7. RCA-1 allowed
+
+- pure Java/offline comparison types and deterministic normalization;
+- recorded authoritative snapshots and Data candidate fixtures;
+- RCA-0 fixture extension without changing RCA-0 expected classifications;
+- lane-specific comparison and result taxonomy;
+- synthetic fixture identity;
+- redacted machine-readable evidence and offline counters;
+- source/core/SQL/config protected regressions;
+- implementation in a separate PR after SC-3 merge.
+
+## 8. RCA-1 forbidden
+
+- P1/P2 source replacement;
+- Spring, repository, DB query, worker, scheduler, listener or feature-flag wiring;
+- SQL, migration, DB role or grant;
+- real identity mapping;
+- fake aggregate-to-event reconstruction;
+- canonical P2 dataset/hash recalculation or release evidence modification;
+- runtime dark read;
+- production traffic, cutover, source deprecation or authority transfer.
+
+## 9. Lane separation
+
+P1 and P2 must produce independent lane verdicts and independent mismatch inventories. A combined green status cannot conceal a lane failure.
+
+P1 non-comparable dimensions must be expected-gap classifications. P2 exposure/window/fallback mismatches are failures, while stale assignment, persisted dedupe and canonical hash remain migration-protected unless a future phase is approved.
+
+## 10. Database governance
 
 - SQL `01..52` is protected and immutable;
-- SQL `53+` requires SC allocation before implementation;
-- tracks must not create independent migration numbers or DB versions;
-- forward migration is required for future DB behavior;
-- every DB bundle must include owner, writer, reader, grants, retention, privacy, rollback/forward-fix and PostgreSQL 15/18 validation;
-- existing P1/P2 tables, roles and grants are High-risk protected paths.
+- SQL `53+` remains unallocated;
+- RCA-1 Model A: `DB_CHANGE=NONE`, `SQL_ALLOCATION=NOT_REQUIRED`;
+- no new table, view, role or grant;
+- a discovered DB requirement blocks that sub-scope with `RCA1_ENTRY_BLOCKED_BY_SQL_ALLOCATION`.
 
-RCA-0 classification: `DB_CHANGE_NOT_REQUIRED`.
+## 11. Verification governance
 
-## 6. Change proposal gate
+Required for the SC-3 governance PR:
 
-A proposal is required before:
+- exact authoritative work-start SHA;
+- PR #23 merge and RCA-0 exact-final-head ancestry/tree;
+- RCA-0 handoff/contracts/12 P1/21 P2 fixtures;
+- current P1/P2 authority markers;
+- SQL `01..52`, SQL `53+` absence and production defaults;
+- single Model A and synthetic-only decisions;
+- complete lane taxonomies and evidence/privacy policy;
+- governance-only diff and unchanged historical RCA-0 evidence;
+- exact final PR-head verifier execution.
 
-- new common ID/enum/time/version;
-- source or exposure authority change;
-- identity mapping implementation;
-- another track read/write path;
-- snapshot/hash/canonicalization change;
-- SQL/role/grant allocation;
-- runtime source enablement or cutover;
-- moderation/eligibility change;
-- metric, attribution or release-state change.
+Unexecuted PostgreSQL, shadow comparison, runtime, canary, load, replay and production checks are not PASS.
 
-Process:
+## 12. Entry and exit
 
-```text
-proposal
-→ SC impact decision
-→ registry/sequence reservation
-→ implementation
-→ track verification
-→ cross-track contract test
-→ handoff
-→ integration approval
-```
-
-## 7. PR and branch separation
-
-- one PR must not mix independent track write authorities;
-- governance/allocation PRs are separate from implementation PRs;
-- RCA-0 may contain both lane fixtures only because it changes no source or write authority; lane evidence and approvals must remain separate;
-- main direct push is prohibited for system-track changes;
-- no PR is merged without explicit user approval.
-
-Recommended branch:
+Entry verdict:
 
 ```text
-agent/rca0-recommendation-data-consumer-contracts
+RCA1_ENTRY_AUTHORIZED
+IMPLEMENTATION_REQUIRES_SEPARATE_PR
 ```
 
-## 8. Required verification
+Exit requires both lane executions, classified differences, enforced synthetic identity boundary, unchanged authority, no production traffic and no authority transfer.
 
-### Data
+## 13. PR and branch separation
 
-Schema/version, idempotency, lineage, quality, integration and protected SQL.
+- SC-3 governance/allocation PR is separate from RCA-1 implementation;
+- implementation uses a new branch after SC-3 merge;
+- current branch recommendation: `agent/sc-rca1-entry-authorization`;
+- no main direct push;
+- no merge without explicit user approval.
 
-### Intelligence / P1
+## 14. Integration refusal
 
-Current source non-regression, deterministic consumer validation, missing-semantics classification and no fake aggregate-to-event conversion.
+Reject implementation or integration if any of these occur:
 
-### Reliability / P2
+- `RP` naming conflict;
+- P1/P2 source or evidence change;
+- P2 exposure/window/event/fallback meaning change;
+- aggregate-to-event fabrication;
+- real identity join;
+- SQL change or SQL `53+` allocation;
+- runtime wiring;
+- production config change;
+- unexecuted check reported as PASS;
+- reconciliation represented as runtime/production/cutover readiness;
+- authority transfer marker.
 
-Exact assignment/exposure/run/subject/session semantics, seven-day click/like/save/share attribution, fallback binding, dataset/hash/release protection.
-
-### Operations
-
-For RCA-0, only protected production-config diff. Runtime tests are not applicable and must not be reported as PASS.
-
-### Common
-
-Exact tested SHA, registry uniqueness, identity fail-closed, no cross-track writes, no SQL `53+`, no production activation.
-
-## 9. Integration refusal
-
-Reject integration when any of the following occurs:
-
-- duplicate or ambiguous registry ID;
-- `RP` reused for Recommendation;
-- current P1/P2 source or evidence changed;
-- P2 exposure/metric meaning altered;
-- Data aggregate inferred to be current P1 event stream;
-- real identity join without an approved owner/policy;
-- SQL `01..52` change or SQL `53+` use;
-- runtime wiring in RCA-0;
-- production control difference;
-- unexecuted check represented as PASS;
-- fixture compatibility represented as runtime or production readiness.
-
-## 10. Canonical governance paths
+## 15. Canonical governance paths
 
 - [SC Decision Register](SC-DECISION-REGISTER.md)
 - [SC RACI](SC-RACI.md)
 - [SC Platform Registry](SC-PLATFORM-REGISTRY.md)
 - [SC Handoff](SC-HANDOFF.md)
-- [SC-2 Reconciliation](SC-2-POST-DP-CLOSURE-NEXT-TRACK-BASELINE-RECONCILIATION.md)
-- [RCA-0 implementation prompt](sc-next-track/12-RCA-0-IMPLEMENTATION-HANDOFF-PROMPT.md)
+- [SC-3 master decision](sc-next-track/SC-3-RCA-1-ENTRY-AUTHORIZATION-AND-BASELINE-ALLOCATION.md)
+- [RCA-1 implementation prompt](sc-next-track/22-RCA-1-IMPLEMENTATION-HANDOFF-PROMPT.md)

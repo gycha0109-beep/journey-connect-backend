@@ -2,147 +2,136 @@
 
 ## Status
 
-`DATA_PLATFORM_TECHNICAL_CLOSURE_COMPLETE / RCA-0 ENTRY CONDITIONALLY AUTHORIZED`
+`RCA0_CONTRACT_AND_FIXTURE_COMPLETE / RCA1_ENTRY_AUTHORIZED`
 
 ## Authoritative baseline
 
 - repository: `gycha0109-beep/journey-connect-backend`;
-- authoritative main: `95dad33fd56a54d69e2497c11dc4e2e77d8d3a77`;
-- verified closure head: `478a15929db43b1b3d3fde4648a5027a36ee75da`;
-- closure head versus merge commit: zero changed files;
+- authoritative main/work-start: `f802a105e46a62718616acaa7a3db6c172e7ed10`;
+- PR #23: merged;
+- RCA-0 exact-final-head: `d33f7e152d0e40999ed8dc3f16c0a3f0bb980a9d`;
+- RCA-0 merge tree: identical to exact-final-head tree;
+- Data Platform: technically closed;
 - SQL `01..52`: implemented and protected;
 - SQL `53+`: absent and unallocated;
-- Data Platform DP-0 through DP-7: technically closed;
-- production activation: not authorized.
+- production activation: not authorized;
+- current P1/P2 authority: unchanged.
 
-Closure exact-head workflow success belongs to the closure head. Main push CI is not available and merge-commit local checkout was not executed. Neither is PASS.
-
-## Protected state
+## Official phase and model
 
 ```text
-Production shadow: DISABLED
-Kill switch: ENABLED
-Sampling: 0 BPS
-Cohort: EMPTY
-Production Recommendation write: DISABLED
-Intelligence runtime activation: DISABLED
-Search indexing: DISABLED
-Search cutover: NOT_STARTED
-Worker: NOT_IMPLEMENTED
-Scheduler: DISABLED
-Replay: NOT_AUTHORIZED
-Backfill: NOT_AUTHORIZED
-Automatic rebuild: NOT_AUTHORIZED
-Automatic purge: DISABLED
+RCA-1 Recommendation Data Shadow Reconciliation
+CLASSIFICATION=JOINT_INTELLIGENCE_RELIABILITY_ADOPTION
+RCA1_EXECUTION_MODEL=MODEL_A_OFFLINE_DETERMINISTIC_RECONCILIATION
+IDENTITY_MODE=SYNTHETIC_ONLY
 ```
 
-## Next official workstream
+RCA is a cross-track workstream. `RP` remains Reliability Platform.
+
+## Purpose
+
+RCA-1 compares recorded authoritative P1/P2 reference snapshots with Data candidate projections in deterministic non-production cases and classifies differences at field, semantic and authority levels.
+
+It does not prove runtime, production, cutover, complete equivalence, user-traffic safety or authority transfer.
+
+## Current authority
 
 ```text
-JOINT_INTELLIGENCE_RELIABILITY_ADOPTION
+P1_SOURCE=RecommendationP1ProfileSource
+P1_RESULT=recommendation_p1_profile_snapshot
+P2_SOURCE=RecommendationP2ObservationSource
+P2_EXPOSURE_AUTHORITY=recommendation_p2_experiment_exposure
+P2_DATASET=recommendation-evaluation-dataset-v1
+P2_METRICS=engagement_rate,fallback_rate
 ```
 
-Official workstream: `Recommendation Consumer Adoption (RCA)`.
+Data candidate and RCA consumer contracts remain non-authoritative.
 
-RCA is not a platform. `RP` remains Reliability Platform.
+## P1 decision
 
-## Official first phase
+- entry: `CONDITIONALLY_APPROVED`;
+- exact/shared and deterministic-derived dimensions: zero mismatch tolerance;
+- ordering, event grain, explicit preference, transform policy and fingerprint semantics: categorical expected/protected gaps;
+- fake aggregate-to-event reconstruction: prohibited;
+- P1 PASS: lane-only reconciliation evidence, not full source equivalence.
 
-```text
-RCA-0 Recommendation Data Consumer Contract & Fixture Alignment
-```
+## P2 decision
 
-Classification:
-
-```text
-FIRST_IMPLEMENTATION_SCOPE: CONTRACT_AND_FIXTURE
-DB_CHANGE: NOT_REQUIRED
-SQL_ALLOCATION: NOT_REQUIRED
-PRODUCTION_IMPACT: NONE
-PRODUCTION_ACTIVATION: NOT_AUTHORIZED
-ENTRY: NEXT_TRACK_ENTRY_CONDITIONALLY_AUTHORIZED
-```
-
-Condition: this SC-2 reconciliation PR must be explicitly reviewed and merged before RCA-0 implementation begins.
-
-## Ownership
-
-- P1 profile consumer meaning: Intelligence;
-- P2 experiment outcome/exposure/metric compatibility: Reliability;
-- shared implementation lead: Intelligence permitted;
-- registry, breaking change and authority transfer: SC;
-- runtime execution and controls: Operations, outside RCA-0.
-
-Physical code location does not transfer semantic ownership.
-
-## RCA-0 allowed
-
-- consumer-side immutable contract types;
-- strict version/schema/required-field validators;
-- deterministic P1/P2 fixtures;
-- lane-specific compatibility classification;
-- synthetic identity binding or unimplemented port reference;
-- protected source/SQL/config regressions;
-- non-production verifier and machine-readable evidence.
-
-## RCA-0 forbidden
-
-- `RecommendationP1ProfileSource` or `RecommendationP2ObservationSource` replacement;
-- Spring/runtime/repository/worker/scheduler wiring;
-- Data projection production reads;
-- SQL `01..52` change or SQL `53+` creation;
-- identity mapping implementation;
-- P1/P2 write, metric, exposure, dataset, hash or release change;
-- shadow reconciliation, production write, traffic cutover or authority transfer.
-
-## Compatibility baseline
-
-| Lane | Current verdict | Authority |
-|---|---|---|
-| Data profile to Recommendation | `CONDITIONALLY_COMPATIBLE` | current P1 source retained |
-| Data outcome to Recommendation/Reliability | `CONDITIONALLY_COMPATIBLE` | current P2 exposure/dataset/metric retained |
-| Data to generic Intelligence | `INCONCLUSIVE` | Data-specific semantic contract required |
-| Data to Search | `INCONCLUSIVE` | Data-to-Search contract required |
+- entry: `CONDITIONALLY_APPROVED`;
+- exact required: exposure, assignment/version, synthetic subject/session/run, 604800-second window, click/like/save/share and bound fallback;
+- stale-unexposed assignment, persisted one-observation dedupe and canonical dataset hash: migration-protected;
+- canonical bytes/hash: not recalculated;
+- release evidence: non-modification protection only;
+- mixed general exposure/impression/view/hide/report: authority mismatch failure;
+- P2 PASS marker: `P2_SHADOW_RECONCILIATION_ONLY / NO_AUTHORITY_TRANSFER`.
 
 ## Identity and privacy
 
-`subject:<opaque-id>` and `user:<numeric-id>` remain distinct. RCA-0 can test synthetic mappings but cannot implement or use a real mapping repository. Missing or mismatched identity fails closed.
+Model A uses synthetic identities only. No physical identity mapping owner, store, repository or port implementation is authorized. Real identity governance remains deferred.
 
-## Operations and Reliability prerequisites
+Evidence uses hashed fixture IDs and redacted normalized values. Raw user IDs, opaque subject IDs, session secrets, payload history, mapping pairs and canonical dataset rows are prohibited.
 
-Operations runtime, deployment, secrets and monitoring are not prerequisites for RCA-0 contract-and-fixture work. Reliability approval is mandatory for P2 fixture semantics. GATE-3 through GATE-9 remain unchanged.
+## DB and production
+
+```text
+DB_CHANGE=NONE
+SQL_ALLOCATION=NOT_REQUIRED
+NEW_TABLE_REQUIRED=NO
+NEW_VIEW_REQUIRED=NO
+NEW_ROLE_REQUIRED=NO
+NEW_GRANT_REQUIRED=NO
+RUNTIME_WIRING=NOT_AUTHORIZED
+PRODUCTION_IMPACT=NONE
+PRODUCTION_ACTIVATION=NOT_AUTHORIZED
+```
+
+A discovered DB requirement blocks that sub-scope and requires a new allocation proposal.
+
+## Prerequisites
+
+| Track | RCA-1 Model A prerequisite |
+|---|---|
+| Intelligence | required for P1 semantics and implementation |
+| Reliability | required for P2 semantics and acceptance |
+| Data | consulted for candidate contract/checkpoint/lineage |
+| SC | required for entry, exit and breaking changes |
+| Operations | consulted; execution credentials not required |
+| Privacy/Security | policy review; no real identity material |
+
+## Verification truth
+
+SC-3 verifies governance, baseline, contracts, fixture inventory, source authority, SQL/config protection, decision uniqueness and diff boundaries.
+
+The following are not executed by SC-3 and are not PASS: actual RCA-1 comparison, PostgreSQL, runtime, canary, load, replay and production.
 
 ## Documents
 
-- [SC-2 reconciliation](SC-2-POST-DP-CLOSURE-NEXT-TRACK-BASELINE-RECONCILIATION.md)
-- [post-closure baseline](sc-next-track/01-SC-POST-DP-CLOSURE-AUTHORITATIVE-BASELINE.md)
-- [ownership decision](sc-next-track/02-SC-NEXT-TRACK-OWNERSHIP-DECISION.md)
-- [naming and phase](sc-next-track/03-SC-NEXT-TRACK-NAMING-AND-PHASE-ALLOCATION.md)
-- [scope decision](sc-next-track/04-SC-RECOMMENDATION-CONSUMER-ADOPTION-SCOPE-DECISION.md)
-- [P1/P2 protection](sc-next-track/05-SC-EXISTING-P1-P2-AUTHORITY-PROTECTION-DECISION.md)
-- [dependency map](sc-next-track/06-SC-DATA-TO-RECOMMENDATION-CONTRACT-DEPENDENCY-MAP.md)
-- [identity/privacy](sc-next-track/07-SC-IDENTITY-PRIVACY-DEPENDENCY-DECISION.md)
-- [Operations/Reliability matrix](sc-next-track/08-SC-OPERATIONS-RELIABILITY-PREREQUISITE-MATRIX.md)
-- [SQL decision](sc-next-track/09-SC-SQL-ALLOCATION-DECISION.md)
-- [production impact](sc-next-track/10-SC-PRODUCTION-ACTIVATION-IMPACT-ASSESSMENT.md)
-- [verification plan](sc-next-track/11-SC-CROSS-TRACK-VERIFICATION-PLAN.md)
-- [RCA-0 implementation prompt](sc-next-track/12-RCA-0-IMPLEMENTATION-HANDOFF-PROMPT.md)
+- [SC-3 master decision](sc-next-track/SC-3-RCA-1-ENTRY-AUTHORIZATION-AND-BASELINE-ALLOCATION.md)
+- [execution model](sc-next-track/13-SC-RCA1-EXECUTION-MODEL-DECISION.md)
+- [P1 equivalence](sc-next-track/14-SC-RCA1-P1-RECONCILIATION-AUTHORITY-AND-EQUIVALENCE.md)
+- [P2 equivalence](sc-next-track/15-SC-RCA1-P2-RECONCILIATION-AUTHORITY-AND-EQUIVALENCE.md)
+- [identity governance](sc-next-track/16-SC-RCA1-IDENTITY-MAPPING-GOVERNANCE.md)
+- [evidence/privacy](sc-next-track/17-SC-RCA1-EVIDENCE-AND-PRIVACY-POLICY.md)
+- [prerequisite matrix](sc-next-track/18-SC-RCA1-OPERATIONS-RELIABILITY-PREREQUISITE-MATRIX.md)
+- [DB/SQL decision](sc-next-track/19-SC-RCA1-DB-SQL-IMPACT-DECISION.md)
+- [verification plan](sc-next-track/20-SC-RCA1-VERIFICATION-PLAN.md)
+- [exit and RCA-2 boundary](sc-next-track/21-SC-RCA1-EXIT-CRITERIA-AND-RCA2-HANDOFF.md)
+- [implementation prompt](sc-next-track/22-RCA-1-IMPLEMENTATION-HANDOFF-PROMPT.md)
 
 ## Follow-up order
 
-1. merge SC-2 after explicit user approval;
-2. implement RCA-0 in a separate branch and PR;
-3. propose RCA-1 shadow reconciliation only after RCA-0 findings;
-4. continue Intelligence Data Contract;
-5. continue Search Data Contract;
-6. implement Operations Runtime Enablement;
-7. establish Reliability Production Readiness;
-8. evaluate production activation gates.
+1. review and merge SC-3 only after explicit user approval;
+2. implement RCA-1 Model A in a separate branch/PR;
+3. obtain Intelligence P1 and Reliability P2 acceptance;
+4. evaluate RCA-1 exit criteria;
+5. separately propose Model B if DB evidence is still needed;
+6. separately propose RCA-2 for runtime dark read.
 
 ## Current gate
 
 ```text
-NEXT_TRACK_ENTRY_CONDITIONALLY_AUTHORIZED
+RCA1_ENTRY_AUTHORIZED
+IMPLEMENTATION_REQUIRES_SEPARATE_PR
 ```
 
-No implementation or merge is authorized before explicit user approval of the SC-2 PR.
+SC-3 is governance-only. The PR must remain unmerged until explicit user approval.

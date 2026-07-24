@@ -1,0 +1,13 @@
+check	status	detail
+authoritative_main	PASS	f802a105e46a62718616acaa7a3db6c172e7ed10 verified before branch creation
+rca0_merge	PASS	PR 23 merged with exact-final-head d33f7e152d0e40999ed8dc3f16c0a3f0bb980a9d
+required_documents	PASS	11 decision and handoff documents generated
+python_syntax	PASS	three verifier/workflow Python scripts compiled locally
+postgresql	NOT_EXECUTED	SC-3 governance only
+shadow_comparison	NOT_EXECUTED	RCA-1 implementation separate PR
+runtime	NOT_EXECUTED	Model C blocked
+canary	NOT_EXECUTED	production not authorized
+load	NOT_EXECUTED	governance only
+replay	NOT_EXECUTED	governance only
+production	NOT_EXECUTED	production activation not authorized
+exact_final_pr_head	PENDING	CI required after PR creation
