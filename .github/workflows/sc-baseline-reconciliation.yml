@@ -10,6 +10,7 @@ on:
       - "verification/sc-next-track/**"
       - "verification/data-platform-closure/**"
       - ".github/workflows/sc-baseline-reconciliation.yml"
+      - ".github/workflows/sc-rca1b-entry-ci.yml"
   workflow_dispatch:
 
 permissions:
@@ -27,23 +28,26 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - name: Validate SC baseline through RCA-1 entry
+      - name: Validate SC baseline through RCA-1B entry
         shell: bash
         run: |
           set -o pipefail
-          mkdir -p verification/sc-next-track/rca1-entry/runtime
+          mkdir -p verification/sc-next-track/rca1b-entry/runtime
           python verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py \
-            2>&1 | tee verification/sc-next-track/rca1-entry/runtime/SC_BASELINE_RECONCILIATION_CI.log
+            2>&1 | tee verification/sc-next-track/rca1b-entry/runtime/SC_BASELINE_RECONCILIATION_CI.log
       - name: Validate Data Platform technical closure
         shell: bash
         run: |
           set -o pipefail
           python verification/data-platform-closure/run_data_platform_closure_verification.py \
-            2>&1 | tee verification/sc-next-track/rca1-entry/runtime/DATA_PLATFORM_CLOSURE_CI.log
-      - name: Upload SC RCA-1 entry evidence
+            2>&1 | tee verification/sc-next-track/rca1b-entry/runtime/DATA_PLATFORM_CLOSURE_CI.log
+      - name: Upload SC RCA-1B entry evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: sc-rca1-entry-evidence
-          path: verification/sc-next-track/rca1-entry/runtime/**
+          name: sc-rca1b-entry-continuity-evidence
+          retention-days: 90
+          path: |
+            verification/sc-next-track/rca1b-entry/runtime/**
+            verification/sc-next-track/rca1-entry/runtime/**
           if-no-files-found: error
