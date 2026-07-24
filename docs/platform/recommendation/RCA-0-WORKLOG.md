@@ -28,14 +28,15 @@
 ## Stage 5 — Independent verification design
 
 - Added protected diff, SQL inventory, source-field equivalence, fixture uniqueness, forbidden dependency, document structure, exact SHA, core regression, backend regression, and execution-state evidence checks.
-- PostgreSQL/shadow/canary/load/replay/production remain `NOT_APPLICABLE`.
+- PostgreSQL/shadow/canary/load/replay/production remain `NOT_APPLICABLE` in the RCA-0 verifier.
 
 ## Stage 6 — Existing protected CI compatibility correction
 
-- The exact PR head exposed that `Recommendation P0 Database CI` ran the pre-closure Data Platform closure verifier for every backend source change.
-- The P0 Java static suite itself passed, but the obsolete closure diff allowlist rejected the approved RCA package before PostgreSQL execution.
-- Corrected only the workflow dispatch logic: the Data closure verifier now runs when Data closure artifacts change and is explicitly `NOT_APPLICABLE` for unrelated RCA diffs. P0 static and PostgreSQL 15/18 regression execution remain mandatory.
-- No closure evidence, SQL, P1/P2 source, core, production control, or runtime code was weakened or changed.
+- The exact PR head exposed that `Recommendation P0 Database CI` ran the historical DP-5 and Data Platform closure diff verifiers for every backend source change.
+- The P0 Java static suite itself passed, but those completed-phase allowlists rejected the approved RCA package before PostgreSQL execution.
+- Corrected only workflow dispatch logic: the DP-5 verifier now runs when DP-5/Data projection artifacts change, and the Data closure verifier runs when Data closure artifacts change. Both report `NOT_APPLICABLE` for unrelated RCA diffs.
+- P0 static and PostgreSQL 15/18 regression execution remain mandatory for every matching backend change.
+- No DP-5 or closure evidence, SQL, P1/P2 source, core, production control, or runtime behavior was weakened or changed.
 
 ## Stage 7 — Final review and PR handoff
 
