@@ -105,7 +105,7 @@ final class Rca1bQueryRegistry {
                         "public.recommendation_user_preference", "public.tags"), prohibited()));
         register(definitions, new QueryDefinition(
                 "P1_DATA_CANDIDATE_V1", Lane.P1, "queries/p1-data-candidate-v1.sql",
-                "2fb6c99c1adcfbc5c3558466a98166dca63b1415f74a2dc61767591868462e22",
+                "a354809f9890aafdaf7b471a5788df8171eda33cdce2babe0001bb393eb7d96a",
                 List.of("caseId", "maxRows"), "activity_window_days,projection_record_ref",
                 Set.of("rca1b_fixture.p1_case_map", "public.data_recommendation_profile_input_projection_v1",
                         "public.data_source_checkpoint_v1", "public.data_projection_snapshot_v1"), prohibited()));
