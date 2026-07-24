@@ -157,7 +157,7 @@ for marker in (
     if marker not in prod:
         fail(f"production default missing: {marker}")
 
-subprocess.run(["git", "fetch", "origin", "main", "--depth=2"], cwd=ROOT, check=False,
+subprocess.run(["git", "fetch", "origin", "main"], cwd=ROOT, check=False,
                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 origin_main = subprocess.run(["git", "rev-parse", "origin/main"], cwd=ROOT, check=True,
                              text=True, capture_output=True).stdout.strip()
