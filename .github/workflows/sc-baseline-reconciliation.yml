@@ -10,7 +10,6 @@ on:
       - "verification/sc-next-track/**"
       - "verification/data-platform-closure/**"
       - ".github/workflows/sc-baseline-reconciliation.yml"
-      - ".github/workflows/sc-rca1b-entry-ci.yml"
   workflow_dispatch:
 
 permissions:
