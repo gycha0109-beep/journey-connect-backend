@@ -52,7 +52,7 @@ jobs:
           JC_TEST_POSTGRES_IMAGE: postgres:${{ matrix.postgres }}-alpine
         run: |
           set -o pipefail
-          ./gradlew test \
+          ./gradlew :test \
             --tests com.jc.backend.recommendation.dataadoption.reconciliation.database.Rca1bDatabaseReconciliationTest \
             -Drca1b.testedSha=${{ github.event.pull_request.head.sha || github.sha }} \
             --stacktrace --no-daemon \
