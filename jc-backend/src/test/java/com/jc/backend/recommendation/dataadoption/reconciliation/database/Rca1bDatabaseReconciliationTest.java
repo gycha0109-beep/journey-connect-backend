@@ -237,12 +237,7 @@ class Rca1bDatabaseReconciliationTest {
             String target = "/tmp/rca1b-canonical-" + script.getFileName();
             container.copyFileToContainer(MountableFile.forHostPath(script), target);
             if (number == 28) {
-                execSql(container, "ALTER TABLE public.posts DISABLE TRIGGER posts_set_updated_at");
-                try {
-                    execPsql(container, target, List.of());
-                } finally {
-                    execSql(container, "ALTER TABLE public.posts ENABLE TRIGGER posts_set_updated_at");
-                }
+                execPsql(container, target, List.of("-c", "SET session_replication_role=replica"));
             } else {
                 execPsql(container, target, List.of());
             }
@@ -272,18 +267,6 @@ class Rca1bDatabaseReconciliationTest {
         Container.ExecResult result = container.execInContainer(command.toArray(String[]::new));
         if (result.getExitCode() != 0) {
             throw new IllegalStateException("psql failed for " + path + "\n" + result.getStdout() + "\n" + result.getStderr());
-        }
-    }
-
-    private static void execSql(PostgreSQLContainer<?> container, String sql) throws Exception {
-        List<String> command = psqlCommand(container);
-        command.add("-v");
-        command.add("ON_ERROR_STOP=1");
-        command.add("-c");
-        command.add(sql);
-        Container.ExecResult result = container.execInContainer(command.toArray(String[]::new));
-        if (result.getExitCode() != 0) {
-            throw new IllegalStateException("psql statement failed\n" + result.getStdout() + "\n" + result.getStderr());
         }
     }
 
