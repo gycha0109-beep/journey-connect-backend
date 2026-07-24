@@ -1,0 +1,4 @@
+contract_id	owner	status	authority	work_start_sha
+recommendation-shadow-reconciliation-v1	Intelligence+Reliability	IMPLEMENTED_OFFLINE	NONE	5a0ca52c8226a0f4a6e21f9af96c7da0732c8d5b
+recommendation-shadow-reconciliation-evidence-v1	Reliability+SC	IMPLEMENTED_REDACTED	NONE	5a0ca52c8226a0f4a6e21f9af96c7da0732c8d5b
+recommendation-shadow-reconciliation-fixture-v1	Intelligence+Reliability	IMPLEMENTED_SYNTHETIC	NONE	5a0ca52c8226a0f4a6e21f9af96c7da0732c8d5b

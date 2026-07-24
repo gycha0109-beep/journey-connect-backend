@@ -1,0 +1,71 @@
+name: RCA-1 Offline Shadow Reconciliation CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "jc-backend/src/main/java/com/jc/backend/recommendation/dataadoption/reconciliation/**"
+      - "jc-backend/src/test/resources/recommendation-data-adoption/reconciliation/**"
+      - "verification/rca1/**"
+      - "docs/platform/recommendation/RCA-1-*.md"
+      - ".github/workflows/rca1-offline-reconciliation-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rca1-offline-reconciliation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-reconciliation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout exact pull request head
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Grant Gradle wrapper permission
+        run: chmod +x jc-backend/gradlew
+
+      - name: Run RCA-1 independent verifier and regressions
+        shell: bash
+        run: |
+          set -o pipefail
+          python verification/rca1/run_rca1_verification.py --execute-regressions \
+            2>&1 | tee verification/rca1/RCA1_CI.log
+
+      - name: Upload RCA-1 redacted evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rca1-offline-shadow-reconciliation-evidence
+          retention-days: 90
+          path: |
+            verification/rca1/runtime/**
+            verification/rca1/RCA1_CI.log
+            verification/rca0/runtime/**
+            jc-backend/build/test-results/**/*.xml
+            jc-backend/build/reports/tests/**
+            jc-backend/jc-recommendation-core/build/test-results/**/*.xml
+            jc-backend/jc-recommendation-core/build/reports/tests/**
+          if-no-files-found: warn
