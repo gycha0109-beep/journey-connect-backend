@@ -157,8 +157,9 @@ for marker in (
     if marker not in prod:
         fail(f"production default missing: {marker}")
 
-subprocess.run(["git", "fetch", "origin", "main"], cwd=ROOT, check=False,
-               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+shallow_file = ROOT / ".git/shallow"
+fetch_command = ["git", "fetch", "--unshallow", "origin"] if shallow_file.exists() else ["git", "fetch", "origin", "main"]
+subprocess.run(fetch_command, cwd=ROOT, check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 origin_main = subprocess.run(["git", "rev-parse", "origin/main"], cwd=ROOT, check=True,
                              text=True, capture_output=True).stdout.strip()
 if origin_main != CURRENT_MAIN:
