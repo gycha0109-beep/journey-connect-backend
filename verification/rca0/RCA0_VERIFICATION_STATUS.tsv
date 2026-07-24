@@ -1,0 +1,10 @@
+verification	status	note
+contract_fixture_execution	EXECUTED_BY_VERIFIER	dependency-free javac/java execution
+recommendation_core_regression	EXECUTED_WHEN_FLAGGED	:jc-recommendation-core:check
+backend_regression	EXECUTED_WHEN_FLAGGED	jc-backend test
+postgresql	NOT_APPLICABLE	no DB change
+shadow_reconciliation	NOT_APPLICABLE	RCA-1 scope
+canary	NOT_APPLICABLE	production activation not authorized
+load	NOT_APPLICABLE	contract/fixture phase
+replay	NOT_APPLICABLE	no replay or backfill
+production	NOT_APPLICABLE	production impact none

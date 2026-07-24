@@ -1,0 +1,58 @@
+name: RCA-0 Contract and Fixture CI
+
+on:
+  pull_request:
+    paths:
+      - "jc-backend/src/main/java/com/jc/backend/recommendation/dataadoption/**"
+      - "jc-backend/src/test/resources/recommendation-data-adoption/**"
+      - "verification/rca0/**"
+      - "docs/platform/recommendation/RCA-0-*.md"
+      - ".github/workflows/rca0-contract-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rca0-contract-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract-fixture-and-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Grant execute permission for Gradle Wrapper
+        run: chmod +x jc-backend/gradlew
+
+      - name: Run RCA-0 independent verifier and regressions
+        run: python verification/rca0/run_rca0_verification.py --execute-regressions
+
+      - name: Upload RCA-0 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rca0-verification-evidence
+          path: |
+            verification/rca0/runtime/**
+            jc-backend/build/test-results/**/*.xml
+            jc-backend/build/reports/tests/**
+            jc-backend/jc-recommendation-core/build/test-results/**/*.xml
+            jc-backend/jc-recommendation-core/build/reports/tests/**
+          if-no-files-found: warn

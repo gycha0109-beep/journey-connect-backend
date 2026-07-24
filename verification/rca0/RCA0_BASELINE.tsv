@@ -1,0 +1,15 @@
+key	value
+repository	gycha0109-beep/journey-connect-backend
+work_start_sha	a89dd336cfdd20f650eac4aee8dd2db8de8f3c04
+authoritative_main	a89dd336cfdd20f650eac4aee8dd2db8de8f3c04
+sc2_pr	22
+workstream	RCA
+phase	RCA-0 Recommendation Data Consumer Contract & Fixture Alignment
+classification	JOINT_INTELLIGENCE_RELIABILITY_ADOPTION
+canonical_sql	01..52_PROTECTED
+sql_53_plus	UNALLOCATED
+production_activation	NOT_AUTHORIZED
+p1_source	RecommendationP1ProfileSource
+p2_source	RecommendationP2ObservationSource
+p2_exposure_authority	recommendation_p2_experiment_exposure
+p2_dataset	recommendation-evaluation-dataset-v1
