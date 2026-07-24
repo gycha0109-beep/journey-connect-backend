@@ -289,7 +289,7 @@ BEGIN
 BEGIN
 INSERT INTO public.recommendation_p2_experiment_exposure(
 exposure_id,assignment_id,run_id,user_id,session_id,variant,exposed_at,exposure_fingerprint)
-SELECT 'rca1b-exposure-duplicate','rca1b-assignment','rca1b-run-baseline',user_id,'rca1b-session','baseline',
+SELECT 'rca1b-exposure-duplicate','rca1b-assignment','rca1b-run-baseline',id,'rca1b-session','baseline',
 '2026-07-24T00:00:01Z',repeat('a',64)
 FROM public.app_users WHERE email='rca1b-fixture@example.invalid';
 RAISE EXCEPTION 'duplicate exposure was not blocked';
