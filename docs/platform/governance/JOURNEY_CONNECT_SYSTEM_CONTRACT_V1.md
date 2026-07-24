@@ -24,6 +24,10 @@ This contract governs shared identity, time, version, source authority, exposure
 - main push CI is not available and merge-commit local checkout was not executed.
 - technical closure is not production readiness or production approval.
 
+```text
+PRODUCTION_ACTIVATION: NOT_AUTHORIZED
+```
+
 Protected state:
 
 ```text
