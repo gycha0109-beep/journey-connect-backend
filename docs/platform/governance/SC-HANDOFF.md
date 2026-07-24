@@ -2,37 +2,44 @@
 
 ## Status
 
-`RCA0_CONTRACT_AND_FIXTURE_COMPLETE / RCA1_ENTRY_AUTHORIZED`
+`RCA1_OFFLINE_SHADOW_RECONCILIATION_COMPLETE / RCA1B_ENTRY_AUTHORIZED`
+
+Historical marker `RCA0_CONTRACT_AND_FIXTURE_COMPLETE / RCA1_ENTRY_AUTHORIZED` remains satisfied.
 
 ## Authoritative baseline
 
 - repository: `gycha0109-beep/journey-connect-backend`;
-- authoritative main/work-start: `f802a105e46a62718616acaa7a3db6c172e7ed10`;
-- PR #23: merged;
-- RCA-0 exact-final-head: `d33f7e152d0e40999ed8dc3f16c0a3f0bb980a9d`;
-- RCA-0 merge tree: identical to exact-final-head tree;
-- Data Platform: technically closed;
-- SQL `01..52`: implemented and protected;
-- SQL `53+`: absent and unallocated;
+- authoritative main/work-start: `b2e7a5c316c6f6ee543ccedf35bca65353ab3aa4`;
+- PR #25: merged;
+- RCA-1 exact-final-head: `38896b2a37180633870282e9d9e305d9c9fbbf8a`;
+- merge tree: identical to exact-final-head tree;
+- P1: `RECONCILED_WITH_EXPECTED_GAPS`;
+- P2: `RECONCILED_WITH_MIGRATION_GAPS`;
+- identity: `SYNTHETIC_ONLY`;
+- SQL `01..52`: protected;
+- SQL `53+`: absent/unallocated;
 - production activation: not authorized;
-- current P1/P2 authority: unchanged.
+- current P1/P2 authority: unchanged;
+- no runtime wiring or actual identity mapping.
 
-## Official phase and model
+## Official phase
 
 ```text
-RCA-1 Recommendation Data Shadow Reconciliation
+RCA-1B Recommendation Data Non-production Read-only Reconciliation
 CLASSIFICATION=JOINT_INTELLIGENCE_RELIABILITY_ADOPTION
-RCA1_EXECUTION_MODEL=MODEL_A_OFFLINE_DETERMINISTIC_RECONCILIATION
+RCA1B_EXECUTION_ENVIRONMENT=CI_EPHEMERAL_POSTGRESQL
+POSTGRESQL_VERSION_MATRIX=15,18
+RCA1B_DATASET_MODE=DETERMINISTIC_SYNTHETIC_DATABASE_FIXTURE
 IDENTITY_MODE=SYNTHETIC_ONLY
 ```
 
-RCA is a cross-track workstream. `RP` remains Reliability Platform.
+RCA is a cross-track workstream. `RP` is reserved for Reliability Platform.
 
 ## Purpose
 
-RCA-1 compares recorded authoritative P1/P2 reference snapshots with Data candidate projections in deterministic non-production cases and classifies differences at field, semantic and authority levels.
+Read current authoritative P1/P2 query results and Data candidate projection results from isolated ephemeral PostgreSQL, compare them using RCA-1 taxonomy, and classify checkpoint, lineage, field, semantic and authority differences per lane.
 
-It does not prove runtime, production, cutover, complete equivalence, user-traffic safety or authority transfer.
+This does not prove production/runtime/cutover readiness, live latency, actual identity governance, source replacement or authority transfer.
 
 ## Current authority
 
@@ -43,95 +50,126 @@ P2_SOURCE=RecommendationP2ObservationSource
 P2_EXPOSURE_AUTHORITY=recommendation_p2_experiment_exposure
 P2_DATASET=recommendation-evaluation-dataset-v1
 P2_METRICS=engagement_rate,fallback_rate
+CURRENT_P1_P2_AUTHORITY_UNCHANGED
 ```
 
-Data candidate and RCA consumer contracts remain non-authoritative.
+## Environment and versions
+
+- Environment A CI ephemeral PostgreSQL: approved;
+- Environment B shared non-production DB: deferred;
+- Environment C production replica/derived: blocked;
+- PostgreSQL 15 minimum; 15 and 18 required;
+- UTC, `C` collation/ctype, no extension/PostGIS;
+- one database per job and teardown by container destruction.
+
+## Read-only execution contract
+
+```text
+TRANSACTION_READ_ONLY=REQUIRED
+TRANSACTION_ISOLATION=REPEATABLE_READ
+AUTOCOMMIT=DISABLED
+STATEMENT_TIMEOUT_MS=5000
+LOCK_TIMEOUT_MS=1000
+IDLE_IN_TRANSACTION_TIMEOUT_MS=5000
+MAX_RESULT_ROWS_PER_QUERY=1000
+MAX_RECONCILIATION_CASES=10000
+MAX_EXECUTION_DURATION_SECONDS=900
+PARALLEL_QUERY=DISABLED
+RETRY_POLICY=NONE
+```
+
+An ephemeral `rca1b_readonly` login is required. Owner/superuser, write privilege, RLS bypass, DDL/DML, temp objects, migrations and unbounded queries are forbidden.
+
+## Query and dataset boundary
+
+Only registered/fingerprinted prepared queries for P1/P2 source/candidate, checkpoint, lineage and bounded counts are allowed. Canonical SQL `01..52` is replayed and a deterministic noncanonical test-only seed is applied before read-only execution. Raw SQL construction, production data, canonical dataset rows and release evidence are prohibited.
 
 ## P1 decision
 
-- entry: `CONDITIONALLY_APPROVED`;
-- exact/shared and deterministic-derived dimensions: zero mismatch tolerance;
-- ordering, event grain, explicit preference, transform policy and fingerprint semantics: categorical expected/protected gaps;
-- fake aggregate-to-event reconstruction: prohibited;
-- P1 PASS: lane-only reconciliation evidence, not full source equivalence.
+P1 keeps RCA-1 expected gaps and adds DB query/checkpoint/snapshot/order/null/numeric/timezone/duplicate/row-count dimensions. Comparable dimensions use zero tolerance. Checkpoint/snapshot equality and lineage match are mandatory. Aggregate-to-event fabrication remains prohibited.
 
 ## P2 decision
 
-- entry: `CONDITIONALLY_APPROVED`;
-- exact required: exposure, assignment/version, synthetic subject/session/run, 604800-second window, click/like/save/share and bound fallback;
-- stale-unexposed assignment, persisted one-observation dedupe and canonical dataset hash: migration-protected;
-- canonical bytes/hash: not recalculated;
-- release evidence: non-modification protection only;
-- mixed general exposure/impression/view/hide/report: authority mismatch failure;
-- P2 PASS marker: `P2_SHADOW_RECONCILIATION_ONLY / NO_AUTHORITY_TRANSFER`.
+P2 protects `recommendation_p2_experiment_exposure`, exact assignment/version/binding, inclusive-lower/exclusive-upper 604800-second window, click/like/save/share and bound-run fallback. Duplicate observations and unsupported sources/events fail. Stale assignment and persisted dedupe remain migration-required. Dataset hash and release evidence remain outside query scope.
 
-## Identity and privacy
+Required marker:
 
-Model A uses synthetic identities only. No physical identity mapping owner, store, repository or port implementation is authorized. Real identity governance remains deferred.
+```text
+P2_NON_PRODUCTION_RECONCILIATION_ONLY
+CURRENT_P2_AUTHORITY_UNCHANGED
+NO_AUTHORITY_TRANSFER
+```
 
-Evidence uses hashed fixture IDs and redacted normalized values. Raw user IDs, opaque subject IDs, session secrets, payload history, mapping pairs and canonical dataset rows are prohibited.
+## Checkpoint, identity and evidence
 
-## DB and production
+Exact parity uses zero-lag explicit fixture checkpoints and matching lineage. Identity is synthetic-only and every invalid state fails closed. Evidence stores hashes, normalized values, query fingerprints, checkpoints, row counts and DB version; never raw rows, IDs, credentials, endpoints or connection strings. CI retention is 90 days; DB/raw result retention is execution lifetime/none.
+
+## DB and SQL impact
 
 ```text
 DB_CHANGE=NONE
 SQL_ALLOCATION=NOT_REQUIRED
 NEW_TABLE_REQUIRED=NO
 NEW_VIEW_REQUIRED=NO
-NEW_ROLE_REQUIRED=NO
-NEW_GRANT_REQUIRED=NO
+NEW_ROLE_REQUIRED=YES_EPHEMERAL_TEST_ONLY
+NEW_GRANT_REQUIRED=YES_EPHEMERAL_TEST_ONLY
+TEST_FIXTURE_SQL_REQUIRED=YES_NONCANONICAL_TEST_ONLY
 RUNTIME_WIRING=NOT_AUTHORIZED
 PRODUCTION_IMPACT=NONE
 PRODUCTION_ACTIVATION=NOT_AUTHORIZED
 ```
 
-A discovered DB requirement blocks that sub-scope and requires a new allocation proposal.
+No SQL is created by SC-4 and SQL `53+` remains unallocated.
 
 ## Prerequisites
 
-| Track | RCA-1 Model A prerequisite |
+| Role | Status |
 |---|---|
-| Intelligence | required for P1 semantics and implementation |
-| Reliability | required for P2 semantics and acceptance |
-| Data | consulted for candidate contract/checkpoint/lineage |
-| SC | required for entry, exit and breaking changes |
-| Operations | consulted; execution credentials not required |
-| Privacy/Security | policy review; no real identity material |
+| Intelligence | `BLOCKING_APPROVAL` for P1 query/result/exit |
+| Reliability | `BLOCKING_APPROVAL` for P2 query/migration/evidence |
+| Data | `REQUIRED` for candidate/checkpoint/lineage/seed |
+| Operations | `BLOCKING_APPROVAL` for DB/credential/network/role/resource/retention |
+| Privacy/Security | `BLOCKING_APPROVAL` for identity/redaction/secret/retention |
+| SC | `BLOCKING_APPROVAL` for entry/exit/registry/SQL/authority |
 
 ## Verification truth
 
-SC-3 verifies governance, baseline, contracts, fixture inventory, source authority, SQL/config protection, decision uniqueness and diff boundaries.
+SC-4 verifies governance, baseline, merge tree, RCA-1 contract/fixture inventory, decision uniqueness, finite limits, query/role/dimension policies, SQL/source/config protection and governance-only diff.
 
-The following are not executed by SC-3 and are not PASS: actual RCA-1 comparison, PostgreSQL, runtime, canary, load, replay and production.
+SC-4 does not execute PostgreSQL reconciliation, role permission tests, actual queries, runtime dark read, canary, load, replay, production validation or actual identity mapping; these are not PASS.
 
 ## Documents
 
-- [SC-3 master decision](sc-next-track/SC-3-RCA-1-ENTRY-AUTHORIZATION-AND-BASELINE-ALLOCATION.md)
-- [execution model](sc-next-track/13-SC-RCA1-EXECUTION-MODEL-DECISION.md)
-- [P1 equivalence](sc-next-track/14-SC-RCA1-P1-RECONCILIATION-AUTHORITY-AND-EQUIVALENCE.md)
-- [P2 equivalence](sc-next-track/15-SC-RCA1-P2-RECONCILIATION-AUTHORITY-AND-EQUIVALENCE.md)
-- [identity governance](sc-next-track/16-SC-RCA1-IDENTITY-MAPPING-GOVERNANCE.md)
-- [evidence/privacy](sc-next-track/17-SC-RCA1-EVIDENCE-AND-PRIVACY-POLICY.md)
-- [prerequisite matrix](sc-next-track/18-SC-RCA1-OPERATIONS-RELIABILITY-PREREQUISITE-MATRIX.md)
-- [DB/SQL decision](sc-next-track/19-SC-RCA1-DB-SQL-IMPACT-DECISION.md)
-- [verification plan](sc-next-track/20-SC-RCA1-VERIFICATION-PLAN.md)
-- [exit and RCA-2 boundary](sc-next-track/21-SC-RCA1-EXIT-CRITERIA-AND-RCA2-HANDOFF.md)
-- [implementation prompt](sc-next-track/22-RCA-1-IMPLEMENTATION-HANDOFF-PROMPT.md)
+- [SC-4 master](sc-next-track/SC-4-RCA-1B-ENTRY-AUTHORIZATION-AND-EXECUTION-BOUNDARY.md)
+- [execution environment](sc-next-track/23-SC-RCA1B-EXECUTION-ENVIRONMENT-DECISION.md)
+- [PostgreSQL versions](sc-next-track/24-SC-RCA1B-POSTGRESQL-VERSION-AND-COMPATIBILITY-DECISION.md)
+- [read-only contract](sc-next-track/25-SC-RCA1B-DB-READ-ONLY-EXECUTION-CONTRACT.md)
+- [role/grant and SQL](sc-next-track/26-SC-RCA1B-ROLE-GRANT-AND-SQL-ALLOCATION-DECISION.md)
+- [query boundary](sc-next-track/27-SC-RCA1B-ALLOWED-QUERY-BOUNDARY.md)
+- [dataset](sc-next-track/28-SC-RCA1B-REPRODUCIBLE-DATASET-DECISION.md)
+- [identity/privacy](sc-next-track/29-SC-RCA1B-IDENTITY-PRIVACY-DECISION.md)
+- [P1 DB](sc-next-track/30-SC-RCA1B-P1-DB-RECONCILIATION-AUTHORITY-AND-EQUIVALENCE.md)
+- [P2 DB](sc-next-track/31-SC-RCA1B-P2-DB-RECONCILIATION-AUTHORITY-AND-EQUIVALENCE.md)
+- [checkpoint/lineage](sc-next-track/32-SC-RCA1B-CHECKPOINT-FRESHNESS-LINEAGE-DECISION.md)
+- [evidence policy](sc-next-track/33-SC-RCA1B-EVIDENCE-REDACTION-RETENTION-POLICY.md)
+- [prerequisite matrix](sc-next-track/34-SC-RCA1B-OPERATIONS-RELIABILITY-PREREQUISITE-MATRIX.md)
+- [verification plan](sc-next-track/35-SC-RCA1B-VERIFICATION-PLAN.md)
+- [exit/RCA-2 boundary](sc-next-track/36-SC-RCA1B-EXIT-CRITERIA-AND-RCA2-HANDOFF.md)
+- [implementation prompt](sc-next-track/37-RCA-1B-IMPLEMENTATION-HANDOFF-PROMPT.md)
 
 ## Follow-up order
 
-1. review and merge SC-3 only after explicit user approval;
-2. implement RCA-1 Model A in a separate branch/PR;
-3. obtain Intelligence P1 and Reliability P2 acceptance;
-4. evaluate RCA-1 exit criteria;
-5. separately propose Model B if DB evidence is still needed;
-6. separately propose RCA-2 for runtime dark read.
+1. merge SC-4 only after explicit user approval;
+2. implement RCA-1B in a separate Draft PR;
+3. collect exact-head blocking approvals and execute PostgreSQL 15/18 read-only tests;
+4. evaluate lane-separated RCA-1B exit;
+5. propose RCA-2 separately if runtime evidence is still required.
 
 ## Current gate
 
 ```text
-RCA1_ENTRY_AUTHORIZED
+RCA1B_ENTRY_AUTHORIZED
 IMPLEMENTATION_REQUIRES_SEPARATE_PR
 ```
 
-SC-3 is governance-only. The PR must remain unmerged until explicit user approval.
+SC-4 is governance-only. Do not mark ready or merge without explicit user approval.
