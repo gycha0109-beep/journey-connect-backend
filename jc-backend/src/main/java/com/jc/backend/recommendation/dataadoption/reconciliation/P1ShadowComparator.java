@@ -40,7 +40,7 @@ public final class P1ShadowComparator {
         results.add(gap(Rca1Contracts.Dimension.ORDERING_NOT_COMPARABLE, candidate.orderingComparable(),
                 "Aggregate projection has no authoritative event ordering."));
         results.add(gap(Rca1Contracts.Dimension.EVENT_GRAIN_MISSING, candidate.eventGrainAvailable(),
-                "Aggregate projection cannot fabricate BehaviorProfileEvent rows."));
+                "Aggregate projection cannot fabricate authoritative event rows."));
         results.add(gap(Rca1Contracts.Dimension.EXPLICIT_PREFERENCE_MISSING, candidate.explicitPreferencesAvailable(),
                 "Explicit recommendation preferences are absent from the candidate aggregate."));
         results.add(gap(Rca1Contracts.Dimension.TRANSFORM_POLICY_MISSING, candidate.transformPolicyAvailable(),
