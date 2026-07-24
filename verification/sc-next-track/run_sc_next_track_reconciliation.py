@@ -118,7 +118,7 @@ raci = read(GOV / "SC-RACI.md")
 sc_handoff = read(GOV / "SC-HANDOFF.md")
 for name, text, markers in (
     ("system", system_contract, ("V1.4 / SC-3 RCA-1 ENTRY", CURRENT_MAIN, RCA0_FINAL_HEAD, "RCA1_ENTRY_AUTHORIZED")),
-    ("governance", governance, ("RCA-0 Recommendation Data Consumer Contract & Fixture Alignment [COMPLETE / MERGED]", "RCA-1 Recommendation Data Shadow Reconciliation", "RP remains reserved for Reliability Platform")),
+    ("governance", governance, ("RCA-0 Recommendation Data Consumer Contract & Fixture Alignment [COMPLETE / MERGED]", "RCA-1 Recommendation Data Shadow Reconciliation", "reserved for Reliability Platform")),
     ("registry", registry, ("ACTIVE / RCA0_COMPLETE / RCA1_ENTRY_AUTHORIZED", "recommendation-data-consumer-alignment-v1", "recommendation-shadow-reconciliation-v1", "`53+`")),
     ("decisions", decisions, ("SC-RCA-001", "SC-RCA1-001", "RCA1_ENTRY_AUTHORIZED")),
     ("raci", raci, ("P1 comparison implementation", "P2 exposure/window/event/fallback acceptance")),
