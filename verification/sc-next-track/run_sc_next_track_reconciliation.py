@@ -247,6 +247,7 @@ allowed_prefixes = (
     "verification/sc-next-track/",
     "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
     "verification/data-platform-closure/run_data_platform_closure_verification.py",
+    "verification/dp7/run_dp7_allocation_verification.py",
 )
 for rel in filter(None, changed):
     if not any(rel == prefix or rel.startswith(prefix) for prefix in allowed_prefixes):
