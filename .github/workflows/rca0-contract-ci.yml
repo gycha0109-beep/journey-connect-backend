@@ -53,6 +53,6 @@ jobs:
             verification/rca0/runtime/**
             jc-backend/build/test-results/**/*.xml
             jc-backend/build/reports/tests/**
-            jc-recommendation-core/build/test-results/**/*.xml
-            jc-recommendation-core/build/reports/tests/**
+            jc-backend/jc-recommendation-core/build/test-results/**/*.xml
+            jc-backend/jc-recommendation-core/build/reports/tests/**
           if-no-files-found: warn
