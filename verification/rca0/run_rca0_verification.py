@@ -57,7 +57,7 @@ def main():
         rec("work_start_is_ancestor",lambda:(sh(["git","merge-base","--is-ancestor",START,head]).stdout or "ancestor verified"),f"git merge-base --is-ancestor {START} {head}")
         rec("contract_id_registration",lambda:(need(IDS<=set(re.findall(r'"([a-z0-9-]+-v1)"',"\n".join(p.read_text() for p in PKG.glob("*.java")))),"contract ID missing") or "four IDs registered"))
         changed=git("diff","--name-only",f"{START}..{head}").splitlines()
-        rec("rp_naming_conflict_absent",lambda:(need(not re.search(r"RecommendationPlatform|RP\s*(?:=|:|means)\s*Recommendation","\n".join((ROOT/p).read_text(errors="ignore") for p in changed if (ROOT/p).is_file()),re.I),"RP naming conflict") or "RP=Reliability; RCA workstream"))
+        rec("rp_naming_conflict_absent",lambda:(need(not re.search(r"Recommendation" + r"Platform|RP\s*(?:=|:|means)\s*" + r"Recommendation","\n".join((ROOT/p).read_text(errors="ignore") for p in changed if (ROOT/p).is_file()),re.I),"RP naming conflict") or "RP=Reliability; RCA workstream"))
         def fx():
             a,ac=fixture(F1); b,bc=fixture(F2); need(a==P1,f"P1 fixture mismatch {P1^a}"); need(b==P2,f"P2 fixture mismatch {P2^b}"); need(not {"RUNTIME_READY","PRODUCTION_READY","AUTHORITATIVE","CUTOVER_APPROVED"}&set(ac+bc),"forbidden classification"); return "12 P1 and 21 P2 unique scenarios"
         rec("required_fixture_inventory",fx)
