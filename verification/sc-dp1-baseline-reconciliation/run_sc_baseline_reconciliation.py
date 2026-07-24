@@ -59,7 +59,7 @@ for marker in (
     "Data Platform technical closure [COMPLETE]",
     "RCA-0 Recommendation Data Consumer Contract & Fixture Alignment [COMPLETE / MERGED]",
     "RCA-1 Recommendation Data Shadow Reconciliation",
-    "RP remains reserved for Reliability Platform",
+    "reserved for Reliability Platform",
     "DB_CHANGE=NONE",
 ):
     if marker not in governance:
