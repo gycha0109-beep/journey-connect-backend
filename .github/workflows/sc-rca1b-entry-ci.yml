@@ -1,0 +1,51 @@
+name: SC RCA-1B Entry Authorization CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "docs/platform/governance/**"
+      - "verification/sc-next-track/rca1b-entry/**"
+      - "verification/sc-next-track/rca1-entry/**"
+      - "verification/sc-next-track/run_sc_next_track_reconciliation.py"
+      - "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py"
+      - ".github/workflows/sc-rca1b-entry-ci.yml"
+      - ".github/workflows/sc-baseline-reconciliation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sc-rca1b-entry-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  governance-entry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact pull request head
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Run RCA-1B entry independent verifier
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p verification/sc-next-track/rca1b-entry/runtime
+          python verification/sc-next-track/rca1b-entry/run_sc_rca1b_entry_verification.py \
+            2>&1 | tee verification/sc-next-track/rca1b-entry/runtime/SC_RCA1B_ENTRY_CI.log
+      - name: Upload RCA-1B governance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sc-rca1b-entry-governance-evidence
+          retention-days: 90
+          path: verification/sc-next-track/rca1b-entry/runtime/**
+          if-no-files-found: error
