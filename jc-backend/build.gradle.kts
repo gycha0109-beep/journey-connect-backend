@@ -402,3 +402,27 @@ tasks.register("verifyIp12") {
         "check",
     )
 }
+
+
+/** RCA-2 controlled isolated non-production runtime dark-read verification. */
+tasks.register<Test>("rca2ControlledRuntimeDarkReadTest") {
+    group = "verification"
+    description = "Runs RCA-2 flag, traffic, async, executor, breaker, identity, authority and no-side-effect contracts."
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    dependsOn(tasks.testClasses)
+    useJUnitPlatform()
+    filter { includeTestsMatching("com.jc.backend.recommendation.rca2.*") }
+}
+
+tasks.register("rca2ControlledRuntimeDarkReadVerification") {
+    group = "verification"
+    description = "Runs RCA-2 implementation tests and protected Recommendation/backend regressions."
+    dependsOn(
+        "rca2ControlledRuntimeDarkReadTest",
+        "p0Verification",
+        "p1ContractVerification",
+        "p2ContractVerification",
+        "check",
+    )
+}
