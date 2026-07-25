@@ -228,6 +228,7 @@ def main() -> int:
                 "verification/data-platform-closure/run_data_platform_closure_verification.py",
                 "verification/dp6/run_dp6_allocation_verification.py",
                 "verification/dp7/run_dp7_allocation_verification.py",
+                "verification/dp7/run_dp7_static_verification.py",
                 "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
                 "verification/sc-next-track/rca2-entry/",
             )
