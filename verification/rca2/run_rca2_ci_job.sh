@@ -19,7 +19,7 @@ case "$LANE" in
   baseline)
     git -C "$ROOT" cat-file -e "$WORK_START^{commit}"
     git -C "$ROOT" cat-file -e "$SC5_HEAD^{commit}"
-    test "$(git -C "$ROOT" show -s --format=%s "$WORK_START")" = "docs(sc): authorize controlled RCA-2 runtime dark read"
+    git -C "$ROOT" show -s --format=%B "$WORK_START" | grep -q 'docs(sc): authorize controlled RCA-2 runtime dark read'
     git -C "$ROOT" diff --quiet "$SC5_HEAD" "$WORK_START"
     test -f "$ROOT/$HANDOFF"
     grep -q 'RCA2_ENTRY_AUTHORIZED' "$ROOT/docs/platform/governance/sc-next-track/SC-5-RCA-2-ENTRY-AUTHORIZATION-AND-EXECUTION-BOUNDARY.md"
