@@ -26,8 +26,23 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
-      - name: Run RCA-2 isolated runtime tests
+      - name: Run RCA-2 isolated runtime tests and capture full log
+        id: probe
         working-directory: jc-backend
+        shell: bash
         run: |
+          set +e
           chmod +x gradlew
-          ./gradlew rca2ControlledRuntimeDarkReadTest --stacktrace --no-daemon
+          ./gradlew rca2ControlledRuntimeDarkReadTest --stacktrace --no-daemon > ../rca2-compile-probe.log 2>&1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          tail -200 ../rca2-compile-probe.log
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rca2-compile-probe-log
+          path: rca2-compile-probe.log
+          retention-days: 7
+      - name: Enforce probe result
+        shell: bash
+        run: exit ${{ steps.probe.outputs.status }}
