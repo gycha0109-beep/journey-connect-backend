@@ -146,7 +146,16 @@ def main() -> int:
     out=repo/args.output
     out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(evidence,indent=2,sort_keys=True)+"\n",encoding="utf-8")
-    print(json.dumps(evidence,indent=2,sort_keys=True))
+    failed=[c.as_dict() for c in checks if c.status == "FAIL"]
+    summary={
+        "overall": overall,
+        "testedSha": actual_head,
+        "expectedHead": args.expected_head or None,
+        "failedChecks": failed,
+        "verificationCounters": evidence["verificationCounters"],
+        "evidencePath": str(out.relative_to(repo)),
+    }
+    print(json.dumps(summary,indent=2,sort_keys=True))
     return 0 if overall=="PASS" else 1
 
 if __name__=="__main__": sys.exit(main())
