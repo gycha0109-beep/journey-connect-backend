@@ -1,0 +1,21 @@
+name: RCA-2 CI lane
+inputs:
+  lane:
+    required: true
+  expected-head:
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@v5
+      with:
+        distribution: temurin
+        java-version: '21'
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.13'
+    - uses: gradle/actions/setup-gradle@v6
+    - shell: bash
+      run: chmod +x jc-backend/gradlew verification/rca2/run_rca2_ci_job.sh
+    - shell: bash
+      run: verification/rca2/run_rca2_ci_job.sh '${{ inputs.lane }}' '${{ inputs.expected-head }}'
