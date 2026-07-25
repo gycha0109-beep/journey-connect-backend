@@ -46,7 +46,8 @@ public final class Rca2IdentityPolicy {
         if (!Rca2RuntimeContracts.ENVIRONMENT.equals(identity.environment())) return blocked(Reason.WRONG_ENVIRONMENT, audit);
         if (!PURPOSE.equals(identity.purpose())) return blocked(Reason.UNAUTHORIZED_PURPOSE, audit);
         if (!allowedCallers.contains(identity.caller())) return blocked(Reason.UNAUTHORIZED_CALLER, audit);
-        if (identity.deleted() || identity.invalidated()) return blocked(Reason.DELETED, audit);
+        if (identity.deleted()) return blocked(Reason.DELETED, audit);
+        if (identity.invalidated()) return blocked(Reason.INVALID, audit);
         if (identity.validUntil() == null || !now.isBefore(identity.validUntil())) return blocked(Reason.EXPIRED, audit);
         if (!identity.encryptedAtRest() || !identity.encryptedInTransit()) return blocked(Reason.ENCRYPTION_CONTRACT_FAILED, audit);
         if (identity.ref().matches("user:[0-9]+") || identity.ref().matches("subject:production:.+")) {
@@ -68,7 +69,7 @@ public final class Rca2IdentityPolicy {
     public String resolveRequestIdentity(Long userId) {
         if (userId == null || userId <= 0) return "anonymous";
         String hash = sha256("user:" + userId);
-        return allowedTestAccountHashes.contains(hash) ? "test-account:" + hash : "user:" + userId;
+        return allowedTestAccountHashes.contains(hash) ? "test-account:" + hash : "subject:production:" + hash;
     }
 
     private static Decision blocked(Reason reason, String audit) { return new Decision(false, reason, audit); }

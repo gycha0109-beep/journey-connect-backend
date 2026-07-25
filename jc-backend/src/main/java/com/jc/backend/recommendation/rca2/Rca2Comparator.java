@@ -53,7 +53,7 @@ public final class Rca2Comparator {
         }
         if (!"recommendation_p2_experiment_exposure".equals(candidate.exposureAuthority())
                 || candidate.outcomeWindowSeconds() != 604_800L
-                || !P2_EVENTS.containsAll(candidate.engagementEvents())
+                || !P2_EVENTS.equals(candidate.engagementEvents())
                 || !"BOUND_RECOMMENDATION_RUN_ONLY".equals(candidate.fallbackSource())
                 || !candidate.oneObservationKeyValid()) {
             inventory.add("P2_AUTHORITY_OR_SEMANTIC_MISMATCH");

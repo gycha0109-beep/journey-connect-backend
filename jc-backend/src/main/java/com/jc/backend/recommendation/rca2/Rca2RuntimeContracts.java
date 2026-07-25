@@ -19,6 +19,19 @@ public final class Rca2RuntimeContracts {
     public static final Duration CONNECTION_TIMEOUT = Duration.ofMillis(100);
     public static final Duration READ_TIMEOUT = Duration.ofMillis(300);
     public static final Duration TOTAL_TIMEOUT = Duration.ofMillis(500);
+    public static final int INITIAL_TRAFFIC_PERCENT = 0;
+    public static final int MAX_PRODUCTION_DARK_READ_PERCENT = 0;
+    public static final String PRIMARY_RESULT_AUTHORITY = "CURRENT_P1_P2_ONLY";
+    public static final String SHADOW_RESULT_AUTHORITY = "NONE";
+    public static final String SHADOW_RESULT_SERVING = "FORBIDDEN";
+    public static final String SHADOW_FAILURE_FALLBACK = "KEEP_PRIMARY_RESULT";
+    public static final String RETRY_POLICY = "NONE";
+    public static final String LATE_RESULT_POLICY = "DISCARD";
+    public static final String IDENTITY_MODE = "SYNTHETIC_OR_TEST_ACCOUNT_ONLY";
+    public static final String DB_CHANGE = "NONE";
+    public static final String SQL_ALLOCATION = "NOT_REQUIRED";
+    public static final String PRODUCTION_ACTIVATION = "NOT_AUTHORIZED";
+    public static final String AUTHORITY_TRANSFER = "FORBIDDEN";
     public static final Set<String> P1_EXPECTED_GAPS = Set.of(
             "ORDERING_NOT_COMPARABLE", "EVENT_GRAIN_MISSING", "EXPLICIT_PREFERENCE_MISSING",
             "TRANSFORM_POLICY_MISSING", "FINGERPRINT_SEMANTICS_PROTECTED");

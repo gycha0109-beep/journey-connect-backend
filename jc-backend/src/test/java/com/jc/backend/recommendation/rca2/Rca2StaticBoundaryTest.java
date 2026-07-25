@@ -30,7 +30,7 @@ class Rca2StaticBoundaryTest {
             for (Path path : files.filter(Files::isRegularFile).toList()) {
                 String source = Files.readString(path);
                 assertThat(source).doesNotContain("JpaRepository", "JdbcTemplate", "EntityManager", "ApplicationEventPublisher",
-                        "KafkaTemplate", "Repository.save", "flush()", "@Transactional");
+                        "KafkaTemplate", "Repository.save", "flush()", "@Transactional", "production.example", "jdbc:postgresql://prod");
             }
         }
     }
