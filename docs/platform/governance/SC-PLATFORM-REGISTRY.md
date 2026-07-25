@@ -5,22 +5,15 @@
 | Field | Value |
 |---|---|
 | contract ID | `sc-platform-registry-v1` |
-| status | `ACTIVE / RCA1_COMPLETE / RCA1B_ENTRY_AUTHORIZED` |
-| authoritative main | `b2e7a5c316c6f6ee543ccedf35bca65353ab3aa4` |
-| RCA-1 exact-final-head | `38896b2a37180633870282e9d9e305d9c9fbbf8a` |
+| status | `ACTIVE / RCA1B_COMPLETE / RCA2_ENTRY_AUTHORIZED` |
+| authoritative main/work-start | `3efbf96ebf25ae1645a62f35269c4b569425a9ca` |
+| RCA-1B exact-final-head | `dbb6b5397ad0fe675856b195e280faf9a0f3030c` |
 | canonical SQL | `01..52` |
 | unallocated SQL | `53+` |
 
-Historical status marker `ACTIVE / RCA0_COMPLETE / RCA1_ENTRY_AUTHORIZED` remains preserved by the completed phases.
+## Baseline markers
 
-## Modules and boundaries
-
-| Boundary | Package/object family | Owner | Status |
-|---|---|---|---|
-| RCA-0 consumer boundary | `com.jc.backend.recommendation.dataadoption` | Intelligence lead / Reliability P2 semantics | ACTIVE / PURE JAVA |
-| RCA-1 comparator boundary | `.dataadoption.reconciliation` | joint Intelligence/Reliability | ACTIVE / MODEL A COMPLETE |
-| RCA-1B test implementation | test-only adjacent package/resources | joint lane owners + Operations | RESERVED / SEPARATE PR |
-| RCA-1B DB environment | CI ephemeral PostgreSQL | Operations | ENTRY AUTHORIZED / NOT IMPLEMENTED |
+`RCA1B_NONPRODUCTION_READONLY_RECONCILIATION_COMPLETE`, `CROSS_VERSION_RESULT_EQUIVALENCE=PASS`, `READ_ONLY_BOUNDARY=ENFORCED`, `QUERY_ALLOWLIST=ENFORCED`, `CHECKPOINT_BOUNDARY=ENFORCED`, `LINEAGE_BOUNDARY=ENFORCED`.
 
 ## Workstream and phase identifiers
 
@@ -28,62 +21,68 @@ Historical status marker `ACTIVE / RCA0_COMPLETE / RCA1_ENTRY_AUTHORIZED` remain
 |---|---|---|
 | `RCA` | Recommendation Consumer Adoption cross-track workstream | ACTIVE |
 | `RCA-0` | contract/fixture alignment | COMPLETE / MERGED |
-| `RCA-1` | offline deterministic reconciliation | COMPLETE / MODEL A |
-| `RCA-1B` | non-production read-only DB reconciliation | ENTRY AUTHORIZED |
-| `RCA-2` | controlled runtime dark read | RESERVED / NOT AUTHORIZED |
+| `RCA-1` | offline deterministic reconciliation | COMPLETE |
+| `RCA-1B` | non-production read-only reconciliation | COMPLETE / MERGED |
+| `SC-5` | RCA-2 entry authorization | ACTIVE |
+| `RCA-2` | controlled runtime dark read | ENTRY AUTHORIZED / NOT IMPLEMENTED |
 | `RP` | Reliability Platform | PROTECTED ACRONYM |
 
 `RP` is reserved for Reliability Platform and is not a Recommendation workstream name.
 
-## RCA contracts
+## Contract registry
 
 | Contract ID | Owner | Status |
 |---|---|---|
-| `recommendation-data-consumer-alignment-v1` | SC coordination | ACTIVE / RCA-0 |
-| `recommendation-profile-input-consumer-v1` | Intelligence | ACTIVE / RCA-0 |
-| `experiment-outcome-input-consumer-v1` | Reliability semantics | ACTIVE / RCA-0 |
-| `recommendation-data-consumer-fixture-v1` | joint | ACTIVE / RCA-0 |
-| `recommendation-shadow-reconciliation-v1` | lane split | ACTIVE / RCA-1 |
-| `recommendation-shadow-reconciliation-evidence-v1` | Reliability integrity | ACTIVE / RCA-1 |
-| `recommendation-shadow-reconciliation-fixture-v1` | joint | ACTIVE / RCA-1 |
+| `recommendation-data-consumer-alignment-v1` | SC | ACTIVE / RCA-0 |
+| `recommendation-shadow-reconciliation-v1` | lane owners | ACTIVE / RCA-1 |
+| `recommendation-shadow-reconciliation-evidence-v1` | Reliability | ACTIVE / RCA-1/RCA-1B |
+| `recommendation-runtime-dark-read-boundary-v1` | SC | ALLOCATED / RCA-2 |
+| `recommendation-runtime-dark-read-query-registry-v1` | Data + lane owners | REQUIRED / NOT IMPLEMENTED |
+| `recommendation-runtime-dark-read-evidence-v1` | Reliability + Privacy | REQUIRED / NOT IMPLEMENTED |
 
-No additional contract ID is allocated by SC-4. RCA-1B reuses the RCA-1 taxonomy/evidence contract and registers query IDs in governance evidence.
+No DB contract or SQL number is allocated by SC-5.
 
-## RCA-1B query registry
+## Module boundary registry
 
-| Query ID | Lane | Status |
+| Boundary | Owner | Status |
 |---|---|---|
-| `P1_AUTHORITATIVE_REFERENCE_V1` | P1 | APPROVED / NOT IMPLEMENTED |
-| `P1_DATA_CANDIDATE_V1` | P1 | APPROVED / NOT IMPLEMENTED |
-| `P2_AUTHORITATIVE_EXPOSURE_OUTCOME_V1` | P2 | APPROVED / NOT IMPLEMENTED |
-| `P2_DATA_CANDIDATE_V1` | P2 | APPROVED / NOT IMPLEMENTED |
-| `SOURCE_CHECKPOINT_V1` | common | APPROVED / NOT IMPLEMENTED |
-| `SOURCE_LINEAGE_V1` | common | APPROVED / NOT IMPLEMENTED |
-| `BOUNDED_ROW_COUNT_V1` | common | APPROVED / NOT IMPLEMENTED |
+| current P1 source/result | Intelligence | PROTECTED |
+| current P2 source/exposure/dataset/metrics | Reliability | PROTECTED |
+| RCA-1B test-only DB adapter and queries | joint | HISTORICAL / TEST ONLY |
+| RCA-2 shadow orchestrator | Operations/shared implementation | RESERVED / SEPARATE PR |
+| RCA-2 P1 comparator | Intelligence | RESERVED |
+| RCA-2 P2 comparator | Reliability | RESERVED |
+| RCA-2 checkpoint/lineage adapter | Data | RESERVED |
+| RCA-2 flag/breaker/kill/rollback controls | Operations | RESERVED |
+| production dark-read trigger | SC | BLOCKED |
+| authority-transfer adapter | SC | NOT ALLOCATED |
 
-Every query requires a version-controlled fingerprint, prepared parameters, deterministic ordering and a finite bound.
-
-## Identity modes
-
-| Mode | Status |
-|---|---|
-| `SYNTHETIC_ONLY` | APPROVED / RCA-1B |
-| pseudonymized non-production binding | DEFERRED |
-| actual identity mapping | BLOCKED |
-
-No identity repository, persistent mapping or actual-user evidence is authorized.
-
-## Execution environment registry
+## Environment registry
 
 ```text
-RCA1B_EXECUTION_ENVIRONMENT=CI_EPHEMERAL_POSTGRESQL
-POSTGRESQL_VERSION_MATRIX=15,18
-RCA1B_DATASET_MODE=DETERMINISTIC_SYNTHETIC_DATABASE_FIXTURE
-TRANSACTION_READ_ONLY=REQUIRED
-PRODUCTION_DB=FORBIDDEN
+RCA2_ENTRY_AUTHORIZED
+RCA2_EXECUTION_ENVIRONMENT=ISOLATED_NON_PRODUCTION_RUNTIME
+RCA2_RUNTIME_MODEL=ASYNC_POST_RESPONSE_SHADOW
+CI_RUNTIME_SIMULATION=REQUIRED
+PRODUCTION_DARK_READ=BLOCKED
+FEATURE_FLAG_DEFAULT=OFF
+INITIAL_TRAFFIC_PERCENT=0
+MAX_PRODUCTION_DARK_READ_PERCENT=0
+PRIMARY_RESULT_AUTHORITY=CURRENT_P1_P2_ONLY
+SHADOW_RESULT_AUTHORITY=NONE
+SHADOW_RESULT_SERVING=FORBIDDEN
+SHADOW_FAILURE_FALLBACK=KEEP_PRIMARY_RESULT
+IDENTITY_MODE=SYNTHETIC_OR_TEST_ACCOUNT_ONLY
+RUNTIME_FRESHNESS_POLICY=BLOCKED_PENDING_MEASUREMENT
 ```
 
-PostGIS/extensions are not required. Environment B is deferred; production replica/derived environments are blocked.
+## Runtime model registry
+
+| Model | Status |
+|---|---|
+| synchronous isolated shadow | TEST FALLBACK ONLY |
+| asynchronous post-response shadow | APPROVED |
+| queue/event shadow worker | BLOCKED / SEPARATE CONTRACT |
 
 ## Current Recommendation authority
 
@@ -98,34 +97,45 @@ PostGIS/extensions are not required. Environment B is deferred; production repli
 
 `CURRENT_P1_P2_AUTHORITY_UNCHANGED`.
 
-## Role and grant registry
+## Identity registry
+
+| Mode | Status |
+|---|---|
+| synthetic runtime simulation | APPROVED |
+| explicit isolated non-production test account | CONDITIONALLY APPROVED / ALLOWLIST |
+| pseudonymized production subject | BLOCKED |
+| actual production identity | BLOCKED |
+
+## Query registry status
+
+The RCA-1B seven-query registry is `TEST_ONLY`. `recommendation-runtime-dark-read-query-registry-v1` is allocated as an application contract but has zero approved production DB queries. Dynamic SQL and raw identity queries are forbidden.
+
+## Role and credential registry
 
 | Item | Status |
 |---|---|
-| `rca1b_readonly` | RESERVED / EPHEMERAL TEST ONLY |
-| persistent RCA role | NOT ALLOCATED |
-| schema usage | EXPLICIT ALLOWLIST ONLY |
-| table select | EXPLICIT ALLOWLIST ONLY |
-| write grant | FORBIDDEN |
-| `BYPASSRLS` | FORBIDDEN |
-| owner/superuser use | FORBIDDEN |
+| `rca1b_readonly` | HISTORICAL / EPHEMERAL TEST ONLY |
+| RCA-2 persistent DB role | NOT ALLOCATED |
+| RCA-2 DB grant | NOT ALLOCATED |
+| RCA-2 non-production workload identity | REQUIRED / OPERATIONS OWNED / NOT IMPLEMENTED |
+| production credential | BLOCKED |
+| production route | BLOCKED |
 
 ## DB sequence
 
-| Range | Owner/purpose | Status |
-|---|---|---|
-| `01..26` | canonical + Recommendation P2 | PROTECTED |
-| `27..28` | Search/Operations baseline | PROTECTED |
-| `29..52` | Data Platform | PROTECTED |
-| `53+` | unallocated | SC ASSIGNMENT REQUIRED |
+| Range | Status |
+|---|---|
+| `01..52` | PROTECTED |
+| `53+` | UNALLOCATED / SC ASSIGNMENT REQUIRED |
 
 ```text
 DB_CHANGE=NONE
 SQL_ALLOCATION=NOT_REQUIRED
 NEW_TABLE_REQUIRED=NO
 NEW_VIEW_REQUIRED=NO
-NEW_ROLE_REQUIRED=YES_EPHEMERAL_TEST_ONLY
-NEW_GRANT_REQUIRED=YES_EPHEMERAL_TEST_ONLY
-TEST_FIXTURE_SQL_REQUIRED=YES_NONCANONICAL_TEST_ONLY
+NEW_ROLE_REQUIRED=NO
+NEW_GRANT_REQUIRED=NO
+PERSISTED_EVIDENCE_REQUIRED=NO
 PRODUCTION_ACTIVATION=NOT_AUTHORIZED
+AUTHORITY_TRANSFER=FORBIDDEN
 ```
