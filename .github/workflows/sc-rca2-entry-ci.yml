@@ -6,6 +6,7 @@ on:
     paths:
       - "docs/platform/governance/**"
       - "verification/sc-next-track/rca2-entry/**"
+      - "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py"
       - ".github/workflows/sc-rca2-entry-ci.yml"
   workflow_dispatch:
 
@@ -41,6 +42,7 @@ jobs:
       - name: Run independent SC-5 verifier
         run: |
           set -o pipefail
+          mkdir -p verification/sc-next-track/rca2-entry/runtime
           python verification/sc-next-track/rca2-entry/run_sc_rca2_entry_verification.py \
             2>&1 | tee verification/sc-next-track/rca2-entry/runtime/SC_RCA2_ENTRY_VERIFIER.log
       - name: Upload exact-head governance evidence
