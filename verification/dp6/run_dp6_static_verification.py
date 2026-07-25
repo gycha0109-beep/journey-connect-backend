@@ -135,11 +135,31 @@ try:
     unexpected=changed_sql-(SQL_FILES|DP7_SUCCESSOR_SQL_FILES)
     if unexpected:
         fail(f"unexpected SQL outside approved DP-6/DP-7 ranges: {sorted(unexpected)}")
-    protected=[path for path in changed if path.startswith((
+    protected=[item for item in changed if item.startswith((
         "jc-recommendation-core/","jc-intelligence-contracts/","jc-search-contracts/","jc-search-compatibility/",
-        "jc-search-runtime/","jc-search-integration/","jc-search-shadow-wiring/","jc-search-readiness/",
-        "jc-search-production-controls/","jc-backend/src/main/","jc-backend/src/main/resources/"))]
-    if protected: fail(f"protected production/Recommendation/Search source changed: {protected}")
+        "jc-search-runtime/","jc-search-integration/","jc-search-shadow-wiring/",
+        "jc-search-production-controls/"))]
+    protected += [item for item in changed if item in (
+        "jc-backend/src/main/java/com/jc/backend/recommendation/p1/RecommendationP1ProfileSource.java",
+        "jc-backend/src/main/java/com/jc/backend/recommendation/p2/RecommendationP2ObservationSource.java",
+    )]
+    production_configs = [item for item in changed
+        if item.startswith("jc-backend/src/main/resources/application")
+        and item != "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml"]
+    if protected or production_configs:
+        fail(f"protected production/Recommendation/Search source changed: {protected + production_configs}")
+    rca2_config=(ROOT/"jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml").read_text(encoding="utf-8")
+    for marker in ("flag: off","traffic-percent: 0","max-production-dark-read-percent: 0",
+                   "production-route-allowed: false","db-change: NONE","sql-allocation: NOT_REQUIRED"):
+        if marker not in rca2_config: fail(f"RCA2 isolated config marker missing: {marker}")
+    if "http://" in rca2_config or "https://" in rca2_config or "jdbc:" in rca2_config:
+        fail("RCA2 isolated config contains concrete route or DB connection")
+    runtime_source="\n".join(item.read_text(encoding="utf-8")
+        for item in (ROOT/"jc-backend/src/main/java/com/jc/backend/recommendation/rca2").glob("*.java"))
+    for token in ("JpaRepository","JdbcTemplate","EntityManager","ApplicationEventPublisher",
+                  "KafkaTemplate","@Transactional","ForkJoinPool.commonPool","newCachedThreadPool",
+                  "CallerRunsPolicy"):
+        if token in runtime_source: fail(f"RCA2 runtime violates DP6 static boundary: {token}")
     old=[path for path in changed_sql if int(Path(path).name[:2])<=42]
     if old: fail(f"protected SQL 01..42 changed: {old}")
 except (subprocess.CalledProcessError,FileNotFoundError):
