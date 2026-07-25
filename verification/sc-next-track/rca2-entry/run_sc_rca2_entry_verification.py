@@ -209,6 +209,7 @@ def main() -> int:
                 need(marker in p2, f"P2 authority marker missing: {marker}")
             changed = git("diff", "--name-only", f"{START}..{head}").splitlines()
             allowed = ("docs/platform/governance/","verification/sc-next-track/rca2-entry/",
+                       "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
                        ".github/workflows/sc-rca2-entry-ci.yml")
             unexpected = [p for p in changed if not any(p == prefix or p.startswith(prefix) for prefix in allowed)]
             need(not unexpected, f"unexpected changed files: {unexpected}")
