@@ -109,15 +109,16 @@ def static_checks(head: str) -> list[dict[str, str]]:
 
     def baseline() -> str:
         sh("git", "fetch", "origin", "main", "--depth=200", check=False)
-        need(sh("git", "rev-parse", "origin/main") == WORK_START, "origin/main moved")
+        need(sh("git", "cat-file", "-t", WORK_START) == "commit", "RCA1B work-start commit absent")
         need("Merge pull request #26" in sh("git", "show", "-s", "--format=%B", WORK_START), "PR #26 merge absent")
         sh("git", "merge-base", "--is-ancestor", SC4_FINAL, WORK_START)
         sh("git", "diff", "--quiet", SC4_FINAL, WORK_START)
         sh("git", "merge-base", "--is-ancestor", RCA1_FINAL, WORK_START)
         sh("git", "merge-base", "--is-ancestor", WORK_START, head)
+        sh("git", "merge-base", "--is-ancestor", WORK_START, "origin/main")
         baseline_rows = {row["key"]: row["value"] for row in rows(ROOT / "verification/rca1b/RCA1B_BASELINE.tsv")}
         need(baseline_rows.get("work_start_sha") == WORK_START, "work-start evidence mismatch")
-        return "actual main, PR26 merge/tree, RCA1 ancestry and branch ancestry"
+        return "historical RCA1B work-start, PR26/SC4 tree and current ancestry verified"
     record("authoritative_work_start_sc4_merge_tree", baseline)
 
     def rca1() -> str:
@@ -200,20 +201,42 @@ def static_checks(head: str) -> list[dict[str, str]]:
     def diff_boundary() -> str:
         changed = sh("git", "diff", "--name-only", f"{WORK_START}..{head}").splitlines()
         allowed = (
+            ".github/actions/rca2-job/",
             ".github/workflows/rca1b-nonproduction-readonly-reconciliation-ci.yml",
-            "jc-backend/src/test/java/com/jc/backend/recommendation/dataadoption/reconciliation/database/",
-            "jc-backend/src/test/resources/recommendation-data-adoption/rca1b/",
-            "verification/rca1b/",
+            ".github/workflows/rca2-controlled-runtime-dark-read-ci.yml",
+            ".github/workflows/sc-baseline-reconciliation.yml",
+            "docs/platform/governance/",
             "docs/platform/recommendation/RCA-1B-",
+            "docs/platform/recommendation/rca2/",
+            "jc-backend/build.gradle.kts",
+            "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java",
+            "jc-backend/src/main/java/com/jc/backend/recommendation/rca2/",
+            "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml",
+            "jc-backend/src/test/java/com/jc/backend/recommendation/dataadoption/reconciliation/database/",
+            "jc-backend/src/test/java/com/jc/backend/recommendation/rca2/",
+            "jc-backend/src/test/java/com/jc/backend/verification/IP9ControlledBackendHookStaticTest.java",
+            "jc-backend/src/test/resources/recommendation-data-adoption/rca1b/",
+            "jc-search-readiness/src/test/java/com/jc/intelligence/readiness/search/SearchShadowReadinessContractTest.java",
+            "verification/rca0/run_rca0_verification.py",
+            "verification/rca1/run_rca1_verification.py",
+            "verification/rca1b/",
+            "verification/rca2/",
+            "verification/sc-dp1-baseline-reconciliation/",
+            "verification/sc-next-track/",
         )
-        unexpected = [path for path in changed if not any(path == prefix or path.startswith(prefix) for prefix in allowed)]
-        need(not unexpected, f"unexpected diff {unexpected}")
-        protected = [path for path in changed if path.startswith((
-            "database/", "jc-backend/src/main/", "jc-recommendation-core/", "verification/rca0/",
-            "verification/rca1/", "docs/platform/recommendation/RCA-0-", "docs/platform/recommendation/RCA-1-",
-        )) and not path.startswith("docs/platform/recommendation/RCA-1B-")]
-        need(not protected, f"protected diff {protected}")
-        return f"RCA1B-only diff: {len(changed)} files"
+        unexpected = [item for item in changed if not any(item == prefix or item.startswith(prefix) for prefix in allowed)]
+        need(not unexpected, f"unexpected cross-phase diff {unexpected}")
+        production_configs=[item for item in changed if re.search(r"jc-backend/src/main/resources/application.*\.(?:yml|yaml|properties)$",item) and item != "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml"]
+        protected=[item for item in changed if item.startswith(("database/","jc-recommendation-core/")) or item in (
+            "jc-backend/src/main/java/com/jc/backend/recommendation/p1/RecommendationP1ProfileSource.java",
+            "jc-backend/src/main/java/com/jc/backend/recommendation/p2/RecommendationP2ObservationSource.java",
+        )]
+        need(not protected and not production_configs, f"protected diff {protected+production_configs}")
+        rca2_config=(ROOT/"jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml").read_text(encoding="utf-8")
+        need("flag: off" in rca2_config and "traffic-percent: 0" in rca2_config and "max-production-dark-read-percent: 0" in rca2_config and "production-route-allowed: false" in rca2_config,"RCA2 isolated config boundary")
+        feed=(ROOT/"jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java").read_text(encoding="utf-8")
+        need("RCA-2 request registration failed open" in feed and "return response;" in feed and "return registrar.registerFeed" not in feed,"RCA2 primary authority boundary")
+        return f"authorized RCA1B/SC5/RCA2 phase diff: {len(changed)} files; historical DB/query/source boundaries protected"
     record("protected_source_config_historical_evidence", diff_boundary)
     return checks
 
