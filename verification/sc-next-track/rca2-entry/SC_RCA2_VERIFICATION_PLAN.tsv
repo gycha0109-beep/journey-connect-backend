@@ -1,0 +1,25 @@
+check	sc5_status	evidence
+authoritative_work_start	PASS	git and baseline evidence
+pr27_merge_and_tree_equivalence	PASS	git merge commit ancestor and empty diff
+rca1b_completion_and_lane_baseline	PASS	existing RCA-1B docs plus SC baseline
+required_documents	PASS	20 documents and mandatory sections
+singular_environment_and_runtime_model	PASS	decision TSV
+feature_flag_and_traffic	PASS	default off and initial 0
+authority_timeout_fallback_breakers	PASS	decision and runtime contract
+credential_network_identity	PASS	boundary evidence
+p1_p2_lane_separation	PASS	lane evidence
+checkpoint_freshness	PASS	blocked pending measurement
+observability_redaction_rollback	PASS	metric and rollback inventories
+db_sql_and_query_boundary	PASS	no DB/SQL and application registry only
+governance_only_diff	PASS	git diff allowlist
+runtime_dark_read	NOT_EXECUTED	implementation phase
+feature_flag_runtime_test	NOT_EXECUTED	implementation phase
+actual_credential_test	NOT_EXECUTED	implementation phase
+production_route_test	NOT_EXECUTED	production blocked
+canary	NOT_EXECUTED	production blocked
+load	NOT_EXECUTED	implementation and Operations phase
+replay	NOT_EXECUTED	queue/event model blocked
+production_validation	NOT_EXECUTED	production blocked
+actual_identity_mapping	NOT_EXECUTED	identity blocked
+production_activation	NOT_EXECUTED	not authorized
+authority_transfer	NOT_EXECUTED	forbidden
