@@ -1,0 +1,40 @@
+name: RCA-2 Data Closure Import Fix
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/rca2-data-closure-import-fix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+      - name: Add missing regex import
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('verification/data-platform-closure/run_data_platform_closure_verification.py')
+          text = path.read_text()
+          needle = 'import csv\nimport subprocess\n'
+          replacement = 'import csv\nimport re\nimport subprocess\n'
+          if needle not in text:
+              raise SystemExit('Data closure import insertion point not found')
+          path.write_text(text.replace(needle, replacement, 1))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add verification/data-platform-closure/run_data_platform_closure_verification.py
+          git diff --cached --quiet && exit 0
+          git commit -m 'fix(data): import regex for RCA2 closure boundary'
+          git push origin HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}
