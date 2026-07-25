@@ -1,0 +1,33 @@
+name: RCA-2 Workspace Export
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/rca2-workspace-export.yml'
+      - 'verification/rca2-export-trigger.txt'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Record exact checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p rca2-export
+          git rev-parse HEAD > rca2-export/head-sha.txt
+          git rev-parse HEAD^{tree} > rca2-export/tree-sha.txt
+          git ls-files -z | tar --null -T - -czf rca2-export/source.tgz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rca2-workspace-source
+          path: rca2-export/
+          retention-days: 1
