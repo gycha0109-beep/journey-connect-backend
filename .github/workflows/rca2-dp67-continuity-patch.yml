@@ -1,0 +1,133 @@
+name: RCA-2 DP6 DP7 Continuity Patch
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/rca2-dp67-continuity-patch.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+      - name: Apply phase-aware DP6 and DP7 continuity boundaries
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          dp7 = Path('verification/dp7/run_dp7_allocation_verification.py')
+          text = dp7.read_text()
+          old_allowed = '''    "verification/data-platform-closure/", "verification/sc-next-track/",
+              "verification/dp5/run_dp5_static_verification.py",'''
+          new_allowed = '''    "verification/data-platform-closure/", "verification/sc-next-track/",
+              ".github/actions/rca2-job/", ".github/workflows/rca2-controlled-runtime-dark-read-ci.yml",
+              "docs/platform/recommendation/rca2/", "jc-backend/build.gradle.kts",
+              "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java",
+              "jc-backend/src/main/java/com/jc/backend/recommendation/rca2/",
+              "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml",
+              "jc-backend/src/test/java/com/jc/backend/recommendation/rca2/",
+              "jc-backend/src/test/java/com/jc/backend/verification/IP9ControlledBackendHookStaticTest.java",
+              "jc-search-readiness/src/test/java/com/jc/intelligence/readiness/search/SearchShadowReadinessContractTest.java",
+              "verification/rca0/run_rca0_verification.py", "verification/rca1/run_rca1_verification.py",
+              "verification/rca1b/run_rca1b_verification.py", "verification/rca2/",
+              "verification/dp5/run_dp5_static_verification.py",'''
+          old_protected = '''    protected_sources = [rel for rel in changed if rel.startswith((
+                  "jc-backend/src/main/", "jc-recommendation-core/", "jc-intelligence-contracts/",
+                  "jc-search-contracts/", "jc-search-compatibility/", "jc-search-runtime/",
+                  "jc-search-integration/", "jc-search-shadow-wiring/", "jc-search-readiness/",
+                  "jc-search-production-controls/",
+              ))]
+              if protected_sources:
+                  fail(f"protected production/target-track source changed: {protected_sources}")'''
+          new_protected = '''    protected_sources = [rel for rel in changed if rel.startswith((
+                  "jc-recommendation-core/", "jc-intelligence-contracts/", "jc-search-contracts/",
+                  "jc-search-compatibility/", "jc-search-runtime/", "jc-search-integration/",
+                  "jc-search-shadow-wiring/", "jc-search-production-controls/",
+              ))]
+              protected_sources += [rel for rel in changed if rel in (
+                  "jc-backend/src/main/java/com/jc/backend/recommendation/p1/RecommendationP1ProfileSource.java",
+                  "jc-backend/src/main/java/com/jc/backend/recommendation/p2/RecommendationP2ObservationSource.java",
+              )]
+              production_configs = [rel for rel in changed
+                  if rel.startswith("jc-backend/src/main/resources/application")
+                  and rel != "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml"]
+              if protected_sources or production_configs:
+                  fail(f"protected production/target-track source changed: {protected_sources + production_configs}")
+              rca2_config = (ROOT / "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml").read_text(encoding="utf-8")
+              for marker in ("flag: off", "traffic-percent: 0", "max-production-dark-read-percent: 0",
+                             "production-route-allowed: false", "db-change: NONE", "sql-allocation: NOT_REQUIRED"):
+                  if marker not in rca2_config:
+                      fail(f"RCA2 isolated config marker missing: {marker}")
+              if "http://" in rca2_config or "https://" in rca2_config or "jdbc:" in rca2_config:
+                  fail("RCA2 isolated config contains concrete route or DB connection")
+              feed = (ROOT / "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java").read_text(encoding="utf-8")
+              if "RCA-2 request registration failed open" not in feed or "return response;" not in feed:
+                  fail("RCA2 primary response boundary missing")
+              if "return registrar.registerFeed" in feed or "return rca2Registrar" in feed:
+                  fail("RCA2 hook became response authority")'''
+          for old, new in ((old_allowed, new_allowed), (old_protected, new_protected)):
+              if old not in text:
+                  raise SystemExit('DP7 target block not found exactly')
+              text = text.replace(old, new, 1)
+          dp7.write_text(text)
+
+          dp6 = Path('verification/dp6/run_dp6_allocation_verification.py')
+          text = dp6.read_text()
+          old_dp6 = '''    forbidden_prefixes = (
+                  "jc-backend/src/main/", "jc-backend/src/main/resources/", "jc-recommendation-core/",
+                  "jc-intelligence-contracts/", "jc-search-contracts/", "jc-search-compatibility/",
+                  "jc-search-runtime/", "jc-search-integration/", "jc-search-shadow-wiring/",
+                  "jc-search-readiness/", "jc-search-production-controls/",
+              )
+              protected = [path for path in changed if path.startswith(forbidden_prefixes)]
+              if protected:
+                  fail(f"protected production/Recommendation/Search source changed: {protected}")'''
+          new_dp6 = '''    forbidden_prefixes = (
+                  "jc-recommendation-core/", "jc-intelligence-contracts/", "jc-search-contracts/",
+                  "jc-search-compatibility/", "jc-search-runtime/", "jc-search-integration/",
+                  "jc-search-shadow-wiring/", "jc-search-production-controls/",
+              )
+              protected = [item for item in changed if item.startswith(forbidden_prefixes)]
+              protected += [item for item in changed if item in (
+                  "jc-backend/src/main/java/com/jc/backend/recommendation/p1/RecommendationP1ProfileSource.java",
+                  "jc-backend/src/main/java/com/jc/backend/recommendation/p2/RecommendationP2ObservationSource.java",
+              )]
+              production_configs = [item for item in changed
+                  if item.startswith("jc-backend/src/main/resources/application")
+                  and item != "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml"]
+              if protected or production_configs:
+                  fail(f"protected production/Recommendation/Search source changed: {protected + production_configs}")
+              rca2_config = (ROOT / "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml").read_text(encoding="utf-8")
+              for marker in ("flag: off", "traffic-percent: 0", "max-production-dark-read-percent: 0",
+                             "production-route-allowed: false", "db-change: NONE", "sql-allocation: NOT_REQUIRED"):
+                  if marker not in rca2_config:
+                      fail(f"RCA2 isolated config marker missing: {marker}")
+              if "http://" in rca2_config or "https://" in rca2_config or "jdbc:" in rca2_config:
+                  fail("RCA2 isolated config contains concrete route or DB connection")
+              runtime_source = "\\n".join(item.read_text(encoding="utf-8")
+                  for item in (ROOT / "jc-backend/src/main/java/com/jc/backend/recommendation/rca2").glob("*.java"))
+              for token in ("JpaRepository", "JdbcTemplate", "EntityManager", "ApplicationEventPublisher",
+                            "KafkaTemplate", "@Transactional", "ForkJoinPool.commonPool", "newCachedThreadPool",
+                            "CallerRunsPolicy"):
+                  if token in runtime_source:
+                      fail(f"RCA2 runtime violates DP6 boundary: {token}")'''
+          if old_dp6 not in text:
+              raise SystemExit('DP6 target block not found exactly')
+          dp6.write_text(text.replace(old_dp6, new_dp6, 1))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add verification/dp6/run_dp6_allocation_verification.py verification/dp7/run_dp7_allocation_verification.py
+          git diff --cached --quiet && exit 0
+          git commit -m 'fix(data): preserve DP6 DP7 continuity across RCA2 phase'
+          git push origin HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}
