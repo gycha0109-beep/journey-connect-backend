@@ -31,9 +31,6 @@ class Check:
 def run(repo: Path, *args: str) -> str:
     return subprocess.check_output(args, cwd=repo, text=True, stderr=subprocess.STDOUT).strip()
 
-def sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
 def contains(path: Path, *values: str) -> bool:
     text=path.read_text(encoding="utf-8")
     return all(value in text for value in values)
@@ -55,7 +52,8 @@ def main() -> int:
         actual_head=run(repo, "git", "rev-parse", "HEAD")
         check("actual_work_start_present", run(repo,"git","cat-file","-t",WORK_START)=="commit", WORK_START)
         check("sc5_exact_final_head_present", run(repo,"git","cat-file","-t",SC5_HEAD)=="commit", SC5_HEAD)
-        check("pr28_merge_subject", "authorize controlled RCA-2 runtime dark read" in run(repo,"git","show","-s","--format=%s",WORK_START), run(repo,"git","show","-s","--format=%s",WORK_START))
+        full_message=run(repo,"git","show","-s","--format=%B",WORK_START)
+        check("pr28_merge_subject", "authorize controlled RCA-2 runtime dark read" in full_message, full_message.splitlines()[-1] if full_message else "")
         check("sc5_merge_tree_equivalence", run(repo,"git","rev-parse",f"{WORK_START}^{{tree}}") == run(repo,"git","rev-parse",f"{SC5_HEAD}^{{tree}}"), "SC-5 exact-final-head tree equals PR #28 merge tree")
         if args.expected_head:
             check("exact_final_pr_head", actual_head == args.expected_head, f"actual={actual_head} expected={args.expected_head}")
@@ -97,8 +95,7 @@ def main() -> int:
     check("p2_exact_event_allowlist", "P2_EVENTS.equals(candidate.engagementEvents())" in all_source, "exact click/like/save/share")
     check("checkpoint_lineage", all(x in all_source for x in ["opaqueRef","monotonicSequence","capturedAtUtc","lineage fingerprint","artifactSha"]), "checkpoint and lineage required")
     check("freshness_measurement_only", "RUNTIME_FRESHNESS_POLICY_BLOCKED_PENDING_MEASUREMENT" in all_source and "freshness-threshold" not in all_source.lower(), "no invented PASS threshold")
-    metrics_path=src/"Rca2Metrics.java"
-    metric_text=metrics_path.read_text(encoding="utf-8")
+    metric_text=(src/"Rca2Metrics.java").read_text(encoding="utf-8")
     check("seventeen_metrics", all(m in metric_text for m in REQUIRED_METRICS), ",".join(REQUIRED_METRICS))
     check("metric_low_cardinality", all(x in metric_text for x in ["environment","lane","result_class","breaker_state"]) and all(x not in metric_text for x in ["request_id","subject_id","session_id","exposure_id"]), "allowlisted labels only")
     check("redaction", "hashedRequestRef" in all_source and "private static final List<String> FORBIDDEN" in main_source and "killSwitch.failClosed" in all_source, "redaction/global kill")
@@ -126,8 +123,7 @@ def main() -> int:
     check("approval_pending", any("APPROVAL_STATUS=PENDING_USER_REVIEW" in p.read_text(encoding="utf-8") for p in docs), "no fabricated human approval")
 
     for name in NOT_EXECUTED: status(name, "NOT_EXECUTED", "RCA-2 production boundary")
-    statuses={c.status for c in checks}
-    overall="PASS" if "FAIL" not in statuses else "FAIL"
+    overall="FAIL" if any(c.status=="FAIL" for c in checks) else "PASS"
     evidence={
         "contract":"recommendation-runtime-dark-read-v1",
         "actualWorkStartSha":WORK_START,
@@ -146,14 +142,13 @@ def main() -> int:
     out=repo/args.output
     out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(evidence,indent=2,sort_keys=True)+"\n",encoding="utf-8")
-    failed=[c.as_dict() for c in checks if c.status == "FAIL"]
     summary={
-        "overall": overall,
-        "testedSha": actual_head,
-        "expectedHead": args.expected_head or None,
-        "failedChecks": failed,
-        "verificationCounters": evidence["verificationCounters"],
-        "evidencePath": str(out.relative_to(repo)),
+        "overall":overall,
+        "testedSha":actual_head,
+        "expectedHead":args.expected_head or None,
+        "failedChecks":[c.as_dict() for c in checks if c.status=="FAIL"],
+        "verificationCounters":evidence["verificationCounters"],
+        "evidencePath":str(out.relative_to(repo)),
     }
     print(json.dumps(summary,indent=2,sort_keys=True))
     return 0 if overall=="PASS" else 1
