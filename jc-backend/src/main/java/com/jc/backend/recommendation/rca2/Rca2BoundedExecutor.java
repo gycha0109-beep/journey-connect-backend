@@ -30,6 +30,7 @@ public final class Rca2BoundedExecutor implements AutoCloseable {
     private final AtomicLong lateDiscarded = new AtomicLong();
     private final AtomicLong timedOut = new AtomicLong();
     private final AtomicInteger active = new AtomicInteger();
+    private final AtomicInteger outstanding = new AtomicInteger();
 
     public Rca2BoundedExecutor() {
         queue = new ArrayBlockingQueue<>(Rca2RuntimeContracts.MAX_SHADOW_QUEUE_DEPTH);
@@ -54,11 +55,16 @@ public final class Rca2BoundedExecutor implements AutoCloseable {
         Objects.requireNonNull(completion, "completion");
         if (closed.get()) return false;
         QueuedTask<T> task = new QueuedTask<>(System.nanoTime(), callable, completion);
+        outstanding.incrementAndGet();
         try {
             boolean accepted = queue.offer(task, Rca2RuntimeContracts.TASK_QUEUE_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
-            if (!accepted) rejected.incrementAndGet();
+            if (!accepted) {
+                outstanding.decrementAndGet();
+                rejected.incrementAndGet();
+            }
             return accepted;
         } catch (InterruptedException exception) {
+            outstanding.decrementAndGet();
             Thread.currentThread().interrupt();
             rejected.incrementAndGet();
             return false;
@@ -81,56 +87,60 @@ public final class Rca2BoundedExecutor implements AutoCloseable {
     @SuppressWarnings("unchecked")
     private <T> void execute(QueuedTask<?> raw) {
         QueuedTask<T> task = (QueuedTask<T>) raw;
-        long age = System.nanoTime() - task.enqueuedAtNanos();
-        if (age > Rca2RuntimeContracts.MAX_TASK_AGE.toNanos()) {
-            lateDiscarded.incrementAndGet();
-            task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.LATE_DISCARDED,
-                    null, null, TimeUnit.NANOSECONDS.toMillis(age)));
-            return;
-        }
-        active.incrementAndGet();
-        long started = System.nanoTime();
-        Future<T> future;
         try {
-            future = runtimeExecutor.submit(task.callable());
-        } catch (RejectedExecutionException exception) {
-            active.decrementAndGet();
-            rejected.incrementAndGet();
-            task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.EXCEPTION,
-                    null, exception, elapsed(started)));
-            return;
-        }
-        try {
-            T result = future.get(Rca2RuntimeContracts.TOTAL_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
-            long elapsed = elapsed(started);
-            if (elapsed > Rca2RuntimeContracts.TOTAL_TIMEOUT.toMillis()) {
+            long age = System.nanoTime() - task.enqueuedAtNanos();
+            if (age > Rca2RuntimeContracts.MAX_TASK_AGE.toNanos()) {
                 lateDiscarded.incrementAndGet();
                 task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.LATE_DISCARDED,
-                        null, null, elapsed));
-            } else {
-                task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.SUCCESS,
-                        result, null, elapsed));
+                        null, null, TimeUnit.NANOSECONDS.toMillis(age)));
+                return;
             }
-        } catch (TimeoutException exception) {
-            timedOut.incrementAndGet();
-            future.cancel(true);
-            task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.TIMEOUT,
-                    null, exception, elapsed(started)));
-        } catch (InterruptedException exception) {
-            future.cancel(true);
-            Thread.currentThread().interrupt();
-            task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.CANCELLED,
-                    null, exception, elapsed(started)));
-        } catch (ExecutionException exception) {
-            task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.EXCEPTION,
-                    null, exception.getCause(), elapsed(started)));
+            active.incrementAndGet();
+            long started = System.nanoTime();
+            Future<T> future;
+            try {
+                future = runtimeExecutor.submit(task.callable());
+            } catch (RejectedExecutionException exception) {
+                rejected.incrementAndGet();
+                task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.EXCEPTION,
+                        null, exception, elapsed(started)));
+                return;
+            }
+            try {
+                T result = future.get(Rca2RuntimeContracts.TOTAL_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
+                long elapsed = elapsed(started);
+                if (elapsed > Rca2RuntimeContracts.TOTAL_TIMEOUT.toMillis()) {
+                    lateDiscarded.incrementAndGet();
+                    task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.LATE_DISCARDED,
+                            null, null, elapsed));
+                } else {
+                    task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.SUCCESS,
+                            result, null, elapsed));
+                }
+            } catch (TimeoutException exception) {
+                timedOut.incrementAndGet();
+                future.cancel(true);
+                task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.TIMEOUT,
+                        null, exception, elapsed(started)));
+            } catch (InterruptedException exception) {
+                future.cancel(true);
+                Thread.currentThread().interrupt();
+                task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.CANCELLED,
+                        null, exception, elapsed(started)));
+            } catch (ExecutionException exception) {
+                task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.EXCEPTION,
+                        null, exception.getCause(), elapsed(started)));
+            } finally {
+                active.decrementAndGet();
+            }
         } finally {
-            active.decrementAndGet();
+            outstanding.decrementAndGet();
         }
     }
 
     public int queueDepth() { return queue.size(); }
     public int activeCount() { return active.get(); }
+    public int outstandingCount() { return outstanding.get(); }
     public long rejectedCount() { return rejected.get(); }
     public long lateDiscardedCount() { return lateDiscarded.get(); }
     public long timeoutCount() { return timedOut.get(); }
@@ -138,7 +148,8 @@ public final class Rca2BoundedExecutor implements AutoCloseable {
     public boolean awaitIdle(Duration timeout) {
         long deadline = System.nanoTime() + timeout.toNanos();
         while (System.nanoTime() < deadline) {
-            if (queue.isEmpty() && active.get() == 0 && runtimeExecutor.getActiveCount() == 0) return true;
+            if (outstanding.get() == 0 && queue.isEmpty() && active.get() == 0
+                    && runtimeExecutor.getActiveCount() == 0) return true;
             try { Thread.sleep(2L); }
             catch (InterruptedException exception) { Thread.currentThread().interrupt(); return false; }
         }
@@ -148,8 +159,10 @@ public final class Rca2BoundedExecutor implements AutoCloseable {
     @Override public void close() {
         if (!closed.compareAndSet(false, true)) return;
         for (Thread dispatcher : dispatchers) dispatcher.interrupt();
+        List<QueuedTask<?>> abandoned = new ArrayList<>();
+        queue.drainTo(abandoned);
+        outstanding.addAndGet(-abandoned.size());
         runtimeExecutor.shutdownNow();
-        queue.clear();
         try { runtimeExecutor.awaitTermination(1, TimeUnit.SECONDS); }
         catch (InterruptedException exception) { Thread.currentThread().interrupt(); }
     }
