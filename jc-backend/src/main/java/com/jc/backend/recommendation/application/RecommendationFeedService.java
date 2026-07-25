@@ -6,9 +6,10 @@ import com.jc.backend.post.PostDtos;
 import com.jc.backend.post.PostService;
 import com.jc.backend.recommendation.rca2.Rca2RequestRegistrar;
 import java.util.Optional;
-import org.springframework.beans.factory.ObjectProvider;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -79,11 +80,15 @@ public class RecommendationFeedService {
             Long userId,
             String tokenId,
             long startedNanos) {
-        Rca2RequestRegistrar registrar = rca2Registrar.getIfAvailable();
-        if (registrar != null) {
-            long latencyMillis = Math.max(0L, java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(
-                    System.nanoTime() - startedNanos));
-            registrar.registerFeed(response, userId, tokenId, latencyMillis);
+        try {
+            Rca2RequestRegistrar registrar = rca2Registrar.getIfAvailable();
+            if (registrar != null) {
+                long latencyMillis = Math.max(0L, TimeUnit.NANOSECONDS.toMillis(
+                        System.nanoTime() - startedNanos));
+                registrar.registerFeed(response, userId, tokenId, latencyMillis);
+            }
+        } catch (RuntimeException exception) {
+            log.warn("RCA-2 request registration failed open: {}", exception.getClass().getSimpleName());
         }
         return response;
     }
