@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 jobs:
-  apply:
+  diagnose:
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
@@ -20,15 +20,24 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
           fetch-depth: 0
-      - name: Apply exact RCA-2 implementation payload
+      - name: Diagnose payload integrity
         shell: bash
         run: |
-          set -euo pipefail
-          base64 --decode verification/rca2-bootstrap.tar.gz.b64 > /tmp/rca2-bootstrap.tar.gz
-          tar -xzf /tmp/rca2-bootstrap.tar.gz -C .
-          rm verification/rca2-bootstrap.tar.gz.b64
+          set +e
+          mkdir -p verification
+          {
+            echo "payload_bytes=$(wc -c < verification/rca2-bootstrap.tar.gz.b64)"
+            echo "payload_sha256=$(sha256sum verification/rca2-bootstrap.tar.gz.b64 | cut -d' ' -f1)"
+            base64 --decode verification/rca2-bootstrap.tar.gz.b64 > /tmp/rca2-bootstrap.tar.gz
+            echo "decode_exit=$?"
+            echo "archive_bytes=$(wc -c < /tmp/rca2-bootstrap.tar.gz)"
+            echo "archive_sha256=$(sha256sum /tmp/rca2-bootstrap.tar.gz | cut -d' ' -f1)"
+            tar -tzf /tmp/rca2-bootstrap.tar.gz >/tmp/rca2-list.txt 2>/tmp/rca2-tar-error.txt
+            echo "tar_exit=$?"
+            echo "tar_error=$(tr '\n' ' ' < /tmp/rca2-tar-error.txt)"
+          } > verification/rca2-bootstrap-diagnostic.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'feat(rca2): add controlled runtime dark-read foundation'
+          git add verification/rca2-bootstrap-diagnostic.txt
+          git commit -m 'test(rca2): record bootstrap payload diagnostics'
           git push origin HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}
