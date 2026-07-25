@@ -1,0 +1,103 @@
+name: RCA-2 DP7 Static Continuity Patch
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/rca2-dp7-static-continuity-patch.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+      - name: Apply DP7 static continuity and verifier links
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('verification/dp7/run_dp7_static_verification.py')
+          text = path.read_text()
+          old = '''    if any(rel.startswith(("jc-backend/src/main/", "jc-recommendation-core/", "jc-intelligence-contracts/",
+                                     "jc-search-")) for rel in changed):
+                  fail("protected production or target-track source changed")'''
+          new = '''    protected = [rel for rel in changed if rel.startswith((
+                  "jc-recommendation-core/", "jc-intelligence-contracts/", "jc-search-contracts/",
+                  "jc-search-compatibility/", "jc-search-runtime/", "jc-search-integration/",
+                  "jc-search-shadow-wiring/", "jc-search-production-controls/",
+              ))]
+              protected += [rel for rel in changed if rel in (
+                  "jc-backend/src/main/java/com/jc/backend/recommendation/p1/RecommendationP1ProfileSource.java",
+                  "jc-backend/src/main/java/com/jc/backend/recommendation/p2/RecommendationP2ObservationSource.java",
+              )]
+              production_configs = [rel for rel in changed
+                  if rel.startswith("jc-backend/src/main/resources/application")
+                  and rel != "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml"]
+              if protected or production_configs:
+                  fail(f"protected production or target-track source changed: {protected + production_configs}")
+              rca2_config = (ROOT / "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml").read_text(encoding="utf-8")
+              for marker in ("flag: off", "traffic-percent: 0", "max-production-dark-read-percent: 0",
+                             "production-route-allowed: false", "db-change: NONE", "sql-allocation: NOT_REQUIRED"):
+                  if marker not in rca2_config:
+                      fail(f"RCA2 isolated config marker missing: {marker}")
+              if "http://" in rca2_config or "https://" in rca2_config or "jdbc:" in rca2_config:
+                  fail("RCA2 isolated config contains concrete route or DB connection")
+              runtime_source = "\\n".join(item.read_text(encoding="utf-8")
+                  for item in (ROOT / "jc-backend/src/main/java/com/jc/backend/recommendation/rca2").glob("*.java"))
+              for token in ("JpaRepository", "JdbcTemplate", "EntityManager", "ApplicationEventPublisher",
+                            "KafkaTemplate", "@Transactional", "ForkJoinPool.commonPool", "newCachedThreadPool",
+                            "CallerRunsPolicy"):
+                  if token in runtime_source:
+                      fail(f"RCA2 runtime violates DP7 static boundary: {token}")'''
+          if old not in text:
+              raise SystemExit('DP7 static target block not found exactly')
+          path.write_text(text.replace(old, new, 1))
+
+          links = {
+              'verification/sc-next-track/rca2-entry/run_sc_rca2_entry_verification.py': (
+                  '''                "verification/dp7/run_dp7_allocation_verification.py",
+                          "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",''',
+                  '''                "verification/dp7/run_dp7_allocation_verification.py",
+                          "verification/dp7/run_dp7_static_verification.py",
+                          "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",'''
+              ),
+              'verification/rca1/run_rca1_verification.py': (
+                  '''                "verification/dp7/run_dp7_allocation_verification.py",
+                          "verification/sc-dp1-baseline-reconciliation/",''',
+                  '''                "verification/dp7/run_dp7_allocation_verification.py",
+                          "verification/dp7/run_dp7_static_verification.py",
+                          "verification/sc-dp1-baseline-reconciliation/",'''
+              ),
+              'verification/rca1b/run_rca1b_verification.py': (
+                  '''            "verification/dp7/run_dp7_allocation_verification.py",
+                      "verification/sc-dp1-baseline-reconciliation/",''',
+                  '''            "verification/dp7/run_dp7_allocation_verification.py",
+                      "verification/dp7/run_dp7_static_verification.py",
+                      "verification/sc-dp1-baseline-reconciliation/",'''
+              ),
+          }
+          for filename, (old_link, new_link) in links.items():
+              target = Path(filename)
+              source = target.read_text()
+              if old_link not in source:
+                  raise SystemExit(f'DP7 static linkage point not found: {filename}')
+              target.write_text(source.replace(old_link, new_link, 1))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add verification/dp7/run_dp7_static_verification.py \
+                  verification/sc-next-track/rca2-entry/run_sc_rca2_entry_verification.py \
+                  verification/rca1/run_rca1_verification.py \
+                  verification/rca1b/run_rca1b_verification.py
+          git diff --cached --quiet && exit 0
+          git commit -m 'fix(data): preserve DP7 static continuity across RCA2 phase'
+          git push origin HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}
