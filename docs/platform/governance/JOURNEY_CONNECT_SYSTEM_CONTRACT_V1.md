@@ -5,42 +5,28 @@
 | Field | Value |
 |---|---|
 | contract ID | `jc-system-contract-v1` |
-| revision | `V1.5 / SC-4 RCA-1B ENTRY` |
-| status | `ACTIVE / RCA1_COMPLETE / RCA1B_ENTRY_AUTHORIZED` |
-| authoritative main | `b2e7a5c316c6f6ee543ccedf35bca65353ab3aa4` |
-| RCA-1 exact-final-head | `38896b2a37180633870282e9d9e305d9c9fbbf8a` |
-| historical SC-3 marker | `V1.4 / SC-3 RCA-1 ENTRY` |
+| revision | `V1.6 / SC-5 RCA-2 ENTRY` |
+| status | `ACTIVE / RCA1B_COMPLETE / RCA2_ENTRY_AUTHORIZED` |
+| authoritative main/work-start | `3efbf96ebf25ae1645a62f35269c4b569425a9ca` |
+| RCA-1B exact-final-head | `dbb6b5397ad0fe675856b195e280faf9a0f3030c` |
+| classification | `JOINT_INTELLIGENCE_RELIABILITY_OPERATIONS_ADOPTION` |
 | canonical DB | `journey-connect-db-v2.7/01..52` |
 | SQL `53+` | `UNALLOCATED` |
-| date | `2026-07-24` |
+| date | `2026-07-25` |
 
-## 2. Authoritative state
+## 2. Authoritative baseline
 
-- PR #25 is merged at `b2e7a5c316c6f6ee543ccedf35bca65353ab3aa4`.
-- RCA-1 exact-final-head `38896b2a37180633870282e9d9e305d9c9fbbf8a` is an ancestor and has an identical tree to the merge commit.
-- `RCA1_OFFLINE_SHADOW_RECONCILIATION_COMPLETE`.
-- `P1_RESULT=RECONCILED_WITH_EXPECTED_GAPS`.
-- `P2_RESULT=RECONCILED_WITH_MIGRATION_GAPS`.
-- `IDENTITY_MODE=SYNTHETIC_ONLY`.
-- `DATA_PLATFORM_TECHNICAL_CLOSURE_COMPLETE` and historical RCA-0 completion remain preserved.
-- SQL `01..52` is protected; SQL `53+` is absent/unallocated.
-- `PRODUCTION_ACTIVATION=NOT_AUTHORIZED`.
-- `CURRENT_P1_P2_AUTHORITY_UNCHANGED` and `NO_AUTHORITY_TRANSFER`.
+- PR #27 is merged at `3efbf96ebf25ae1645a62f35269c4b569425a9ca`.
+- RCA-1B exact-final-head `dbb6b5397ad0fe675856b195e280faf9a0f3030c` is an ancestor and has an identical tree to the merge commit.
+- `RCA1B_NONPRODUCTION_READONLY_RECONCILIATION_COMPLETE`.
+- `POSTGRESQL_VERSION_MATRIX=15,18`; `CROSS_VERSION_RESULT_EQUIVALENCE=PASS`.
+- P1 is `RECONCILED_WITH_EXPECTED_GAPS`; P2 is `RECONCILED_WITH_MIGRATION_GAPS`.
+- `READ_ONLY_BOUNDARY=ENFORCED`, `QUERY_ALLOWLIST=ENFORCED`, `CHECKPOINT_BOUNDARY=ENFORCED`, `LINEAGE_BOUNDARY=ENFORCED`.
+- No production database, traffic, credential, route, identity mapping or activation occurred.
+- SQL `01..52` remains protected; SQL `53+` remains absent/unallocated.
+- `CURRENT_P1_P2_AUTHORITY_UNCHANGED`; `NO_AUTHORITY_TRANSFER`.
 
-## 3. Track and authority boundary
-
-| Area | Semantic owner | Restriction |
-|---|---|---|
-| Data candidate projection/checkpoint/lineage | Data | non-authoritative candidate only |
-| P1 source/result and semantic acceptance | Intelligence | `RecommendationP1ProfileSource`; `recommendation_p1_profile_snapshot` protected |
-| P2 exposure/outcome/metric/release | Reliability | `RecommendationP2ObservationSource`; P2 authority protected |
-| CI DB environment/credential/resource | Operations | non-production ephemeral only |
-| privacy/redaction/retention | Privacy/Security | synthetic-only; raw rows/IDs prohibited |
-| registry, entry/exit, SQL allocation, authority transfer | System Coordination | approval authority |
-
-`RCA` is Recommendation Consumer Adoption, a cross-track workstream. `RP` is reserved for Reliability Platform and never means Recommendation Platform.
-
-## 4. Current Recommendation authority
+## 3. Current Recommendation authority
 
 ```text
 P1_SOURCE=RecommendationP1ProfileSource
@@ -51,179 +37,223 @@ P2_DATASET=recommendation-evaluation-dataset-v1
 P2_METRICS=engagement_rate,fallback_rate
 ```
 
-General exposure, behavior impression and P2 experiment exposure are distinct. `view`, `hide`, and `report` are not P2 engagement events.
+## 4. Workstream naming
+
+`RCA` is the Recommendation Consumer Adoption cross-track workstream. `RP` is reserved for Reliability Platform and never means Recommendation Platform.
 
 ## 5. RCA sequence
 
 ```text
-RCA-0 Recommendation Data Consumer Contract & Fixture Alignment [COMPLETE / MERGED]
-RCA-1 Recommendation Data Shadow Reconciliation [COMPLETE / MODEL A]
-RCA-1B Recommendation Data Non-production Read-only Reconciliation [ENTRY AUTHORIZED]
-RCA-2 Controlled Runtime Dark Read [NOT AUTHORIZED]
+RCA-0 contract and fixture alignment [COMPLETE / MERGED]
+RCA-1 offline deterministic reconciliation [COMPLETE]
+RCA-1B non-production read-only reconciliation [COMPLETE / MERGED]
+RCA-2 controlled runtime dark read [ENTRY AUTHORIZED / IMPLEMENTATION NOT STARTED]
+production dark read [BLOCKED / SEPARATE SC APPROVAL]
+authority transfer [FORBIDDEN / SEPARATE REVIEW]
 ```
 
-Historical entry marker `RCA1_ENTRY_AUTHORIZED` remains true for the completed RCA-1 phase.
-
-## 6. RCA-1B execution decision
+## 6. SC-5 entry decision
 
 ```text
-RCA1B_ENTRY_AUTHORIZED
-RCA1B_EXECUTION_ENVIRONMENT=CI_EPHEMERAL_POSTGRESQL
-POSTGRESQL_VERSION_MATRIX=15,18
-RCA1B_DATASET_MODE=DETERMINISTIC_SYNTHETIC_DATABASE_FIXTURE
-IDENTITY_MODE=SYNTHETIC_ONLY
-TRANSACTION_READ_ONLY=REQUIRED
-DB_WRITE=FORBIDDEN
-PRODUCTION_DB=FORBIDDEN
-RUNTIME_WIRING=NOT_AUTHORIZED
-PRODUCTION_IMPACT=NONE
+RCA2_ENTRY_AUTHORIZED
+RCA2_EXECUTION_ENVIRONMENT=ISOLATED_NON_PRODUCTION_RUNTIME
+RCA2_RUNTIME_MODEL=ASYNC_POST_RESPONSE_SHADOW
+FEATURE_FLAG_REQUIRED=YES
+FEATURE_FLAG_DEFAULT=OFF
+INITIAL_TRAFFIC_PERCENT=0
+PRIMARY_RESULT_AUTHORITY=CURRENT_P1_P2_ONLY
+SHADOW_RESULT_AUTHORITY=NONE
+SHADOW_RESULT_SERVING=FORBIDDEN
+SHADOW_FAILURE_FALLBACK=KEEP_PRIMARY_RESULT
+IDENTITY_MODE=SYNTHETIC_OR_TEST_ACCOUNT_ONLY
+DB_CHANGE=NONE
+SQL_ALLOCATION=NOT_REQUIRED
 PRODUCTION_ACTIVATION=NOT_AUTHORIZED
-CURRENT_P1_P2_AUTHORITY_UNCHANGED
+AUTHORITY_TRANSFER=FORBIDDEN
 IMPLEMENTATION_REQUIRES_SEPARATE_PR
 ```
 
-Environment B is deferred; production replica/derived environments are blocked.
+`RCA2_ENTRY_AUTHORIZED` authorizes a separate implementation PR for an isolated non-production, default-off, zero-initial-traffic shadow path only. It does not authorize execution, production traffic, serving or transfer.
 
-## 7. PostgreSQL and execution contract
+## 7. Runtime environment and model
 
 ```text
-POSTGRESQL_MINIMUM_VERSION=15
-POSTGRESQL_VERSION_MATRIX=15,18
-TRANSACTION_ISOLATION=REPEATABLE_READ
-AUTOCOMMIT=DISABLED
-STATEMENT_TIMEOUT_MS=5000
-LOCK_TIMEOUT_MS=1000
-IDLE_IN_TRANSACTION_TIMEOUT_MS=5000
-MAX_RESULT_ROWS_PER_QUERY=1000
-MAX_RECONCILIATION_CASES=10000
-MAX_EXECUTION_DURATION_SECONDS=900
-MAX_RECONCILIATION_CONNECTIONS=2
-PARALLEL_QUERY=DISABLED
-CURSOR_FETCH_SIZE=100
+ENVIRONMENT_A=REQUIRED_CI_RUNTIME_SIMULATION
+ENVIRONMENT_B=APPROVED_ISOLATED_NON_PRODUCTION_RUNTIME
+ENVIRONMENT_C=BLOCKED_PRODUCTION_DARK_READ
+RCA2_RUNTIME_MODEL=ASYNC_POST_RESPONSE_SHADOW
+MODEL_A=TEST_FALLBACK_ONLY
+MODEL_C=BLOCKED_PENDING_QUEUE_EVENT_CONTRACT
+```
+
+The executor is dedicated, bounded and invoked only after the authoritative response is committed. The repository currently has no validated asynchronous boundary; implementation must create and prove it before enablement.
+
+## 8. Feature flag and traffic
+
+```text
+FEATURE_FLAG_REQUIRED=YES
+FEATURE_FLAG_DEFAULT=OFF
+FAIL_CLOSED_ON_UNKNOWN_FLAG=YES
+LOCAL_DEFAULT_ENABLE=NO
+ENVIRONMENT_OVERRIDE_REQUIRED=YES
+RUNTIME_ENABLE_WITHOUT_SC_APPROVAL=FORBIDDEN
+INITIAL_TRAFFIC_PERCENT=0
+MAX_NONPRODUCTION_TRAFFIC_PERCENT=100_STAGED
+MAX_PRODUCTION_DARK_READ_PERCENT=0
+```
+
+Missing, stale, expired or malformed flag state resolves OFF. Global and lane kill switches override every enable flag. Deployment and enablement are separate approvals.
+
+## 9. Primary and shadow authority
+
+```text
+PRIMARY_RESULT_SOURCE=CURRENT_AUTHORITATIVE_SOURCE
+PRIMARY_RESULT_MUTATION=FORBIDDEN
+SHADOW_RESULT_AUTHORITY=NONE
+SHADOW_RESULT_USER_VISIBLE=NO
+SHADOW_RESULT_SERVING=FORBIDDEN
+SHADOW_RESULT_FALLBACK=FORBIDDEN
+SHADOW_RESULT_CACHE_WRITE=FORBIDDEN
+SHADOW_RESULT_DATABASE_WRITE=FORBIDDEN
+SHADOW_RESULT_EVENT_EMISSION=FORBIDDEN
+SHADOW_RESULT_NOTIFICATION=FORBIDDEN
+SHADOW_RESULT_RANKING_FEEDBACK=FORBIDDEN
+SHADOW_FAILURE_USER_IMPACT=NONE
+```
+
+## 10. Runtime resource and failure contract
+
+```text
+SHADOW_CONNECTION_TIMEOUT_MS=100
+SHADOW_READ_TIMEOUT_MS=300
+SHADOW_TOTAL_TIMEOUT_MS=500
+TASK_QUEUE_TIMEOUT_MS=50
+MAX_TASK_AGE_MS=1000
+MAX_SHADOW_CONCURRENCY=4
+MAX_SHADOW_QUEUE_DEPTH=100
+LATE_RESULT_POLICY=DISCARD
 RETRY_POLICY=NONE
+PRIMARY_TIMEOUT_UNCHANGED=YES
+SHADOW_TIMEOUT_CANNOT_EXTEND_PRIMARY_BUDGET=YES
+CIRCUIT_BREAKER_REQUIRED=YES
+GLOBAL_KILL_SWITCH_REQUIRED=YES
+LANE_KILL_SWITCH_REQUIRED=YES
 ```
 
-Timezone is UTC; collation/ctype semantics are `C`; no PostGIS or extension is required. DDL, DML, temporary objects, server-file COPY, function/trigger creation, schema changes, migrations, lock escalation, owner/superuser use and write grants are prohibited.
+Timeout, exception, queue rejection, stale data and circuit-open preserve the primary result. Breakers are independent for P1 and P2.
 
-## 8. Role, grant and SQL sequence
+## 11. Credential, network and DB boundary
 
 ```text
-RCA1B_ROLE_REQUIRED=YES_EPHEMERAL_TEST_ONLY
-RCA1B_ROLE_NAME=rca1b_readonly
-BYPASSRLS_ALLOWED=NO
-CREATEDB_ALLOWED=NO
-CREATEROLE_ALLOWED=NO
-REPLICATION_ALLOWED=NO
-SCHEMA_USAGE=EXPLICIT_ALLOWLIST_ONLY
-TABLE_SELECT=EXPLICIT_ALLOWLIST_ONLY
-WRITE_GRANT=FORBIDDEN
-OWNER_ROLE_USE=FORBIDDEN
-DB_CHANGE=NONE
-SQL_ALLOCATION=NOT_REQUIRED
-TEST_FIXTURE_SQL_REQUIRED=YES_NONCANONICAL_TEST_ONLY
+RUNTIME_DB_ACCESS_REQUIRED=NO
+PRODUCTION_ROUTE_ALLOWED=NO
+TLS_REQUIRED=YES
+CREDENTIAL_OWNER=OPERATIONS
+CREDENTIAL_SCOPE=ENVIRONMENT_SPECIFIC_NONPRODUCTION_LEAST_PRIVILEGE
+CREDENTIAL_STORAGE=PLATFORM_SECRET_MANAGER
+CREDENTIAL_MAX_TTL_SECONDS=3600
+NETWORK_POLICY=DENY_BY_DEFAULT_EXPLICIT_NONPRODUCTION_ALLOWLIST
+DB_CHANGE_REQUIRED=NO
+SQL_ALLOCATION_REQUIRED=NO
+NEW_TABLE_REQUIRED=NO
+NEW_VIEW_REQUIRED=NO
+NEW_ROLE_REQUIRED=NO
+NEW_GRANT_REQUIRED=NO
 ```
 
-The test-only role/grants and synthetic seed are destroyed with the container. They are not canonical migrations. SQL `01..52` remains immutable and SQL `53+` remains unallocated.
+RCA-1B `rca1b_readonly` is test-only and cannot become a runtime role. A persistent DB object/role/grant requirement blocks entry by SQL allocation and no SQL may be authored in RCA-2 implementation.
 
-## 9. Query boundary
+## 12. Runtime query boundary
 
-Only registered, version-controlled, prepared, parameterized, bounded, deterministically ordered and fingerprinted query IDs may run:
+The seven RCA-1B queries remain test-only. RCA-2 requires `recommendation-runtime-dark-read-query-registry-v1` as an application-level versioned contract with static identifiers, finite limits, deterministic normalization, parameter provenance, checkpoint/lineage dependencies and redaction classification. Dynamic SQL, owner queries, raw identity queries and production DB queries are not authorized.
+
+## 13. Identity and privacy
 
 ```text
-P1_AUTHORITATIVE_REFERENCE_V1
-P1_DATA_CANDIDATE_V1
-P2_AUTHORITATIVE_EXPOSURE_OUTCOME_V1
-P2_DATA_CANDIDATE_V1
-SOURCE_CHECKPOINT_V1
-SOURCE_LINEAGE_V1
-BOUNDED_ROW_COUNT_V1
+IDENTITY_MODE=SYNTHETIC_OR_TEST_ACCOUNT_ONLY
+IDENTITY_OWNER=PRIVACY_SECURITY
+IDENTITY_AUTHORITY=RCA2_NONPRODUCTION_TEST_ACCOUNT_ALLOWLIST_V1
+IDENTITY_PURPOSE_BINDING=RCA2_ISOLATED_NONPRODUCTION_DARK_READ_ONLY
+IDENTITY_STORAGE=ENCRYPTED_ENVIRONMENT_IDENTITY_REGISTRY
+IDENTITY_FAILURE_POLICY=FAIL_CLOSED_KEEP_PRIMARY
+ACTUAL_PRODUCTION_IDENTITY=BLOCKED
+RAW_IDENTITY_RETENTION=NONE
+RAW_RESULT_RETENTION=NONE
+CREDENTIAL_RETENTION=NONE
 ```
 
-Dynamic/unreviewed SQL, unbounded scans, production data, actual identity mapping, canonical dataset rows, release evidence and credential catalogs are prohibited.
+Anonymous, nearest-user, alternate-subject and inferred-ID fallback are forbidden.
 
-## 10. Dataset and identity
-
-`RCA1B_DATASET_MODE=DETERMINISTIC_SYNTHETIC_DATABASE_FIXTURE`. Canonical SQL `01..52` is replayed into an ephemeral database and followed by noncanonical test-only seed setup. Dataset B is deferred and production-derived Dataset C is blocked.
-
-Identity remains synthetic-only:
+## 14. P1 runtime lane
 
 ```text
-IDENTITY_MAPPING_OWNER=NOT_REQUIRED_FOR_SYNTHETIC_ONLY
-IDENTITY_MAPPING_AUTHORITY=NONE
-IDENTITY_MAPPING_STORAGE=EPHEMERAL_TEST_FIXTURE_ONLY
-IDENTITY_MAPPING_RETENTION=EXECUTION_LIFETIME_ONLY
-IDENTITY_MAPPING_DELETION=CONTAINER_DESTRUCTION
-IDENTITY_MAPPING_AUDIT=HASHED_CASE_AND_CLASSIFICATION_ONLY
-IDENTITY_MAPPING_PURPOSE_BINDING=RCA1B_NONPRODUCTION_RECONCILIATION_ONLY
-IDENTITY_MAPPING_LOGGING_POLICY=NO_RAW_ID_OR_MAPPING_PAIR
-IDENTITY_MAPPING_FAILURE_POLICY=FAIL_CLOSED
+P1_RUNTIME_DARK_READ_ONLY
+CURRENT_P1_AUTHORITY_UNCHANGED
+P1_SHADOW_RESULT_NOT_SERVED
 ```
 
-Actual identity mapping is blocked. Anonymous, nearest-user, alternate-subject and inferred-ID fallback are prohibited.
+Compare normalized digests, result size, shared and derived fields, 7/30/90 windows, checkpoint, lineage, latency and failure classification. Existing expected/protected gaps remain excluded from unexpected mismatch. Aggregate-to-event fabrication is forbidden.
 
-## 11. P1 database reconciliation
-
-RCA-1 dimensions remain and DB-specific dimensions are separate: query result, checkpoint, snapshot isolation, row order, null semantics, numeric/timezone normalization, duplicate rows and source row count.
-
-Comparable exact/shared, deterministic-derived and 7/30/90 windows use zero mismatch tolerance. Checkpoint/snapshot equality and lineage match are required for exact parity. SQL NULL and empty remain distinct. Aggregate-to-event fabrication is forbidden. Ordering, event grain, explicit preferences, transform policy and fingerprint semantics remain expected/protected gaps.
-
-## 12. P2 database reconciliation
+## 15. P2 runtime lane
 
 ```text
+P2_RUNTIME_DARK_READ_ONLY
+CURRENT_P2_AUTHORITY_UNCHANGED
+P2_SHADOW_RESULT_NOT_SERVED
+NO_AUTHORITY_TRANSFER
 P2_EXPOSURE_AUTHORITY=recommendation_p2_experiment_exposure
 OUTCOME_WINDOW_SECONDS=604800
-WINDOW_BOUNDARY=EXPOSED_AT_INCLUSIVE__EXPOSED_AT_PLUS_604800_EXCLUSIVE
 ENGAGEMENT_EVENTS=click,like,save,share
 FALLBACK_SOURCE=BOUND_RECOMMENDATION_RUN_ONLY
 ONE_OBSERVATION_KEY=experimentRef,experimentVersion,subjectRef
 ```
 
-P2 DB dimensions include query/checkpoint parity, exposure/outcome uniqueness, duplicate observation, window SQL, event filter, fallback and assignment-version joins, and source row count. Stale-unexposed assignment and persisted dedupe remain `MIGRATION_REQUIRED`. Canonical dataset/hash and release evidence are excluded from query scope.
+`STALE_UNEXPOSED_ASSIGNMENT_GAP` and `OBSERVATION_DEDUPE_GAP` remain migration gaps. `CANONICAL_DATASET_HASH_PROTECTED` and `RELEASE_EVIDENCE_PROTECTED` remain inaccessible.
 
-Required markers:
-
-```text
-P2_NON_PRODUCTION_RECONCILIATION_ONLY
-CURRENT_P2_AUTHORITY_UNCHANGED
-NO_AUTHORITY_TRANSFER
-```
-
-## 13. Checkpoint, lineage and evidence
+## 16. Checkpoint, lineage and freshness
 
 ```text
 CHECKPOINT_REQUIRED=YES
-CHECKPOINT_EQUALITY_REQUIRED=YES_FOR_EXACT_PARITY
-MAX_ALLOWED_CHECKPOINT_LAG=0
-STALE_SOURCE_THRESHOLD=0_FOR_DETERMINISTIC_FIXTURE
-SNAPSHOT_CAPTURE_TIME=EXPLICIT_FIXTURE_TIMESTAMP
 LINEAGE_FINGERPRINT_REQUIRED=YES
-SYSTEM_CLOCK_DEPENDENCY=FORBIDDEN
-CI_EVIDENCE_RETENTION_DAYS=90
-DB_SNAPSHOT_RETENTION=EXECUTION_LIFETIME_ONLY
-RAW_RESULT_RETENTION=NONE
+RUNTIME_FRESHNESS_POLICY=BLOCKED_PENDING_MEASUREMENT
+INCOMPATIBLE_CHECKPOINT_POLICY=KEEP_PRIMARY_AND_CLASSIFY
+CLOCK_SOURCE=UTC_MONOTONIC_CAPTURE
 ```
 
-Evidence stores query fingerprints, normalized/redacted values, checkpoints, lineage, row counts, PostgreSQL version, transaction controls, verifier version and exact tested SHA. Raw rows, IDs, credentials, hosts and connection strings are prohibited.
+No live lag threshold is invented. Isolated non-production measurement must establish evidence before a threshold proposal.
 
-## 14. Failure and abort
+## 17. Observability and retention
 
-Production endpoint detection, owner/superuser use, write privilege, read-only off, allowlist violation, missing timeout/limit, unbounded query, checkpoint inversion, lineage mismatch, unsupported version, schema mismatch, P2 authority/window/event/fallback mismatch, raw identity evidence, protected-data access or protected diff immediately aborts.
+Required metrics are lane-separated and low-cardinality. Raw user/subject/session/run/exposure IDs, recommendation content, DB rows, query parameters, credentials, connection strings, endpoints, canonical dataset rows and release evidence are forbidden in logs or metrics. Metrics retain 30 days, redacted logs 14 days, exact-head review artifacts 90 days. Operational telemetry is not a P2 product metric or SLO.
 
-Abort behavior: transaction rollback, connection close, evidence-generation abort, execution FAIL, candidate result not approved, authority markers unchanged.
+## 18. Alert, kill switch and rollback
 
-## 15. Completion and production gates
+Critical conditions—response mutation, candidate write attempt, authority mismatch, redaction failure, production route or traffic-ceiling breach—trigger immediate global disable. Timeout/exception/queue and semantic failures trigger lane breakers. Rollback order is flag OFF, lane kill, global disable, config rollback, deployment rollback, credential revoke and network route revoke.
 
-RCA-1B completion requires independent P1/P2 DB results, checkpoint/lineage/read-only/identity enforcement, Model A taxonomy alignment, unchanged authority, no production DB/traffic and no authority transfer.
+## 19. Approval boundary
 
-Completion does not authorize runtime dark read, production DB reads, source replacement, production activation, authority transfer or automatic RCA-2 entry.
+| Role | Approval |
+|---|---|
+| Intelligence | `BLOCKING_APPROVAL` |
+| Reliability | `BLOCKING_APPROVAL` |
+| Data | `REQUIRED` |
+| Operations | `BLOCKING_APPROVAL` |
+| Privacy/Security | `BLOCKING_APPROVAL` |
+| System Coordination | `BLOCKING_APPROVAL` |
 
-## 16. Absolute prohibitions
+No nonzero traffic is allowed before all blocking approvals are exact-head bound.
 
-- canonical SQL rewrite or SQL `53+` allocation;
-- persistent role/grant or production-derived data;
-- production DB/network/credential/traffic;
-- Java/Kotlin runtime wiring in the SC-4 PR;
-- actual identity mapping or raw row evidence;
-- P1/P2 source/core/dataset/hash/release changes;
-- runtime dark read, feature flag, worker, scheduler or canary;
-- main direct push or merge without explicit user approval.
+## 20. Production and authority-transfer gates
+
+RCA-2 completion does not imply production activation, full traffic, candidate serving, cutover, source deprecation, actual identity approval, load/scale completion, migration-gap resolution or authority transfer. Production dark read and any transfer require separate System Coordination review.
+
+## 21. Absolute prohibitions
+
+- production serving, traffic, route, credential, DB access or activation;
+- primary response mutation, blending or candidate fallback;
+- actual identity or inferred subject mapping;
+- persistent database object, role or grant;
+- canonical SQL change or SQL `53+` allocation;
+- P2 canonical dataset/hash/release access;
+- dynamic/unbounded query, unbounded retry or queue;
+- automatic rollout, main direct push or automatic merge.
