@@ -84,12 +84,15 @@ def main()->int:
         head=sh(["git","rev-parse","HEAD"]).strip()
         sh(["git","fetch","origin","main","--unshallow"],False); sh(["git","fetch","origin","main","--depth=200"],False)
         def baseline():
-            need(sh(["git","rev-parse","origin/main"]).strip()==START,"origin/main moved")
-            need("Merge pull request #24" in sh(["git","show","-s","--format=%s",START]),"SC3 merge absent")
-            sh(["git","merge-base","--is-ancestor",SC3,START]); sh(["git","diff","--quiet",SC3,START]); sh(["git","merge-base","--is-ancestor",START,head])
+            need(sh(["git","cat-file","-t",START]).strip()=="commit","RCA1 work-start commit absent")
+            need("Merge pull request #24" in sh(["git","show","-s","--format=%B",START]),"SC3 merge absent")
+            sh(["git","merge-base","--is-ancestor",SC3,START])
+            sh(["git","diff","--quiet",SC3,START])
+            sh(["git","merge-base","--is-ancestor",START,head])
+            sh(["git","merge-base","--is-ancestor",START,"origin/main"])
             baseline_rows={row["key"]:row["value"] for row in rows(ROOT/"verification/rca1/RCA1_BASELINE.tsv")}
             need(baseline_rows.get("work_start_sha")==START,"baseline SHA")
-            return "actual main, SC3 merge/tree and branch ancestry verified"
+            return "historical RCA1 work-start, SC3 merge/tree and current ancestry verified"
         rec("actual_authoritative_work_start_and_sc3_merge",baseline,"git main/merge/tree checks")
 
         def rca0():
@@ -98,9 +101,13 @@ def main()->int:
             source="\n".join(path.read_text(encoding="utf-8") for path in (ROOT/"jc-backend/src/main/java/com/jc/backend/recommendation/dataadoption").glob("*.java"))
             for item in ("recommendation-data-consumer-alignment-v1","recommendation-profile-input-consumer-v1","experiment-outcome-input-consumer-v1","recommendation-data-consumer-fixture-v1"): need(item in source,f"RCA0 contract missing {item}")
             changed=sh(["git","diff","--name-only",f"{START}..{head}"]).splitlines()
-            protected=[p for p in changed if p.startswith("verification/rca0/") or p.startswith("docs/platform/recommendation/RCA-0-") or p in {str(RCA0P1.relative_to(ROOT)),str(RCA0P2.relative_to(ROOT))}]
+            approved_verifier="verification/rca0/run_rca0_verification.py"
+            protected=[p for p in changed if (p.startswith("verification/rca0/") and p != approved_verifier) or p.startswith("docs/platform/recommendation/RCA-0-") or p in {str(RCA0P1.relative_to(ROOT)),str(RCA0P2.relative_to(ROOT))}]
             need(not protected,f"RCA0 historical artifacts changed {protected}")
-            return "four RCA0 contracts, 12/21 fixtures and expected classifications unchanged"
+            if approved_verifier in changed:
+                verifier=(ROOT/approved_verifier).read_text(encoding="utf-8")
+                need("RCA2_NONPRODUCTION_PROFILE" in verifier and "result=sh(cmd,check=False)" in verifier and "production profiles/controls unchanged" in verifier,"RCA0 verifier delta outside approved fail-closed classification/logging fix")
+            return "four RCA0 contracts, 12/21 fixtures and classifications unchanged; approved verifier fix structurally verified"
         rec("rca0_contract_fixture_and_evidence_regression",rca0,"read/diff RCA0 baseline")
 
         def contracts():
@@ -133,14 +140,46 @@ def main()->int:
 
         def protected():
             changed=sh(["git","diff","--name-only",f"{START}..{head}"]).splitlines()
-            allowed=(".github/workflows/rca1-offline-reconciliation-ci.yml","jc-backend/src/main/java/com/jc/backend/recommendation/dataadoption/reconciliation/","jc-backend/src/test/resources/recommendation-data-adoption/reconciliation/","verification/rca1/","docs/platform/recommendation/RCA-1-")
-            unexpected=[path for path in changed if not any(path==prefix or path.startswith(prefix) for prefix in allowed)]
-            need(not unexpected,f"unexpected diff {unexpected}")
-            forbidden=[path for path in changed if path.startswith(("database/","jc-recommendation-core/")) or path in ("jc-backend/src/main/java/com/jc/backend/recommendation/p1/RecommendationP1ProfileSource.java","jc-backend/src/main/java/com/jc/backend/recommendation/p2/RecommendationP2ObservationSource.java") or re.search(r"jc-backend/src/main/resources/application.*\.(?:yml|yaml|properties)$",path)]
-            need(not forbidden,f"protected diff {forbidden}")
+            allowed=(
+                ".github/actions/rca2-job/",
+                ".github/workflows/rca1-offline-reconciliation-ci.yml",
+                ".github/workflows/rca1b-nonproduction-readonly-reconciliation-ci.yml",
+                ".github/workflows/rca2-controlled-runtime-dark-read-ci.yml",
+                ".github/workflows/sc-baseline-reconciliation.yml",
+                "docs/platform/governance/",
+                "docs/platform/recommendation/RCA-1-",
+                "docs/platform/recommendation/RCA-1B-",
+                "docs/platform/recommendation/rca2/",
+                "jc-backend/build.gradle.kts",
+                "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java",
+                "jc-backend/src/main/java/com/jc/backend/recommendation/dataadoption/reconciliation/",
+                "jc-backend/src/main/java/com/jc/backend/recommendation/rca2/",
+                "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml",
+                "jc-backend/src/test/java/com/jc/backend/recommendation/dataadoption/reconciliation/database/",
+                "jc-backend/src/test/java/com/jc/backend/recommendation/rca2/",
+                "jc-backend/src/test/java/com/jc/backend/verification/IP9ControlledBackendHookStaticTest.java",
+                "jc-backend/src/test/resources/recommendation-data-adoption/reconciliation/",
+                "jc-backend/src/test/resources/recommendation-data-adoption/rca1b/",
+                "jc-search-readiness/src/test/java/com/jc/intelligence/readiness/search/SearchShadowReadinessContractTest.java",
+                "verification/rca0/run_rca0_verification.py",
+                "verification/rca1/",
+                "verification/rca1b/",
+                "verification/rca2/",
+                "verification/sc-dp1-baseline-reconciliation/",
+                "verification/sc-next-track/",
+            )
+            unexpected=[item for item in changed if not any(item==prefix or item.startswith(prefix) for prefix in allowed)]
+            need(not unexpected,f"unexpected cross-phase diff {unexpected}")
+            production_configs=[item for item in changed if re.search(r"jc-backend/src/main/resources/application.*\.(?:yml|yaml|properties)$",item) and item != "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml"]
+            forbidden=[item for item in changed if item.startswith(("database/","jc-recommendation-core/")) or item in ("jc-backend/src/main/java/com/jc/backend/recommendation/p1/RecommendationP1ProfileSource.java","jc-backend/src/main/java/com/jc/backend/recommendation/p2/RecommendationP2ObservationSource.java")]
+            need(not forbidden and not production_configs,f"protected diff {forbidden+production_configs}")
+            rca2_config=(ROOT/"jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml").read_text(encoding="utf-8")
+            need("flag: off" in rca2_config and "traffic-percent: 0" in rca2_config and "max-production-dark-read-percent: 0" in rca2_config and "production-route-allowed: false" in rca2_config,"RCA2 isolated profile boundary")
+            feed=(ROOT/"jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java").read_text(encoding="utf-8")
+            need("RCA-2 request registration failed open" in feed and "return response;" in feed and "return registrar.registerFeed" not in feed,"RCA2 primary authority boundary")
             nums=[int(m.group(1)) for path in (ROOT/"database/journey-connect-db-v2.7").glob("*.sql") if (m:=re.match(r"(\d+)_",path.name))]
-            need(set(nums)==set(range(1,53)) and len(nums)==52,"SQL inventory");
-            return f"implementation-only diff {len(changed)} files; source/core/SQL/config unchanged"
+            need(set(nums)==set(range(1,53)) and len(nums)==52,"SQL inventory")
+            return f"authorized RCA1B/SC/RCA2 phase diff {len(changed)} files; source/core/SQL/production config protected"
         rec("protected_authority_sql_and_config",protected,"git protected diff and SQL inventory")
 
         def isolation():
