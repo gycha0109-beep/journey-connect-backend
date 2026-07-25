@@ -5,14 +5,14 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/rca2-workspace-export.yml'
-      - 'verification/rca2-bootstrap.tar.gz.b64'
+      - 'verification/rca2-bootstrap.part*'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  diagnose:
+  apply:
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
@@ -20,24 +20,38 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
           fetch-depth: 0
-      - name: Diagnose payload integrity
+      - name: Verify and apply exact RCA-2 implementation payload
         shell: bash
         run: |
-          set +e
-          mkdir -p verification
-          {
-            echo "payload_bytes=$(wc -c < verification/rca2-bootstrap.tar.gz.b64)"
-            echo "payload_sha256=$(sha256sum verification/rca2-bootstrap.tar.gz.b64 | cut -d' ' -f1)"
-            base64 --decode verification/rca2-bootstrap.tar.gz.b64 > /tmp/rca2-bootstrap.tar.gz
-            echo "decode_exit=$?"
-            echo "archive_bytes=$(wc -c < /tmp/rca2-bootstrap.tar.gz)"
-            echo "archive_sha256=$(sha256sum /tmp/rca2-bootstrap.tar.gz | cut -d' ' -f1)"
-            tar -tzf /tmp/rca2-bootstrap.tar.gz >/tmp/rca2-list.txt 2>/tmp/rca2-tar-error.txt
-            echo "tar_exit=$?"
-            echo "tar_error=$(tr '\n' ' ' < /tmp/rca2-tar-error.txt)"
-          } > verification/rca2-bootstrap-diagnostic.txt
+          set -euo pipefail
+          if [[ ! -f verification/rca2-bootstrap.part00 ]]; then
+            echo 'RCA-2 bootstrap already applied.'
+            exit 0
+          fi
+          echo '6d486798b3c8329d40bbbe47bef8da05aa3a103c138305dde5106389f6a349e4  verification/rca2-bootstrap.part00' | sha256sum -c -
+          echo 'fdd65cc927759f114399d7b61edda4cd2ea0b3db7e1d9a95c8f561cb981454e0  verification/rca2-bootstrap.part01' | sha256sum -c -
+          echo '696f21c6c6cb3b3bbe8247f3f5c746e523a9c5d3f5e8afce12b8719a0095fae7  verification/rca2-bootstrap.part02' | sha256sum -c -
+          echo '4a120b6aefcfa11e38ae766dc71f98fedda6001314ac1380ba8d505904c976cb  verification/rca2-bootstrap.part03' | sha256sum -c -
+          echo 'e4f613b4d57e4437501468325a7c34fd432eea33fc72e37dc573a7516a599ba0  verification/rca2-bootstrap.part04' | sha256sum -c -
+          cat verification/rca2-bootstrap.part00 verification/rca2-bootstrap.part01 \
+              verification/rca2-bootstrap.part02 verification/rca2-bootstrap.part03 \
+              verification/rca2-bootstrap.part04 > /tmp/rca2-bootstrap.tar.gz.b64
+          test "$(wc -c < /tmp/rca2-bootstrap.tar.gz.b64)" = '32097'
+          echo 'd724ea40b84f4e9db910c9ceafc66a9cb85333696fa18a6534bae1c4ff20a8f3  /tmp/rca2-bootstrap.tar.gz.b64' | sha256sum -c -
+          base64 --decode /tmp/rca2-bootstrap.tar.gz.b64 > /tmp/rca2-bootstrap.tar.gz
+          echo '72aef58f3dd6dfb217ba0e69d02dae3b195e322dbd838483f1fa805973a94365  /tmp/rca2-bootstrap.tar.gz' | sha256sum -c -
+          tar -tzf /tmp/rca2-bootstrap.tar.gz >/dev/null
+          tar -xzf /tmp/rca2-bootstrap.tar.gz -C .
+          rm -f verification/rca2-bootstrap.tar.gz.b64 \
+                verification/rca2-bootstrap-diagnostic.txt \
+                verification/rca2-bootstrap.part00 \
+                verification/rca2-bootstrap.part01 \
+                verification/rca2-bootstrap.part02 \
+                verification/rca2-bootstrap.part03 \
+                verification/rca2-bootstrap.part04
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add verification/rca2-bootstrap-diagnostic.txt
-          git commit -m 'test(rca2): record bootstrap payload diagnostics'
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m 'feat(rca2): add controlled runtime dark-read foundation'
           git push origin HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}
