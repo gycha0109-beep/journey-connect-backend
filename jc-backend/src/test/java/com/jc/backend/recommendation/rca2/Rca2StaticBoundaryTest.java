@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 class Rca2StaticBoundaryTest {
-    private static final Path ROOT = Path.of("..").toAbsolutePath().normalize();
+    private static final Path ROOT = locateRepositoryRoot();
 
     @Test void defaultsRemainOffZeroAndProductionIsExcluded() throws Exception {
         String config = Files.readString(ROOT.resolve("jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml"));
@@ -33,5 +33,16 @@ class Rca2StaticBoundaryTest {
                         "KafkaTemplate", "Repository.save", "flush()", "@Transactional", "production.example", "jdbc:postgresql://prod");
             }
         }
+    }
+
+    private static Path locateRepositoryRoot() {
+        Path current = Path.of("").toAbsolutePath().normalize();
+        for (Path candidate = current; candidate != null; candidate = candidate.getParent()) {
+            if (Files.isRegularFile(candidate.resolve("jc-backend/build.gradle.kts"))
+                    && Files.isDirectory(candidate.resolve("database"))) {
+                return candidate;
+            }
+        }
+        throw new IllegalStateException("RCA-2 repository root not found from " + current);
     }
 }
