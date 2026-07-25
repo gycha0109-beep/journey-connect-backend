@@ -24,6 +24,8 @@ REQUIRED = [
     GOV / "sc-next-track/SC-3-RCA-1-ENTRY-AUTHORIZATION-AND-BASELINE-ALLOCATION.md",
     GOV / "sc-next-track/SC-4-RCA-1B-ENTRY-AUTHORIZATION-AND-EXECUTION-BOUNDARY.md",
     GOV / "sc-next-track/37-RCA-1B-IMPLEMENTATION-HANDOFF-PROMPT.md",
+    GOV / "sc-next-track/SC-5-RCA-2-ENTRY-AUTHORIZATION-AND-EXECUTION-BOUNDARY.md",
+    GOV / "sc-next-track/56-RCA-2-IMPLEMENTATION-HANDOFF-PROMPT.md",
     DATA / "DP-0-DATA-PLATFORM-CONTRACT-FOUNDATION.md",
     DATA / "DP-0-P2-BASELINE-ALIGNMENT.md",
     DATA / "DP-0-HANDOFF.md",
@@ -47,13 +49,14 @@ for path in REQUIRED:
 
 system_contract = (GOV / "JOURNEY_CONNECT_SYSTEM_CONTRACT_V1.md").read_text(encoding="utf-8")
 for marker in (
-    "V1.5 / SC-4 RCA-1B ENTRY",
-    "b2e7a5c316c6f6ee543ccedf35bca65353ab3aa4",
-    "38896b2a37180633870282e9d9e305d9c9fbbf8a",
+    "V1.6 / SC-5 RCA-2 ENTRY",
+    "3efbf96ebf25ae1645a62f35269c4b569425a9ca",
+    "dbb6b5397ad0fe675856b195e280faf9a0f3030c",
     "journey-connect-db-v2.7/01..52",
-    "RCA1B_ENTRY_AUTHORIZED",
-    "CI_EPHEMERAL_POSTGRESQL",
-    "TRANSACTION_READ_ONLY=REQUIRED",
+    "RCA1B_NONPRODUCTION_READONLY_RECONCILIATION_COMPLETE",
+    "CROSS_VERSION_RESULT_EQUIVALENCE=PASS",
+    "RCA2_ENTRY_AUTHORIZED",
+    "FEATURE_FLAG_DEFAULT=OFF",
     "PRODUCTION_ACTIVATION=NOT_AUTHORIZED",
 ):
     if marker not in system_contract:
@@ -61,23 +64,25 @@ for marker in (
 
 governance = (GOV / "JOURNEY_CONNECT_TRACK_GOVERNANCE_V1.md").read_text(encoding="utf-8")
 for marker in (
-    "Data Platform technical closure [COMPLETE]",
-    "RCA-0 Recommendation Data Consumer Contract & Fixture Alignment [COMPLETE / MERGED]",
-    "RCA-1 Recommendation Data Shadow Reconciliation [COMPLETE / MODEL A]",
-    "RCA-1B Recommendation Data Non-production Read-only Reconciliation [ENTRY AUTHORIZED]",
+    "RCA-0 [COMPLETE / MERGED]",
+    "RCA-1 [COMPLETE]",
+    "RCA-1B [COMPLETE / MERGED]",
+    "SC-5 RCA-2 entry [AUTHORIZED]",
     "reserved for Reliability Platform",
     "SQL_ALLOCATION=NOT_REQUIRED",
+    "ASYNC_POST_RESPONSE_SHADOW",
 ):
     if marker not in governance:
         fail(f"governance marker missing: {marker}")
 
 registry = (GOV / "SC-PLATFORM-REGISTRY.md").read_text(encoding="utf-8")
 for marker in (
-    "ACTIVE / RCA1_COMPLETE / RCA1B_ENTRY_AUTHORIZED",
+    "RCA2_ENTRY_AUTHORIZED",
     "recommendation-shadow-reconciliation-v1",
-    "P1_AUTHORITATIVE_REFERENCE_V1",
-    "POSTGRESQL_VERSION_MATRIX=15,18",
-    "`29..52`",
+    "recommendation-runtime-dark-read-query-registry-v1",
+    "FEATURE_FLAG_DEFAULT=OFF",
+    "INITIAL_TRAFFIC_PERCENT=0",
+    "`01..52`",
     "`53+`",
 ):
     if marker not in registry:
@@ -91,18 +96,22 @@ if list(SQL.glob("5[3-9]_*.sql")) or list(SQL.glob("[6-9][0-9]_*.sql")):
 
 for path in OUT.glob("*.tsv"):
     with path.open(encoding="utf-8", newline="") as handle:
-        rows = list(csv.reader(handle, delimiter="\t"))
-    if not rows:
+        evidence_rows = list(csv.reader(handle, delimiter="\t"))
+    if not evidence_rows:
         fail(f"empty historical SC evidence: {path.name}")
 
-verifiers = (
+historical_verifiers = (
     ROOT / "verification/sc-next-track/run_sc_next_track_reconciliation.py",
     ROOT / "verification/sc-next-track/rca1-entry/run_sc_rca1_entry_verification.py",
     ROOT / "verification/sc-next-track/rca1b-entry/run_sc_rca1b_entry_verification.py",
 )
-for verifier in verifiers:
+for verifier in historical_verifiers:
     if not verifier.is_file():
-        fail(f"verifier missing: {verifier.relative_to(ROOT)}")
-    subprocess.run([sys.executable, str(verifier)], cwd=ROOT, check=True)
+        fail(f"historical verifier missing: {verifier.relative_to(ROOT)}")
 
-print("SC baseline reconciliation through RCA-1 merge and RCA-1B entry authorization: PASS")
+current_verifier = ROOT / "verification/sc-next-track/rca2-entry/run_sc_rca2_entry_verification.py"
+if not current_verifier.is_file():
+    fail(f"current verifier missing: {current_verifier.relative_to(ROOT)}")
+subprocess.run([sys.executable, str(current_verifier)], cwd=ROOT, check=True)
+
+print("SC baseline reconciliation through RCA-1B completion and RCA-2 entry authorization: PASS")
