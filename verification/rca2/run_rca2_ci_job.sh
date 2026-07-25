@@ -12,7 +12,7 @@ run_test() {
   local classes=("$@")
   local args=()
   for class_name in "${classes[@]}"; do args+=(--tests "$class_name"); done
-  (cd "$ROOT/jc-backend" && ./gradlew test "${args[@]}" --stacktrace --no-daemon)
+  (cd "$ROOT/jc-backend" && ./gradlew rca2ControlledRuntimeDarkReadTest "${args[@]}" --stacktrace --no-daemon)
 }
 
 case "$LANE" in
