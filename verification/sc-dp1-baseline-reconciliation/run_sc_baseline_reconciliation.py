@@ -109,6 +109,12 @@ for verifier in historical_verifiers:
     if not verifier.is_file():
         fail(f"historical verifier missing: {verifier.relative_to(ROOT)}")
 
+if (ROOT / ".git/shallow").exists():
+    subprocess.run(["git", "fetch", "--unshallow", "origin"], cwd=ROOT, check=True)
+else:
+    subprocess.run(["git", "fetch", "origin", "main"], cwd=ROOT, check=True,
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
 current_verifier = ROOT / "verification/sc-next-track/rca2-entry/run_sc_rca2_entry_verification.py"
 if not current_verifier.is_file():
     fail(f"current verifier missing: {current_verifier.relative_to(ROOT)}")
