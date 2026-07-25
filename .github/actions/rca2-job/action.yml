@@ -17,5 +17,20 @@ runs:
     - uses: gradle/actions/setup-gradle@v6
     - shell: bash
       run: chmod +x jc-backend/gradlew verification/rca2/run_rca2_ci_job.sh
+    - id: gate
+      shell: bash
+      run: |
+        set +e
+        verification/rca2/run_rca2_ci_job.sh '${{ inputs.lane }}' '${{ inputs.expected-head }}'
+        status=$?
+        echo "status=$status" >> "$GITHUB_OUTPUT"
+        exit 0
+    - if: always() && inputs.lane == 'exact-head'
+      uses: actions/upload-artifact@v4
+      with:
+        name: rca2-exact-head-diagnostic
+        path: verification/rca2/evidence/rca2-verification-evidence.json
+        if-no-files-found: warn
+        retention-days: 7
     - shell: bash
-      run: verification/rca2/run_rca2_ci_job.sh '${{ inputs.lane }}' '${{ inputs.expected-head }}'
+      run: exit '${{ steps.gate.outputs.status }}'
