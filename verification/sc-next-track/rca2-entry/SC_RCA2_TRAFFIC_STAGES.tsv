@@ -1,0 +1,7 @@
+stage	traffic_percent	cohort	minimum_duration	minimum_requests	entry_condition	continue_threshold	rollback_condition
+NP0	0	CONFIG_AND_DEPLOYMENT_ONLY	0	0	all controls present	no execution	any execution
+NP1	1	SYNTHETIC_ONLY	30m	200	all blocking approvals; breakers, kills and metrics active	timeout<=1%; exception<=0.5%; queue_reject=0; unexpected_mismatch=0; critical=0	any critical or threshold breach
+NP2	10	SYNTHETIC_OR_TEST_ACCOUNT_ALLOWLIST	2h	2000	NP1 pass and Operations+Privacy reaffirm	same as NP1; p95_shadow<=300ms; p99<=500ms	any critical or two consecutive breaches
+NP3	50	SYNTHETIC_OR_TEST_ACCOUNT_ALLOWLIST	8h	10000	NP2 pass and lane-owner approval	same as NP2; no primary latency extension	any critical or breaker opens twice
+NP4	100	ISOLATED_NONPRODUCTION_ONLY	24h	50000	NP3 pass and SC approval	same as NP3; rollback drill pass	any critical or rollback drill failure
+PROD	0	NONE	NOT_APPLICABLE	0	SEPARATE_SC_APPROVAL_REQUIRED	NOT_AUTHORIZED	any nonzero production trigger
