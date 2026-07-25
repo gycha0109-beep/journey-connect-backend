@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import csv
+import re
 import subprocess
 from pathlib import Path
 
