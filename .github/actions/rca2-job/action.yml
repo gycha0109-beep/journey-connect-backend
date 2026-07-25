@@ -35,6 +35,17 @@ runs:
           jc-backend/build/test-results/rca2ControlledRuntimeDarkReadTest/**
         if-no-files-found: warn
         retention-days: 7
+    - if: always() && inputs.lane == 'protected-regression'
+      uses: actions/upload-artifact@v4
+      with:
+        name: rca2-protected-regression-diagnostic
+        path: |
+          rca2-protected-regression.log
+          verification/**/*.json
+          verification/**/*.txt
+          jc-backend/build/test-results/**
+        if-no-files-found: warn
+        retention-days: 7
     - if: always() && inputs.lane == 'exact-head'
       uses: actions/upload-artifact@v4
       with:
