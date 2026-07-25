@@ -2,174 +2,173 @@
 
 ## Status
 
-`RCA1_OFFLINE_SHADOW_RECONCILIATION_COMPLETE / RCA1B_ENTRY_AUTHORIZED`
-
-Historical marker `RCA0_CONTRACT_AND_FIXTURE_COMPLETE / RCA1_ENTRY_AUTHORIZED` remains satisfied.
+`RCA1B_NONPRODUCTION_READONLY_RECONCILIATION_COMPLETE / RCA2_ENTRY_AUTHORIZED`
 
 ## Authoritative baseline
 
 - repository: `gycha0109-beep/journey-connect-backend`;
-- authoritative main/work-start: `b2e7a5c316c6f6ee543ccedf35bca65353ab3aa4`;
-- PR #25: merged;
-- RCA-1 exact-final-head: `38896b2a37180633870282e9d9e305d9c9fbbf8a`;
+- authoritative main/work-start: `3efbf96ebf25ae1645a62f35269c4b569425a9ca`;
+- PR #27: merged;
+- RCA-1B exact-final-head: `dbb6b5397ad0fe675856b195e280faf9a0f3030c`;
 - merge tree: identical to exact-final-head tree;
+- PostgreSQL 15/18 normalized equivalence: `CROSS_VERSION_RESULT_EQUIVALENCE=PASS`;
 - P1: `RECONCILED_WITH_EXPECTED_GAPS`;
 - P2: `RECONCILED_WITH_MIGRATION_GAPS`;
-- identity: `SYNTHETIC_ONLY`;
+- `READ_ONLY_BOUNDARY=ENFORCED`, `QUERY_ALLOWLIST=ENFORCED`, `CHECKPOINT_BOUNDARY=ENFORCED`, `LINEAGE_BOUNDARY=ENFORCED`;
+- production DB/traffic/identity/activation: none/not executed;
 - SQL `01..52`: protected;
 - SQL `53+`: absent/unallocated;
-- production activation: not authorized;
-- current P1/P2 authority: unchanged;
-- no runtime wiring or actual identity mapping.
+- current P1/P2 authority: unchanged.
 
 ## Official phase
 
 ```text
-RCA-1B Recommendation Data Non-production Read-only Reconciliation
-CLASSIFICATION=JOINT_INTELLIGENCE_RELIABILITY_ADOPTION
-RCA1B_EXECUTION_ENVIRONMENT=CI_EPHEMERAL_POSTGRESQL
-POSTGRESQL_VERSION_MATRIX=15,18
-RCA1B_DATASET_MODE=DETERMINISTIC_SYNTHETIC_DATABASE_FIXTURE
-IDENTITY_MODE=SYNTHETIC_ONLY
+SC-5 RCA-2 Controlled Runtime Dark Read Entry Authorization & Execution Boundary
+RCA-2 Recommendation Data Controlled Runtime Dark Read
+CLASSIFICATION=JOINT_INTELLIGENCE_RELIABILITY_OPERATIONS_ADOPTION
 ```
 
-RCA is a cross-track workstream. `RP` is reserved for Reliability Platform.
+`RCA` is cross-track. `RP` is reserved for Reliability Platform.
+
+## Entry decision
+
+```text
+RCA2_ENTRY_AUTHORIZED
+RCA2_EXECUTION_ENVIRONMENT=ISOLATED_NON_PRODUCTION_RUNTIME
+RCA2_RUNTIME_MODEL=ASYNC_POST_RESPONSE_SHADOW
+FEATURE_FLAG_REQUIRED=YES
+FEATURE_FLAG_DEFAULT=OFF
+INITIAL_TRAFFIC_PERCENT=0
+PRIMARY_RESULT_AUTHORITY=CURRENT_P1_P2_ONLY
+SHADOW_RESULT_AUTHORITY=NONE
+SHADOW_RESULT_SERVING=FORBIDDEN
+SHADOW_FAILURE_FALLBACK=KEEP_PRIMARY_RESULT
+IDENTITY_MODE=SYNTHETIC_OR_TEST_ACCOUNT_ONLY
+RUNTIME_FRESHNESS_POLICY=BLOCKED_PENDING_MEASUREMENT
+DB_CHANGE=NONE
+SQL_ALLOCATION=NOT_REQUIRED
+PRODUCTION_ACTIVATION=NOT_AUTHORIZED
+AUTHORITY_TRANSFER=FORBIDDEN
+IMPLEMENTATION_REQUIRES_SEPARATE_PR
+```
 
 ## Purpose
 
-Read current authoritative P1/P2 query results and Data candidate projection results from isolated ephemeral PostgreSQL, compare them using RCA-1 taxonomy, and classify checkpoint, lineage, field, semantic and authority differences per lane.
+Preserve current authoritative P1/P2 responses while a bounded, isolated, post-response non-production shadow path computes Data candidate results and records latency, timeout, fallback, checkpoint, lineage and classified differences. No user response, primary transaction, authority or product data is changed.
 
-This does not prove production/runtime/cutover readiness, live latency, actual identity governance, source replacement or authority transfer.
+Current sources remain `RecommendationP1ProfileSource` and `RecommendationP2ObservationSource`.
 
-## Current authority
+## Runtime environment
 
-```text
-P1_SOURCE=RecommendationP1ProfileSource
-P1_RESULT=recommendation_p1_profile_snapshot
-P2_SOURCE=RecommendationP2ObservationSource
-P2_EXPOSURE_AUTHORITY=recommendation_p2_experiment_exposure
-P2_DATASET=recommendation-evaluation-dataset-v1
-P2_METRICS=engagement_rate,fallback_rate
-CURRENT_P1_P2_AUTHORITY_UNCHANGED
-```
+- CI/runtime simulation: required;
+- isolated non-production runtime: approved implementation target;
+- production dark read: blocked;
+- production traffic ceiling: 0%.
 
-## Environment and versions
+## Runtime model
 
-- Environment A CI ephemeral PostgreSQL: approved;
-- Environment B shared non-production DB: deferred;
-- Environment C production replica/derived: blocked;
-- PostgreSQL 15 minimum; 15 and 18 required;
-- UTC, `C` collation/ctype, no extension/PostGIS;
-- one database per job and teardown by container destruction.
+Dedicated bounded asynchronous post-response task. No existing validated async boundary was found; the separate implementation must create, isolate and test one. Submission occurs only after response commit and after flag, cohort, breaker, identity and resource gates.
 
-## Read-only execution contract
+## Flag and traffic
 
-```text
-TRANSACTION_READ_ONLY=REQUIRED
-TRANSACTION_ISOLATION=REPEATABLE_READ
-AUTOCOMMIT=DISABLED
-STATEMENT_TIMEOUT_MS=5000
-LOCK_TIMEOUT_MS=1000
-IDLE_IN_TRANSACTION_TIMEOUT_MS=5000
-MAX_RESULT_ROWS_PER_QUERY=1000
-MAX_RECONCILIATION_CASES=10000
-MAX_EXECUTION_DURATION_SECONDS=900
-PARALLEL_QUERY=DISABLED
-RETRY_POLICY=NONE
-```
+Default OFF, unknown/stale OFF, initial 0%, no local default enable, manual audited stage changes only. Non-production stages are 1%, 10%, 50%, 100% after evidence. Production remains 0%.
 
-An ephemeral `rca1b_readonly` login is required. Owner/superuser, write privilege, RLS bypass, DDL/DML, temp objects, migrations and unbounded queries are forbidden.
+## Primary/shadow contract
 
-## Query and dataset boundary
+Primary is current P1/P2 only. Shadow has no serving, fallback, cache, DB write, event, notification or feedback authority. Every failure preserves primary.
 
-Only registered/fingerprinted prepared queries for P1/P2 source/candidate, checkpoint, lineage and bounded counts are allowed. Canonical SQL `01..52` is replayed and a deterministic noncanonical test-only seed is applied before read-only execution. Raw SQL construction, production data, canonical dataset rows and release evidence are prohibited.
+## Timeouts and breakers
 
-## P1 decision
+100 ms connection, 300 ms read, 500 ms total, 50 ms queue wait, 1000 ms task age, concurrency 4, queue 100, no retry, late discard. P1 and P2 breakers are independent; global and lane kill switches are mandatory.
 
-P1 keeps RCA-1 expected gaps and adds DB query/checkpoint/snapshot/order/null/numeric/timezone/duplicate/row-count dimensions. Comparable dimensions use zero tolerance. Checkpoint/snapshot equality and lineage match are mandatory. Aggregate-to-event fabrication remains prohibited.
+## Credential and network
 
-## P2 decision
+Operations-owned short-lived non-production workload identity only, secret manager, TLS and deny-by-default explicit allowlist. No production route/credential and no runtime DB role are authorized.
 
-P2 protects `recommendation_p2_experiment_exposure`, exact assignment/version/binding, inclusive-lower/exclusive-upper 604800-second window, click/like/save/share and bound-run fallback. Duplicate observations and unsupported sources/events fail. Stale assignment and persisted dedupe remain migration-required. Dataset hash and release evidence remain outside query scope.
+## Identity
 
-Required marker:
+Synthetic or explicit non-production test account only. Privacy/Security owns allowlist, purpose, encryption, deletion, invalidation and audit. Actual production identity and inferred fallback are blocked.
 
-```text
-P2_NON_PRODUCTION_RECONCILIATION_ONLY
-CURRENT_P2_AUTHORITY_UNCHANGED
-NO_AUTHORITY_TRANSFER
-```
+## P1 boundary
 
-## Checkpoint, identity and evidence
+`P1_RUNTIME_DARK_READ_ONLY`, unchanged authority, no served shadow. Preserve expected/protected gaps and prohibit aggregate-to-event fabrication.
 
-Exact parity uses zero-lag explicit fixture checkpoints and matching lineage. Identity is synthetic-only and every invalid state fails closed. Evidence stores hashes, normalized values, query fingerprints, checkpoints, row counts and DB version; never raw rows, IDs, credentials, endpoints or connection strings. CI retention is 90 days; DB/raw result retention is execution lifetime/none.
+## P2 boundary
 
-## DB and SQL impact
+`P2_RUNTIME_DARK_READ_ONLY`, unchanged authority, no served shadow, no transfer. Preserve exact exposure/window/events/fallback, migration gaps and protected dataset/release boundaries.
+
+## Checkpoint and freshness
+
+Checkpoint, lineage, schema, deployment and artifact versions are mandatory. `RUNTIME_FRESHNESS_POLICY=BLOCKED_PENDING_MEASUREMENT`; no live threshold is approved.
+
+## Observability and evidence
+
+Lane-separated low-cardinality metrics, 30-day metrics, 14-day redacted logs and 90-day exact-head artifacts. Raw IDs/content/rows/parameters/credentials/endpoints are forbidden. Critical violations are 100% recorded and auto-disable candidates.
+
+## Deployment and rollback
+
+Deployment, flag enable and traffic increase are separate. Exact image digest/artifact/config/flag versions are recorded. Rollback levels: flag, lane kill, global disable, config, deployment, credential and network.
+
+## DB and SQL
 
 ```text
 DB_CHANGE=NONE
 SQL_ALLOCATION=NOT_REQUIRED
 NEW_TABLE_REQUIRED=NO
 NEW_VIEW_REQUIRED=NO
-NEW_ROLE_REQUIRED=YES_EPHEMERAL_TEST_ONLY
-NEW_GRANT_REQUIRED=YES_EPHEMERAL_TEST_ONLY
-TEST_FIXTURE_SQL_REQUIRED=YES_NONCANONICAL_TEST_ONLY
-RUNTIME_WIRING=NOT_AUTHORIZED
-PRODUCTION_IMPACT=NONE
-PRODUCTION_ACTIVATION=NOT_AUTHORIZED
+NEW_ROLE_REQUIRED=NO
+NEW_GRANT_REQUIRED=NO
+RUNTIME_QUERY_REGISTRY_REQUIRED=YES_APPLICATION_CONTRACT_ONLY
+PERSISTED_EVIDENCE_REQUIRED=NO
 ```
 
-No SQL is created by SC-4 and SQL `53+` remains unallocated.
+A newly discovered persistent DB requirement stops implementation and returns to SC. Do not allocate SQL `53+`.
 
-## Prerequisites
+## Approvals
 
-| Role | Status |
+| Role | State |
 |---|---|
-| Intelligence | `BLOCKING_APPROVAL` for P1 query/result/exit |
-| Reliability | `BLOCKING_APPROVAL` for P2 query/migration/evidence |
-| Data | `REQUIRED` for candidate/checkpoint/lineage/seed |
-| Operations | `BLOCKING_APPROVAL` for DB/credential/network/role/resource/retention |
-| Privacy/Security | `BLOCKING_APPROVAL` for identity/redaction/secret/retention |
-| SC | `BLOCKING_APPROVAL` for entry/exit/registry/SQL/authority |
+| Intelligence | `BLOCKING_APPROVAL` |
+| Reliability | `BLOCKING_APPROVAL` |
+| Data | `REQUIRED` |
+| Operations | `BLOCKING_APPROVAL` |
+| Privacy/Security | `BLOCKING_APPROVAL` |
+| System Coordination | `BLOCKING_APPROVAL` |
 
 ## Verification truth
 
-SC-4 verifies governance, baseline, merge tree, RCA-1 contract/fixture inventory, decision uniqueness, finite limits, query/role/dimension policies, SQL/source/config protection and governance-only diff.
-
-SC-4 does not execute PostgreSQL reconciliation, role permission tests, actual queries, runtime dark read, canary, load, replay, production validation or actual identity mapping; these are not PASS.
+SC-5 verifies governance and baseline only. Runtime dark read, runtime flag behavior, credentials, production route, canary, load, replay, production validation, actual identity mapping, activation and authority transfer are not executed and are not PASS.
 
 ## Documents
 
-- [SC-4 master](sc-next-track/SC-4-RCA-1B-ENTRY-AUTHORIZATION-AND-EXECUTION-BOUNDARY.md)
-- [execution environment](sc-next-track/23-SC-RCA1B-EXECUTION-ENVIRONMENT-DECISION.md)
-- [PostgreSQL versions](sc-next-track/24-SC-RCA1B-POSTGRESQL-VERSION-AND-COMPATIBILITY-DECISION.md)
-- [read-only contract](sc-next-track/25-SC-RCA1B-DB-READ-ONLY-EXECUTION-CONTRACT.md)
-- [role/grant and SQL](sc-next-track/26-SC-RCA1B-ROLE-GRANT-AND-SQL-ALLOCATION-DECISION.md)
-- [query boundary](sc-next-track/27-SC-RCA1B-ALLOWED-QUERY-BOUNDARY.md)
-- [dataset](sc-next-track/28-SC-RCA1B-REPRODUCIBLE-DATASET-DECISION.md)
-- [identity/privacy](sc-next-track/29-SC-RCA1B-IDENTITY-PRIVACY-DECISION.md)
-- [P1 DB](sc-next-track/30-SC-RCA1B-P1-DB-RECONCILIATION-AUTHORITY-AND-EQUIVALENCE.md)
-- [P2 DB](sc-next-track/31-SC-RCA1B-P2-DB-RECONCILIATION-AUTHORITY-AND-EQUIVALENCE.md)
-- [checkpoint/lineage](sc-next-track/32-SC-RCA1B-CHECKPOINT-FRESHNESS-LINEAGE-DECISION.md)
-- [evidence policy](sc-next-track/33-SC-RCA1B-EVIDENCE-REDACTION-RETENTION-POLICY.md)
-- [prerequisite matrix](sc-next-track/34-SC-RCA1B-OPERATIONS-RELIABILITY-PREREQUISITE-MATRIX.md)
-- [verification plan](sc-next-track/35-SC-RCA1B-VERIFICATION-PLAN.md)
-- [exit/RCA-2 boundary](sc-next-track/36-SC-RCA1B-EXIT-CRITERIA-AND-RCA2-HANDOFF.md)
-- [implementation prompt](sc-next-track/37-RCA-1B-IMPLEMENTATION-HANDOFF-PROMPT.md)
-
-## Follow-up order
-
-1. merge SC-4 only after explicit user approval;
-2. implement RCA-1B in a separate Draft PR;
-3. collect exact-head blocking approvals and execute PostgreSQL 15/18 read-only tests;
-4. evaluate lane-separated RCA-1B exit;
-5. propose RCA-2 separately if runtime evidence is still required.
+- [SC-5 master](sc-next-track/SC-5-RCA-2-ENTRY-AUTHORIZATION-AND-EXECUTION-BOUNDARY.md)
+- [environment](sc-next-track/38-SC-RCA2-RUNTIME-ENVIRONMENT-DECISION.md)
+- [model](sc-next-track/39-SC-RCA2-RUNTIME-MODEL-DECISION.md)
+- [flag/traffic](sc-next-track/40-SC-RCA2-FEATURE-FLAG-AND-TRAFFIC-POLICY.md)
+- [authority](sc-next-track/41-SC-RCA2-PRIMARY-SHADOW-AUTHORITY-CONTRACT.md)
+- [timeouts/breakers](sc-next-track/42-SC-RCA2-TIMEOUT-FALLBACK-CIRCUIT-BREAKER-POLICY.md)
+- [credential/network](sc-next-track/43-SC-RCA2-CREDENTIAL-AND-NETWORK-BOUNDARY.md)
+- [query](sc-next-track/44-SC-RCA2-RUNTIME-QUERY-BOUNDARY.md)
+- [identity](sc-next-track/45-SC-RCA2-IDENTITY-AND-PRIVACY-GOVERNANCE.md)
+- [P1](sc-next-track/46-SC-RCA2-P1-RUNTIME-DARK-READ-DECISION.md)
+- [P2](sc-next-track/47-SC-RCA2-P2-RUNTIME-DARK-READ-DECISION.md)
+- [checkpoint/freshness](sc-next-track/48-SC-RCA2-CHECKPOINT-LINEAGE-FRESHNESS-DECISION.md)
+- [observability](sc-next-track/49-SC-RCA2-OBSERVABILITY-METRIC-LOGGING-POLICY.md)
+- [alert/kill](sc-next-track/50-SC-RCA2-ALERT-AND-KILL-SWITCH-POLICY.md)
+- [deployment/rollback](sc-next-track/51-SC-RCA2-DEPLOYMENT-AND-ROLLBACK-POLICY.md)
+- [DB/SQL](sc-next-track/52-SC-RCA2-DB-SQL-IMPACT-DECISION.md)
+- [approvals](sc-next-track/53-SC-RCA2-OPERATIONS-RELIABILITY-APPROVAL-MATRIX.md)
+- [verification](sc-next-track/54-SC-RCA2-VERIFICATION-PLAN.md)
+- [exit](sc-next-track/55-SC-RCA2-EXIT-CRITERIA-AND-AUTHORITY-TRANSFER-BOUNDARY.md)
+- [implementation handoff](sc-next-track/56-RCA-2-IMPLEMENTATION-HANDOFF-PROMPT.md)
 
 ## Current gate
 
 ```text
-RCA1B_ENTRY_AUTHORIZED
+RCA2_ENTRY_AUTHORIZED
 IMPLEMENTATION_REQUIRES_SEPARATE_PR
+PRODUCTION_ACTIVATION=NOT_AUTHORIZED
+AUTHORITY_TRANSFER=FORBIDDEN
 ```
 
-SC-4 is governance-only. Do not mark ready or merge without explicit user approval.
+Keep the SC-5 PR Draft and unmerged until explicit user approval.
