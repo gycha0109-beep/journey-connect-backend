@@ -5,88 +5,90 @@
 | Field | Value |
 |---|---|
 | contract ID | `sc-decision-register-v1` |
-| status | `ACTIVE / SC-4 RCA-1B ENTRY AUTHORIZED` |
-| authoritative main | `b2e7a5c316c6f6ee543ccedf35bca65353ab3aa4` |
-| RCA-1 exact-final-head | `38896b2a37180633870282e9d9e305d9c9fbbf8a` |
-| updated | `2026-07-24` |
+| status | `ACTIVE / SC-5 RCA-2 ENTRY AUTHORIZED` |
+| authoritative main/work-start | `3efbf96ebf25ae1645a62f35269c4b569425a9ca` |
+| RCA-1B exact-final-head | `dbb6b5397ad0fe675856b195e280faf9a0f3030c` |
+| updated | `2026-07-25` |
 
 ## Historical decisions retained
 
-| Decision ID | Decision | Status |
-|---|---|---|
-| `SC-DP-CLOSE-001` | Data Platform DP-0..DP-7 | COMPLETE / NOT PRODUCTION READINESS |
-| `SC-DP-CLOSE-002` | SQL `01..52` | IMMUTABLE BASELINE |
-| `SC-DP-CLOSE-003` | SQL `53+` | UNALLOCATED |
-| `SC-RCA-001` | official workstream `RCA` | ACTIVE / CROSS-TRACK |
-| `SC-RCA-003` | `RP` means Reliability Platform | PROTECTED |
-| `SC-RCA-004` | RCA-0 | COMPLETE / MERGED |
-| `SC-RCA1-001` | RCA-1 entry | `RCA1_ENTRY_AUTHORIZED` / SATISFIED |
-| `SC-RCA1-002` | Model A | COMPLETE |
-| `SC-RCA1-005` | identity mode | `SYNTHETIC_ONLY` |
-| `SC-RCA1-007` | P1 lane | `RECONCILED_WITH_EXPECTED_GAPS` |
-| `SC-RCA1-008` | P2 lane | `RECONCILED_WITH_MIGRATION_GAPS` |
-| `SC-RCA1-019` | P1/P2 authority | PROTECTED / UNCHANGED |
-| `SC-RCA1-020` | runtime/production | NOT AUTHORIZED |
+- Data Platform closure and SQL `01..52` protection remain complete.
+- SQL `53+` remains unallocated.
+- RCA-0, RCA-1 and RCA-1B are complete and merged as applicable.
+- `RCA1B_NONPRODUCTION_READONLY_RECONCILIATION_COMPLETE` and `CROSS_VERSION_RESULT_EQUIVALENCE=PASS` remain authoritative.
+- `READ_ONLY_BOUNDARY=ENFORCED`, `QUERY_ALLOWLIST=ENFORCED`, `CHECKPOINT_BOUNDARY=ENFORCED`, `LINEAGE_BOUNDARY=ENFORCED`.
+- `RP` is reserved for Reliability Platform.
+- P1 `RecommendationP1ProfileSource` and P2 `RecommendationP2ObservationSource` authority remains unchanged.
+- RCA-1B historical source, tests, evidence and artifacts are immutable.
 
-RCA-0 and RCA-1 historical documents, fixtures and verification evidence remain unchanged.
-
-## SC-4 RCA-1B entry decisions
+## SC-5 decisions
 
 | Decision ID | Decision | Status | Restriction |
 |---|---|---|---|
-| `SC-RCA1B-001` | authorize RCA-1B entry | APPROVED | implementation requires separate PR |
-| `SC-RCA1B-002` | execution environment | APPROVED | `CI_EPHEMERAL_POSTGRESQL` |
-| `SC-RCA1B-003` | shared non-production DB | DEFERRED | separate SC/Operations/Privacy approval |
-| `SC-RCA1B-004` | production replica/derived DB | BLOCKED | production data/identity risk |
-| `SC-RCA1B-005` | PostgreSQL matrix | APPROVED | `15,18`; minimum 15 |
-| `SC-RCA1B-006` | dataset | APPROVED | deterministic synthetic DB fixture |
-| `SC-RCA1B-007` | identity | APPROVED | synthetic only; actual mapping blocked |
-| `SC-RCA1B-008` | transaction | APPROVED | repeatable-read, explicit read-only |
-| `SC-RCA1B-009` | timeouts/limits | APPROVED | finite values mandatory |
-| `SC-RCA1B-010` | retry/parallel query | APPROVED | none/disabled |
-| `SC-RCA1B-011` | query allowlist/fingerprint | APPROVED | prepared, bounded, ordered |
-| `SC-RCA1B-012` | ephemeral test role | CONDITIONALLY_APPROVED | least privilege; no owner/superuser |
-| `SC-RCA1B-013` | canonical SQL allocation | NOT_REQUIRED | SQL `53+` remains unallocated |
-| `SC-RCA1B-014` | test seed/role SQL | CONDITIONALLY_APPROVED | noncanonical test-only |
-| `SC-RCA1B-015` | P1 DB lane | CONDITIONALLY_APPROVED | expected gaps preserved |
-| `SC-RCA1B-016` | P2 DB lane | CONDITIONALLY_APPROVED | exposure/window/event/fallback protected |
-| `SC-RCA1B-017` | checkpoint equality | APPROVED | zero-lag deterministic fixture |
-| `SC-RCA1B-018` | lineage | APPROVED | fingerprint required; mismatch fails |
-| `SC-RCA1B-019` | evidence/redaction | APPROVED | no raw rows/IDs/credentials; 90 days |
-| `SC-RCA1B-020` | Operations approval | BLOCKING_APPROVAL | environment/credential/resource |
-| `SC-RCA1B-021` | Reliability approval | BLOCKING_APPROVAL | P2/evidence integrity |
-| `SC-RCA1B-022` | Intelligence approval | BLOCKING_APPROVAL | P1 query/exit |
-| `SC-RCA1B-023` | Privacy/Security approval | BLOCKING_APPROVAL | identity/redaction/retention |
-| `SC-RCA1B-024` | runtime dark read | NOT AUTHORIZED | RCA-2 only |
-| `SC-RCA1B-025` | authority transfer | FORBIDDEN | current sources unchanged |
-| `SC-RCA1B-026` | RCA-1B exit | APPROVED DEFINITION | lane-separated exact-head evidence |
+| `SC-RCA2-001` | authorize RCA-2 implementation entry | APPROVED | separate Draft PR |
+| `SC-RCA2-002` | Environment B isolated non-production | APPROVED | no production data/route/identity |
+| `SC-RCA2-003` | Environment A CI simulation | REQUIRED | implementation verification |
+| `SC-RCA2-004` | Environment C production dark read | BLOCKED | separate SC approval |
+| `SC-RCA2-005` | async post-response model | APPROVED | dedicated bounded executor |
+| `SC-RCA2-006` | queue/event model | BLOCKED | queue/event contract absent |
+| `SC-RCA2-007` | feature flag | REQUIRED | default OFF; stale/unknown OFF |
+| `SC-RCA2-008` | initial traffic | APPROVED | 0% |
+| `SC-RCA2-009` | non-production staged ceiling | CONDITIONALLY APPROVED | manual 1/10/50/100 stages |
+| `SC-RCA2-010` | production traffic ceiling | APPROVED | 0% |
+| `SC-RCA2-011` | primary authority | PROTECTED | current P1/P2 only |
+| `SC-RCA2-012` | shadow authority | NONE | no serving/fallback/write/event |
+| `SC-RCA2-013` | timeout/resources | APPROVED | finite 100/300/500 ms, 4/100 |
+| `SC-RCA2-014` | retry | FORBIDDEN | NONE |
+| `SC-RCA2-015` | circuit breakers | REQUIRED | lane + global |
+| `SC-RCA2-016` | kill switches | REQUIRED | lane + global |
+| `SC-RCA2-017` | credential/network | CONDITIONALLY APPROVED | non-production workload identity only |
+| `SC-RCA2-018` | production credential/route | BLOCKED | Operations/Security/SC review |
+| `SC-RCA2-019` | identity | CONDITIONALLY APPROVED | synthetic/test account only |
+| `SC-RCA2-020` | actual production identity | BLOCKED | separate privacy governance |
+| `SC-RCA2-021` | P1 runtime lane | CONDITIONALLY APPROVED | expected gaps preserved |
+| `SC-RCA2-022` | P2 runtime lane | CONDITIONALLY APPROVED | exposure/window/event/fallback protected |
+| `SC-RCA2-023` | runtime freshness | MEASUREMENT_ONLY | threshold blocked pending evidence |
+| `SC-RCA2-024` | observability/redaction | REQUIRED | low cardinality, no raw IDs/content |
+| `SC-RCA2-025` | alert/automatic disable | REQUIRED | critical violations global kill |
+| `SC-RCA2-026` | deployment/enable separation | REQUIRED | deploy does not enable |
+| `SC-RCA2-027` | rollback hierarchy | REQUIRED | seven levels |
+| `SC-RCA2-028` | DB/SQL | NOT_REQUIRED | no persistent objects/roles/grants |
+| `SC-RCA2-029` | runtime query registry | REQUIRED | application contract only |
+| `SC-RCA2-030` | persisted evidence | NOT_REQUIRED | existing observability |
+| `SC-RCA2-031` | production activation | NOT AUTHORIZED | separate SC decision |
+| `SC-RCA2-032` | authority transfer | FORBIDDEN | separate review after RCA-2 exit |
 
-## Explicit field decisions
+## Explicit decision block
 
 ```text
-RCA1B_ENTRY_AUTHORIZED
-RCA1B_EXECUTION_ENVIRONMENT=CI_EPHEMERAL_POSTGRESQL
-POSTGRESQL_VERSION_MATRIX=15,18
-RCA1B_DATASET_MODE=DETERMINISTIC_SYNTHETIC_DATABASE_FIXTURE
-IDENTITY_MODE=SYNTHETIC_ONLY
-TRANSACTION_READ_ONLY=REQUIRED
-DB_WRITE=FORBIDDEN
-PRODUCTION_DB=FORBIDDEN
+RCA2_ENTRY_AUTHORIZED
+RCA2_EXECUTION_ENVIRONMENT=ISOLATED_NON_PRODUCTION_RUNTIME
+RCA2_RUNTIME_MODEL=ASYNC_POST_RESPONSE_SHADOW
+FEATURE_FLAG_REQUIRED=YES
+FEATURE_FLAG_DEFAULT=OFF
+INITIAL_TRAFFIC_PERCENT=0
+PRIMARY_RESULT_AUTHORITY=CURRENT_P1_P2_ONLY
+SHADOW_RESULT_AUTHORITY=NONE
+SHADOW_RESULT_SERVING=FORBIDDEN
+SHADOW_FAILURE_FALLBACK=KEEP_PRIMARY_RESULT
+IDENTITY_MODE=SYNTHETIC_OR_TEST_ACCOUNT_ONLY
+RUNTIME_FRESHNESS_POLICY=BLOCKED_PENDING_MEASUREMENT
 DB_CHANGE=NONE
 SQL_ALLOCATION=NOT_REQUIRED
-RUNTIME_WIRING=NOT_AUTHORIZED
-PRODUCTION_IMPACT=NONE
 PRODUCTION_ACTIVATION=NOT_AUTHORIZED
-CURRENT_P1_P2_AUTHORITY_UNCHANGED
+AUTHORITY_TRANSFER=FORBIDDEN
 IMPLEMENTATION_REQUIRES_SEPARATE_PR
 ```
 
-## Deferred and blocked work
+## Blocking approvals
 
-- Environment B persistent shared non-production database;
-- pseudonymized or actual identity governance;
-- nonzero live checkpoint lag;
-- persistent role/grant or canonical DB object;
-- production DB/replica/derived extract;
-- runtime dark read, feature flags, traffic, canary, monitoring and production credentials;
-- source replacement, authority transfer and automatic RCA-2 entry.
+Intelligence, Reliability, Operations, Privacy/Security and System Coordination are `BLOCKING_APPROVAL`. Data is `REQUIRED`. These approvals gate nonzero traffic and stage increases; SC-5 technical verification does not imply approval.
+
+## Deferred and blocked
+
+- safe async executor implementation and runtime tests;
+- live freshness threshold;
+- production credential, route, identity, canary, load and validation;
+- persistent DB object/role/grant or SQL allocation;
+- queue/event infrastructure;
+- candidate serving, cutover, source deprecation and authority transfer.

@@ -1,0 +1,7 @@
+role	scope	approval	gate
+Intelligence	P1 semantics, mismatch classes, protected gaps, exit recommendation	BLOCKING_APPROVAL	before nonzero traffic and each stage increase
+Reliability	P2 exposure/window/event/fallback, migration gaps, failure policy, evidence integrity	BLOCKING_APPROVAL	before nonzero traffic and each stage increase
+Data	candidate contract, checkpoint, lineage, schema/version and freshness measurement	REQUIRED	before implementation completion and each incompatible schema change
+Operations	environment, deployment, flag, credential, network, resource, breaker, traffic, rollback, observability	BLOCKING_APPROVAL	before deployment and nonzero traffic
+Privacy/Security	identity mode, redaction, credential, retention, audit, incident response	BLOCKING_APPROVAL	before test-account use or evidence retention
+System Coordination	entry, exit, registry, SQL allocation, rollout ceiling, authority and no-transfer	BLOCKING_APPROVAL	SC-5 merge, each traffic ceiling and RCA-2 exit

@@ -1,0 +1,9 @@
+query_or_contract	lane	status	production_db_authorized	dependency	restriction
+RCA1B_P1_AUTHORITATIVE_REFERENCE_V1	P1	TEST_ONLY	NO	RCA-1B static fixture DB	not a runtime contract
+RCA1B_P1_DATA_CANDIDATE_V1	P1	TEST_ONLY	NO	RCA-1B static fixture DB	not a runtime contract
+RCA1B_P2_AUTHORITATIVE_EXPOSURE_OUTCOME_V1	P2	TEST_ONLY	NO	RCA-1B static fixture DB	not a runtime contract
+RCA1B_P2_DATA_CANDIDATE_V1	P2	TEST_ONLY	NO	RCA-1B static fixture DB	not a runtime contract
+RCA1B_SOURCE_CHECKPOINT_V1	SHARED	TEST_ONLY	NO	RCA-1B static fixture DB	not a runtime contract
+RCA1B_SOURCE_LINEAGE_V1	SHARED	TEST_ONLY	NO	RCA-1B static fixture DB	not a runtime contract
+RCA1B_BOUNDED_ROW_COUNT_V1	SHARED	TEST_ONLY	NO	RCA-1B static fixture DB	not a runtime contract
+recommendation-runtime-dark-read-query-registry-v1	P1,P2,SHARED	REQUIRED_SEPARATE_IMPLEMENTATION	NO_DB_QUERY_AUTHORIZED	application adapters/static contracts	dynamic/unbounded/raw identity queries forbidden
