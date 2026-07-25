@@ -1,0 +1,7 @@
+payload_bytes=20017
+payload_sha256=5030012c9dbca45e028b7c9d713352a9bddf3cd92c5a7fcc0020dc6926565819
+decode_exit=1
+archive_bytes=7500
+archive_sha256=391e7b4ef32a56e578173432229b459fd2ae3b8ae07caf66de7a7e4d406f8c3e
+tar_exit=2
+tar_error= gzip: stdin: unexpected end of file tar: Unexpected EOF in archive tar: Error is not recoverable: exiting now 
