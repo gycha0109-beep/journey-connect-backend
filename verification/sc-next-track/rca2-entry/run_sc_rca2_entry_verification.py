@@ -208,12 +208,55 @@ def main() -> int:
                            "b.event_type in ('click','like','save','share')","r.run_status = 'fallback'"):
                 need(marker in p2, f"P2 authority marker missing: {marker}")
             changed = git("diff", "--name-only", f"{START}..{head}").splitlines()
-            allowed = ("docs/platform/governance/","verification/sc-next-track/rca2-entry/",
-                       "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
-                       ".github/workflows/sc-rca2-entry-ci.yml")
-            unexpected = [p for p in changed if not any(p == prefix or p.startswith(prefix) for prefix in allowed)]
+            allowed = (
+                ".github/actions/rca2-job/",
+                ".github/workflows/rca2-controlled-runtime-dark-read-ci.yml",
+                ".github/workflows/sc-rca2-entry-ci.yml",
+                "docs/platform/governance/",
+                "docs/platform/recommendation/rca2/",
+                "jc-backend/build.gradle.kts",
+                "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java",
+                "jc-backend/src/main/java/com/jc/backend/recommendation/rca2/",
+                "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml",
+                "jc-backend/src/test/java/com/jc/backend/recommendation/rca2/",
+                "jc-backend/src/test/java/com/jc/backend/verification/IP9ControlledBackendHookStaticTest.java",
+                "jc-search-readiness/src/test/java/com/jc/intelligence/readiness/search/SearchShadowReadinessContractTest.java",
+                "verification/rca0/run_rca0_verification.py",
+                "verification/rca1/run_rca1_verification.py",
+                "verification/rca1b/run_rca1b_verification.py",
+                "verification/rca2/",
+                "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
+                "verification/sc-next-track/rca2-entry/",
+            )
+            unexpected = [item for item in changed if not any(item == prefix or item.startswith(prefix) for prefix in allowed)]
             need(not unexpected, f"unexpected changed files: {unexpected}")
-            return f"SQL, authority and governance-only diff verified: {len(changed)} files"
+            production_configs = [item for item in changed
+                if re.search(r"jc-backend/src/main/resources/application.*\.(?:yml|yaml|properties)$", item)
+                and item != "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml"]
+            forbidden = [item for item in changed if item.startswith(("database/", "jc-recommendation-core/"))
+                or item in (
+                    "jc-backend/src/main/java/com/jc/backend/recommendation/p1/RecommendationP1ProfileSource.java",
+                    "jc-backend/src/main/java/com/jc/backend/recommendation/p2/RecommendationP2ObservationSource.java",
+                )]
+            need(not forbidden and not production_configs,
+                 f"protected source/core/SQL/production config changed: {forbidden + production_configs}")
+            config = (ROOT / "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml").read_text(encoding="utf-8")
+            for marker in ("flag: off", "traffic-percent: 0", "max-production-dark-read-percent: 0",
+                           "production-route-allowed: false", "db-change: NONE", "sql-allocation: NOT_REQUIRED"):
+                need(marker in config, f"RCA2 isolated config marker missing: {marker}")
+            need(not re.search(r"https?://|jdbc:", config), "concrete route or DB connection in RCA2 config")
+            feed = (ROOT / "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java").read_text(encoding="utf-8")
+            need("RCA-2 request registration failed open" in feed and "return response;" in feed,
+                 "RCA2 fail-open primary response boundary missing")
+            need("return registrar.registerFeed" not in feed and "return rca2Registrar" not in feed,
+                 "RCA2 hook became response authority")
+            runtime_source = "\n".join(path.read_text(encoding="utf-8")
+                for path in (ROOT / "jc-backend/src/main/java/com/jc/backend/recommendation/rca2").glob("*.java"))
+            for token in ("JpaRepository", "JdbcTemplate", "EntityManager", "ApplicationEventPublisher",
+                          "KafkaTemplate", "@Transactional", "ForkJoinPool.commonPool", "newCachedThreadPool",
+                          "CallerRunsPolicy"):
+                need(token not in runtime_source, f"forbidden RCA2 runtime dependency: {token}")
+            return f"SC5 entry and authorized RCA2 implementation boundaries verified: {len(changed)} files"
         record("sql_authority_and_historical_protection", protected,
                f"git diff --name-only {START}..{head}")
 
