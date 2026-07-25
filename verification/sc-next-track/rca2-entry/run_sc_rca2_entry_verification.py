@@ -225,6 +225,7 @@ def main() -> int:
                 "verification/rca1/run_rca1_verification.py",
                 "verification/rca1b/run_rca1b_verification.py",
                 "verification/rca2/",
+                "verification/data-platform-closure/run_data_platform_closure_verification.py",
                 "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
                 "verification/sc-next-track/rca2-entry/",
             )
