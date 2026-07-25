@@ -28,8 +28,6 @@ jobs:
             echo 'RCA-2 enhancements already applied.'
             exit 0
           fi
-          echo '05fec5801ea1ad67d034144a8f6496579e8e9043687f8899b3f519cb0e7e8443  verification/rca2-enhancement.part00' | sha256sum -c -
-          echo '0b4afcc6e45aa13366eade3786d685d46c952fdfcc496dc5e2513f97928cd416  verification/rca2-enhancement.part01' | sha256sum -c -
           cat verification/rca2-enhancement.part00 verification/rca2-enhancement.part01 > /tmp/rca2-enhancement.tar.gz.b64
           base64 --decode /tmp/rca2-enhancement.tar.gz.b64 > /tmp/rca2-enhancement.tar.gz
           echo 'd67eaec515724fb6eb4bdb3da343f5fa6284d762bbe3dbedfc479430179cd617  /tmp/rca2-enhancement.tar.gz' | sha256sum -c -
