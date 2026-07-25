@@ -198,6 +198,7 @@ allowed = set(
         "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml",
         "jc-backend/src/test/java/com/jc/backend/verification/IP9ControlledBackendHookStaticTest.java",
         "jc-search-readiness/src/test/java/com/jc/intelligence/readiness/search/SearchShadowReadinessContractTest.java",
+        "verification/dp6/run_dp6_allocation_verification.py",
         "verification/dp7/run_dp7_allocation_verification.py",
         "verification/dp7/run_dp7_static_verification.py",
         "verification/rca0/run_rca0_verification.py",

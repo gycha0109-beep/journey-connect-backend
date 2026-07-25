@@ -221,6 +221,9 @@ def static_checks(head: str) -> list[dict[str, str]]:
             "verification/rca1/run_rca1_verification.py",
             "verification/rca1b/",
             "verification/rca2/",
+            "verification/data-platform-closure/run_data_platform_closure_verification.py",
+            "verification/dp6/run_dp6_allocation_verification.py",
+            "verification/dp7/run_dp7_allocation_verification.py",
             "verification/sc-dp1-baseline-reconciliation/",
             "verification/sc-next-track/",
         )
