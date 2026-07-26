@@ -45,7 +45,8 @@ public record Rca2Op1Configuration(
         allowlistStorage = normalized(allowlistStorage);
         cohortSaltVersion = normalized(cohortSaltVersion);
         cohortSaltMaterialHash = normalized(cohortSaltMaterialHash);
-        validate();
+        validate(environment, shadowEnabled, configuredTrafficPercent, effectiveTrafficPercent,
+                maxConfigurablePercent, databaseRoute, automaticRamp, manualEnablementImplemented);
     }
 
     public static Rca2Op1Configuration from(Environment environment) {
@@ -78,7 +79,15 @@ public record Rca2Op1Configuration(
                 && !"UNRESOLVED".equals(candidateApiVersion);
     }
 
-    private void validate() {
+    private static void validate(
+            String environment,
+            boolean shadowEnabled,
+            int configuredTrafficPercent,
+            int effectiveTrafficPercent,
+            int maxConfigurablePercent,
+            String databaseRoute,
+            boolean automaticRamp,
+            boolean manualEnablementImplemented) {
         if (!Rca2RuntimeContracts.ENVIRONMENT.equals(environment)) {
             throw new IllegalArgumentException("OP-1 environment must remain isolated non-production");
         }
