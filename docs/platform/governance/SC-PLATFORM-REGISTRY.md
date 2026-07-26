@@ -23,10 +23,26 @@
 | `SC-6` | nonzero non-production Stage 1 governance | CONDITIONALLY AUTHORIZED / ENABLEMENT BLOCKED |
 | `RP` | Reliability Platform | PROTECTED ACRONYM |
 
+## Retained SC-5 registry markers
+
+```text
+RCA2_ENTRY_AUTHORIZED
+RCA2_EXECUTION_ENVIRONMENT=ISOLATED_NON_PRODUCTION_RUNTIME
+RCA2_RUNTIME_MODEL=ASYNC_POST_RESPONSE_SHADOW
+FEATURE_FLAG_DEFAULT=OFF
+INITIAL_TRAFFIC_PERCENT=0
+PRIMARY_RESULT_AUTHORITY=CURRENT_P1_P2_ONLY
+SHADOW_RESULT_AUTHORITY=NONE
+SHADOW_RESULT_SERVING=FORBIDDEN
+PRODUCTION_ACTIVATION=NOT_AUTHORIZED
+AUTHORITY_TRANSFER=FORBIDDEN
+```
+
 ## Contract registry
 
 | Contract ID | Owner | Status |
 |---|---|---|
+| `recommendation-shadow-reconciliation-v1` | lane owners | ACTIVE / HISTORICAL |
 | `recommendation-runtime-dark-read-boundary-v1` | System Coordination | ACTIVE / RCA-2 |
 | `recommendation-runtime-dark-read-query-registry-v1` | Data + lane owners | CONTRACT-ONLY |
 | `rca2-nonproduction-stage1-traffic-v1` | System Coordination | ACTIVE / GOVERNANCE ONLY |
