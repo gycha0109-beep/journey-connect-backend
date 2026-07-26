@@ -5,90 +5,72 @@
 | Field | Value |
 |---|---|
 | contract ID | `sc-decision-register-v1` |
-| status | `ACTIVE / SC-5 RCA-2 ENTRY AUTHORIZED` |
-| authoritative main/work-start | `3efbf96ebf25ae1645a62f35269c4b569425a9ca` |
-| RCA-1B exact-final-head | `dbb6b5397ad0fe675856b195e280faf9a0f3030c` |
-| updated | `2026-07-25` |
+| status | `ACTIVE / SC-6 STAGE 1 CONDITIONALLY AUTHORIZED / ENABLEMENT BLOCKED` |
+| authoritative main/work-start | `b57c344c9b4e332966fe9f6d36a5da66a5faae71` |
+| RCA-2 exact-final-head | `511b19f80cdd42bb2fafde0563c7388b4f5b5f48` |
+| updated | `2026-07-26` |
 
 ## Historical decisions retained
 
-- Data Platform closure and SQL `01..52` protection remain complete.
-- SQL `53+` remains unallocated.
-- RCA-0, RCA-1 and RCA-1B are complete and merged as applicable.
-- `RCA1B_NONPRODUCTION_READONLY_RECONCILIATION_COMPLETE` and `CROSS_VERSION_RESULT_EQUIVALENCE=PASS` remain authoritative.
-- `READ_ONLY_BOUNDARY=ENFORCED`, `QUERY_ALLOWLIST=ENFORCED`, `CHECKPOINT_BOUNDARY=ENFORCED`, `LINEAGE_BOUNDARY=ENFORCED`.
-- `RP` is reserved for Reliability Platform.
-- P1 `RecommendationP1ProfileSource` and P2 `RecommendationP2ObservationSource` authority remains unchanged.
-- RCA-1B historical source, tests, evidence and artifacts are immutable.
+Data Platform closure and SQL `01..52` protection remain complete; SQL `53+` remains absent/unallocated. RCA-0, RCA-1, RCA-1B and RCA-2 historical evidence remains immutable. PR #29 is merged. Current P1/P2 authority, RCA-2 default OFF, traffic 0, no serving, no production activation and no authority transfer remain protected.
 
-## SC-5 decisions
+## SC-5 retained decision
+
+`RCA2_ENTRY_AUTHORIZED` authorized the isolated non-production runtime implementation only. RCA-2 completed at `511b19f80cdd42bb2fafde0563c7388b4f5b5f48` with evidence artifact `8621492010` and digest `sha256:9e95b85fff822cfae5aa6f7dbf25425d7c47551c32c18ac014aea4b90ee6a760`.
+
+## SC-6 decisions
 
 | Decision ID | Decision | Status | Restriction |
 |---|---|---|---|
-| `SC-RCA2-001` | authorize RCA-2 implementation entry | APPROVED | separate Draft PR |
-| `SC-RCA2-002` | Environment B isolated non-production | APPROVED | no production data/route/identity |
-| `SC-RCA2-003` | Environment A CI simulation | REQUIRED | implementation verification |
-| `SC-RCA2-004` | Environment C production dark read | BLOCKED | separate SC approval |
-| `SC-RCA2-005` | async post-response model | APPROVED | dedicated bounded executor |
-| `SC-RCA2-006` | queue/event model | BLOCKED | queue/event contract absent |
-| `SC-RCA2-007` | feature flag | REQUIRED | default OFF; stale/unknown OFF |
-| `SC-RCA2-008` | initial traffic | APPROVED | 0% |
-| `SC-RCA2-009` | non-production staged ceiling | CONDITIONALLY APPROVED | manual 1/10/50/100 stages |
-| `SC-RCA2-010` | production traffic ceiling | APPROVED | 0% |
-| `SC-RCA2-011` | primary authority | PROTECTED | current P1/P2 only |
-| `SC-RCA2-012` | shadow authority | NONE | no serving/fallback/write/event |
-| `SC-RCA2-013` | timeout/resources | APPROVED | finite 100/300/500 ms, 4/100 |
-| `SC-RCA2-014` | retry | FORBIDDEN | NONE |
-| `SC-RCA2-015` | circuit breakers | REQUIRED | lane + global |
-| `SC-RCA2-016` | kill switches | REQUIRED | lane + global |
-| `SC-RCA2-017` | credential/network | CONDITIONALLY APPROVED | non-production workload identity only |
-| `SC-RCA2-018` | production credential/route | BLOCKED | Operations/Security/SC review |
-| `SC-RCA2-019` | identity | CONDITIONALLY APPROVED | synthetic/test account only |
-| `SC-RCA2-020` | actual production identity | BLOCKED | separate privacy governance |
-| `SC-RCA2-021` | P1 runtime lane | CONDITIONALLY APPROVED | expected gaps preserved |
-| `SC-RCA2-022` | P2 runtime lane | CONDITIONALLY APPROVED | exposure/window/event/fallback protected |
-| `SC-RCA2-023` | runtime freshness | MEASUREMENT_ONLY | threshold blocked pending evidence |
-| `SC-RCA2-024` | observability/redaction | REQUIRED | low cardinality, no raw IDs/content |
-| `SC-RCA2-025` | alert/automatic disable | REQUIRED | critical violations global kill |
-| `SC-RCA2-026` | deployment/enable separation | REQUIRED | deploy does not enable |
-| `SC-RCA2-027` | rollback hierarchy | REQUIRED | seven levels |
-| `SC-RCA2-028` | DB/SQL | NOT_REQUIRED | no persistent objects/roles/grants |
-| `SC-RCA2-029` | runtime query registry | REQUIRED | application contract only |
-| `SC-RCA2-030` | persisted evidence | NOT_REQUIRED | existing observability |
-| `SC-RCA2-031` | production activation | NOT AUTHORIZED | separate SC decision |
-| `SC-RCA2-032` | authority transfer | FORBIDDEN | separate review after RCA-2 exit |
+| `SC-RCA2-S1-001` | Stage 1 candidate ceiling | CONDITIONALLY AUTHORIZED | target 1%, current 0% |
+| `SC-RCA2-S1-002` | stable-hash cohort | REQUIRED | hashed non-production test subject only |
+| `SC-RCA2-S1-003` | endpoint | BLOCKED | Operations-owned, not implemented |
+| `SC-RCA2-S1-004` | credential | BLOCKED | short-lived, not issued |
+| `SC-RCA2-S1-005` | identity allowlist | BLOCKED | Privacy/Security-owned, empty |
+| `SC-RCA2-S1-006` | observation | REQUIRED | 30 minutes and 100 executions |
+| `SC-RCA2-S1-007` | metrics | BLOCKED | exact 27-metric inventory incomplete |
+| `SC-RCA2-S1-008` | safety ceilings | CONDITIONALLY AUTHORIZED | zero critical tolerance |
+| `SC-RCA2-S1-009` | rollback Level 1..7 | REQUIRED | Operations execution owner |
+| `SC-RCA2-S1-010` | six role approvals | BLOCKED | pending user review |
+| `SC-RCA2-S1-011` | actual traffic enablement | NOT AUTHORIZED | separate manual decision |
+| `SC-RCA2-S1-012` | production traffic | NOT AUTHORIZED | 0% |
+| `SC-RCA2-S1-013` | DB/SQL | NOT REQUIRED | no change/allocation |
+| `SC-RCA2-S1-014` | authority transfer | FORBIDDEN | separate review |
 
-## Explicit decision block
+## Decision block
 
 ```text
-RCA2_ENTRY_AUTHORIZED
-RCA2_EXECUTION_ENVIRONMENT=ISOLATED_NON_PRODUCTION_RUNTIME
-RCA2_RUNTIME_MODEL=ASYNC_POST_RESPONSE_SHADOW
-FEATURE_FLAG_REQUIRED=YES
+RCA2_NONZERO_NONPRODUCTION_TRAFFIC_STAGE1_CONDITIONALLY_AUTHORIZED
+TARGET_ENVIRONMENT=ISOLATED_NON_PRODUCTION_RUNTIME
+TARGET_TRAFFIC_STAGE=STAGE_1
+TARGET_TRAFFIC_PERCENT=1
+CURRENT_TRAFFIC_PERCENT=0
+TRAFFIC_ENABLEMENT=BLOCKED_PENDING_ALL_CONDITIONS
 FEATURE_FLAG_DEFAULT=OFF
-INITIAL_TRAFFIC_PERCENT=0
+MANUAL_ENABLEMENT_REQUIRED=YES
+AUTOMATIC_ROLLOUT=FORBIDDEN
 PRIMARY_RESULT_AUTHORITY=CURRENT_P1_P2_ONLY
 SHADOW_RESULT_AUTHORITY=NONE
 SHADOW_RESULT_SERVING=FORBIDDEN
-SHADOW_FAILURE_FALLBACK=KEEP_PRIMARY_RESULT
-IDENTITY_MODE=SYNTHETIC_OR_TEST_ACCOUNT_ONLY
-RUNTIME_FRESHNESS_POLICY=BLOCKED_PENDING_MEASUREMENT
-DB_CHANGE=NONE
-SQL_ALLOCATION=NOT_REQUIRED
+PRODUCTION_TRAFFIC_PERCENT=0
 PRODUCTION_ACTIVATION=NOT_AUTHORIZED
 AUTHORITY_TRANSFER=FORBIDDEN
-IMPLEMENTATION_REQUIRES_SEPARATE_PR
+APPROVAL_STATUS=PENDING_USER_REVIEW
+DB_CHANGE=NONE
+SQL_ALLOCATION=NOT_REQUIRED
+STAGE1_EXECUTION_REQUIRES_SEPARATE_PR_OR_OPERATIONS_CHANGE
 ```
 
-## Blocking approvals
+## Blockers
 
-Intelligence, Reliability, Operations, Privacy/Security and System Coordination are `BLOCKING_APPROVAL`. Data is `REQUIRED`. These approvals gate nonzero traffic and stage increases; SC-5 technical verification does not imply approval.
-
-## Deferred and blocked
-
-- safe async executor implementation and runtime tests;
-- live freshness threshold;
-- production credential, route, identity, canary, load and validation;
-- persistent DB object/role/grant or SQL allocation;
-- queue/event infrastructure;
-- candidate serving, cutover, source deprecation and authority transfer.
+- isolated non-production endpoint not built or verified;
+- candidate adapter remains contract-only primary mirror;
+- stable-hash test-subject cohort not implemented;
+- short-lived credential not issued or verified;
+- test-account allowlist empty;
+- traffic selection, executor, task-age, cancellation and checkpoint-lag metrics incomplete;
+- dashboard and critical notification route unverified;
+- credential/network rollback infrastructure drill not executed;
+- six blocking approvals pending user review;
+- runtime observation not executed;
+- no empirical unexpected-mismatch threshold basis.
