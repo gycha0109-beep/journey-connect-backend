@@ -31,6 +31,7 @@ jobs:
         shell: bash
         run: |
           set +e
+          mkdir -p ../verification/operations/op1/runtime
           chmod +x gradlew
           ./gradlew cleanTest test \
             --tests "com.jc.backend.recommendation.rca2.Rca2Op1BoundaryUnitTest" \
@@ -45,7 +46,7 @@ jobs:
         with:
           name: op1-isolated-test-diagnostics
           retention-days: 7
-          if-no-files-found: warn
+          if-no-files-found: error
           path: |
             verification/operations/op1/runtime/isolated-test.log
             jc-backend/build/test-results/test/**
