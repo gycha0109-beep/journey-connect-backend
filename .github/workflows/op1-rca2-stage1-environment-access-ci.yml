@@ -1,0 +1,215 @@
+name: OP-1 RCA-2 Stage 1 Environment and Access CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "jc-backend/src/main/java/com/jc/backend/recommendation/rca2/**"
+      - "jc-backend/src/test/java/com/jc/backend/recommendation/rca2/**"
+      - "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml"
+      - "docs/platform/operations/op1/**"
+      - "verification/operations/op1/**"
+      - ".github/workflows/op1-rca2-stage1-environment-access-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: op1-rca2-stage1-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  authoritative_baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.13" }
+      - run: python verification/operations/op1/run_op1_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only authoritative_baseline
+
+  op0_continuity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.13" }
+      - run: python verification/operations/op1/run_op1_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only op0_continuity
+
+  application_compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
+      - uses: actions/setup-java@v5
+        with: { distribution: temurin, java-version: "21" }
+      - uses: gradle/actions/setup-gradle@v6
+      - working-directory: jc-backend
+        run: chmod +x gradlew && ./gradlew compileJava compileKotlin --stacktrace --no-daemon
+      - run: echo "EXACT_TESTED_SHA=${{ github.event.pull_request.head.sha || github.sha }}"
+
+  unit_tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
+      - uses: actions/setup-java@v5
+        with: { distribution: temurin, java-version: "21" }
+      - uses: gradle/actions/setup-gradle@v6
+      - working-directory: jc-backend
+        run: chmod +x gradlew && ./gradlew :test --tests "com.jc.backend.recommendation.rca2.Rca2Op1BoundaryUnitTest" --stacktrace --no-daemon
+
+  integration_tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
+      - uses: actions/setup-java@v5
+        with: { distribution: temurin, java-version: "21" }
+      - uses: gradle/actions/setup-gradle@v6
+      - working-directory: jc-backend
+        run: chmod +x gradlew && ./gradlew :test --tests "com.jc.backend.recommendation.rca2.Rca2Op1EnvironmentAccessIntegrationTest" --stacktrace --no-daemon
+
+  endpoint_policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.13" }
+      - run: python verification/operations/op1/run_op1_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only endpoint_policy
+
+  credential_boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.13" }
+      - run: python verification/operations/op1/run_op1_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only credential_boundary
+
+  identity_allowlist_boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.13" }
+      - run: python verification/operations/op1/run_op1_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only identity_allowlist_boundary
+
+  stable_hash_cohort:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.13" }
+      - run: python verification/operations/op1/run_op1_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only stable_hash_cohort
+
+  candidate_adapter_boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.13" }
+      - run: python verification/operations/op1/run_op1_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only candidate_adapter_boundary
+
+  effective_zero_traffic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.13" }
+      - run: python verification/operations/op1/run_op1_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only effective_zero_traffic
+
+  runtime_side_effect_protection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
+      - uses: actions/setup-java@v5
+        with: { distribution: temurin, java-version: "21" }
+      - uses: gradle/actions/setup-gradle@v6
+      - working-directory: jc-backend
+        run: |
+          chmod +x gradlew
+          ./gradlew :test \
+            --tests "com.jc.backend.recommendation.rca2.Rca2RuntimeOrchestratorTest" \
+            --tests "com.jc.backend.recommendation.rca2.Rca2StaticBoundaryTest" \
+            --tests "com.jc.backend.recommendation.rca2.Rca2CredentialNetworkRollbackTest" \
+            --stacktrace --no-daemon
+
+  historical_evidence_protection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.13" }
+      - run: python verification/operations/op1/run_op1_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only historical_evidence_protection
+
+  sql_protection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.13" }
+      - run: python verification/operations/op1/run_op1_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only sql_protection
+
+  independent_verifier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs:
+      - authoritative_baseline
+      - op0_continuity
+      - application_compile
+      - unit_tests
+      - integration_tests
+      - endpoint_policy
+      - credential_boundary
+      - identity_allowlist_boundary
+      - stable_hash_cohort
+      - candidate_adapter_boundary
+      - effective_zero_traffic
+      - runtime_side_effect_protection
+      - historical_evidence_protection
+      - sql_protection
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.13" }
+      - name: Run exact-head verifier
+        run: python verification/operations/op1/run_op1_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}"
+      - name: Print exact tested SHA
+        run: echo "EXACT_TESTED_SHA=${{ github.event.pull_request.head.sha || github.sha }}"
+      - name: Upload OP-1 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: op1-rca2-stage1-environment-access-evidence
+          retention-days: 90
+          if-no-files-found: error
+          path: |
+            verification/operations/op1/runtime/**
+            jc-backend/build/test-results/**/*.xml
+            jc-backend/build/reports/tests/**

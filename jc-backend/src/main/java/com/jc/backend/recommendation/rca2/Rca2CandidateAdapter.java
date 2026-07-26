@@ -8,6 +8,14 @@ public interface Rca2CandidateAdapter {
             Rca2RuntimeContracts.ShadowRequest request,
             Rca2RuntimeContracts.Deadline deadline) throws Exception;
 
+    default Rca2CandidateSourceDecision sourceDecision() {
+        return Rca2CandidateSourceDecision.unresolved();
+    }
+
+    default boolean readOnly() { return true; }
+    default boolean servingAllowed() { return false; }
+    default String fallbackPolicy() { return Rca2RuntimeContracts.SHADOW_FAILURE_FALLBACK; }
+
     static Rca2CandidateAdapter isolatedContractOnly() {
         return (request, deadline) -> {
             var primary = request.primary();
