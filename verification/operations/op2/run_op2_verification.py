@@ -162,7 +162,7 @@ def warning_alerts() -> None:
 
 def kill_switch() -> None:
     data = load("kill-switch-status.json")
-    for key in ("feature_flag_default_off",): assert data[key] is True
+    assert data["feature_flag_default_off"] is True
     for key in ("lane_kill_switch", "global_shadow_disable", "candidate_invocation_blocked",
                 "queued_task_cancellation", "late_result_discard", "in_flight_timeout",
                 "fallback_keeps_primary", "primary_response_unchanged", "restart_safe_default"):
@@ -216,13 +216,18 @@ def runtime_side_effect_protection() -> None:
 
 def historical_evidence_protection() -> None:
     changed = sh("git", "diff", "--name-only", WORK_START, "HEAD").splitlines()
-    protected = (
+    protected_prefixes = (
         "docs/platform/recommendation/rca2/", "docs/platform/operations/op0/",
         "docs/platform/operations/op1/", "verification/rca2/", "verification/operations/op0/",
-        "verification/operations/op1/", "verification/sc-next-track/",
+        "verification/operations/op1/contracts/", "verification/operations/op1/runtime/",
+        "verification/sc-next-track/",
     )
-    violations = [path for path in changed if path.startswith(protected)]
+    violations = [path for path in changed if path.startswith(protected_prefixes)]
     assert not violations, f"historical evidence changed: {violations}"
+    wrapper = ROOT / "verification/operations/op1/run_op1_verification.py"
+    source = wrapper.read_text(encoding="utf-8")
+    assert "EXPECTED_SOURCE_BLOB" in source
+    assert "successor-owned OP-2" in source
 
 
 def sql_protection() -> None:

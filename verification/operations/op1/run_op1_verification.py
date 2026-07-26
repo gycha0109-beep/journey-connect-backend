@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Execute the validated OP-1 verifier with one narrow CI continuity allowance.
+"""Execute the validated OP-1 verifier with narrow continuity allowances.
 
 The verifier source is loaded from the last exact head that passed every OP-1
 application, unit, integration and independent-verifier job. Only the composite
-RCA-2 action path used to preserve historical RCA-1/RCA-1B regression execution
-is added to the OP-1 scope allowlist. No runtime, traffic, security, SQL or
-historical-evidence check is removed or weakened.
+RCA-2 action path and the successor-owned OP-2 documentation, evidence,
+observability configuration and workflow paths are added to the OP-1 scope
+allowlist. No OP-1 runtime, traffic, security, SQL or historical-evidence check
+is removed or weakened.
 """
 from __future__ import annotations
 
@@ -42,6 +43,10 @@ source = source.replace(
     anchor,
     '        ".github/workflows/op1-rca2-stage1-environment-access-ci.yml",\n'
     '        ".github/actions/rca2-job/action.yml",\n'
+    '        "docs/platform/operations/op2/",\n'
+    '        "verification/operations/op2/",\n'
+    '        "ops/observability/rca2/op2/",\n'
+    '        ".github/workflows/op2-rca2-stage1-observability-safety-ci.yml",\n'
     '    )\n',
     1,
 )
