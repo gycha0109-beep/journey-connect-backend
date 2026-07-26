@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Execute the authoritative SC-5 verifier with SC-6 governance-only paths added.
+"""Execute the authoritative SC-5 verifier with approved successor paths.
 
 The SC-5 verification logic is loaded byte-for-byte from the authoritative
-pre-SC-6 main commit. Only two successor path allowlist entries are inserted;
-no SC-5 evidence, thresholds, authority rules or runtime checks are changed.
+pre-SC-6 main commit. Only SC-6, OP-0 and OP-1 successor path allowlist
+entries are inserted; no SC-5 evidence, thresholds, authority rules or runtime
+checks are changed.
 """
 from __future__ import annotations
 
@@ -24,19 +25,31 @@ source = subprocess.run(
 
 workflow_anchor = '                ".github/workflows/sc-rca2-entry-ci.yml",\n'
 evidence_anchor = '                "verification/sc-next-track/rca2-entry/",\n'
-if workflow_anchor not in source or evidence_anchor not in source:
+doc_anchor = '                "docs/platform/recommendation/rca2/",\n'
+if workflow_anchor not in source or evidence_anchor not in source or doc_anchor not in source:
     raise SystemExit("FAIL: authoritative SC-5 verifier compatibility anchors missing")
 
 source = source.replace(
     workflow_anchor,
     workflow_anchor
-    + '                ".github/workflows/sc6-rca2-nonzero-nonprod-stage1-governance-ci.yml",\n',
+    + '                ".github/workflows/sc6-rca2-nonzero-nonprod-stage1-governance-ci.yml",\n'
+    + '                ".github/workflows/op0-rca2-stage1-operations-preparation-governance-ci.yml",\n'
+    + '                ".github/workflows/op1-rca2-stage1-environment-access-ci.yml",\n',
+    1,
+)
+source = source.replace(
+    doc_anchor,
+    doc_anchor
+    + '                "docs/platform/operations/op0/",\n'
+    + '                "docs/platform/operations/op1/",\n',
     1,
 )
 source = source.replace(
     evidence_anchor,
     evidence_anchor
-    + '                "verification/sc-next-track/rca2-nonzero-nonprod-entry/",\n',
+    + '                "verification/sc-next-track/rca2-nonzero-nonprod-entry/",\n'
+    + '                "verification/operations/op0/",\n'
+    + '                "verification/operations/op1/",\n',
     1,
 )
 
