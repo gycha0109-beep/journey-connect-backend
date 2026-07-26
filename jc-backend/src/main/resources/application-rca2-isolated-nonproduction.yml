@@ -1,0 +1,74 @@
+spring:
+  config:
+    activate:
+      on-profile: rca2-isolated-nonproduction
+
+app:
+  recommendation:
+    rca2:
+      environment: ISOLATED_NON_PRODUCTION_RUNTIME
+      runtime-model: ASYNC_POST_RESPONSE_SHADOW
+
+      # Fail-closed enablement. Deployment alone cannot activate the lane.
+      flag: off
+      flag-version: rca2-flag-default-off-v1
+      config-signature-verified: false
+      flag-refresh-seconds: 30
+      flag-stale-seconds: 120
+      flag-max-ttl-days: 30
+
+      lane:
+        p1-enabled: false
+        p2-enabled: false
+        p1-kill-switch: true
+        p2-kill-switch: true
+      global-kill-switch: true
+
+      # Stage candidates are documentary only. No automatic transition exists.
+      traffic-percent: 0
+      initial-traffic-percent: 0
+      max-production-dark-read-percent: 0
+      stage-candidates: 0,1,10,50,100
+
+      executor:
+        max-shadow-concurrency: 4
+        max-shadow-queue-depth: 100
+        task-queue-timeout-ms: 50
+        max-task-age-ms: 1000
+        retry-policy: NONE
+        late-result-policy: DISCARD
+
+      timeout:
+        connection-ms: 100
+        read-ms: 300
+        total-ms: 500
+
+      identity-mode: SYNTHETIC_OR_TEST_ACCOUNT_ONLY
+      test-account-hashes: ""
+      identity-authority: RCA2_NONPRODUCTION_TEST_ACCOUNT_ALLOWLIST_V1
+      identity-purpose: RCA2_ISOLATED_NONPRODUCTION_DARK_READ_ONLY
+      allowlist-entry-max-days: 30
+      hashed-audit-retention-days: 90
+
+      credential-secret-ref: ${RCA2_NONPRODUCTION_CREDENTIAL_SECRET_REF:}
+      credential-owner: OPERATIONS
+      credential-storage: PLATFORM_SECRET_MANAGER
+      credential-max-ttl-seconds: 3600
+      credential-scope: NONPRODUCTION_READ_ONLY
+
+      tls-required: true
+      network-policy: DENY_BY_DEFAULT_EXPLICIT_NONPRODUCTION_ALLOWLIST
+      nonproduction-endpoint-placeholder: ""
+      production-route-allowed: false
+
+      db-change: NONE
+      sql-allocation: NOT_REQUIRED
+      approved-production-db-query-count: 0
+      runtime-query-registry: recommendation-runtime-dark-read-query-registry-v1
+
+      primary-result-authority: CURRENT_P1_P2_ONLY
+      shadow-result-authority: NONE
+      shadow-result-serving: FORBIDDEN
+      shadow-failure-fallback: KEEP_PRIMARY_RESULT
+      production-activation: NOT_AUTHORIZED
+      authority-transfer: FORBIDDEN

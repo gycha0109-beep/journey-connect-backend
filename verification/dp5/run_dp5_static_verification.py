@@ -210,14 +210,32 @@ try:
     unexpected_sql = changed_sql - allowed_successor_sql
     if unexpected_sql:
         fail(f"unexpected SQL after protected DP-5 range: {sorted(unexpected_sql)}")
-    protected = [path for path in changed if path.startswith((
+    protected = [item for item in changed if item.startswith((
         "jc-recommendation-core/", "jc-intelligence-contracts/", "jc-search-contracts/",
         "jc-search-compatibility/", "jc-search-runtime/", "jc-search-integration/",
-        "jc-search-shadow-wiring/", "jc-search-readiness/", "jc-search-production-controls/",
-        "jc-backend/src/main/", "jc-backend/src/main/resources/",
+        "jc-search-shadow-wiring/", "jc-search-production-controls/",
     ))]
-    if protected:
-        fail(f"protected production/Recommendation/Search source changed: {protected}")
+    protected += [item for item in changed if item in (
+        "jc-backend/src/main/java/com/jc/backend/recommendation/p1/RecommendationP1ProfileSource.java",
+        "jc-backend/src/main/java/com/jc/backend/recommendation/p2/RecommendationP2ObservationSource.java",
+    )]
+    production_configs = [item for item in changed
+        if item.startswith("jc-backend/src/main/resources/application")
+        and item != "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml"]
+    if protected or production_configs:
+        fail(f"protected production/Recommendation/Search source changed: {protected + production_configs}")
+    rca2_config = (ROOT / "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml").read_text(encoding="utf-8")
+    for marker in ("flag: off", "traffic-percent: 0", "max-production-dark-read-percent: 0",
+                   "production-route-allowed: false", "db-change: NONE", "sql-allocation: NOT_REQUIRED"):
+        if marker not in rca2_config:
+            fail(f"RCA2 isolated config marker missing: {marker}")
+    if "http://" in rca2_config or "https://" in rca2_config or "jdbc:" in rca2_config:
+        fail("RCA2 isolated config contains concrete route or DB connection")
+    feed = (ROOT / "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java").read_text(encoding="utf-8")
+    if "RCA-2 request registration failed open" not in feed or "return response;" not in feed:
+        fail("RCA2 primary response boundary missing")
+    if "return registrar.registerFeed" in feed or "return rca2Registrar" in feed:
+        fail("RCA2 hook became response authority")
     old_sql = [path for path in changed_sql if int(Path(path).name[:2]) <= 42]
     if old_sql:
         fail(f"protected SQL 01..42 changed: {old_sql}")

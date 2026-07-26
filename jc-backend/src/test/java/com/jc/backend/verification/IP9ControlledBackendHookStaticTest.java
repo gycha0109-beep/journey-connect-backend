@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Test;
 class IP9ControlledBackendHookStaticTest {
     private static final String CONTROLLER =
             "jc-backend/src/main/java/com/jc/backend/post/PostController.java";
+    private static final String RCA2_FEED_SERVICE =
+            "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java";
 
     @Test
     void controllerUsesLegacyServiceResultAsTheOnlyResponseAuthority() throws Exception {
@@ -69,21 +71,30 @@ class IP9ControlledBackendHookStaticTest {
     }
 
     @Test
-    void allPriorRecommendationAndSqlProtectedSourcesRemainExact() throws Exception {
+    void allPriorRecommendationAndSqlProtectedSourcesRemainExactExceptApprovedRca2Hook() throws Exception {
         Path manifest = RepositoryLayout.resolve("verification/ip8/IP8_PROTECTED_BASELINE_EXPECTED_SHA256.txt");
         List<String> lines = Files.readAllLines(manifest, StandardCharsets.UTF_8).stream()
                 .filter(line -> !line.isBlank())
                 .toList();
         int checked = 0;
+        int approvedRca2Deltas = 0;
         for (String line : lines) {
             String[] parts = line.trim().split("\\s+", 2);
             assertThat(parts).hasSize(2);
             Path path = RepositoryLayout.resolve(parts[1]);
-            assertThat(sha256(path)).as(parts[1]).isEqualTo(parts[0]);
+            String current = sha256(path);
+            if (RCA2_FEED_SERVICE.equals(parts[1])) {
+                assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
+                assertApprovedRca2FeedRegistrationBoundary(Files.readString(path));
+                approvedRca2Deltas++;
+            } else {
+                assertThat(current).as(parts[1]).isEqualTo(parts[0]);
+            }
             checked++;
         }
         assertThat(lines).hasSize(320);
         assertThat(checked).isEqualTo(320);
+        assertThat(approvedRca2Deltas).isEqualTo(1);
     }
 
     @Test
@@ -119,6 +130,21 @@ class IP9ControlledBackendHookStaticTest {
             assertThat(sha256(RepositoryLayout.resolve(parts[1]))).as(parts[1]).isEqualTo(parts[0]);
         }
         assertThat(lines).hasSize(26);
+    }
+
+    private static void assertApprovedRca2FeedRegistrationBoundary(String source) {
+        assertThat(source).contains(
+                "ObjectProvider<Rca2RequestRegistrar>",
+                "Rca2RequestRegistrar registrar = rca2Registrar.getIfAvailable();",
+                "registrar.registerFeed(response, userId, tokenId, latencyMillis);",
+                "catch (RuntimeException exception)",
+                "RCA-2 request registration failed open",
+                "return response;");
+        assertThat(source).doesNotContain(
+                "return registrar.registerFeed",
+                "return rca2Registrar",
+                "return Rca2RequestRegistrar",
+                "SHADOW_RESULT_SERVING");
     }
 
     private static int count(String value, String token) {

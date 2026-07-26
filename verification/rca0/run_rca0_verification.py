@@ -13,6 +13,7 @@ D1=ROOT/"jc-data-contracts/src/main/java/com/jc/data/contract/v1/projection/Reco
 D2=ROOT/"jc-data-contracts/src/main/java/com/jc/data/contract/v1/projection/ExperimentOutcomeInputProjection.java"
 S1="jc-backend/src/main/java/com/jc/backend/recommendation/p1/RecommendationP1ProfileSource.java"
 S2="jc-backend/src/main/java/com/jc/backend/recommendation/p2/RecommendationP2ObservationSource.java"
+RCA2_NONPRODUCTION_PROFILE="jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml"
 IDS={"recommendation-data-consumer-alignment-v1","recommendation-profile-input-consumer-v1","experiment-outcome-input-consumer-v1","recommendation-data-consumer-fixture-v1"}
 P1={"p1_valid_7","p1_valid_30","p1_valid_90","p1_unsupported_schema_version","p1_invalid_activity_window","p1_missing_subject","p1_missing_checkpoint","p1_missing_lineage","p1_aggregate_to_event_stream_rejected","p1_explicit_preference_missing","p1_identity_mapping_missing","p1_identity_scheme_mismatch"}
 P2={"p2_valid_exact_exposure_outcome","p2_click_only","p2_like_only","p2_save_only","p2_share_only","p2_combined_engagement","p2_non_p2_exposure_rejected","p2_behavior_impression_rejected","p2_view_rejected","p2_hide_rejected","p2_report_rejected","p2_outcome_window_mismatch","p2_unbound_fallback_rejected","p2_subject_mismatch_rejected","p2_session_mismatch_rejected","p2_run_mismatch_rejected","p2_exposure_mismatch_rejected","p2_stale_assignment_migration","p2_dataset_hash_migration","p2_identity_mapping_missing","p2_identity_scheme_mismatch"}
@@ -73,7 +74,13 @@ def main():
         def isolated():
             t="\n".join(p.read_text() for p in PKG.glob("*.java")); bad=[x for x in ["org.springframework","jakarta.persistence","JdbcTemplate","DataSource","EntityManager","@Component","@Service","@Repository","@Controller","@Configuration","System.getenv","System.getProperty","Instant.now","Clock.system","java.net.http"] if x in t]; need(not bad,f"forbidden tokens {bad}"); return "pure Java isolation verified"
         rec("adoption_package_isolation",isolated)
-        rec("production_profile_control_unchanged",lambda:(need(not [p for p in changed if re.search(r"application[^/]*\.(?:yml|yaml|properties)$",p) or p.startswith("jc-search-production-controls/")],"production control changed") or "production profiles/controls unchanged"))
+        def production_controls():
+            profile_changes=[p for p in changed if re.search(r"application[^/]*\.(?:yml|yaml|properties)$",p) and p != RCA2_NONPRODUCTION_PROFILE]
+            control_changes=[p for p in changed if p.startswith("jc-search-production-controls/")]
+            need(not profile_changes and not control_changes,f"production control changed {profile_changes+control_changes}")
+            need(RCA2_NONPRODUCTION_PROFILE not in profile_changes,"RCA-2 isolated nonproduction profile misclassified")
+            return "production profiles/controls unchanged; RCA-2 isolated nonproduction profile classified nonproduction"
+        rec("production_profile_control_unchanged",production_controls)
         def docs():
             for n in DOCS:
                 t=(ROOT/"docs/platform/recommendation"/n).read_text(); h=set(re.findall(r"^##\s+(.+)$",t,re.M)); need(SECTIONS<=h,f"{n} sections missing {SECTIONS-h}"); need(START in t,f"{n} SHA missing")
@@ -86,7 +93,11 @@ def main():
             core=[str(ROOT/"jc-backend/gradlew"),"-p",str(ROOT/"jc-backend"),":jc-recommendation-core:check","--stacktrace","--no-daemon"]
             back=[str(ROOT/"jc-backend/gradlew"),"-p",str(ROOT/"jc-backend"),"test","--stacktrace","--no-daemon"]
             def gradle(name,cmd):
-                def go(): logs[name+".log"]=sh(cmd).stdout; return name+" passed"
+                def go():
+                    result=sh(cmd,check=False)
+                    logs[name+".log"]=result.stdout
+                    need(result.returncode==0,f"{name} failed with exit {result.returncode}; see verification/rca0/runtime/{name}.log")
+                    return name+" passed"
                 rec(name+"_regression",go," ".join(cmd))
             gradle("recommendation_core",core); gradle("backend",back)
         else:

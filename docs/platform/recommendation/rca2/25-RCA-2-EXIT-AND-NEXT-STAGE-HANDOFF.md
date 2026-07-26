@@ -1,0 +1,37 @@
+# RCA-2 Exit and Next-Stage Handoff
+
+`ACTUAL_WORK_START_SHA=ed5708bd4da12eaea8180043f5cd7f6eb13c3099`
+
+## Allowed completion statement
+```text
+RCA2_CONTROLLED_NONPRODUCTION_RUNTIME_DARK_READ_COMPLETE
+RCA2_EXECUTION_ENVIRONMENT=ISOLATED_NON_PRODUCTION_RUNTIME
+RCA2_RUNTIME_MODEL=ASYNC_POST_RESPONSE_SHADOW
+FEATURE_FLAG_DEFAULT=OFF
+INITIAL_TRAFFIC_PERCENT=0
+PRODUCTION_TRAFFIC_PERCENT=0
+PRIMARY_RESULT_AUTHORITY=CURRENT_P1_P2_ONLY
+SHADOW_RESULT_AUTHORITY=NONE
+SHADOW_RESULT_SERVING=FORBIDDEN
+SHADOW_FAILURE_FALLBACK=KEEP_PRIMARY_RESULT
+P1_RESULT=CONTRACT_ADAPTER_MATCH_WITH_EXPECTED_PROTECTED_GAPS
+P2_RESULT=CONTRACT_ADAPTER_MATCH_WITH_MIGRATION_GAPS
+CHECKPOINT_BOUNDARY=ENFORCED
+LINEAGE_BOUNDARY=ENFORCED
+IDENTITY_MODE=SYNTHETIC_OR_TEST_ACCOUNT_ONLY
+OBSERVABILITY=ACTIVE
+ROLLBACK=VERIFIED_WITH_EXTERNAL_LEVELS_NOT_EXECUTED
+DB_CHANGE=NONE
+SQL_ALLOCATION=NOT_REQUIRED
+PRODUCTION_ACTIVATION=NOT_AUTHORIZED
+AUTHORITY_TRANSFER=FORBIDDEN
+NEXT_STAGE_REQUIRES_SEPARATE_SC_APPROVAL
+```
+
+## Not implied
+Production readiness, production activation, nonzero traffic, actual identity, actual credential, production DB/route, candidate serving, cutover, source replacement, migration-gap closure, load/scale completion, or authority transfer.
+
+## Next-stage prerequisites
+Separate System Coordination authorization; exact-head approval packages from Intelligence, Reliability, Data, Operations, Privacy/Security, and System Coordination; approved non-production endpoint/credential owner; explicit traffic stage; rollback owners; and renewed protected regression.
+
+`APPROVAL_STATUS=PENDING_USER_REVIEW`

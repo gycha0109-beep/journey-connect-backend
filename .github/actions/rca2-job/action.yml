@@ -1,0 +1,57 @@
+name: RCA-2 CI lane
+inputs:
+  lane:
+    required: true
+  expected-head:
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@v5
+      with:
+        distribution: temurin
+        java-version: '21'
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.13'
+    - uses: gradle/actions/setup-gradle@v6
+    - shell: bash
+      run: chmod +x jc-backend/gradlew verification/rca2/run_rca2_ci_job.sh
+    - id: gate
+      shell: bash
+      run: |
+        set +e
+        log="rca2-${{ inputs.lane }}.log"
+        verification/rca2/run_rca2_ci_job.sh '${{ inputs.lane }}' '${{ inputs.expected-head }}' 2>&1 | tee "$log"
+        status=${PIPESTATUS[0]}
+        echo "status=$status" >> "$GITHUB_OUTPUT"
+        exit 0
+    - if: always() && inputs.lane == 'compile-unit'
+      uses: actions/upload-artifact@v4
+      with:
+        name: rca2-compile-unit-diagnostic
+        path: |
+          rca2-compile-unit.log
+          jc-backend/build/test-results/rca2ControlledRuntimeDarkReadTest/**
+        if-no-files-found: warn
+        retention-days: 7
+    - if: always() && inputs.lane == 'protected-regression'
+      uses: actions/upload-artifact@v4
+      with:
+        name: rca2-protected-regression-diagnostic
+        path: |
+          rca2-protected-regression.log
+          verification/**/*.json
+          verification/**/*.txt
+          jc-backend/build/test-results/**
+        if-no-files-found: warn
+        retention-days: 7
+    - if: always() && inputs.lane == 'exact-head'
+      uses: actions/upload-artifact@v4
+      with:
+        name: rca2-exact-head-diagnostic
+        path: verification/rca2/evidence/rca2-verification-evidence.json
+        if-no-files-found: warn
+        retention-days: 7
+    - shell: bash
+      run: exit '${{ steps.gate.outputs.status }}'

@@ -59,6 +59,16 @@ ALLOWED = (
     "docs/platform/governance/JOURNEY_CONNECT_SYSTEM_CONTRACT_V1.md",
     "docs/platform/governance/JOURNEY_CONNECT_TRACK_GOVERNANCE_V1.md", "verification/dp7/",
     "verification/data-platform-closure/", "verification/sc-next-track/",
+    ".github/actions/rca2-job/", ".github/workflows/rca2-controlled-runtime-dark-read-ci.yml",
+    "docs/platform/recommendation/rca2/", "jc-backend/build.gradle.kts",
+    "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java",
+    "jc-backend/src/main/java/com/jc/backend/recommendation/rca2/",
+    "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml",
+    "jc-backend/src/test/java/com/jc/backend/recommendation/rca2/",
+    "jc-backend/src/test/java/com/jc/backend/verification/IP9ControlledBackendHookStaticTest.java",
+    "jc-search-readiness/src/test/java/com/jc/intelligence/readiness/search/SearchShadowReadinessContractTest.java",
+    "verification/rca0/run_rca0_verification.py", "verification/rca1/run_rca1_verification.py",
+    "verification/rca1b/run_rca1b_verification.py", "verification/rca2/",
     "verification/dp5/run_dp5_static_verification.py",
     "verification/dp6/run_dp6_allocation_verification.py", "verification/dp6/run_dp6_static_verification.py",
     "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
@@ -136,13 +146,31 @@ try:
     if protected_sql:
         fail(f"protected SQL 01..47 changed: {protected_sql}")
     protected_sources = [rel for rel in changed if rel.startswith((
-        "jc-backend/src/main/", "jc-recommendation-core/", "jc-intelligence-contracts/",
-        "jc-search-contracts/", "jc-search-compatibility/", "jc-search-runtime/",
-        "jc-search-integration/", "jc-search-shadow-wiring/", "jc-search-readiness/",
-        "jc-search-production-controls/",
+        "jc-recommendation-core/", "jc-intelligence-contracts/", "jc-search-contracts/",
+        "jc-search-compatibility/", "jc-search-runtime/", "jc-search-integration/",
+        "jc-search-shadow-wiring/", "jc-search-production-controls/",
     ))]
-    if protected_sources:
-        fail(f"protected production/target-track source changed: {protected_sources}")
+    protected_sources += [rel for rel in changed if rel in (
+        "jc-backend/src/main/java/com/jc/backend/recommendation/p1/RecommendationP1ProfileSource.java",
+        "jc-backend/src/main/java/com/jc/backend/recommendation/p2/RecommendationP2ObservationSource.java",
+    )]
+    production_configs = [rel for rel in changed
+        if rel.startswith("jc-backend/src/main/resources/application")
+        and rel != "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml"]
+    if protected_sources or production_configs:
+        fail(f"protected production/target-track source changed: {protected_sources + production_configs}")
+    rca2_config = (ROOT / "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml").read_text(encoding="utf-8")
+    for marker in ("flag: off", "traffic-percent: 0", "max-production-dark-read-percent: 0",
+                   "production-route-allowed: false", "db-change: NONE", "sql-allocation: NOT_REQUIRED"):
+        if marker not in rca2_config:
+            fail(f"RCA2 isolated config marker missing: {marker}")
+    if "http://" in rca2_config or "https://" in rca2_config or "jdbc:" in rca2_config:
+        fail("RCA2 isolated config contains concrete route or DB connection")
+    feed = (ROOT / "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java").read_text(encoding="utf-8")
+    if "RCA-2 request registration failed open" not in feed or "return response;" not in feed:
+        fail("RCA2 primary response boundary missing")
+    if "return registrar.registerFeed" in feed or "return rca2Registrar" in feed:
+        fail("RCA2 hook became response authority")
 except (subprocess.CalledProcessError, FileNotFoundError):
     pass
 

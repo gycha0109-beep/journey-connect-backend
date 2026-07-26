@@ -518,6 +518,20 @@ public final class SearchShadowReadinessContractTest {
                 check(controller.contains("exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);")
                                 && controller.contains("return ApiResponse.ok(legacyResponse);"),
                         "approved IP-9 controller delta preserves legacy authority");
+            } else if (entry.relativePath().equals(
+                    "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java")) {
+                String feedService = Files.readString(file);
+                check(!sha256(file).equals(entry.sha256()), "approved RCA-2 feed registration delta exists");
+                check(feedService.contains("ObjectProvider<Rca2RequestRegistrar>")
+                                && feedService.contains("Rca2RequestRegistrar registrar = rca2Registrar.getIfAvailable();")
+                                && feedService.contains("registrar.registerFeed(response, userId, tokenId, latencyMillis);")
+                                && feedService.contains("RCA-2 request registration failed open")
+                                && feedService.contains("return response;"),
+                        "approved RCA-2 feed hook is optional, fail-open and non-serving");
+                check(!feedService.contains("return registrar.registerFeed")
+                                && !feedService.contains("return rca2Registrar")
+                                && !feedService.contains("SHADOW_RESULT_SERVING"),
+                        "RCA-2 feed hook cannot become response authority");
             } else {
                 check(sha256(file).equals(entry.sha256()), "protected file exact " + entry.relativePath());
             }

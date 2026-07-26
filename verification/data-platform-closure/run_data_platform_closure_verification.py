@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import csv
+import re
 import subprocess
 from pathlib import Path
 
@@ -182,6 +183,7 @@ allowed = set(
     + GOV
     + [
         "verification/data-platform-closure/run_data_platform_closure_verification.py",
+        ".github/actions/rca2-job/action.yml",
         ".github/workflows/data-platform-closure-ci.yml",
         ".github/workflows/data-contract-ci.yml",
         ".github/workflows/data-postgres-ci.yml",
@@ -190,8 +192,20 @@ allowed = set(
         ".github/workflows/backend-pr-ci.yml",
         ".github/workflows/recommendation-p0-db-ci.yml",
         ".github/workflows/sc-baseline-reconciliation.yml",
+        ".github/workflows/rca2-controlled-runtime-dark-read-ci.yml",
+        "jc-backend/build.gradle.kts",
+        "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java",
+        "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml",
+        "jc-backend/src/test/java/com/jc/backend/verification/IP9ControlledBackendHookStaticTest.java",
+        "jc-search-readiness/src/test/java/com/jc/intelligence/readiness/search/SearchShadowReadinessContractTest.java",
+        "verification/dp5/run_dp5_static_verification.py",
+        "verification/dp6/run_dp6_allocation_verification.py",
+        "verification/dp6/run_dp6_static_verification.py",
         "verification/dp7/run_dp7_allocation_verification.py",
         "verification/dp7/run_dp7_static_verification.py",
+        "verification/rca0/run_rca0_verification.py",
+        "verification/rca1/run_rca1_verification.py",
+        "verification/rca1b/run_rca1b_verification.py",
         "verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py",
         "docs/platform/governance/SC-RACI.md",
         "docs/platform/governance/SC-2-POST-DP-CLOSURE-NEXT-TRACK-BASELINE-RECONCILIATION.md",
@@ -199,6 +213,10 @@ allowed = set(
 )
 allowed_prefixes = (
     "docs/platform/governance/sc-next-track/",
+    "docs/platform/recommendation/rca2/",
+    "jc-backend/src/main/java/com/jc/backend/recommendation/rca2/",
+    "jc-backend/src/test/java/com/jc/backend/recommendation/rca2/",
+    "verification/rca2/",
     "verification/sc-next-track/",
 )
 subprocess.run(
@@ -222,17 +240,38 @@ for rel in filter(None, changed):
         continue
     if rel not in allowed:
         fail(f"unexpected diff: {rel}")
-for rel in changed:
-    if rel.startswith(
-        (
-            "database/",
-            "jc-backend/src/main/",
-            "jc-backend/src/main/resources/",
-            "jc-recommendation-core/",
-            "jc-intelligence-contracts/",
-            "jc-search-",
-        )
-    ):
-        fail(f"protected change: {rel}")
 
-print("Data Platform technical closure documents, exact evidence set, pre-merge status and protected state: PASS")
+protected = [rel for rel in changed if rel.startswith(("database/", "jc-recommendation-core/", "jc-intelligence-contracts/"))]
+protected += [rel for rel in changed if rel in (
+    "jc-backend/src/main/java/com/jc/backend/recommendation/p1/RecommendationP1ProfileSource.java",
+    "jc-backend/src/main/java/com/jc/backend/recommendation/p2/RecommendationP2ObservationSource.java",
+)]
+production_configs = [rel for rel in changed
+    if rel.startswith("jc-backend/src/main/resources/application")
+    and rel != "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml"]
+if protected or production_configs:
+    fail(f"protected change: {protected + production_configs}")
+
+rca2_config = (ROOT / "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml").read_text(encoding="utf-8")
+for marker in ("flag: off", "traffic-percent: 0", "max-production-dark-read-percent: 0",
+               "production-route-allowed: false", "db-change: NONE", "sql-allocation: NOT_REQUIRED"):
+    if marker not in rca2_config:
+        fail(f"RCA2 isolated config marker missing: {marker}")
+if re.search(r"https?://|jdbc:", rca2_config):
+    fail("RCA2 isolated config contains concrete route or DB connection")
+
+feed = (ROOT / "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java").read_text(encoding="utf-8")
+if "RCA-2 request registration failed open" not in feed or "return response;" not in feed:
+    fail("RCA2 primary response fail-open boundary missing")
+if "return registrar.registerFeed" in feed or "return rca2Registrar" in feed:
+    fail("RCA2 hook became response authority")
+
+runtime_source = "\n".join(item.read_text(encoding="utf-8")
+    for item in (ROOT / "jc-backend/src/main/java/com/jc/backend/recommendation/rca2").glob("*.java"))
+for token in ("JpaRepository", "JdbcTemplate", "EntityManager", "ApplicationEventPublisher",
+              "KafkaTemplate", "@Transactional", "ForkJoinPool.commonPool", "newCachedThreadPool",
+              "CallerRunsPolicy"):
+    if token in runtime_source:
+        fail(f"RCA2 runtime violates Data closure boundary: {token}")
+
+print("Data Platform technical closure continuity and authorized RCA2 shadow-only boundary: PASS")
