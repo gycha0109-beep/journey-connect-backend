@@ -10,7 +10,8 @@ Prepare repository-owned observability and safety controls without executing Sta
 - alert and rollback policy contracts;
 - unit/integration tests;
 - dashboard and alert provisioning definitions;
-- OP-2 documents, machine contracts, verifier and CI workflow.
+- OP-2 documents, machine contracts, verifier and CI workflow;
+- narrow successor-path compatibility wrappers for OP-1, RCA-1/RCA-1B, SC and Data/DP-7 protected regression execution. Historical verifier source blobs, historical documents, fixtures, SQL and evidence are not rewritten.
 
 ## Verification plan
 
