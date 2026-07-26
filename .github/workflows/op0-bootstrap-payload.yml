@@ -1,0 +1,48 @@
+name: OP-0 Payload Bootstrap
+
+on:
+  push:
+    branches:
+      - agent/op0-rca2-stage1-operations-baseline
+    paths:
+      - ".github/workflows/op0-bootstrap-payload.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: agent/op0-rca2-stage1-operations-baseline
+          fetch-depth: 0
+      - name: Materialize verified OP-0 payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .op0-bootstrap/chunk-* > /tmp/op0_payload.b64
+          base64 --decode /tmp/op0_payload.b64 > /tmp/op0_payload.tar.gz
+          tar -tzf /tmp/op0_payload.tar.gz > /tmp/op0_payload.files
+          test "$(wc -l < /tmp/op0_payload.files)" -eq 42
+          tar -xzf /tmp/op0_payload.tar.gz -C .
+          python -m py_compile verification/operations/op0/run_op0_verification.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          files = sorted(Path('verification/operations/op0/contracts').glob('*.json'))
+          assert len(files) == 15, len(files)
+          for path in files:
+              json.loads(path.read_text(encoding='utf-8'))
+          print('MACHINE_READABLE_ARTIFACTS=15')
+          PY
+          rm -rf verification/operations/op0/__pycache__
+          rm -rf .op0-bootstrap
+          rm .github/workflows/op0-bootstrap-payload.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "docs(op): establish RCA-2 Stage 1 operations preparation baseline"
+          git push origin HEAD:agent/op0-rca2-stage1-operations-baseline
