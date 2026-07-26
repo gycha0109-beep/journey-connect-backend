@@ -1,0 +1,22 @@
+{
+  "work_start_sha":"40ff229e2401e7d5d9c5323d469bcd012530e882",
+  "source_sc6_exact_head":"20da93e932c50b5bebd549a56db40edb00ca1eea",
+  "source_sc6_merge_commit":"40ff229e2401e7d5d9c5323d469bcd012530e882",
+  "artifact_version":"op0-rca2-stage1-operations-preparation-v1",
+  "status":"OPEN_BLOCKERS_OWNED",
+  "owner":"SYSTEM_COORDINATION",
+  "updated_at":"2026-07-26T14:15:55Z",
+  "blockers":[
+    {"id":"OP0-B001","description":"External operations infrastructure repository/path is not identified","owner":"OPERATIONS","target_phase":"OP-1","severity":"BLOCKING","resolution_criteria":"name repository/path and prove isolated non-production ownership","status":"OPEN","traffic_effect":"BLOCKED_AT_0_PERCENT"},
+    {"id":"OP0-B002","description":"Actual candidate source, protocol and version are unresolved","owner":"INTELLIGENCE","target_phase":"OP-1","severity":"BLOCKING","resolution_criteria":"approve source authority, protocol, timeout, fallback and no-serving contract","status":"OPEN","traffic_effect":"BLOCKED_AT_0_PERCENT"},
+    {"id":"OP0-B003","description":"Short-lived workload credential platform/secret-manager path is unresolved","owner":"OPERATIONS","target_phase":"OP-1","severity":"BLOCKING","resolution_criteria":"select platform and provide issuance/rotation/revocation plan","status":"OPEN","traffic_effect":"BLOCKED_AT_0_PERCENT"},
+    {"id":"OP0-B004","description":"Test-account allowlist store and hashed-audit path are unresolved","owner":"PRIVACY_SECURITY","target_phase":"OP-1","severity":"BLOCKING","resolution_criteria":"approve storage, purpose/environment binding, expiry and audit design","status":"OPEN","traffic_effect":"BLOCKED_AT_0_PERCENT"},
+    {"id":"OP0-B005","description":"SC-6 27-metric Stage 1 inventory is not fully implemented","owner":"RELIABILITY","target_phase":"OP-2","severity":"BLOCKING","resolution_criteria":"implement and test authoritative inventory plus seven minimum gaps","status":"OPEN","traffic_effect":"BLOCKED_AT_0_PERCENT"},
+    {"id":"OP0-B006","description":"Dashboard repository/path and critical notification route are unresolved","owner":"OPERATIONS","target_phase":"OP-2","severity":"BLOCKING","resolution_criteria":"identify location, deploy in OP-2 and prove alert delivery","status":"OPEN","traffic_effect":"BLOCKED_AT_0_PERCENT"},
+    {"id":"OP0-B007","description":"Credential revoke and network route revoke drills are not executed","owner":"OPERATIONS","target_phase":"OP-2","severity":"BLOCKING","resolution_criteria":"execute Levels 6-7 with evidence while traffic remains zero","status":"OPEN","traffic_effect":"BLOCKED_AT_0_PERCENT"},
+    {"id":"OP0-B008","description":"Six blocking role approvals are pending","owner":"SYSTEM_COORDINATION","target_phase":"OP-2","severity":"BLOCKING","resolution_criteria":"collect explicit exact-head-bound decisions; never infer approval from CI","status":"OPEN","traffic_effect":"BLOCKED_AT_0_PERCENT"},
+    {"id":"OP0-B009","description":"OP-0 baseline user review is pending","owner":"SYSTEM_COORDINATION","target_phase":"OP-1","severity":"BLOCKING","resolution_criteria":"user approves or rejects Draft PR; no ready/merge automation","status":"OPEN","traffic_effect":"BLOCKED_AT_0_PERCENT"},
+    {"id":"OP0-B010","description":"Manual enablement control implementation path is unresolved","owner":"OPERATIONS","target_phase":"OP-3","severity":"BLOCKING","resolution_criteria":"identify audited manual control and two-person execution path","status":"OPEN","traffic_effect":"BLOCKED_AT_0_PERCENT"}
+  ],
+  "unowned_blocker_count":0
+}
