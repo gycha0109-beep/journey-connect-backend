@@ -63,7 +63,7 @@ jobs:
         with: { distribution: temurin, java-version: "21" }
       - uses: gradle/actions/setup-gradle@v6
       - working-directory: jc-backend
-        run: chmod +x gradlew && ./gradlew test --tests "com.jc.backend.recommendation.rca2.Rca2Op1BoundaryUnitTest" --stacktrace --no-daemon
+        run: chmod +x gradlew && ./gradlew :test --tests "com.jc.backend.recommendation.rca2.Rca2Op1BoundaryUnitTest" --stacktrace --no-daemon
 
   integration_tests:
     runs-on: ubuntu-latest
@@ -75,7 +75,7 @@ jobs:
         with: { distribution: temurin, java-version: "21" }
       - uses: gradle/actions/setup-gradle@v6
       - working-directory: jc-backend
-        run: chmod +x gradlew && ./gradlew test --tests "com.jc.backend.recommendation.rca2.Rca2Op1EnvironmentAccessIntegrationTest" --stacktrace --no-daemon
+        run: chmod +x gradlew && ./gradlew :test --tests "com.jc.backend.recommendation.rca2.Rca2Op1EnvironmentAccessIntegrationTest" --stacktrace --no-daemon
 
   endpoint_policy:
     runs-on: ubuntu-latest
@@ -149,7 +149,7 @@ jobs:
       - working-directory: jc-backend
         run: |
           chmod +x gradlew
-          ./gradlew test \
+          ./gradlew :test \
             --tests "com.jc.backend.recommendation.rca2.Rca2RuntimeOrchestratorTest" \
             --tests "com.jc.backend.recommendation.rca2.Rca2StaticBoundaryTest" \
             --tests "com.jc.backend.recommendation.rca2.Rca2CredentialNetworkRollbackTest" \
