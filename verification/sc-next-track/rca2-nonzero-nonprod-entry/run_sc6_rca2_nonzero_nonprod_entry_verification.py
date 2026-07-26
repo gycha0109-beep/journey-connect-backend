@@ -2,7 +2,7 @@
 """Execute the original SC-6 verifier with continuity-wrapper paths allowed.
 
 The SC-6 verification logic is loaded from the last exact head before the
-continuity wrappers were introduced. Only the two historical verifier wrapper
+continuity wrappers were introduced. Only the three historical verifier wrapper
 paths are added to the governance-only diff allowlist.
 """
 from __future__ import annotations
@@ -30,7 +30,8 @@ source = source.replace(
     anchor,
     anchor
     + '        "verification/sc-next-track/rca2-entry/run_sc_rca2_entry_verification.py",\n'
-    + '        "verification/data-platform-closure/run_data_platform_closure_verification.py",\n',
+    + '        "verification/data-platform-closure/run_data_platform_closure_verification.py",\n'
+    + '        "verification/dp7/run_dp7_allocation_verification.py",\n',
     1,
 )
 
