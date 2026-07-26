@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Execute the authoritative DP-7 verifier with the SC-6 workflow allowed.
+"""Execute the authoritative DP-7 verifier with approved successor paths.
 
 The DP-7 verification logic is loaded byte-for-byte from authoritative
-pre-SC-6 main. Only the governance-only SC-6 workflow path is inserted into
-its successor allowlist; DP-7 allocation and protection semantics are unchanged.
+pre-SC-6 main. Only SC-6 and Operations successor paths are inserted into its
+allowlist; DP-7 allocation, SQL and production protection semantics remain
+unchanged.
 """
 from __future__ import annotations
 
@@ -22,13 +23,30 @@ source = subprocess.run(
     stdout=subprocess.PIPE,
 ).stdout
 
-anchor = '    ".github/actions/rca2-job/", ".github/workflows/rca2-controlled-runtime-dark-read-ci.yml",\n'
-if anchor not in source:
+workflow_anchor = '    ".github/actions/rca2-job/", ".github/workflows/rca2-controlled-runtime-dark-read-ci.yml",\n'
+doc_anchor = '    "docs/platform/recommendation/rca2/", "jc-backend/build.gradle.kts",\n'
+verification_anchor = '    "verification/rca1b/run_rca1b_verification.py", "verification/rca2/",\n'
+if workflow_anchor not in source or doc_anchor not in source or verification_anchor not in source:
     raise SystemExit("FAIL: authoritative DP-7 verifier compatibility anchor missing")
+
 source = source.replace(
-    anchor,
-    anchor
-    + '    ".github/workflows/sc6-rca2-nonzero-nonprod-stage1-governance-ci.yml",\n',
+    workflow_anchor,
+    workflow_anchor
+    + '    ".github/workflows/sc6-rca2-nonzero-nonprod-stage1-governance-ci.yml",\n'
+    + '    ".github/workflows/op0-rca2-stage1-operations-preparation-governance-ci.yml",\n'
+    + '    ".github/workflows/op1-rca2-stage1-environment-access-ci.yml",\n',
+    1,
+)
+source = source.replace(
+    doc_anchor,
+    '    "docs/platform/recommendation/rca2/", "docs/platform/operations/op0/",\n'
+    + '    "docs/platform/operations/op1/", "jc-backend/build.gradle.kts",\n',
+    1,
+)
+source = source.replace(
+    verification_anchor,
+    '    "verification/rca1b/run_rca1b_verification.py", "verification/rca2/",\n'
+    + '    "verification/operations/op0/", "verification/operations/op1/",\n',
     1,
 )
 
