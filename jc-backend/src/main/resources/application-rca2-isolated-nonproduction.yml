@@ -87,7 +87,7 @@ app:
         refresh-margin-seconds: 60
         production-scope: FORBIDDEN
         write-scope: FORBIDDEN
-        long-lived-static-secret: FORBIDDEN
+        long-lived-static-credential: FORBIDDEN
         rotation: REQUIRED
         revocation: REQUIRED
         audit: REQUIRED
