@@ -23,6 +23,7 @@ public final class Rca2RuntimeOrchestrator {
     private final Rca2Metrics metrics;
     private final Rca2Redaction redaction;
     private final Consumer<Rca2RuntimeContracts.Evidence> evidenceSink;
+    private final Rca2EnvironmentAccessGate environmentAccessGate;
 
     public Rca2RuntimeOrchestrator(
             Clock clock,
@@ -36,6 +37,23 @@ public final class Rca2RuntimeOrchestrator {
             Rca2Metrics metrics,
             Rca2Redaction redaction,
             Consumer<Rca2RuntimeContracts.Evidence> evidenceSink) {
+        this(clock, flags, killSwitch, identityPolicy, breakers, executor, adapter, comparator, metrics,
+                redaction, evidenceSink, Rca2EnvironmentAccessGate.legacyPassthrough());
+    }
+
+    public Rca2RuntimeOrchestrator(
+            Clock clock,
+            Rca2FeatureFlagPolicy flags,
+            Rca2KillSwitch killSwitch,
+            Rca2IdentityPolicy identityPolicy,
+            Map<Rca2RuntimeContracts.Lane, Rca2CircuitBreaker> breakers,
+            Rca2BoundedExecutor executor,
+            Rca2CandidateAdapter adapter,
+            Rca2Comparator comparator,
+            Rca2Metrics metrics,
+            Rca2Redaction redaction,
+            Consumer<Rca2RuntimeContracts.Evidence> evidenceSink,
+            Rca2EnvironmentAccessGate environmentAccessGate) {
         this.clock = Objects.requireNonNull(clock);
         this.flags = Objects.requireNonNull(flags);
         this.killSwitch = Objects.requireNonNull(killSwitch);
@@ -47,6 +65,7 @@ public final class Rca2RuntimeOrchestrator {
         this.metrics = Objects.requireNonNull(metrics);
         this.redaction = Objects.requireNonNull(redaction);
         this.evidenceSink = Objects.requireNonNull(evidenceSink);
+        this.environmentAccessGate = Objects.requireNonNull(environmentAccessGate);
     }
 
     public Rca2RuntimeContracts.SubmissionStatus submitAfterResponseCommitted(
@@ -67,13 +86,20 @@ public final class Rca2RuntimeOrchestrator {
                     ? Rca2RuntimeContracts.SubmissionStatus.TRAFFIC_ZERO
                     : Rca2RuntimeContracts.SubmissionStatus.FLAG_OFF;
         }
-        if (!sample(request.hashedRequestRef(), flag.trafficPercent())) return Rca2RuntimeContracts.SubmissionStatus.FLAG_OFF;
+
         var identity = new Rca2IdentityPolicy.Identity(request.identityRef(), request.purpose(), request.caller(),
                 request.environment(), now.plusSeconds(3600), false, false, true, true);
         var identityDecision = identityPolicy.validate(identity, now);
         if (!identityDecision.allowed()) {
             metrics.increment("identity_blocked_count", lane, "identity_blocked", breaker.state());
             return Rca2RuntimeContracts.SubmissionStatus.IDENTITY_BLOCKED;
+        }
+
+        var access = environmentAccessGate.evaluate(request, identityDecision.hashedAuditRef(),
+                flag.trafficPercent(), now, breaker.state());
+        if (!access.allowed()) return access.submissionStatus();
+        if (access.bucket() < 0 && !sample(request.hashedRequestRef(), flag.trafficPercent())) {
+            return Rca2RuntimeContracts.SubmissionStatus.FLAG_OFF;
         }
         if (!breaker.permit()) {
             metrics.increment("shadow_circuit_open_count", lane, "circuit_open", breaker.state());

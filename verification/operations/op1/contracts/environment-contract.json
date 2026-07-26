@@ -1,0 +1,14 @@
+{
+  "artifact_version": "op1-rca2-stage1-environment-access-v1",
+  "environment": "ISOLATED_NON_PRODUCTION_RUNTIME",
+  "external_ready": false,
+  "owner": "OPERATIONS",
+  "production_database": "FORBIDDEN",
+  "production_namespace": "FORBIDDEN",
+  "production_route": "FORBIDDEN",
+  "source_op0_exact_head": "e29a056d63c8c953851e4261bde9f71f3cd19441",
+  "source_op0_merge_commit": "0d9cdc7bf9821d5bb8811bfdd08286f3e4804e8d",
+  "status": "APPLICATION_READY_EXTERNAL_BLOCKED",
+  "updated_at": "2026-07-27T11:00:00Z",
+  "work_start_sha": "0d9cdc7bf9821d5bb8811bfdd08286f3e4804e8d"
+}

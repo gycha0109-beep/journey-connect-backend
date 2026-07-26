@@ -1,0 +1,36 @@
+{
+  "artifact_version": "op1-rca2-stage1-environment-access-v1",
+  "owner": "RELIABILITY",
+  "risks": [
+    {
+      "id": "DNS_ROUTE_DRIFT",
+      "mitigation": "OPERATIONS_ATTESTATION_AND_NETWORK_DENY",
+      "severity": "CRITICAL"
+    },
+    {
+      "id": "CREDENTIAL_SCOPE_DRIFT",
+      "mitigation": "TTL_AUDIENCE_SCOPE_VALIDATION",
+      "severity": "CRITICAL"
+    },
+    {
+      "id": "ALLOWLIST_LIFECYCLE_GAP",
+      "mitigation": "EXTERNAL_STORE_AND_AUDIT_REQUIRED",
+      "severity": "HIGH"
+    },
+    {
+      "id": "COHORT_SALT_GOVERNANCE",
+      "mitigation": "VERSIONED_DEPLOYMENT_SECRET_REQUIRED",
+      "severity": "HIGH"
+    },
+    {
+      "id": "CANDIDATE_SIDE_EFFECT_UNKNOWN",
+      "mitigation": "SOURCE_DECISION_AND_READ_ONLY_REVIEW_REQUIRED",
+      "severity": "CRITICAL"
+    }
+  ],
+  "source_op0_exact_head": "e29a056d63c8c953851e4261bde9f71f3cd19441",
+  "source_op0_merge_commit": "0d9cdc7bf9821d5bb8811bfdd08286f3e4804e8d",
+  "status": "ACTIVE",
+  "updated_at": "2026-07-27T11:00:00Z",
+  "work_start_sha": "0d9cdc7bf9821d5bb8811bfdd08286f3e4804e8d"
+}

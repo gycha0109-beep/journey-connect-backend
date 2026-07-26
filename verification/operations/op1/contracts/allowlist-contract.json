@@ -1,0 +1,19 @@
+{
+  "application_provider_boundary_ready": true,
+  "artifact_version": "op1-rca2-stage1-environment-access-v1",
+  "default_deny": true,
+  "environment_binding": "REQUIRED",
+  "external_allowlist_ready": false,
+  "hashed_audit": "REQUIRED",
+  "identity_mode": "SYNTHETIC_OR_TEST_ACCOUNT_ONLY",
+  "max_entry_duration_days": 30,
+  "owner": "PRIVACY_SECURITY",
+  "purpose_binding": "REQUIRED",
+  "raw_identity_logging": "FORBIDDEN",
+  "raw_identity_storage": "FORBIDDEN",
+  "source_op0_exact_head": "e29a056d63c8c953851e4261bde9f71f3cd19441",
+  "source_op0_merge_commit": "0d9cdc7bf9821d5bb8811bfdd08286f3e4804e8d",
+  "status": "BLOCKED_EXTERNAL_DEPENDENCY",
+  "updated_at": "2026-07-27T11:00:00Z",
+  "work_start_sha": "0d9cdc7bf9821d5bb8811bfdd08286f3e4804e8d"
+}

@@ -1,0 +1,21 @@
+{
+  "application_boundary_ready": true,
+  "artifact_version": "op1-rca2-stage1-environment-access-v1",
+  "authoritative_main": "0d9cdc7bf9821d5bb8811bfdd08286f3e4804e8d",
+  "external_environment_ready": false,
+  "official_name": "OP-1 RCA-2 Stage 1 Environment and Access Preparation",
+  "op0_exact_final_head": "e29a056d63c8c953851e4261bde9f71f3cd19441",
+  "op0_merge_commit_is_current_main": true,
+  "owner": "SYSTEM_COORDINATION",
+  "pr29_merged": true,
+  "pr30_merged": true,
+  "pr31_merged": true,
+  "rca2_exact_final_head": "511b19f80cdd42bb2fafde0563c7388b4f5b5f48",
+  "result": "RCA2_STAGE1_ENVIRONMENT_AND_ACCESS_APPLICATION_BOUNDARY_COMPLETE",
+  "sc6_exact_final_head": "20da93e932c50b5bebd549a56db40edb00ca1eea",
+  "source_op0_exact_head": "e29a056d63c8c953851e4261bde9f71f3cd19441",
+  "source_op0_merge_commit": "0d9cdc7bf9821d5bb8811bfdd08286f3e4804e8d",
+  "status": "APPLICATION_BOUNDARY_COMPLETE_EXTERNAL_BLOCKED",
+  "updated_at": "2026-07-27T11:00:00Z",
+  "work_start_sha": "0d9cdc7bf9821d5bb8811bfdd08286f3e4804e8d"
+}

@@ -9,7 +9,7 @@ app:
       environment: ISOLATED_NON_PRODUCTION_RUNTIME
       runtime-model: ASYNC_POST_RESPONSE_SHADOW
 
-      # Fail-closed enablement. Deployment alone cannot activate the lane.
+      # Fail-closed enablement. Deployment and environment preparation never activate traffic.
       flag: off
       flag-version: rca2-flag-default-off-v1
       config-signature-verified: false
@@ -24,11 +24,73 @@ app:
         p2-kill-switch: true
       global-kill-switch: true
 
-      # Stage candidates are documentary only. No automatic transition exists.
       traffic-percent: 0
       initial-traffic-percent: 0
       max-production-dark-read-percent: 0
-      stage-candidates: 0,1,10,50,100
+      stage-candidates: 0,1
+
+      op1:
+        effective-traffic-percent: 0
+        max-configurable-percent: 1
+        automatic-ramp: false
+        manual-enablement-implemented: false
+
+      shadow:
+        enabled: false
+        endpoint: ""
+        environment: ISOLATED_NON_PRODUCTION_RUNTIME
+        namespace: ""
+        database-route: ""
+        allowed-hosts: ""
+        allowed-host-suffixes: ""
+        connect-timeout-ms: 100
+        read-timeout-ms: 300
+        redirect-policy: FORBIDDEN
+        tls-required: true
+        authentication-required: true
+        deny-by-default: true
+        read-only: true
+
+      candidate:
+        source: UNRESOLVED
+        protocol: UNRESOLVED
+        api-version: UNRESOLVED
+        owner: INTELLIGENCE
+        read-only: true
+        idempotent: true
+        serving-allowed: false
+        fallback: KEEP_PRIMARY_RESULT
+
+      cohort:
+        algorithm-version: rca2-stable-hash-percentage-v1
+        salt-version: ""
+        salt-material-hash: ""
+        max-percent-ceiling: 1
+        request-randomness: FORBIDDEN
+        token-derived-request-hash: FORBIDDEN
+
+      allowlist:
+        storage: UNRESOLVED
+        default-deny: true
+        identity-mode: SYNTHETIC_OR_TEST_ACCOUNT_ONLY
+        raw-identity-storage: FORBIDDEN
+        raw-identity-logging: FORBIDDEN
+        purpose-binding: REQUIRED
+        environment-binding: REQUIRED
+        max-entry-duration-days: 30
+
+      credential:
+        provider: UNRESOLVED
+        type: SHORT_LIVED_NONPRODUCTION_WORKLOAD_IDENTITY
+        audience: rca2-isolated-nonproduction-candidate
+        max-ttl-seconds: 3600
+        refresh-margin-seconds: 60
+        production-scope: FORBIDDEN
+        write-scope: FORBIDDEN
+        long-lived-static-secret: FORBIDDEN
+        rotation: REQUIRED
+        revocation: REQUIRED
+        audit: REQUIRED
 
       executor:
         max-shadow-concurrency: 4

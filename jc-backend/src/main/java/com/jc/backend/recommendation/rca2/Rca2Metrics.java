@@ -15,7 +15,12 @@ public final class Rca2Metrics {
         "shadow_exception_count", "shadow_circuit_open_count", "shadow_queue_rejected_count",
         "shadow_late_result_discard_count", "shadow_latency_ms", "primary_latency_ms",
         "p1_result_mismatch_count", "p2_result_mismatch_count", "checkpoint_mismatch_count",
-        "lineage_mismatch_count", "stale_candidate_count", "identity_blocked_count", "redaction_failure_count"
+        "lineage_mismatch_count", "stale_candidate_count", "identity_blocked_count", "redaction_failure_count",
+        "shadow_endpoint_validation_total", "shadow_endpoint_blocked_total",
+        "shadow_credential_unavailable_total", "shadow_credential_refresh_total",
+        "shadow_credential_refresh_failure_total", "shadow_allowlist_lookup_total",
+        "shadow_allowlist_denied_total", "shadow_cohort_selected_total",
+        "shadow_cohort_skipped_total", "shadow_candidate_invocation_blocked_total"
     };
     public static final Set<String> ALLOWED_LABELS = Set.of("environment", "lane", "result_class", "breaker_state");
     private static final Set<String> HISTOGRAMS = Set.of("shadow_latency_ms", "primary_latency_ms");
