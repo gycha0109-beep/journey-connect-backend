@@ -1,0 +1,17 @@
+decision	value	status
+result	RCA2_NONZERO_NONPRODUCTION_TRAFFIC_STAGE1_CONDITIONALLY_AUTHORIZED	PASS
+target_environment	ISOLATED_NON_PRODUCTION_RUNTIME	PASS
+target_stage	STAGE_1	PASS
+target_traffic_percent	1	PASS
+current_traffic_percent	0	PASS
+traffic_enablement	BLOCKED_PENDING_ALL_CONDITIONS	PASS
+feature_flag_default	OFF	PASS
+manual_enablement_required	YES	PASS
+automatic_rollout	FORBIDDEN	PASS
+primary_result_authority	CURRENT_P1_P2_ONLY	PASS
+shadow_result_authority	NONE	PASS
+shadow_result_serving	FORBIDDEN	PASS
+production_traffic_percent	0	PASS
+production_activation	NOT_AUTHORIZED	PASS
+authority_transfer	FORBIDDEN	PASS
+approval_status	PENDING_USER_REVIEW	PASS

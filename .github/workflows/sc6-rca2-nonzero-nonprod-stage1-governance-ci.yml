@@ -1,0 +1,149 @@
+name: SC-6 RCA-2 Nonzero Non-production Stage 1 Governance CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "docs/platform/governance/SC-DECISION-REGISTER.md"
+      - "docs/platform/governance/SC-PLATFORM-REGISTRY.md"
+      - "docs/platform/governance/SC-RACI.md"
+      - "docs/platform/governance/SC-HANDOFF.md"
+      - "docs/platform/governance/sc-next-track/**"
+      - "verification/sc-next-track/rca2-nonzero-nonprod-entry/**"
+      - ".github/workflows/sc6-rca2-nonzero-nonprod-stage1-governance-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sc6-rca2-stage1-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  authoritative_baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: python verification/sc-next-track/rca2-nonzero-nonprod-entry/run_sc6_rca2_nonzero_nonprod_entry_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only authoritative_baseline
+
+  document_completeness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: python verification/sc-next-track/rca2-nonzero-nonprod-entry/run_sc6_rca2_nonzero_nonprod_entry_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only document_completeness
+
+  machine_readable_evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: python verification/sc-next-track/rca2-nonzero-nonprod-entry/run_sc6_rca2_nonzero_nonprod_entry_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only machine_readable_evidence
+
+  governance_only_diff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: python verification/sc-next-track/rca2-nonzero-nonprod-entry/run_sc6_rca2_nonzero_nonprod_entry_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only governance_only_diff
+
+  historical_evidence_protection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: python verification/sc-next-track/rca2-nonzero-nonprod-entry/run_sc6_rca2_nonzero_nonprod_entry_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only historical_evidence_protection
+
+  sql_protection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: python verification/sc-next-track/rca2-nonzero-nonprod-entry/run_sc6_rca2_nonzero_nonprod_entry_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only sql_protection
+
+  rca2_production_authority_boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: python verification/sc-next-track/rca2-nonzero-nonprod-entry/run_sc6_rca2_nonzero_nonprod_entry_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only rca2_production_authority_boundary
+
+  independent_verifier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs:
+      - authoritative_baseline
+      - document_completeness
+      - machine_readable_evidence
+      - governance_only_diff
+      - historical_evidence_protection
+      - sql_protection
+      - rca2_production_authority_boundary
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Run exact-head independent verifier
+        run: python verification/sc-next-track/rca2-nonzero-nonprod-entry/run_sc6_rca2_nonzero_nonprod_entry_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}"
+      - name: Upload exact-head governance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sc6-rca2-stage1-governance-evidence
+          retention-days: 90
+          if-no-files-found: error
+          path: |
+            verification/sc-next-track/rca2-nonzero-nonprod-entry/runtime/**
+            verification/sc-next-track/rca2-entry/run_sc_rca2_entry_verification.py
+            verification/data-platform-closure/run_data_platform_closure_verification.py
+            verification/dp6/run_dp6_allocation_verification.py
+            verification/dp7/run_dp7_allocation_verification.py
+            verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py

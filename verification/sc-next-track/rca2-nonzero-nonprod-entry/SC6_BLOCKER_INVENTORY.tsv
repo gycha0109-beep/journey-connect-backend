@@ -1,0 +1,17 @@
+blocker_id	blocker	status	detail
+SC6-B001	isolated_nonproduction_endpoint	BLOCKED	Isolated non-production endpoint is not built or verified.
+SC6-B002	candidate_adapter	BLOCKED	Candidate adapter remains a contract-only primary mirror.
+SC6-B003	stable_hash_cohort	BLOCKED	Approved test-subject stable-hash cohort is not implemented.
+SC6-B004	short_lived_credential	BLOCKED	Short-lived credential is not issued or verified.
+SC6-B005	test_account_allowlist	BLOCKED	Test-account allowlist is empty.
+SC6-B006	traffic_selection_metric	BLOCKED	Traffic selection metric is incomplete.
+SC6-B007	executor_gauge	BLOCKED	Executor gauge is incomplete.
+SC6-B008	task_age_metric	BLOCKED	Task age metric is incomplete.
+SC6-B009	cancellation_metric	BLOCKED	Cancellation metric is incomplete.
+SC6-B010	checkpoint_lag_metric	BLOCKED	Checkpoint lag metric is incomplete.
+SC6-B011	dashboard	BLOCKED	Stage 1 dashboard is not verified.
+SC6-B012	critical_notification_route	BLOCKED	Critical notification route is not verified.
+SC6-B013	rollback_infrastructure_drill	BLOCKED	Credential/network rollback infrastructure drill is not executed.
+SC6-B014	blocking_approvals	BLOCKED	Six blocking approvals remain pending user review.
+SC6-B015	runtime_observation	BLOCKED	Stage 1 runtime observation is not executed.
+SC6-B016	unexpected_mismatch_threshold	BLOCKED	No empirical unexpected mismatch threshold basis exists.
