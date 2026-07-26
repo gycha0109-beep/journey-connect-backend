@@ -140,4 +140,10 @@ jobs:
           name: sc6-rca2-stage1-governance-evidence
           retention-days: 90
           if-no-files-found: error
-          path: verification/sc-next-track/rca2-nonzero-nonprod-entry/runtime/**
+          path: |
+            verification/sc-next-track/rca2-nonzero-nonprod-entry/runtime/**
+            verification/sc-next-track/rca2-entry/run_sc_rca2_entry_verification.py
+            verification/data-platform-closure/run_data_platform_closure_verification.py
+            verification/dp6/run_dp6_allocation_verification.py
+            verification/dp7/run_dp7_allocation_verification.py
+            verification/sc-dp1-baseline-reconciliation/run_sc_baseline_reconciliation.py
