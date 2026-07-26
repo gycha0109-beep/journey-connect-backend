@@ -1,0 +1,18 @@
+{
+  "work_start_sha": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "source_op1_exact_head": "6c89e78e32f54a1f830d0c84db07a01de951e39c",
+  "source_op1_merge_commit": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "artifact_version": "op2-rca2-stage1-observability-safety-v1",
+  "status": "PASS_PENDING_CI_RECHECK",
+  "owner": "SYSTEM_COORDINATION",
+  "updated_at": "2026-07-27T12:00:00Z",
+  "pr_32_merged": true,
+  "merge_tree_equality_expected": true,
+  "application_boundary_ready": true,
+  "external_endpoint_ready": false,
+  "external_credential_ready": false,
+  "external_allowlist_ready": false,
+  "stable_hash_cohort_ready": true,
+  "candidate_adapter_ready": false,
+  "effective_traffic_percent": 0
+}

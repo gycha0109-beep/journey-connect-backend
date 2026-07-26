@@ -25,34 +25,18 @@ public final class Rca2RuntimeOrchestrator {
     private final Consumer<Rca2RuntimeContracts.Evidence> evidenceSink;
     private final Rca2EnvironmentAccessGate environmentAccessGate;
 
-    public Rca2RuntimeOrchestrator(
-            Clock clock,
-            Rca2FeatureFlagPolicy flags,
-            Rca2KillSwitch killSwitch,
-            Rca2IdentityPolicy identityPolicy,
-            Map<Rca2RuntimeContracts.Lane, Rca2CircuitBreaker> breakers,
-            Rca2BoundedExecutor executor,
-            Rca2CandidateAdapter adapter,
-            Rca2Comparator comparator,
-            Rca2Metrics metrics,
-            Rca2Redaction redaction,
-            Consumer<Rca2RuntimeContracts.Evidence> evidenceSink) {
+    public Rca2RuntimeOrchestrator(Clock clock, Rca2FeatureFlagPolicy flags, Rca2KillSwitch killSwitch,
+            Rca2IdentityPolicy identityPolicy, Map<Rca2RuntimeContracts.Lane, Rca2CircuitBreaker> breakers,
+            Rca2BoundedExecutor executor, Rca2CandidateAdapter adapter, Rca2Comparator comparator,
+            Rca2Metrics metrics, Rca2Redaction redaction, Consumer<Rca2RuntimeContracts.Evidence> evidenceSink) {
         this(clock, flags, killSwitch, identityPolicy, breakers, executor, adapter, comparator, metrics,
                 redaction, evidenceSink, Rca2EnvironmentAccessGate.legacyPassthrough());
     }
 
-    public Rca2RuntimeOrchestrator(
-            Clock clock,
-            Rca2FeatureFlagPolicy flags,
-            Rca2KillSwitch killSwitch,
-            Rca2IdentityPolicy identityPolicy,
-            Map<Rca2RuntimeContracts.Lane, Rca2CircuitBreaker> breakers,
-            Rca2BoundedExecutor executor,
-            Rca2CandidateAdapter adapter,
-            Rca2Comparator comparator,
-            Rca2Metrics metrics,
-            Rca2Redaction redaction,
-            Consumer<Rca2RuntimeContracts.Evidence> evidenceSink,
+    public Rca2RuntimeOrchestrator(Clock clock, Rca2FeatureFlagPolicy flags, Rca2KillSwitch killSwitch,
+            Rca2IdentityPolicy identityPolicy, Map<Rca2RuntimeContracts.Lane, Rca2CircuitBreaker> breakers,
+            Rca2BoundedExecutor executor, Rca2CandidateAdapter adapter, Rca2Comparator comparator,
+            Rca2Metrics metrics, Rca2Redaction redaction, Consumer<Rca2RuntimeContracts.Evidence> evidenceSink,
             Rca2EnvironmentAccessGate environmentAccessGate) {
         this.clock = Objects.requireNonNull(clock);
         this.flags = Objects.requireNonNull(flags);
@@ -69,8 +53,7 @@ public final class Rca2RuntimeOrchestrator {
     }
 
     public Rca2RuntimeContracts.SubmissionStatus submitAfterResponseCommitted(
-            Rca2RuntimeContracts.ShadowRequest request,
-            boolean responseCommitted) {
+            Rca2RuntimeContracts.ShadowRequest request, boolean responseCommitted) {
         Objects.requireNonNull(request, "request");
         var lane = request.primary().lane();
         var breaker = breakers.get(lane);
@@ -99,6 +82,7 @@ public final class Rca2RuntimeOrchestrator {
                 flag.trafficPercent(), now, breaker.state());
         if (!access.allowed()) return access.submissionStatus();
         if (access.bucket() < 0 && !sample(request.hashedRequestRef(), flag.trafficPercent())) {
+            metrics.op2().recordTrafficSkipped(lane, "legacy_sample_skipped");
             return Rca2RuntimeContracts.SubmissionStatus.FLAG_OFF;
         }
         if (!breaker.permit()) {
@@ -120,15 +104,24 @@ public final class Rca2RuntimeOrchestrator {
             Rca2BoundedExecutor.Completion<Rca2RuntimeContracts.CandidateResult> completion,
             Rca2CircuitBreaker breaker) {
         var lane = request.primary().lane();
-        metrics.recordMillis("shadow_latency_ms", lane, completion.status().name().toLowerCase(), breaker.state(),
-                completion.elapsedMillis());
+        String status = completion.status().name().toLowerCase();
+        metrics.op2().increment("shadow_execution_completed_total", lane, status);
+        metrics.op2().recordMillis("shadow_task_age_milliseconds", lane, status, completion.taskAgeMillis());
+        metrics.op2().recordMillis("shadow_task_age_ms", lane, status, completion.taskAgeMillis());
+        metrics.recordMillis("shadow_latency_ms", lane, status, breaker.state(), completion.elapsedMillis());
         switch (completion.status()) {
             case TIMEOUT -> {
                 metrics.increment("shadow_timeout_count", lane, "timeout", breaker.state());
                 breaker.failure(true);
             }
-            case EXCEPTION, CANCELLED -> {
+            case EXCEPTION -> {
                 metrics.increment("shadow_exception_count", lane, "exception", breaker.state());
+                breaker.failure(false);
+            }
+            case CANCELLED -> {
+                metrics.increment("shadow_exception_count", lane, "cancelled", breaker.state());
+                metrics.op2().increment("shadow_cancellation_total", lane, "cancelled");
+                metrics.op2().increment("shadow_cancelled_count", lane, "cancelled");
                 breaker.failure(false);
             }
             case LATE_DISCARDED -> {
@@ -140,20 +133,24 @@ public final class Rca2RuntimeOrchestrator {
     }
 
     private void handleSuccess(Rca2RuntimeContracts.ShadowRequest request,
-            Rca2RuntimeContracts.CandidateResult candidate,
-            long shadowLatencyMillis,
-            Rca2CircuitBreaker breaker) {
+            Rca2RuntimeContracts.CandidateResult candidate, long shadowLatencyMillis, Rca2CircuitBreaker breaker) {
         var lane = request.primary().lane();
         var result = comparator.compare(request.primary(), candidate);
-        if (result.classification() == Rca2RuntimeContracts.ComparisonClass.CHECKPOINT_MISMATCH) {
-            metrics.increment("checkpoint_mismatch_count", lane, "checkpoint_mismatch", breaker.state());
-        } else if (result.classification() == Rca2RuntimeContracts.ComparisonClass.LINEAGE_MISMATCH) {
-            metrics.increment("lineage_mismatch_count", lane, "lineage_mismatch", breaker.state());
-        } else if (result.classification() == Rca2RuntimeContracts.ComparisonClass.STALE_CANDIDATE) {
-            metrics.increment("stale_candidate_count", lane, "stale_candidate", breaker.state());
-        } else if (result.classification() == Rca2RuntimeContracts.ComparisonClass.RESULT_MISMATCH) {
-            metrics.increment(lane == Rca2RuntimeContracts.Lane.P1 ? "p1_result_mismatch_count" : "p2_result_mismatch_count",
-                    lane, "result_mismatch", breaker.state());
+        metrics.op2().recordMillis("shadow_checkpoint_lag_seconds", lane, "measured", result.measuredLagMillis());
+        metrics.op2().recordMillis("checkpoint_lag_ms", lane, "measured", result.measuredLagMillis());
+        switch (result.classification()) {
+            case CHECKPOINT_MISMATCH -> metrics.increment("checkpoint_mismatch_count", lane, "checkpoint_mismatch", breaker.state());
+            case LINEAGE_MISMATCH -> metrics.increment("lineage_mismatch_count", lane, "lineage_mismatch", breaker.state());
+            case STALE_CANDIDATE -> metrics.increment("stale_candidate_count", lane, "stale_candidate", breaker.state());
+            case RESULT_MISMATCH -> metrics.increment(lane == Rca2RuntimeContracts.Lane.P1
+                    ? "p1_result_mismatch_count" : "p2_result_mismatch_count", lane, "result_mismatch", breaker.state());
+            case EXPECTED_GAP -> recordInventory("shadow_p1_expected_protected_gap_total", lane, result, "expected_gap");
+            case MIGRATION_GAP -> recordInventory("shadow_p2_migration_gap_total", lane, result, "migration_gap");
+            case AUTHORITY_MISMATCH -> {
+                metrics.op2().increment("shadow_authority_mismatch_total", lane, "authority_mismatch");
+                killSwitch.failClosed();
+            }
+            default -> { }
         }
         try {
             var evidence = redaction.verify(new Rca2RuntimeContracts.Evidence(
@@ -173,6 +170,12 @@ public final class Rca2RuntimeOrchestrator {
         }
         metrics.increment("shadow_success_count", lane, result.classification().name().toLowerCase(), breaker.state());
         breaker.success();
+    }
+
+    private void recordInventory(String metric, Rca2RuntimeContracts.Lane lane,
+            Rca2RuntimeContracts.ComparisonResult result, String fallback) {
+        if (result.inventory().isEmpty()) metrics.op2().increment(metric, lane, fallback);
+        else result.inventory().forEach(value -> metrics.op2().increment(metric, lane, value.toLowerCase()));
     }
 
     private static boolean sample(String hash, int percent) {

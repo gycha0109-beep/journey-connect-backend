@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Run the authoritative Data closure verifier with OP-1 successor paths.
+"""Run the authoritative Data closure verifier with approved successor paths.
 
 The verifier source is loaded from the authoritative pre-SC-6 baseline. Only
-SC-6 and OP-1 successor workflow/document/evidence paths are added to its diff
-allowlist. Data evidence, SQL inventory, authority, production configuration and
-runtime side-effect checks remain unchanged.
+SC-6, OP-1 and OP-2 successor workflow/document/evidence paths are added to its
+diff allowlist. Data evidence, SQL inventory, authority, production configuration
+and runtime side-effect checks remain unchanged.
 """
 from __future__ import annotations
 
@@ -27,14 +27,18 @@ source = source.replace(
     workflow_anchor,
     workflow_anchor
     + '        ".github/workflows/sc6-rca2-nonzero-nonprod-stage1-governance-ci.yml",\n'
-    + '        ".github/workflows/op1-rca2-stage1-environment-access-ci.yml",\n',
+    + '        ".github/workflows/op1-rca2-stage1-environment-access-ci.yml",\n'
+    + '        ".github/workflows/op2-rca2-stage1-observability-safety-ci.yml",\n',
     1,
 )
 source = source.replace(
     prefix_anchor,
     prefix_anchor
     + '    "docs/platform/operations/op1/",\n'
-    + '    "verification/operations/op1/",\n',
+    + '    "docs/platform/operations/op2/",\n'
+    + '    "verification/operations/op1/",\n'
+    + '    "verification/operations/op2/",\n'
+    + '    "ops/observability/rca2/op2/",\n',
     1,
 )
 

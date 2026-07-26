@@ -1,0 +1,19 @@
+{
+  "work_start_sha": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "source_op1_exact_head": "6c89e78e32f54a1f830d0c84db07a01de951e39c",
+  "source_op1_merge_commit": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "artifact_version": "op2-rca2-stage1-observability-safety-v1",
+  "status": "PENDING_USER_REVIEW",
+  "owner": "SYSTEM_COORDINATION",
+  "updated_at": "2026-07-27T12:00:00Z",
+  "reviewed_exact_head": "PENDING_PR_EXACT_HEAD_AND_CI_ARTIFACT",
+  "reviewed_artifact_digest": "PENDING_CI_ARTIFACT_DIGEST",
+  "approvals": [
+    {"role":"INTELLIGENCE","responsibility":"P1/P2 mismatch semantics and primary authority","checks":["expected/protected gaps separate","candidate serving forbidden"],"blockers":["candidate source unresolved"],"approval_condition":"exact-head CI and source decision","rollback_responsibility":"classification review","expiry":"head or artifact digest change","signature_status":"PENDING_USER_REVIEW"},
+    {"role":"RELIABILITY","responsibility":"thresholds alerts circuit breaker rollback","checks":["SC-6 thresholds unchanged","zero tolerance criticals"],"blockers":["external alert route"],"approval_condition":"alert delivery acknowledgement and rollback owner","rollback_responsibility":"quality hold","expiry":"threshold or rule change","signature_status":"PENDING_USER_REVIEW"},
+    {"role":"DATA","responsibility":"checkpoint lineage and no-write boundary","checks":["checkpoint lag measurement-only","SQL unchanged"],"blockers":["external metrics backend"],"approval_condition":"metrics backend and lineage panel","rollback_responsibility":"data safety review","expiry":"metric/source change","signature_status":"PENDING_USER_REVIEW"},
+    {"role":"OPERATIONS","responsibility":"dashboard alerts enablement rollback execution","checks":["runbook","kill switch","traffic 0"],"blockers":["dashboard route deployment credential network"],"approval_condition":"external controls ready","rollback_responsibility":"levels 1-7 execution","expiry":"deployment/config change","signature_status":"PENDING_USER_REVIEW"},
+    {"role":"PRIVACY_SECURITY","responsibility":"identity redaction credential route safety","checks":["bounded labels","no raw identity token URL"],"blockers":["allowlist and secret manager unresolved"],"approval_condition":"allowlist/credential/network evidence","rollback_responsibility":"credential and route revoke","expiry":"identity/credential policy change","signature_status":"PENDING_USER_REVIEW"},
+    {"role":"SYSTEM_COORDINATION","responsibility":"cross-track authority and OP-3 gate","checks":["all gates AND","authority transfer forbidden"],"blockers":["all external and approval gaps"],"approval_condition":"all prior role approvals exact-head bound","rollback_responsibility":"global hold decision","expiry":"head/artifact/gate change","signature_status":"PENDING_USER_REVIEW"}
+  ]
+}

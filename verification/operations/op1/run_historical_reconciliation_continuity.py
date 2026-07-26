@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run protected RCA-1/RCA-1B verifiers with only approved later-phase paths added.
+"""Run protected RCA-1/RCA-1B verifiers with approved later-phase paths added.
 
 The historical verifier source is executed unchanged except for a narrow extension
 of its cross-phase diff allowlist. Historical documents, fixtures, expected
@@ -17,10 +17,14 @@ APPROVED_LATER_PHASE_PATHS = (
     ".github/workflows/sc6-rca2-nonzero-nonprod-stage1-governance-ci.yml",
     ".github/workflows/op0-rca2-stage1-operations-preparation-governance-ci.yml",
     ".github/workflows/op1-rca2-stage1-environment-access-ci.yml",
+    ".github/workflows/op2-rca2-stage1-observability-safety-ci.yml",
     "docs/platform/operations/op0/",
     "docs/platform/operations/op1/",
+    "docs/platform/operations/op2/",
     "verification/operations/op0/",
     "verification/operations/op1/",
+    "verification/operations/op2/",
+    "ops/observability/rca2/op2/",
 )
 TARGETS = {
     "rca1": {

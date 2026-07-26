@@ -1,0 +1,16 @@
+{
+  "work_start_sha":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","source_op1_exact_head":"6c89e78e32f54a1f830d0c84db07a01de951e39c","source_op1_merge_commit":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","artifact_version":"op2-rca2-stage1-observability-safety-v1","status":"UNRESOLVED_EXTERNAL_DEPENDENCIES","owner":"OPERATIONS","updated_at":"2026-07-27T12:00:00Z",
+  "dependencies":[
+    {"id":"INFRASTRUCTURE_REPOSITORY","status":"UNRESOLVED","required_for":["deployment rollback","network revoke"]},
+    {"id":"SECRET_MANAGER","status":"UNRESOLVED","required_for":["credential issue/revoke drill"]},
+    {"id":"NONPRODUCTION_NAMESPACE","status":"UNRESOLVED","required_for":["endpoint deployment"]},
+    {"id":"NONPRODUCTION_ENDPOINT_PATH","status":"UNRESOLVED","required_for":["candidate invocation"]},
+    {"id":"ALLOWLIST_STORAGE_PATH","status":"UNRESOLVED","required_for":["allowlist lookup"]},
+    {"id":"METRICS_BACKEND","status":"UNRESOLVED","required_for":["external metrics readiness"]},
+    {"id":"DASHBOARD_SYSTEM","status":"UNRESOLVED","required_for":["dashboard deployment"]},
+    {"id":"CRITICAL_ALERT_ROUTE","status":"UNRESOLVED","required_for":["delivery acknowledgement"]},
+    {"id":"CANDIDATE_SOURCE","status":"UNRESOLVED","required_for":["actual adapter"]},
+    {"id":"CANDIDATE_PROTOCOL","status":"UNRESOLVED","required_for":["actual adapter"]},
+    {"id":"CANDIDATE_API_VERSION","status":"UNRESOLVED","required_for":["actual adapter"]}
+  ]
+}

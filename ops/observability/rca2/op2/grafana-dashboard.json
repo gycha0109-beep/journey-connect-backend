@@ -1,0 +1,31 @@
+{
+  "uid":"rca2-op2-stage1","title":"RCA-2 Stage 1 Observability and Safety","schemaVersion":39,"version":1,"refresh":"30s","tags":["rca2","op2","nonproduction","traffic-zero"],
+  "templating":{"list":[{"name":"lane","type":"custom","query":"p1,p2,all","current":{"text":"all","value":"all"}}]},
+  "panels":[
+    {"id":1,"title":"Traffic selection","type":"timeseries","targets":[{"expr":"sum(rate(rca2_op2_traffic_selection_evaluated_total[5m])) by (result)"}]},
+    {"id":2,"title":"Executor active count","type":"timeseries","targets":[{"expr":"rca2_op2_shadow_executor_active"}]},
+    {"id":3,"title":"Executor queue depth","type":"timeseries","targets":[{"expr":"rca2_op2_shadow_executor_queue_depth"}]},
+    {"id":4,"title":"Task age","type":"timeseries","targets":[{"expr":"histogram_quantile(0.95,sum(rate(rca2_op2_shadow_task_age_milliseconds_bucket[5m])) by (le,lane))"}]},
+    {"id":5,"title":"Cancellation","type":"timeseries","targets":[{"expr":"sum(rate(rca2_op2_shadow_cancellation_total[5m])) by (lane,reason)"}]},
+    {"id":6,"title":"Latency","type":"timeseries","targets":[{"expr":"histogram_quantile(0.95,sum(rate(rca2_op2_shadow_total_duration_milliseconds_bucket[5m])) by (le,lane))"}]},
+    {"id":7,"title":"Timeout","type":"timeseries","targets":[{"expr":"sum(rate(rca2_op2_shadow_timeout_total[5m])) by (lane)"}]},
+    {"id":8,"title":"Exception","type":"timeseries","targets":[{"expr":"sum(rate(rca2_op2_shadow_exception_total[5m])) by (lane,class)"}]},
+    {"id":9,"title":"Queue rejection","type":"timeseries","targets":[{"expr":"sum(rate(rca2_op2_shadow_queue_rejection_total[5m])) by (lane)"}]},
+    {"id":10,"title":"Late discard","type":"timeseries","targets":[{"expr":"sum(rate(rca2_op2_shadow_late_discard_total[5m])) by (lane)"}]},
+    {"id":11,"title":"Circuit breaker","type":"timeseries","targets":[{"expr":"sum(rate(rca2_shadow_circuit_open_count[5m])) by (lane,breaker_state)"}]},
+    {"id":12,"title":"Kill switch","type":"stat","targets":[{"expr":"max(rca2_op2_global_kill_switch_state)"}]},
+    {"id":13,"title":"P1 mismatch","type":"timeseries","targets":[{"expr":"sum(rate(rca2_op2_shadow_p1_unexpected_mismatch_total[5m])) by (mismatch_class)"}]},
+    {"id":14,"title":"P2 mismatch","type":"timeseries","targets":[{"expr":"sum(rate(rca2_op2_shadow_p2_unexpected_mismatch_total[5m])) by (mismatch_class)"}]},
+    {"id":15,"title":"Checkpoint lag","type":"timeseries","targets":[{"expr":"histogram_quantile(0.95,sum(rate(rca2_op2_shadow_checkpoint_lag_seconds_bucket[5m])) by (le,lane))"}]},
+    {"id":16,"title":"Lineage mismatch","type":"timeseries","targets":[{"expr":"sum(rate(rca2_op2_shadow_lineage_mismatch_total[5m])) by (lane,class)"}]},
+    {"id":17,"title":"Identity blocked","type":"timeseries","targets":[{"expr":"sum(rate(rca2_identity_blocked_count[5m])) by (lane)"}]},
+    {"id":18,"title":"Redaction","type":"stat","targets":[{"expr":"sum(increase(rca2_op2_shadow_redaction_failure_total[5m]))"}]},
+    {"id":19,"title":"Response mutation","type":"stat","targets":[{"expr":"sum(increase(rca2_op2_shadow_response_mutation_total[5m]))"}]},
+    {"id":20,"title":"Write/event violations","type":"stat","targets":[{"expr":"sum(increase(rca2_op2_shadow_database_write_total[5m])) + sum(increase(rca2_op2_shadow_event_emission_total[5m]))"}]},
+    {"id":21,"title":"Production route detection","type":"stat","targets":[{"expr":"sum(increase(rca2_op2_shadow_production_route_detection_total[5m]))"}]},
+    {"id":22,"title":"Authority mismatch","type":"stat","targets":[{"expr":"sum(increase(rca2_op2_shadow_authority_mismatch_total[5m]))"}]}
+  ],
+  "annotations":{"list":[{"name":"Manual enablement","enable":true,"type":"dashboard","hide":false}]},
+  "time":{"from":"now-30m","to":"now"},
+  "externalDeploymentStatus":"NOT_EXECUTED"
+}

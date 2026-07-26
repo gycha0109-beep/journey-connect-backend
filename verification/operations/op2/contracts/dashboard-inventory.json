@@ -1,0 +1,15 @@
+{
+  "work_start_sha": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "source_op1_exact_head": "6c89e78e32f54a1f830d0c84db07a01de951e39c",
+  "source_op1_merge_commit": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "artifact_version": "op2-rca2-stage1-observability-safety-v1",
+  "status": "APPLICATION_DASHBOARD_CONTRACT_READY",
+  "owner": "OPERATIONS",
+  "updated_at": "2026-07-27T12:00:00Z",
+  "provisioning_path": "ops/observability/rca2/op2/grafana-dashboard.json",
+  "sections": [
+    "Traffic selection","Executor active count","Executor queue depth","Task age","Cancellation","Latency","Timeout","Exception","Queue rejection","Late discard","Circuit breaker","Kill switch","P1 mismatch","P2 mismatch","Checkpoint lag","Lineage mismatch","Identity blocked","Redaction","Response mutation","Write/event violations","Production route detection","Authority mismatch"
+  ],
+  "panel_count": 22,
+  "external_dashboard_ready": false
+}

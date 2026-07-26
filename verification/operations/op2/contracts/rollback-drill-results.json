@@ -1,0 +1,18 @@
+{
+  "work_start_sha": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "source_op1_exact_head": "6c89e78e32f54a1f830d0c84db07a01de951e39c",
+  "source_op1_merge_commit": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "artifact_version": "op2-rca2-stage1-observability-safety-v1",
+  "status": "PARTIAL_APPLICATION_DRILLS_ONLY",
+  "owner": "OPERATIONS",
+  "updated_at": "2026-07-27T12:00:00Z",
+  "level_1": "PASS",
+  "level_2": "PASS",
+  "level_3": "PASS",
+  "level_4": "PASS",
+  "level_5": "NOT_EXECUTED",
+  "level_6": "BLOCKED_EXTERNAL_DEPENDENCY",
+  "level_7": "BLOCKED_EXTERNAL_DEPENDENCY",
+  "actual_external_changes_performed": false,
+  "production_changes_performed": false
+}

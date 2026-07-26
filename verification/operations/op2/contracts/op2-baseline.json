@@ -1,0 +1,23 @@
+{
+  "work_start_sha": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "source_op1_exact_head": "6c89e78e32f54a1f830d0c84db07a01de951e39c",
+  "source_op1_merge_commit": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "artifact_version": "op2-rca2-stage1-observability-safety-v1",
+  "status": "APPLICATION_BOUNDARY_IMPLEMENTED_PENDING_EXACT_HEAD_CI",
+  "owner": "OPERATIONS",
+  "updated_at": "2026-07-27T12:00:00Z",
+  "official_phase": "OP-2 RCA-2 Stage 1 Observability and Safety Preparation",
+  "result_candidate": "RCA2_STAGE1_OBSERVABILITY_AND_SAFETY_APPLICATION_BOUNDARY_COMPLETE",
+  "current_nonproduction_traffic_percent": 0,
+  "target_nonproduction_traffic_percent": 1,
+  "effective_nonproduction_traffic_percent": 0,
+  "production_traffic_percent": 0,
+  "feature_flag_default": "OFF",
+  "manual_enablement_required": true,
+  "automatic_rollout": "FORBIDDEN",
+  "candidate_serving": "FORBIDDEN",
+  "primary_result_authority": "CURRENT_P1_P2_ONLY",
+  "shadow_result_authority": "NONE",
+  "production_activation": "NOT_AUTHORIZED",
+  "authority_transfer": "FORBIDDEN"
+}

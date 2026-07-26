@@ -1,0 +1,12 @@
+{
+  "work_start_sha":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","source_op1_exact_head":"6c89e78e32f54a1f830d0c84db07a01de951e39c","source_op1_merge_commit":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","artifact_version":"op2-rca2-stage1-observability-safety-v1","status":"OPEN_RISKS_RETAINED","owner":"OPERATIONS","updated_at":"2026-07-27T12:00:00Z",
+  "risks":[
+    {"id":"R1","risk":"application meters cannot prove external scrape/retention","mitigation":"block OP-3 until backend query evidence"},
+    {"id":"R2","risk":"rule config cannot prove delivery","mitigation":"require receiver acknowledgement"},
+    {"id":"R3","risk":"deployment/credential/network rollback not drilled","mitigation":"retain external blockers"},
+    {"id":"R4","risk":"task-age/checkpoint warning baseline lacks empirical data","mitigation":"do not invent threshold; separate System Coordination approval"},
+    {"id":"R5","risk":"candidate protocol/source unresolved","mitigation":"candidate invocation remains blocked"},
+    {"id":"R6","risk":"human approvals could be confused with CI","mitigation":"all signatures remain PENDING_USER_REVIEW"},
+    {"id":"R7","risk":"future config could exceed 1 percent","mitigation":"critical traffic ceiling rule plus manual gate"}
+  ]
+}

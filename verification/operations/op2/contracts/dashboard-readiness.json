@@ -1,0 +1,16 @@
+{
+  "work_start_sha": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "source_op1_exact_head": "6c89e78e32f54a1f830d0c84db07a01de951e39c",
+  "source_op1_merge_commit": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "artifact_version": "op2-rca2-stage1-observability-safety-v1",
+  "status": "APPLICATION_CONTRACT_READY_EXTERNAL_BLOCKED",
+  "owner": "OPERATIONS",
+  "updated_at": "2026-07-27T12:00:00Z",
+  "application_dashboard_contract_ready": true,
+  "external_metrics_backend_ready": false,
+  "external_dashboard_ready": false,
+  "dashboard_system": "UNRESOLVED",
+  "dashboard_repository_or_folder": "UNRESOLVED",
+  "deployment_status": "NOT_EXECUTED",
+  "blocker": "No external metrics backend or dashboard provisioning target is available to this repository"
+}

@@ -3,10 +3,7 @@ package com.jc.backend.recommendation.rca2;
 import java.time.Instant;
 import java.util.Objects;
 
-/**
- * Ordered OP-1 gate: effective-zero -> endpoint -> credential -> allowlist -> stable cohort -> candidate source.
- * It never performs network I/O and never mutates the primary response.
- */
+/** Ordered OP-1 gate with OP-2 bounded selection telemetry. It performs no network I/O. */
 public final class Rca2EnvironmentAccessGate {
     public enum Status {
         READY, EFFECTIVE_TRAFFIC_ZERO, CONFIGURATION_BLOCKED, ENDPOINT_BLOCKED,
@@ -14,12 +11,8 @@ public final class Rca2EnvironmentAccessGate {
         CANDIDATE_SOURCE_UNRESOLVED
     }
 
-    public record Decision(
-            boolean allowed,
-            Status status,
-            Rca2RuntimeContracts.SubmissionStatus submissionStatus,
-            String hashedSubjectRef,
-            int bucket) {}
+    public record Decision(boolean allowed, Status status, Rca2RuntimeContracts.SubmissionStatus submissionStatus,
+            String hashedSubjectRef, int bucket) {}
 
     private final Rca2Op1Configuration configuration;
     private final Rca2ShadowEndpointPolicy endpointPolicy;
@@ -32,30 +25,18 @@ public final class Rca2EnvironmentAccessGate {
     private final boolean testFixtureMode;
     private final boolean legacyPassthrough;
 
-    public Rca2EnvironmentAccessGate(
-            Rca2Op1Configuration configuration,
-            Rca2ShadowEndpointPolicy endpointPolicy,
-            Rca2WorkloadCredentialProvider credentialProvider,
-            Rca2TestAccountAllowlist allowlist,
-            Rca2TestAccountAllowlist.Provider allowlistProvider,
-            Rca2StableHashCohortSelector cohortSelector,
-            Rca2CandidateSourceDecision candidateSource,
-            Rca2Metrics metrics,
-            boolean testFixtureMode) {
+    public Rca2EnvironmentAccessGate(Rca2Op1Configuration configuration, Rca2ShadowEndpointPolicy endpointPolicy,
+            Rca2WorkloadCredentialProvider credentialProvider, Rca2TestAccountAllowlist allowlist,
+            Rca2TestAccountAllowlist.Provider allowlistProvider, Rca2StableHashCohortSelector cohortSelector,
+            Rca2CandidateSourceDecision candidateSource, Rca2Metrics metrics, boolean testFixtureMode) {
         this(configuration, endpointPolicy, credentialProvider, allowlist, allowlistProvider,
                 cohortSelector, candidateSource, metrics, testFixtureMode, false);
     }
 
-    private Rca2EnvironmentAccessGate(
-            Rca2Op1Configuration configuration,
-            Rca2ShadowEndpointPolicy endpointPolicy,
-            Rca2WorkloadCredentialProvider credentialProvider,
-            Rca2TestAccountAllowlist allowlist,
-            Rca2TestAccountAllowlist.Provider allowlistProvider,
-            Rca2StableHashCohortSelector cohortSelector,
-            Rca2CandidateSourceDecision candidateSource,
-            Rca2Metrics metrics,
-            boolean testFixtureMode,
+    private Rca2EnvironmentAccessGate(Rca2Op1Configuration configuration, Rca2ShadowEndpointPolicy endpointPolicy,
+            Rca2WorkloadCredentialProvider credentialProvider, Rca2TestAccountAllowlist allowlist,
+            Rca2TestAccountAllowlist.Provider allowlistProvider, Rca2StableHashCohortSelector cohortSelector,
+            Rca2CandidateSourceDecision candidateSource, Rca2Metrics metrics, boolean testFixtureMode,
             boolean legacyPassthrough) {
         this.configuration = configuration;
         this.endpointPolicy = endpointPolicy;
@@ -69,31 +50,32 @@ public final class Rca2EnvironmentAccessGate {
         this.legacyPassthrough = legacyPassthrough;
     }
 
-    public Decision evaluate(
-            Rca2RuntimeContracts.ShadowRequest request,
-            String hashedSubjectRef,
-            int configuredPercent,
-            Instant now,
-            Rca2RuntimeContracts.BreakerState breakerState) {
+    public Decision evaluate(Rca2RuntimeContracts.ShadowRequest request, String hashedSubjectRef,
+            int configuredPercent, Instant now, Rca2RuntimeContracts.BreakerState breakerState) {
         Objects.requireNonNull(request, "request");
         Objects.requireNonNull(now, "now");
         if (legacyPassthrough) return ready(hashedSubjectRef, -1);
         var lane = request.primary().lane();
+        metrics.op2().recordTrafficEvaluated(lane, "evaluated");
         if (configuration == null || configuredPercent < 0 || configuredPercent > 1) {
+            metrics.op2().recordTrafficSkipped(lane, "invalid_configuration");
             return blocked(Status.CONFIGURATION_BLOCKED, Rca2RuntimeContracts.SubmissionStatus.FLAG_OFF,
                     hashedSubjectRef, -1);
         }
         if (!testFixtureMode && configuration.effectiveTrafficPercent() == 0) {
             metrics.increment("shadow_cohort_skipped_total", lane, "effective_traffic_zero", breakerState);
+            metrics.op2().recordTrafficSkipped(lane, "effective_traffic_zero");
             return blocked(Status.EFFECTIVE_TRAFFIC_ZERO, Rca2RuntimeContracts.SubmissionStatus.TRAFFIC_ZERO,
                     hashedSubjectRef, -1);
         }
         if (!testFixtureMode && (configuration.configuredTrafficPercent() != 0 || configuredPercent != 0)) {
+            metrics.op2().recordTrafficSkipped(lane, "configuration_blocked");
             return blocked(Status.CONFIGURATION_BLOCKED, Rca2RuntimeContracts.SubmissionStatus.FLAG_OFF,
                     hashedSubjectRef, -1);
         }
         if (configuredPercent == 0) {
             metrics.increment("shadow_cohort_skipped_total", lane, "configured_traffic_zero", breakerState);
+            metrics.op2().recordTrafficSkipped(lane, "configured_traffic_zero");
             return blocked(Status.EFFECTIVE_TRAFFIC_ZERO, Rca2RuntimeContracts.SubmissionStatus.TRAFFIC_ZERO,
                     hashedSubjectRef, -1);
         }
@@ -103,6 +85,7 @@ public final class Rca2EnvironmentAccessGate {
                 "UNRESOLVED".equals(configuration.databaseRoute()) ? "" : configuration.databaseRoute());
         if (!endpoint.allowed()) {
             metrics.increment("shadow_endpoint_blocked_total", lane, endpoint.rejection().name().toLowerCase(), breakerState);
+            metrics.op2().recordTrafficSkipped(lane, "endpoint_blocked");
             return blocked(Status.ENDPOINT_BLOCKED, Rca2RuntimeContracts.SubmissionStatus.EXECUTOR_UNAVAILABLE,
                     hashedSubjectRef, -1);
         }
@@ -110,6 +93,7 @@ public final class Rca2EnvironmentAccessGate {
         var lease = credentialProvider.current(now);
         if (lease.isEmpty()) {
             metrics.increment("shadow_credential_unavailable_total", lane, "missing", breakerState);
+            metrics.op2().recordTrafficSkipped(lane, "credential_missing");
             return blocked(Status.CREDENTIAL_BLOCKED, Rca2RuntimeContracts.SubmissionStatus.EXECUTOR_UNAVAILABLE,
                     hashedSubjectRef, -1);
         }
@@ -120,6 +104,7 @@ public final class Rca2EnvironmentAccessGate {
             if (refresh.status() != Rca2WorkloadCredentialProvider.Status.READY) {
                 metrics.increment("shadow_credential_refresh_failure_total", lane,
                         refresh.status().name().toLowerCase(), breakerState);
+                metrics.op2().recordTrafficSkipped(lane, "credential_refresh_failure");
                 return blocked(Status.CREDENTIAL_BLOCKED, Rca2RuntimeContracts.SubmissionStatus.EXECUTOR_UNAVAILABLE,
                         hashedSubjectRef, -1);
             }
@@ -130,6 +115,7 @@ public final class Rca2EnvironmentAccessGate {
         if (credentialStatus != Rca2WorkloadCredentialProvider.Status.READY) {
             metrics.increment("shadow_credential_unavailable_total", lane,
                     credentialStatus.name().toLowerCase(), breakerState);
+            metrics.op2().recordTrafficSkipped(lane, "credential_blocked");
             return blocked(Status.CREDENTIAL_BLOCKED, Rca2RuntimeContracts.SubmissionStatus.EXECUTOR_UNAVAILABLE,
                     hashedSubjectRef, -1);
         }
@@ -140,17 +126,21 @@ public final class Rca2EnvironmentAccessGate {
         if (!allowlistDecision.allowed()) {
             metrics.increment("shadow_allowlist_denied_total", lane,
                     allowlistDecision.status().name().toLowerCase(), breakerState);
+            metrics.op2().recordTrafficSkipped(lane, "allowlist_blocked");
             return blocked(Status.ALLOWLIST_BLOCKED, Rca2RuntimeContracts.SubmissionStatus.IDENTITY_BLOCKED,
                     hashedSubjectRef, -1);
         }
 
         var cohort = cohortSelector.select(hashedSubjectRef, configuredPercent, true, request.environment());
+        metrics.op2().recordCohortBucket(lane, cohort.bucket());
         if (!cohort.selected()) {
             metrics.increment("shadow_cohort_skipped_total", lane, cohort.status().name().toLowerCase(), breakerState);
+            metrics.op2().recordTrafficSkipped(lane, cohort.status().name().toLowerCase());
             return blocked(Status.COHORT_SKIPPED, Rca2RuntimeContracts.SubmissionStatus.FLAG_OFF,
                     hashedSubjectRef, cohort.bucket());
         }
         metrics.increment("shadow_cohort_selected_total", lane, "selected", breakerState);
+        metrics.op2().recordTrafficSelected(lane);
 
         if (!candidateSource.ready()) {
             metrics.increment("shadow_candidate_invocation_blocked_total", lane, "source_unresolved", breakerState);
