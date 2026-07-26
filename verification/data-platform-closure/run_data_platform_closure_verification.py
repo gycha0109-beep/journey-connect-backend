@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Execute the authoritative Data closure verifier with approved successor paths.
+"""Execute the authoritative Data closure verifier with the SC-6 workflow allowed.
 
 The closure verification logic is loaded byte-for-byte from authoritative
-pre-SC-6 main. Only SC-6 and OP-1 successor paths are inserted into the
-allowlist; Data evidence, SQL, authority, production and runtime checks remain
-unchanged.
+pre-SC-6 main. Only the governance-only SC-6 workflow path is inserted into
+its successor allowlist; Data evidence and protected-state semantics remain unchanged.
 """
 from __future__ import annotations
 
@@ -23,23 +22,13 @@ source = subprocess.run(
     stdout=subprocess.PIPE,
 ).stdout
 
-workflow_anchor = '        ".github/workflows/rca2-controlled-runtime-dark-read-ci.yml",\n'
-prefix_anchor = '    "docs/platform/recommendation/rca2/",\n'
-if workflow_anchor not in source or prefix_anchor not in source:
+anchor = '        ".github/workflows/rca2-controlled-runtime-dark-read-ci.yml",\n'
+if anchor not in source:
     raise SystemExit("FAIL: authoritative Data closure verifier compatibility anchor missing")
-
 source = source.replace(
-    workflow_anchor,
-    workflow_anchor
-    + '        ".github/workflows/sc6-rca2-nonzero-nonprod-stage1-governance-ci.yml",\n'
-    + '        ".github/workflows/op1-rca2-stage1-environment-access-ci.yml",\n',
-    1,
-)
-source = source.replace(
-    prefix_anchor,
-    prefix_anchor
-    + '    "docs/platform/operations/op1/",\n'
-    + '    "verification/operations/op1/",\n',
+    anchor,
+    anchor
+    + '        ".github/workflows/sc6-rca2-nonzero-nonprod-stage1-governance-ci.yml",\n',
     1,
 )
 
