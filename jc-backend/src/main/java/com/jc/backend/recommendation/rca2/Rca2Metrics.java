@@ -26,9 +26,15 @@ public final class Rca2Metrics {
     private static final Set<String> HISTOGRAMS = Set.of("shadow_latency_ms", "primary_latency_ms");
     private final Map<String, AtomicLong> counters = new ConcurrentHashMap<>();
     private final MeterRegistry registry;
+    private final Rca2Op2Telemetry op2;
 
-    public Rca2Metrics(MeterRegistry registry) { this.registry = registry; }
+    public Rca2Metrics(MeterRegistry registry) {
+        this.registry = registry;
+        this.op2 = new Rca2Op2Telemetry(registry);
+    }
     public static Rca2Metrics inMemory() { return new Rca2Metrics(null); }
+    public Rca2Op2Telemetry op2() { return op2; }
+    public void bindRuntime(Rca2BoundedExecutor executor, Rca2KillSwitch killSwitch) { op2.bindRuntime(executor, killSwitch); }
 
     public void increment(String metric, Rca2RuntimeContracts.Lane lane, String resultClass,
             Rca2RuntimeContracts.BreakerState breakerState) {
@@ -36,6 +42,7 @@ public final class Rca2Metrics {
         String key = key(metric, lane, resultClass, breakerState);
         counters.computeIfAbsent(key, ignored -> new AtomicLong()).incrementAndGet();
         if (registry != null) registry.counter("rca2." + metric, tags(lane, resultClass, breakerState)).increment();
+        mirrorCounter(metric, lane, resultClass);
     }
 
     public void recordMillis(String metric, Rca2RuntimeContracts.Lane lane, String resultClass,
@@ -49,6 +56,9 @@ public final class Rca2Metrics {
                 .serviceLevelObjectives(Duration.ofMillis(10), Duration.ofMillis(25), Duration.ofMillis(50),
                         Duration.ofMillis(100), Duration.ofMillis(250), Duration.ofMillis(500), Duration.ofMillis(1_000))
                 .register(registry).record(Duration.ofMillis(millis));
+        if (metric.equals("shadow_latency_ms")) {
+            op2.recordMillis("shadow_total_duration_milliseconds", lane, resultClass, millis);
+        }
     }
 
     public long total(String metric) {
@@ -62,7 +72,24 @@ public final class Rca2Metrics {
         definitions.put("shadow_write_attempt_blocked_count", "COUNTER");
         definitions.put("shadow_event_attempt_blocked_count", "COUNTER");
         definitions.put("shadow_response_mutation_blocked_count", "COUNTER");
+        op2.definitions().forEach((name, descriptor) -> definitions.put(name, descriptor.type().name()));
         return Map.copyOf(definitions);
+    }
+
+    private void mirrorCounter(String metric, Rca2RuntimeContracts.Lane lane, String resultClass) {
+        switch (metric) {
+            case "shadow_request_count" -> op2.increment("shadow_submission_total", lane, resultClass);
+            case "shadow_execution_count" -> op2.increment("shadow_execution_started_total", lane, resultClass);
+            case "shadow_timeout_count" -> op2.increment("shadow_timeout_total", lane, resultClass);
+            case "shadow_exception_count" -> op2.increment("shadow_exception_total", lane, resultClass);
+            case "shadow_queue_rejected_count" -> op2.increment("shadow_queue_rejection_total", lane, resultClass);
+            case "shadow_late_result_discard_count" -> op2.increment("shadow_late_discard_total", lane, resultClass);
+            case "lineage_mismatch_count" -> op2.increment("shadow_lineage_mismatch_total", lane, resultClass);
+            case "p1_result_mismatch_count" -> op2.increment("shadow_p1_unexpected_mismatch_total", lane, resultClass);
+            case "p2_result_mismatch_count" -> op2.increment("shadow_p2_unexpected_mismatch_total", lane, resultClass);
+            case "redaction_failure_count" -> op2.increment("shadow_redaction_failure_total", lane, resultClass);
+            default -> { }
+        }
     }
 
     private static void require(String metric, boolean histogram) {

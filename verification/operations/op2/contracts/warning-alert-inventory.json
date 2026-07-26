@@ -1,0 +1,18 @@
+{
+  "work_start_sha":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","source_op1_exact_head":"6c89e78e32f54a1f830d0c84db07a01de951e39c","source_op1_merge_commit":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","artifact_version":"op2-rca2-stage1-observability-safety-v1","status":"RULES_READY_ROUTE_BLOCKED","owner":"OPERATIONS","updated_at":"2026-07-27T12:00:00Z",
+  "threshold_policy":"SC-6 thresholds unchanged; unmeasured task/checkpoint baselines require separate coordination before numeric thresholding",
+  "alerts":[
+    {"id":"timeout_rate","condition":"rate >= 20 percent","action":"HOLD_ENABLEMENT"},
+    {"id":"exception_rate","condition":"rate >= 25 percent","action":"HOLD_ENABLEMENT"},
+    {"id":"queue_rejection_rate","condition":"rate >= 5 percent","action":"HOLD_ENABLEMENT"},
+    {"id":"late_discard_rate","condition":"rate >= 5 percent","action":"HOLD_ENABLEMENT"},
+    {"id":"task_age","condition":"explicit degraded signal; no invented numeric threshold","action":"HOLD_ENABLEMENT"},
+    {"id":"checkpoint_lag","condition":"explicit degraded signal; no invented numeric threshold","action":"HOLD_ENABLEMENT"},
+    {"id":"executor_saturation","condition":"active/queue at configured bound","action":"HOLD_ENABLEMENT"},
+    {"id":"credential_refresh_failure","condition":"count > 0","action":"HOLD_ENABLEMENT"},
+    {"id":"allowlist_lookup_failure","condition":"count > 0","action":"HOLD_ENABLEMENT"},
+    {"id":"unexpected_p1_mismatch","condition":"count > 0","action":"HOLD_ENABLEMENT"},
+    {"id":"unexpected_p2_mismatch","condition":"count > 0","action":"HOLD_ENABLEMENT"}
+  ],
+  "unit_test":"Rca2Op2AlertPolicyTest","route_ready":false
+}

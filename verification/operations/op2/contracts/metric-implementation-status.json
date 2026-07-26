@@ -1,0 +1,22 @@
+{
+  "work_start_sha": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "source_op1_exact_head": "6c89e78e32f54a1f830d0c84db07a01de951e39c",
+  "source_op1_merge_commit": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "artifact_version": "op2-rca2-stage1-observability-safety-v1",
+  "status": "APPLICATION_INSTRUMENTATION_IMPLEMENTED",
+  "owner": "OPERATIONS",
+  "updated_at": "2026-07-27T12:00:00Z",
+  "metrics": [
+    {"name":"traffic_selected_count","status":"IMPLEMENTED","source":"Rca2EnvironmentAccessGate selected cohort","unit_test":"Rca2Op2TelemetryTest","integration_test":"Rca2Op2RuntimeSafetyTest","acceptance":"increments only after stable-hash selection"},
+    {"name":"traffic_skipped_count","status":"IMPLEMENTED","source":"Rca2EnvironmentAccessGate fail-closed exits","unit_test":"Rca2Op2TelemetryTest","integration_test":"Rca2Op1EnvironmentAccessIntegrationTest","acceptance":"bounded reason and no identity"},
+    {"name":"executor_active_count","status":"IMPLEMENTED","source":"Rca2BoundedExecutor activeCount gauge","unit_test":"Rca2Op2TelemetryTest","integration_test":"Rca2Op2RuntimeSafetyTest","acceptance":"gauge returns bounded executor state"},
+    {"name":"executor_queue_depth","status":"IMPLEMENTED","source":"Rca2BoundedExecutor queueDepth gauge","unit_test":"Rca2Op2TelemetryTest","integration_test":"Rca2Op2RuntimeSafetyTest","acceptance":"gauge never exceeds configured queue bound"},
+    {"name":"shadow_task_age_ms","status":"IMPLEMENTED","source":"Rca2BoundedExecutor enqueue-to-dispatch age","unit_test":"Rca2Op2TelemetryTest","integration_test":"Rca2Op2RuntimeSafetyTest","acceptance":"milliseconds timer records nonnegative age"},
+    {"name":"shadow_cancelled_count","status":"IMPLEMENTED","source":"queued and in-flight cancellation completion","unit_test":"Rca2Op2RuntimeSafetyTest","integration_test":"Rca2RuntimeOrchestratorTest","acceptance":"cancellation is separated from timeout"},
+    {"name":"checkpoint_lag_ms","status":"IMPLEMENTED","source":"Rca2Comparator measuredLagMillis","unit_test":"Rca2Op2TelemetryTest","integration_test":"Rca2RuntimeOrchestratorTest","acceptance":"measurement-only lag preserves comparator semantics"}
+  ],
+  "raw_identity_labels": "FORBIDDEN",
+  "token_labels": "FORBIDDEN",
+  "full_endpoint_url_labels": "FORBIDDEN",
+  "unbounded_error_labels": "FORBIDDEN"
+}

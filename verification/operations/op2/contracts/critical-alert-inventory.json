@@ -1,0 +1,18 @@
+{
+  "work_start_sha":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","source_op1_exact_head":"6c89e78e32f54a1f830d0c84db07a01de951e39c","source_op1_merge_commit":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","artifact_version":"op2-rca2-stage1-observability-safety-v1","status":"RULES_READY_ROUTE_BLOCKED","owner":"OPERATIONS","updated_at":"2026-07-27T12:00:00Z",
+  "tolerance":0,
+  "alerts":[
+    {"id":"response_mutation_detected","condition":"shadow_response_mutation_total > 0","action":"GLOBAL_SHADOW_DISABLE"},
+    {"id":"database_write_detected","condition":"shadow_database_write_total > 0","action":"GLOBAL_SHADOW_DISABLE"},
+    {"id":"cache_write_detected","condition":"shadow_cache_write_total > 0","action":"GLOBAL_SHADOW_DISABLE"},
+    {"id":"event_emission_detected","condition":"shadow_event_emission_total > 0","action":"GLOBAL_SHADOW_DISABLE"},
+    {"id":"notification_emission_detected","condition":"shadow_notification_emission_total > 0","action":"GLOBAL_SHADOW_DISABLE"},
+    {"id":"redaction_failure_detected","condition":"shadow_redaction_failure_total > 0","action":"GLOBAL_SHADOW_DISABLE"},
+    {"id":"production_route_detected","condition":"shadow_production_route_detection_total > 0","action":"NETWORK_ROUTE_REVOKE"},
+    {"id":"production_identity_detected","condition":"shadow_production_identity_detection_total > 0","action":"GLOBAL_SHADOW_DISABLE"},
+    {"id":"authority_mismatch_detected","condition":"shadow_authority_mismatch_total > 0","action":"GLOBAL_SHADOW_DISABLE"},
+    {"id":"traffic_ceiling_violation","condition":"effective traffic percent > 1","action":"FLAG_OFF"},
+    {"id":"credential_scope_violation","condition":"credential scope violation count > 0","action":"CREDENTIAL_REVOKE"}
+  ],
+  "unit_test":"Rca2Op2AlertPolicyTest","route_ready":false
+}

@@ -1,0 +1,76 @@
+groups:
+  - name: rca2-op2-critical
+    interval: 30s
+    rules:
+      - alert: response_mutation_detected
+        expr: increase(rca2_op2_shadow_response_mutation_total[1m]) > 0
+        labels: {severity: critical, action: GLOBAL_SHADOW_DISABLE}
+      - alert: database_write_detected
+        expr: increase(rca2_op2_shadow_database_write_total[1m]) > 0
+        labels: {severity: critical, action: GLOBAL_SHADOW_DISABLE}
+      - alert: cache_write_detected
+        expr: increase(rca2_op2_shadow_cache_write_total[1m]) > 0
+        labels: {severity: critical, action: GLOBAL_SHADOW_DISABLE}
+      - alert: event_emission_detected
+        expr: increase(rca2_op2_shadow_event_emission_total[1m]) > 0
+        labels: {severity: critical, action: GLOBAL_SHADOW_DISABLE}
+      - alert: notification_emission_detected
+        expr: increase(rca2_op2_shadow_notification_emission_total[1m]) > 0
+        labels: {severity: critical, action: GLOBAL_SHADOW_DISABLE}
+      - alert: redaction_failure_detected
+        expr: increase(rca2_op2_shadow_redaction_failure_total[1m]) > 0
+        labels: {severity: critical, action: GLOBAL_SHADOW_DISABLE}
+      - alert: production_route_detected
+        expr: increase(rca2_op2_shadow_production_route_detection_total[1m]) > 0
+        labels: {severity: critical, action: NETWORK_ROUTE_REVOKE}
+      - alert: production_identity_detected
+        expr: increase(rca2_op2_shadow_production_identity_detection_total[1m]) > 0
+        labels: {severity: critical, action: GLOBAL_SHADOW_DISABLE}
+      - alert: authority_mismatch_detected
+        expr: increase(rca2_op2_shadow_authority_mismatch_total[1m]) > 0
+        labels: {severity: critical, action: GLOBAL_SHADOW_DISABLE}
+      - alert: traffic_ceiling_violation
+        expr: rca2_effective_nonproduction_traffic_percent > 1
+        labels: {severity: critical, action: FLAG_OFF}
+      - alert: credential_scope_violation
+        expr: increase(rca2_op2_credential_scope_violation_total[1m]) > 0
+        labels: {severity: critical, action: CREDENTIAL_REVOKE}
+  - name: rca2-op2-warning
+    interval: 30s
+    rules:
+      - alert: timeout_rate
+        expr: 100 * sum(rate(rca2_op2_shadow_timeout_total[5m])) / clamp_min(sum(rate(rca2_op2_shadow_submission_total[5m])),1) >= 20
+        labels: {severity: warning, action: HOLD_ENABLEMENT}
+      - alert: exception_rate
+        expr: 100 * sum(rate(rca2_op2_shadow_exception_total[5m])) / clamp_min(sum(rate(rca2_op2_shadow_submission_total[5m])),1) >= 25
+        labels: {severity: warning, action: HOLD_ENABLEMENT}
+      - alert: queue_rejection_rate
+        expr: 100 * sum(rate(rca2_op2_shadow_queue_rejection_total[5m])) / clamp_min(sum(rate(rca2_op2_shadow_submission_total[5m])),1) >= 5
+        labels: {severity: warning, action: HOLD_ENABLEMENT}
+      - alert: late_discard_rate
+        expr: 100 * sum(rate(rca2_op2_shadow_late_discard_total[5m])) / clamp_min(sum(rate(rca2_op2_shadow_submission_total[5m])),1) >= 5
+        labels: {severity: warning, action: HOLD_ENABLEMENT}
+      - alert: task_age
+        expr: rca2_op2_shadow_task_age_degraded_signal > 0
+        labels: {severity: warning, action: HOLD_ENABLEMENT}
+        annotations: {note: "No numeric threshold is invented before empirical baseline approval"}
+      - alert: checkpoint_lag
+        expr: rca2_op2_shadow_checkpoint_lag_degraded_signal > 0
+        labels: {severity: warning, action: HOLD_ENABLEMENT}
+        annotations: {note: "No numeric threshold is invented before empirical baseline approval"}
+      - alert: executor_saturation
+        expr: rca2_op2_shadow_executor_active >= 4 or rca2_op2_shadow_executor_queue_depth >= 100
+        labels: {severity: warning, action: HOLD_ENABLEMENT}
+      - alert: credential_refresh_failure
+        expr: increase(rca2_shadow_credential_refresh_failure_total[5m]) > 0
+        labels: {severity: warning, action: HOLD_ENABLEMENT}
+      - alert: allowlist_lookup_failure
+        expr: increase(rca2_op2_shadow_allowlist_lookup_failure_total[5m]) > 0
+        labels: {severity: warning, action: HOLD_ENABLEMENT}
+      - alert: unexpected_p1_mismatch
+        expr: increase(rca2_op2_shadow_p1_unexpected_mismatch_total[5m]) > 0
+        labels: {severity: warning, action: HOLD_ENABLEMENT}
+      - alert: unexpected_p2_mismatch
+        expr: increase(rca2_op2_shadow_p2_unexpected_mismatch_total[5m]) > 0
+        labels: {severity: warning, action: HOLD_ENABLEMENT}
+# Receiver configuration is intentionally absent. CRITICAL_ALERT_ROUTE_READY remains NO.

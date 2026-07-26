@@ -1,0 +1,18 @@
+{
+  "work_start_sha": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "source_op1_exact_head": "6c89e78e32f54a1f830d0c84db07a01de951e39c",
+  "source_op1_merge_commit": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "artifact_version": "op2-rca2-stage1-observability-safety-v1",
+  "status": "APPLICATION_LEVELS_READY_EXTERNAL_LEVELS_BLOCKED",
+  "owner": "OPERATIONS",
+  "updated_at": "2026-07-27T12:00:00Z",
+  "levels": [
+    {"level":1,"control":"FLAG_OFF","trigger":"warning ceiling or operator hold","owner":"OPERATIONS","procedure":"replace signed snapshot with OFF/0","maximum_execution_time":"60s","expected_state":"FLAG_OFF_TRAFFIC_ZERO","verification_query":"P1/P2 decision disabled","recovery_criteria":"cause removed and approvals renewed","escalation":"RELIABILITY","evidence":"unit drill","drill_status":"PASS"},
+    {"level":2,"control":"LANE_KILL_SWITCH","trigger":"single-lane critical","owner":"OPERATIONS","procedure":"kill affected lane","maximum_execution_time":"30s","expected_state":"AFFECTED_LANE_BLOCKED","verification_query":"submission returns LANE_KILLED","recovery_criteria":"lane incident closed","escalation":"RELIABILITY","evidence":"unit drill","drill_status":"PASS"},
+    {"level":3,"control":"GLOBAL_SHADOW_DISABLE","trigger":"cross-lane/privacy critical","owner":"OPERATIONS","procedure":"global kill and cancel queued tasks","maximum_execution_time":"30s","expected_state":"ALL_SHADOW_BLOCKED_PRIMARY_UNCHANGED","verification_query":"submission returns GLOBAL_KILLED","recovery_criteria":"incident closed and approvals renewed","escalation":"SYSTEM_COORDINATION","evidence":"unit/integration drill","drill_status":"PASS"},
+    {"level":4,"control":"CONFIG_ROLLBACK","trigger":"invalid/stale configuration","owner":"OPERATIONS","procedure":"restore approved OFF/0 snapshot","maximum_execution_time":"5m","expected_state":"SAFE_DEFAULT_RESTORED","verification_query":"configured/effective traffic 0","recovery_criteria":"configuration validated","escalation":"SYSTEM_COORDINATION","evidence":"configuration contract test","drill_status":"PASS"},
+    {"level":5,"control":"DEPLOYMENT_ROLLBACK","trigger":"isolated deployment regression","owner":"OPERATIONS","procedure":"rollback to prior exact deployment","maximum_execution_time":"15m","expected_state":"PRIOR_VERSION_RUNNING","verification_query":"deployment digest","recovery_criteria":"new build approved","escalation":"RELIABILITY","evidence":"deployment path unresolved","drill_status":"NOT_EXECUTED"},
+    {"level":6,"control":"CREDENTIAL_REVOKE","trigger":"credential concern/scope violation","owner":"OPERATIONS","procedure":"revoke workload lease","maximum_execution_time":"5m","expected_state":"CREDENTIAL_UNAVAILABLE","verification_query":"provider missing/revoked","recovery_criteria":"new lease approved","escalation":"PRIVACY_SECURITY","evidence":"secret manager unresolved","drill_status":"BLOCKED_EXTERNAL_DEPENDENCY"},
+    {"level":7,"control":"NETWORK_ROUTE_REVOKE","trigger":"production route/route concern","owner":"OPERATIONS","procedure":"remove route/allowlist","maximum_execution_time":"5m","expected_state":"DENY_BY_DEFAULT","verification_query":"connection denied","recovery_criteria":"route reapproved","escalation":"PRIVACY_SECURITY","evidence":"infrastructure path unresolved","drill_status":"BLOCKED_EXTERNAL_DEPENDENCY"}
+  ]
+}

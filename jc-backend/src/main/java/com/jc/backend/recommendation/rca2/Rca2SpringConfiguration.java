@@ -39,8 +39,7 @@ public class Rca2SpringConfiguration {
     @Bean Rca2IdentityPolicy rca2IdentityPolicy(Environment environment) {
         String raw = environment.getProperty("app.recommendation.rca2.test-account-hashes", "");
         Set<String> hashes = raw.isBlank() ? Set.of() : Arrays.stream(raw.split(","))
-                .map(String::trim)
-                .filter(value -> value.matches("[0-9a-f]{64}"))
+                .map(String::trim).filter(value -> value.matches("[0-9a-f]{64}"))
                 .collect(Collectors.toUnmodifiableSet());
         return new Rca2IdentityPolicy(hashes, Set.of("rca2-post-response-hook", "rca2-contract-test"));
     }
@@ -63,26 +62,16 @@ public class Rca2SpringConfiguration {
     @Bean Rca2WorkloadCredentialProvider rca2WorkloadCredentialProvider() {
         return Rca2WorkloadCredentialProvider.unavailable();
     }
-
     @Bean Rca2TestAccountAllowlist rca2TestAccountAllowlist() { return new Rca2TestAccountAllowlist(); }
-
-    @Bean Rca2TestAccountAllowlist.Provider rca2TestAccountAllowlistProvider() {
-        return Rca2TestAccountAllowlist.unavailable();
-    }
-
+    @Bean Rca2TestAccountAllowlist.Provider rca2TestAccountAllowlistProvider() { return Rca2TestAccountAllowlist.unavailable(); }
     @Bean Rca2StableHashCohortSelector rca2StableHashCohortSelector(Rca2Op1Configuration configuration) {
-        return new Rca2StableHashCohortSelector(configuration.cohortSaltVersion(),
-                configuration.cohortSaltMaterialHash());
+        return new Rca2StableHashCohortSelector(configuration.cohortSaltVersion(), configuration.cohortSaltMaterialHash());
     }
 
     @Bean Rca2CandidateSourceDecision rca2CandidateSourceDecision(Rca2Op1Configuration configuration) {
         Rca2CandidateSourceDecision.Protocol protocol;
-        try {
-            protocol = Rca2CandidateSourceDecision.Protocol.valueOf(configuration.candidateProtocol()
-                    .toUpperCase(Locale.ROOT));
-        } catch (IllegalArgumentException exception) {
-            protocol = Rca2CandidateSourceDecision.Protocol.UNRESOLVED;
-        }
+        try { protocol = Rca2CandidateSourceDecision.Protocol.valueOf(configuration.candidateProtocol().toUpperCase(Locale.ROOT)); }
+        catch (IllegalArgumentException exception) { protocol = Rca2CandidateSourceDecision.Protocol.UNRESOLVED; }
         if (configuration.candidateSourceResolved() && protocol == Rca2CandidateSourceDecision.Protocol.UNRESOLVED) {
             throw new IllegalArgumentException("candidate protocol is unsupported");
         }
@@ -92,34 +81,27 @@ public class Rca2SpringConfiguration {
 
     @Bean(destroyMethod = "close") Rca2BoundedExecutor rca2BoundedExecutor() { return new Rca2BoundedExecutor(); }
     @Bean Rca2Comparator rca2Comparator() { return new Rca2Comparator(); }
-    @Bean Rca2Metrics rca2Metrics(MeterRegistry registry) { return new Rca2Metrics(registry); }
+    @Bean Rca2Metrics rca2Metrics(MeterRegistry registry, Rca2BoundedExecutor executor, Rca2KillSwitch killSwitch) {
+        var metrics = new Rca2Metrics(registry);
+        metrics.bindRuntime(executor, killSwitch);
+        return metrics;
+    }
     @Bean Rca2Redaction rca2Redaction() { return new Rca2Redaction(); }
     @Bean Rca2CandidateAdapter rca2CandidateAdapter() { return Rca2CandidateAdapter.isolatedContractOnly(); }
 
-    @Bean Rca2EnvironmentAccessGate rca2EnvironmentAccessGate(
-            Rca2Op1Configuration configuration,
-            Rca2ShadowEndpointPolicy endpointPolicy,
-            Rca2WorkloadCredentialProvider credentialProvider,
-            Rca2TestAccountAllowlist allowlist,
-            Rca2TestAccountAllowlist.Provider allowlistProvider,
-            Rca2StableHashCohortSelector cohortSelector,
-            Rca2CandidateSourceDecision candidateSource,
+    @Bean Rca2EnvironmentAccessGate rca2EnvironmentAccessGate(Rca2Op1Configuration configuration,
+            Rca2ShadowEndpointPolicy endpointPolicy, Rca2WorkloadCredentialProvider credentialProvider,
+            Rca2TestAccountAllowlist allowlist, Rca2TestAccountAllowlist.Provider allowlistProvider,
+            Rca2StableHashCohortSelector cohortSelector, Rca2CandidateSourceDecision candidateSource,
             Rca2Metrics metrics) {
         return new Rca2EnvironmentAccessGate(configuration, endpointPolicy, credentialProvider, allowlist,
                 allowlistProvider, cohortSelector, candidateSource, metrics, false);
     }
 
-    @Bean Rca2RuntimeOrchestrator rca2RuntimeOrchestrator(
-            Clock rca2Clock,
-            Rca2FeatureFlagPolicy flags,
-            Rca2KillSwitch killSwitch,
-            Rca2IdentityPolicy identityPolicy,
-            Rca2BoundedExecutor executor,
-            Rca2CandidateAdapter adapter,
-            Rca2Comparator comparator,
-            Rca2Metrics metrics,
-            Rca2Redaction redaction,
-            Rca2EnvironmentAccessGate environmentAccessGate) {
+    @Bean Rca2RuntimeOrchestrator rca2RuntimeOrchestrator(Clock rca2Clock, Rca2FeatureFlagPolicy flags,
+            Rca2KillSwitch killSwitch, Rca2IdentityPolicy identityPolicy, Rca2BoundedExecutor executor,
+            Rca2CandidateAdapter adapter, Rca2Comparator comparator, Rca2Metrics metrics,
+            Rca2Redaction redaction, Rca2EnvironmentAccessGate environmentAccessGate) {
         var breakers = new EnumMap<Rca2RuntimeContracts.Lane, Rca2CircuitBreaker>(Rca2RuntimeContracts.Lane.class);
         breakers.put(Rca2RuntimeContracts.Lane.P1, Rca2CircuitBreaker.system());
         breakers.put(Rca2RuntimeContracts.Lane.P2, Rca2CircuitBreaker.system());
@@ -127,8 +109,8 @@ public class Rca2SpringConfiguration {
                 adapter, comparator, metrics, redaction, new Rca2Redaction.StructuredLogSink(), environmentAccessGate);
     }
 
-    @Bean Rca2RequestRegistrar rca2RequestRegistrar(
-            ObjectMapper objectMapper, Clock rca2Clock, Rca2IdentityPolicy identityPolicy) {
+    @Bean Rca2RequestRegistrar rca2RequestRegistrar(ObjectMapper objectMapper, Clock rca2Clock,
+            Rca2IdentityPolicy identityPolicy) {
         return new Rca2RequestRegistrar(objectMapper, rca2Clock, identityPolicy);
     }
 

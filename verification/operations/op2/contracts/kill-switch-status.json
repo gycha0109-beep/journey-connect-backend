@@ -1,0 +1,22 @@
+{
+  "work_start_sha": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "source_op1_exact_head": "6c89e78e32f54a1f830d0c84db07a01de951e39c",
+  "source_op1_merge_commit": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "artifact_version": "op2-rca2-stage1-observability-safety-v1",
+  "status": "APPLICATION_CONTROLS_VERIFIED",
+  "owner": "OPERATIONS",
+  "updated_at": "2026-07-27T12:00:00Z",
+  "feature_flag_default_off": true,
+  "lane_kill_switch": "PASS",
+  "global_shadow_disable": "PASS",
+  "candidate_invocation_blocked": "PASS",
+  "queued_task_cancellation": "PASS",
+  "late_result_discard": "PASS",
+  "in_flight_timeout": "PASS",
+  "fallback_keeps_primary": "PASS",
+  "primary_response_unchanged": "PASS",
+  "automatic_restart_or_ramp": "FORBIDDEN",
+  "kill_metric_and_audit_contract": "PASS",
+  "restart_safe_default": "PASS",
+  "production_or_primary_path_interruption": "FORBIDDEN"
+}

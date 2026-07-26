@@ -1,0 +1,10 @@
+{
+  "work_start_sha":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","source_op1_exact_head":"6c89e78e32f54a1f830d0c84db07a01de951e39c","source_op1_merge_commit":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","artifact_version":"op2-rca2-stage1-observability-safety-v1","status":"SKELETON_READY_NOT_APPROVED_NOT_EXECUTED","owner":"OPERATIONS","updated_at":"2026-07-27T12:00:00Z",
+  "execution_allowed_through_step":11,
+  "steps":[
+    "confirm exact deployment/version","confirm external endpoint","confirm credential validity","confirm allowlist","confirm candidate source/version","confirm metric readiness","confirm dashboard","confirm critical alert route","confirm rollback owner on standby","confirm six-role approvals","confirm effective traffic 0","approve manual 1 percent enablement","execute enablement","immediately inspect metrics","observe 30 minutes and 100 executions","exit or rollback"
+  ],
+  "step_12_and_later":"FORBIDDEN_IN_OP2",
+  "manual_enablement_approved":false,
+  "manual_control_path_ready":false
+}
