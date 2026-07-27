@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse, hashlib, json, os, re, subprocess, sys, urllib.request
 from pathlib import Path
 
-ROOT=Path(__file__).resolve().parents[3]
+ROOT=Path(os.getenv('GITHUB_WORKSPACE') or Path(__file__).resolve().parents[3]).resolve()
 ART=ROOT/'verification/admin/adm0/adm0-artifacts.json'
 DOC=ROOT/'docs/admin/adm0/ADM-0-ADMIN-CAPABILITY-SCHEMA-INTEGRATION-BASELINE.md'
 ENTRY=ROOT/'docs/admin/adm0/ADM-0-ENTRY-VERIFICATION.md'
@@ -32,8 +32,11 @@ def expect(condition, message):
     if not condition: raise Failure(message)
 
 def load():
-    expect(ART.is_file(),'artifact bundle missing')
-    return json.loads(ART.read_text(encoding='utf-8'))
+    expect(ART.is_file(),f'artifact bundle missing: {ART}')
+    try:
+        return json.loads(ART.read_text(encoding='utf-8'))
+    except json.JSONDecodeError as exc:
+        raise Failure(f'artifact JSON invalid at line {exc.lineno}, column {exc.colno}: {exc.msg}') from exc
 
 def http_json(url):
     req=urllib.request.Request(url,headers={'Accept':'application/vnd.github+json','User-Agent':'jc-adm0-verifier'})
@@ -48,14 +51,14 @@ def http_text(url):
         return response.read().decode('utf-8')
 
 def changed_files():
-    base=os.getenv('GITHUB_BASE_SHA')
-    head=os.getenv('GITHUB_SHA')
+    base=os.getenv('ADM0_BASE_SHA')
+    head=os.getenv('ADM0_HEAD_SHA')
     if not base or not head: return []
     out=subprocess.check_output(['git','diff','--name-only',base,head],cwd=ROOT,text=True)
     return [line for line in out.splitlines() if line]
 
 def check_head():
-    expected=os.getenv('GITHUB_SHA')
+    expected=os.getenv('ADM0_HEAD_SHA')
     if expected:
         actual=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
         expect(actual==expected,f'checkout is not exact PR head: {actual} != {expected}')
@@ -147,14 +150,16 @@ def main():
     selected=list(checks) if args.check=='all' else [args.check]
     for name in selected:
         expect(name in checks,f'unknown check: {name}')
+        print(f'ADM-0 check start: {name}', flush=True)
         checks[name]()
-    evidence={'schema_version':'adm0-verification-evidence-v1','status':'PASS','checked':selected,'head':os.getenv('GITHUB_SHA') or 'LOCAL_OFFLINE','artifact_sha256':hashlib.sha256(ART.read_bytes()).hexdigest()}
+        print(f'ADM-0 check pass: {name}', flush=True)
+    evidence={'schema_version':'adm0-verification-evidence-v1','status':'PASS','checked':selected,'head':os.getenv('ADM0_HEAD_SHA') or 'LOCAL_OFFLINE','artifact_sha256':hashlib.sha256(ART.read_bytes()).hexdigest()}
     EVIDENCE.parent.mkdir(parents=True,exist_ok=True)
     EVIDENCE.write_text(json.dumps(evidence,indent=2)+'\n',encoding='utf-8')
     print(json.dumps(evidence))
 
 if __name__=='__main__':
     try: main()
-    except (Failure,Exception) as exc:
+    except Exception as exc:
         print(f'ADM-0 verification failed: {exc}',file=sys.stderr)
         sys.exit(1)
