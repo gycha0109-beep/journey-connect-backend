@@ -31,6 +31,7 @@ public final class Rca2Metrics {
     private static final Set<String> HISTOGRAMS = Set.of("shadow_latency_ms", "primary_latency_ms", "shadow_task_age_ms", "checkpoint_lag_ms");
     private static final Set<String> GAUGES = Set.of("executor_active_count", "executor_queue_depth");
     private final Map<String, AtomicLong> values = new ConcurrentHashMap<>();
+    private final Map<String, AtomicLong> sampleCounts = new ConcurrentHashMap<>();
     private final MeterRegistry registry;
 
     public Rca2Metrics(MeterRegistry registry) { this.registry = registry; }
@@ -41,6 +42,7 @@ public final class Rca2Metrics {
         require(metric, MetricKind.COUNTER);
         String key = key(metric, lane, resultClass, breakerState);
         values.computeIfAbsent(key, ignored -> new AtomicLong()).incrementAndGet();
+        sampleCounts.computeIfAbsent(key, ignored -> new AtomicLong()).incrementAndGet();
         if (registry != null) registry.counter("rca2." + metric, tags(lane, resultClass, breakerState)).increment();
     }
 
@@ -51,6 +53,7 @@ public final class Rca2Metrics {
         String key = key(metric, lane, resultClass, breakerState);
         AtomicLong holder = values.computeIfAbsent(key, ignored -> new AtomicLong());
         holder.set(value);
+        sampleCounts.computeIfAbsent(key, ignored -> new AtomicLong()).incrementAndGet();
         if (registry != null) {
             Gauge.builder("rca2." + metric, holder, AtomicLong::get)
                     .tags(tags(lane, resultClass, breakerState))
@@ -62,7 +65,9 @@ public final class Rca2Metrics {
             Rca2RuntimeContracts.BreakerState breakerState, long millis) {
         require(metric, MetricKind.HISTOGRAM);
         if (millis < 0) throw new IllegalArgumentException("millis must be nonnegative");
-        values.computeIfAbsent(key(metric, lane, resultClass, breakerState), ignored -> new AtomicLong()).addAndGet(millis);
+        String key = key(metric, lane, resultClass, breakerState);
+        values.computeIfAbsent(key, ignored -> new AtomicLong()).addAndGet(millis);
+        sampleCounts.computeIfAbsent(key, ignored -> new AtomicLong()).incrementAndGet();
         if (registry != null) Timer.builder("rca2." + metric)
                 .tags(tags(lane, resultClass, breakerState))
                 .serviceLevelObjectives(Duration.ofMillis(10), Duration.ofMillis(25), Duration.ofMillis(50),
@@ -72,6 +77,11 @@ public final class Rca2Metrics {
 
     public long total(String metric) {
         return values.entrySet().stream().filter(entry -> entry.getKey().startsWith(metric + "|"))
+                .mapToLong(entry -> entry.getValue().get()).sum();
+    }
+
+    public long sampleCount(String metric) {
+        return sampleCounts.entrySet().stream().filter(entry -> entry.getKey().startsWith(metric + "|"))
                 .mapToLong(entry -> entry.getValue().get()).sum();
     }
 
