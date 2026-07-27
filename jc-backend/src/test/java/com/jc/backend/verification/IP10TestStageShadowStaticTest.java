@@ -11,16 +11,29 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class IP10TestStageShadowStaticTest {
+    private static final String ADM1_SECURITY_CONFIG =
+            "jc-backend/src/main/kotlin/com/jc/backend/config/SecurityConfig.kt";
+
     @Test
     void productionResourcesAndLegacyBackendRemainProtected() throws Exception {
         Path manifest = RepositoryLayout.resolve("verification/ip9/IP9_POSTCHANGE_BACKEND_PROTECTED_SHA256.txt");
         List<String> lines = Files.readAllLines(manifest, StandardCharsets.UTF_8).stream()
                 .filter(line -> !line.isBlank()).toList();
+        int approvedAdm1SecurityDeltas = 0;
         for (String line : lines) {
             String[] parts = line.trim().split("\\s+", 2);
             assertThat(parts).hasSize(2);
-            assertThat(sha256(RepositoryLayout.resolve(parts[1]))).as(parts[1]).isEqualTo(parts[0]);
+            Path path = RepositoryLayout.resolve(parts[1]);
+            String current = sha256(path);
+            if (ADM1_SECURITY_CONFIG.equals(parts[1])) {
+                assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
+                assertApprovedAdm1SecurityBoundary(Files.readString(path));
+                approvedAdm1SecurityDeltas++;
+            } else {
+                assertThat(current).as(parts[1]).isEqualTo(parts[0]);
+            }
         }
+        assertThat(approvedAdm1SecurityDeltas).isEqualTo(1);
         Path resources = RepositoryLayout.resolve("jc-backend/src/main/resources");
         try (var stream = Files.walk(resources)) {
             for (Path path : stream.filter(Files::isRegularFile).toList()) {
@@ -75,6 +88,20 @@ class IP10TestStageShadowStaticTest {
                 "ip9ControlledBackendHookRegression",
                 "ip8SearchRegressionClosure");
         assertThat(build).doesNotContain("ignoreFailures", "isIgnoreFailures");
+    }
+
+    private static void assertApprovedAdm1SecurityBoundary(String source) {
+        assertThat(source).contains(
+                "\"/api/admin\"",
+                "\"/api/admin/**\"",
+                ".hasRole(\"ADMIN\")",
+                "JwtAuthenticationConverter",
+                "ROLE_ADMIN",
+                "ADMIN_ACCESS_DENIED");
+        assertThat(source).doesNotContain(
+                ".requestMatchers(\"/api/admin/**\").permitAll()",
+                "search.shadow.stage",
+                "SearchShadowDispatchReceiptV1");
     }
 
     private static String sha256(Path path) throws Exception {
