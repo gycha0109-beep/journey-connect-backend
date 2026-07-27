@@ -1,56 +1,53 @@
 {
-  "artifact_version": "sc-op3-cost-and-teardown-contract-v1",
-  "status": "BLOCKED_REQUIRED_INPUTS",
-  "billing_spend_authorized": false,
+  "artifact_version": "sc-op3-cost-and-teardown-contract-v2-personal-spend-forbidden",
+  "status": "PAID_CLOUD_USAGE_FORBIDDEN",
+  "final_deployment_platform": "UNDECIDED",
+  "cloud_provisioning_required_now": false,
+  "cloud_provisioning_status": "DEFERRED_PLATFORM_UNDECIDED",
+  "personal_cloud_spend_allowed": false,
+  "paid_cloud_usage": "FORBIDDEN",
+  "cost_ceiling": 0,
+  "billing_account_linkage_authorized": false,
   "cloud_resource_creation_authorized": false,
-  "billing_resource_owner": "UNASSIGNED",
-  "cost_ceiling": "UNASSIGNED",
-  "budget_alert_status": "REQUIRED_NOT_CONFIGURED",
-  "budget_alert_is_hard_spend_cap": false,
-  "experiment_end_date": "UNASSIGNED",
-  "teardown_deadline": "UNASSIGNED",
-  "teardown_operator": "UNASSIGNED",
-  "teardown_reviewer": "UNASSIGNED",
-  "teardown_verification": "NOT_EXECUTED",
-  "allowed_after_separate_authorization": [
-    "ONE_DEDICATED_NONPRODUCTION_GCP_PROJECT_OR_APPROVED_EXISTING_DEDICATED_PROJECT",
-    "REQUIRED_APIS_ONLY",
-    "ONE_CLOUD_RUN_SERVICE_WITH_ZERO_TRAFFIC_REVISION",
-    "MINIMUM_REQUIRED_WORKLOAD_IDENTITY_POOL_PROVIDER_AND_PRINCIPALS",
-    "ONE_DEFAULT_DENY_ALLOWLIST_STORE",
-    "ONE_CLOUD_MONITORING_DASHBOARD_AND_REQUIRED_ALERT_POLICIES",
-    "ONE_GCP_CLOUD_STORAGE_EVIDENCE_BUCKET_WITH_UNLOCKED_RETENTION_POLICY",
-    "ONE_BUDGET_ALERT"
-  ],
-  "forbidden_resources": [
-    "PRODUCTION_PROJECT_OR_ROUTE",
-    "PUBLIC_UNAUTHENTICATED_CLOUD_RUN_ACCESS",
-    "CLOUD_SQL_OR_OTHER_DATABASE_ROUTE",
-    "VPC_CONNECTOR_OR_NAT_WITHOUT_SEPARATE_APPROVAL",
-    "LOAD_BALANCER_OR_CUSTOM_DOMAIN",
-    "GPU_OR_ALWAYS_ON_COMPUTE",
-    "MINIMUM_INSTANCES_ABOVE_ZERO",
-    "INSTANCE_BASED_BILLING",
-    "UNBOUNDED_AUTOSCALING",
-    "LONG_LIVED_SERVICE_ACCOUNT_KEY",
-    "RETENTION_POLICY_LOCK_WITHOUT_SEPARATE_APPROVAL",
-    "K_BEAUTY_OR_EXISTING_SUPABASE_RESOURCE_REPURPOSING"
-  ],
-  "cloud_run_cost_controls": {
-    "billing_mode": "REQUEST_BASED_REQUIRED",
-    "min_instances": 0,
-    "max_instances": "REQUIRED_INPUT",
-    "traffic_percent": 0,
-    "tagged_revision_cost_review": "REQUIRED",
-    "automatic_rollout": "FORBIDDEN"
+  "billing_spend_authorized": false,
+  "iam_mutation_authorized": false,
+  "gcp_resource_creation_authorized": false,
+  "gcp_billing_spend_authorized": false,
+  "aws_resource_creation_authorized": false,
+  "aws_billing_spend_authorized": false,
+  "academy_funded_exception": {
+    "status": "NOT_APPROVED",
+    "reassessment_allowed": true,
+    "conditions": [
+      "ACADEMY_ACCOUNT_OR_FREE_CREDIT_CONFIRMED",
+      "NO_PERSONAL_PAYMENT_METHOD_OR_OVERAGE_EXPOSURE",
+      "SERVICE_SCOPE_AND_QUOTAS_CONFIRMED",
+      "DEPLOYMENT_DURATION_CONFIRMED",
+      "SHUTDOWN_AND_DELETION_POLICY_CONFIRMED",
+      "SEPARATE_SC_AND_USER_APPROVAL"
+    ]
   },
-  "evidence_bucket_lifecycle": {
-    "retention_period_days": "UNASSIGNED",
-    "retention_policy": "DESIGN_APPROVED_NOT_PROVISIONED",
-    "retention_lock": "NOT_AUTHORIZED",
-    "separate_owner": "UNASSIGNED",
-    "project_deletion_impact_review": "REQUIRED",
-    "lien_impact_review": "REQUIRED",
-    "deletion_after_retention": "SEPARATE_APPROVAL_REQUIRED"
+  "platform_selection_cost_inputs": {
+    "academy_aws_service_scope": "PENDING_CURRICULUM_CONFIRMATION",
+    "rds_scope": "PENDING_CURRICULUM_CONFIRMATION",
+    "academy_account_or_credit": "PENDING_CURRICULUM_CONFIRMATION",
+    "personal_payment_method_required": "PENDING_CURRICULUM_CONFIRMATION",
+    "personal_cost_exposure": "PENDING_CURRICULUM_CONFIRMATION",
+    "deployment_duration": "PENDING_CURRICULUM_CONFIRMATION",
+    "resource_teardown_policy": "PENDING_CURRICULUM_CONFIRMATION"
+  },
+  "teardown": {
+    "required_now": false,
+    "status": "DEFERRED_UNTIL_PLATFORM_SELECTION",
+    "operator": "DEFERRED_UNTIL_EXECUTION",
+    "independent_reviewer": "DEFERRED_UNTIL_EXECUTION",
+    "deadline": "DEFERRED_UNTIL_PLATFORM_SELECTION",
+    "verification": "NOT_EXECUTED_NO_RESOURCES_EXIST"
+  },
+  "evidence_store": {
+    "platform_specific_store": "UNDECIDED",
+    "gcp_cloud_storage_model": "REFERENCE_ONLY",
+    "retention_policy": "DEFERRED_UNTIL_PLATFORM_SELECTION",
+    "retention_lock": "NOT_AUTHORIZED"
   }
 }
