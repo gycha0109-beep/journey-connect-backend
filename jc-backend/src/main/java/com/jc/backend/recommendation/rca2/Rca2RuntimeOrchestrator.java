@@ -108,6 +108,7 @@ public final class Rca2RuntimeOrchestrator {
         boolean accepted = executor.submit(
                 () -> adapter.compute(request, Rca2RuntimeContracts.Deadline.approved()),
                 completion -> complete(request, completion, breaker));
+        updateExecutorGauges(lane, breaker.state(), executor.activeCount(), executor.queueDepth());
         if (!accepted) {
             metrics.increment("shadow_queue_rejected_count", lane, "queue_rejected", breaker.state());
             return Rca2RuntimeContracts.SubmissionStatus.QUEUE_REJECTED;
@@ -120,14 +121,23 @@ public final class Rca2RuntimeOrchestrator {
             Rca2BoundedExecutor.Completion<Rca2RuntimeContracts.CandidateResult> completion,
             Rca2CircuitBreaker breaker) {
         var lane = request.primary().lane();
+        metrics.recordMillis("shadow_task_age_ms", lane, completion.status().name().toLowerCase(), breaker.state(),
+                completion.queueAgeMillis());
+        updateExecutorGauges(lane, breaker.state(), Math.max(0, executor.activeCount() - 1), executor.queueDepth());
         metrics.recordMillis("shadow_latency_ms", lane, completion.status().name().toLowerCase(), breaker.state(),
                 completion.elapsedMillis());
         switch (completion.status()) {
             case TIMEOUT -> {
                 metrics.increment("shadow_timeout_count", lane, "timeout", breaker.state());
+                metrics.increment("shadow_cancelled_count", lane, "timeout_cancelled", breaker.state());
                 breaker.failure(true);
             }
-            case EXCEPTION, CANCELLED -> {
+            case CANCELLED -> {
+                metrics.increment("shadow_exception_count", lane, "cancelled", breaker.state());
+                metrics.increment("shadow_cancelled_count", lane, "cancelled", breaker.state());
+                breaker.failure(false);
+            }
+            case EXCEPTION -> {
                 metrics.increment("shadow_exception_count", lane, "exception", breaker.state());
                 breaker.failure(false);
             }
@@ -145,6 +155,8 @@ public final class Rca2RuntimeOrchestrator {
             Rca2CircuitBreaker breaker) {
         var lane = request.primary().lane();
         var result = comparator.compare(request.primary(), candidate);
+        metrics.recordMillis("checkpoint_lag_ms", lane, result.classification().name().toLowerCase(), breaker.state(),
+                result.measuredLagMillis());
         if (result.classification() == Rca2RuntimeContracts.ComparisonClass.CHECKPOINT_MISMATCH) {
             metrics.increment("checkpoint_mismatch_count", lane, "checkpoint_mismatch", breaker.state());
         } else if (result.classification() == Rca2RuntimeContracts.ComparisonClass.LINEAGE_MISMATCH) {
@@ -173,6 +185,12 @@ public final class Rca2RuntimeOrchestrator {
         }
         metrics.increment("shadow_success_count", lane, result.classification().name().toLowerCase(), breaker.state());
         breaker.success();
+    }
+
+    private void updateExecutorGauges(Rca2RuntimeContracts.Lane lane,
+            Rca2RuntimeContracts.BreakerState breakerState, int activeCount, int queueDepth) {
+        metrics.setGauge("executor_active_count", lane, "executor", breakerState, activeCount);
+        metrics.setGauge("executor_queue_depth", lane, "executor", breakerState, queueDepth);
     }
 
     private static boolean sample(String hash, int percent) {

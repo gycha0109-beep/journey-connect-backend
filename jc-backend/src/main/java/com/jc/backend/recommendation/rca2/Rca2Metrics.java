@@ -1,5 +1,6 @@
 package com.jc.backend.recommendation.rca2;
 
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import java.time.Duration;
@@ -22,9 +23,15 @@ public final class Rca2Metrics {
         "shadow_allowlist_denied_total", "shadow_cohort_selected_total",
         "shadow_cohort_skipped_total", "shadow_candidate_invocation_blocked_total"
     };
+    public static final String[] OP2_BACKLOG = {
+        "traffic_selected_count", "traffic_skipped_count", "executor_active_count", "executor_queue_depth",
+        "shadow_task_age_ms", "shadow_cancelled_count", "checkpoint_lag_ms"
+    };
     public static final Set<String> ALLOWED_LABELS = Set.of("environment", "lane", "result_class", "breaker_state");
-    private static final Set<String> HISTOGRAMS = Set.of("shadow_latency_ms", "primary_latency_ms");
-    private final Map<String, AtomicLong> counters = new ConcurrentHashMap<>();
+    private static final Set<String> HISTOGRAMS = Set.of("shadow_latency_ms", "primary_latency_ms", "shadow_task_age_ms", "checkpoint_lag_ms");
+    private static final Set<String> GAUGES = Set.of("executor_active_count", "executor_queue_depth");
+    private final Map<String, AtomicLong> values = new ConcurrentHashMap<>();
+    private final Map<String, AtomicLong> sampleCounts = new ConcurrentHashMap<>();
     private final MeterRegistry registry;
 
     public Rca2Metrics(MeterRegistry registry) { this.registry = registry; }
@@ -32,18 +39,35 @@ public final class Rca2Metrics {
 
     public void increment(String metric, Rca2RuntimeContracts.Lane lane, String resultClass,
             Rca2RuntimeContracts.BreakerState breakerState) {
-        require(metric, false);
+        require(metric, MetricKind.COUNTER);
         String key = key(metric, lane, resultClass, breakerState);
-        counters.computeIfAbsent(key, ignored -> new AtomicLong()).incrementAndGet();
+        values.computeIfAbsent(key, ignored -> new AtomicLong()).incrementAndGet();
+        sampleCounts.computeIfAbsent(key, ignored -> new AtomicLong()).incrementAndGet();
         if (registry != null) registry.counter("rca2." + metric, tags(lane, resultClass, breakerState)).increment();
+    }
+
+    public void setGauge(String metric, Rca2RuntimeContracts.Lane lane, String resultClass,
+            Rca2RuntimeContracts.BreakerState breakerState, long value) {
+        require(metric, MetricKind.GAUGE);
+        if (value < 0) throw new IllegalArgumentException("gauge must be nonnegative");
+        String key = key(metric, lane, resultClass, breakerState);
+        AtomicLong holder = values.computeIfAbsent(key, ignored -> new AtomicLong());
+        holder.set(value);
+        sampleCounts.computeIfAbsent(key, ignored -> new AtomicLong()).incrementAndGet();
+        if (registry != null) {
+            Gauge.builder("rca2." + metric, holder, AtomicLong::get)
+                    .tags(tags(lane, resultClass, breakerState))
+                    .register(registry);
+        }
     }
 
     public void recordMillis(String metric, Rca2RuntimeContracts.Lane lane, String resultClass,
             Rca2RuntimeContracts.BreakerState breakerState, long millis) {
-        require(metric, true);
+        require(metric, MetricKind.HISTOGRAM);
         if (millis < 0) throw new IllegalArgumentException("millis must be nonnegative");
-        counters.computeIfAbsent(key(metric, lane, resultClass, breakerState), ignored -> new AtomicLong())
-                .addAndGet(millis);
+        String key = key(metric, lane, resultClass, breakerState);
+        values.computeIfAbsent(key, ignored -> new AtomicLong()).addAndGet(millis);
+        sampleCounts.computeIfAbsent(key, ignored -> new AtomicLong()).incrementAndGet();
         if (registry != null) Timer.builder("rca2." + metric)
                 .tags(tags(lane, resultClass, breakerState))
                 .serviceLevelObjectives(Duration.ofMillis(10), Duration.ofMillis(25), Duration.ofMillis(50),
@@ -52,26 +76,42 @@ public final class Rca2Metrics {
     }
 
     public long total(String metric) {
-        return counters.entrySet().stream().filter(entry -> entry.getKey().startsWith(metric + "|"))
+        return values.entrySet().stream().filter(entry -> entry.getKey().startsWith(metric + "|"))
+                .mapToLong(entry -> entry.getValue().get()).sum();
+    }
+
+    public long sampleCount(String metric) {
+        return sampleCounts.entrySet().stream().filter(entry -> entry.getKey().startsWith(metric + "|"))
                 .mapToLong(entry -> entry.getValue().get()).sum();
     }
 
     public Map<String, String> definitions() {
         Map<String, String> definitions = new LinkedHashMap<>();
-        for (String metric : REQUIRED) definitions.put(metric, HISTOGRAMS.contains(metric) ? "HISTOGRAM" : "COUNTER");
+        for (String metric : REQUIRED) definitions.put(metric, kind(metric).name());
+        for (String metric : OP2_BACKLOG) definitions.put(metric, kind(metric).name());
         definitions.put("shadow_write_attempt_blocked_count", "COUNTER");
         definitions.put("shadow_event_attempt_blocked_count", "COUNTER");
         definitions.put("shadow_response_mutation_blocked_count", "COUNTER");
         return Map.copyOf(definitions);
     }
 
-    private static void require(String metric, boolean histogram) {
-        boolean required = java.util.Arrays.asList(REQUIRED).contains(metric)
+    private static void require(String metric, MetricKind expected) {
+        if (!registered(metric)) throw new IllegalArgumentException("unregistered metric: " + metric);
+        if (kind(metric) != expected) throw new IllegalArgumentException("metric type mismatch: " + metric);
+    }
+
+    private static boolean registered(String metric) {
+        return java.util.Arrays.asList(REQUIRED).contains(metric)
+                || java.util.Arrays.asList(OP2_BACKLOG).contains(metric)
                 || metric.equals("shadow_write_attempt_blocked_count")
                 || metric.equals("shadow_event_attempt_blocked_count")
                 || metric.equals("shadow_response_mutation_blocked_count");
-        if (!required) throw new IllegalArgumentException("unregistered metric: " + metric);
-        if (histogram != HISTOGRAMS.contains(metric)) throw new IllegalArgumentException("metric type mismatch: " + metric);
+    }
+
+    private static MetricKind kind(String metric) {
+        if (HISTOGRAMS.contains(metric)) return MetricKind.HISTOGRAM;
+        if (GAUGES.contains(metric)) return MetricKind.GAUGE;
+        return MetricKind.COUNTER;
     }
 
     private static String key(String metric, Rca2RuntimeContracts.Lane lane, String resultClass,
@@ -89,4 +129,6 @@ public final class Rca2Metrics {
         if (value == null || !value.matches("[a-z0-9_]{1,40}")) return "unknown";
         return value;
     }
+
+    private enum MetricKind { COUNTER, GAUGE, HISTOGRAM }
 }

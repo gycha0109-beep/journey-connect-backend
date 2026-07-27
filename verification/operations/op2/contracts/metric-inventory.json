@@ -1,0 +1,14 @@
+{
+  "work_start_sha": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "source_op1_exact_head": "6c89e78e32f54a1f830d0c84db07a01de951e39c",
+  "source_op1_merge_commit": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "artifact_version": "metric-inventory-v1",
+  "status": "PASS",
+  "owner": "RELIABILITY",
+  "updated_at": "2026-07-27T00:30:00Z",
+  "exact_head_binding": "GITHUB_SHA",
+  "authoritative_count": 27,
+  "authoritative_metrics": ["shadow_request_count","shadow_execution_count","shadow_success_count","shadow_timeout_count","shadow_exception_count","shadow_circuit_open_count","shadow_queue_rejected_count","shadow_late_result_discard_count","shadow_latency_ms","primary_latency_ms","p1_result_mismatch_count","p2_result_mismatch_count","checkpoint_mismatch_count","lineage_mismatch_count","stale_candidate_count","identity_blocked_count","redaction_failure_count","shadow_endpoint_validation_total","shadow_endpoint_blocked_total","shadow_credential_unavailable_total","shadow_credential_refresh_total","shadow_credential_refresh_failure_total","shadow_allowlist_lookup_total","shadow_allowlist_denied_total","shadow_cohort_selected_total","shadow_cohort_skipped_total","shadow_candidate_invocation_blocked_total"],
+  "p1_p2_mismatch_separate": true,
+  "zero_tolerance_critical_preserved": true
+}

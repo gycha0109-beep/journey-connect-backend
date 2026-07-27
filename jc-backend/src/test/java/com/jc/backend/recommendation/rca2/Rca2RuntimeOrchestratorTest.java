@@ -55,6 +55,41 @@ class Rca2RuntimeOrchestratorTest {
         assertThat(after).isEqualTo(before);
     }
 
+    @Test void op2ExecutorTaskCancellationAndCheckpointMetricsAreWired() throws Exception {
+        Rca2CandidateAdapter laggedCandidate = (request, deadline) -> {
+            var base = candidate(request, request.primary().digest(), false, false);
+            var checkpoint = new Rca2RuntimeContracts.Checkpoint(
+                    request.primary().checkpoint().opaqueRef(),
+                    request.primary().checkpoint().monotonicSequence(),
+                    NOW.minusMillis(25),
+                    request.primary().checkpoint().sourceVersion(),
+                    request.primary().checkpoint().schemaVersion());
+            return new Rca2RuntimeContracts.CandidateResult(base.lane(), base.digest(), base.resultSize(),
+                    checkpoint, base.lineage(), false, false, false, base.declaredGaps(), base.exposureAuthority(),
+                    base.outcomeWindowSeconds(), base.engagementEvents(), base.fallbackSource(), true);
+        };
+        try (Fixture fixture = fixture(laggedCandidate)) {
+            assertThat(fixture.orchestrator.submitAfterResponseCommitted(request(Rca2RuntimeContracts.Lane.P1), true))
+                    .isEqualTo(Rca2RuntimeContracts.SubmissionStatus.ACCEPTED);
+            assertThat(fixture.executor.awaitIdle(Duration.ofSeconds(2))).isTrue();
+            assertThat(fixture.metrics.sampleCount("executor_active_count")).isGreaterThanOrEqualTo(2);
+            assertThat(fixture.metrics.sampleCount("executor_queue_depth")).isGreaterThanOrEqualTo(2);
+            assertThat(fixture.metrics.sampleCount("shadow_task_age_ms")).isEqualTo(1);
+            assertThat(fixture.metrics.sampleCount("checkpoint_lag_ms")).isEqualTo(1);
+            assertThat(fixture.metrics.total("checkpoint_lag_ms")).isEqualTo(25);
+        }
+        try (Fixture fixture = fixture((request, deadline) -> {
+            Thread.sleep(5_000L);
+            return candidate(request, request.primary().digest(), false, false);
+        })) {
+            assertThat(fixture.orchestrator.submitAfterResponseCommitted(request(Rca2RuntimeContracts.Lane.P1), true))
+                    .isEqualTo(Rca2RuntimeContracts.SubmissionStatus.ACCEPTED);
+            assertThat(fixture.executor.awaitIdle(Duration.ofSeconds(2))).isTrue();
+            assertThat(fixture.metrics.total("shadow_cancelled_count")).isEqualTo(1);
+            assertThat(fixture.metrics.total("shadow_timeout_count")).isEqualTo(1);
+        }
+    }
+
     @Test void responseMustBeCommittedGlobalAndLaneKillAndTrafficZeroPreventExecution() {
         try (Fixture fixture = fixture(adapterMatching())) {
             var request = request(Rca2RuntimeContracts.Lane.P1);
@@ -89,7 +124,7 @@ class Rca2RuntimeOrchestratorTest {
 
     @Test void metricsContainExactlyRequiredLowCardinalityInventory() {
         var metrics = Rca2Metrics.inMemory();
-        assertThat(metrics.definitions()).containsKeys(Rca2Metrics.REQUIRED);
+        assertThat(metrics.definitions()).containsKeys(Rca2Metrics.REQUIRED).containsKeys(Rca2Metrics.OP2_BACKLOG);
         assertThat(Rca2Metrics.ALLOWED_LABELS).containsExactlyInAnyOrder(
                 "environment", "lane", "result_class", "breaker_state");
     }

@@ -1,0 +1,201 @@
+name: OP-2 RCA-2 Stage 1 Observability and Safety CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'jc-backend/src/main/java/com/jc/backend/recommendation/rca2/**'
+      - 'jc-backend/src/test/java/com/jc/backend/recommendation/rca2/**'
+      - 'docs/platform/operations/op2/**'
+      - 'verification/operations/op2/**'
+      - '.github/workflows/op2-rca2-stage1-observability-safety-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: op2-observability-safety-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  EXPECTED_WORK_START_SHA: f17fc3e515264eefcf2ca2b113a0e5875bbde6ae
+  EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  authoritative_baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - run: python verification/operations/op2/run_op2_verification.py --section baseline
+
+  op1_continuity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - run: python verification/operations/op2/run_op2_verification.py --section inventory
+
+  application_compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - uses: actions/setup-java@v5
+        with: {distribution: temurin, java-version: '21'}
+      - uses: gradle/actions/setup-gradle@v6
+      - run: chmod +x jc-backend/gradlew && cd jc-backend && ./gradlew :compileJava
+
+  unit_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - uses: actions/setup-java@v5
+        with: {distribution: temurin, java-version: '21'}
+      - uses: gradle/actions/setup-gradle@v6
+      - run: chmod +x jc-backend/gradlew && cd jc-backend && ./gradlew :test --tests '*Rca2Op2MetricsTest'
+
+  integration_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - uses: actions/setup-java@v5
+        with: {distribution: temurin, java-version: '21'}
+      - uses: gradle/actions/setup-gradle@v6
+      - run: >-
+          chmod +x jc-backend/gradlew && cd jc-backend && ./gradlew :test
+          --tests '*Rca2RuntimeOrchestratorTest'
+          --tests '*Rca2BoundedExecutorTest'
+          --tests '*Rca2Op1EnvironmentAccessIntegrationTest'
+
+  metric_continuity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - run: python verification/operations/op2/run_op2_verification.py --section metrics
+
+  metric_instrumentation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - run: python verification/operations/op2/run_op2_verification.py --section metrics
+
+  metric_redaction:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - run: >-
+          python -c "import json;d=json.load(open('verification/operations/op2/contracts/metric-implementation-status.json'));
+          assert d['labels_bounded'];assert not d['raw_identity_label'];assert not d['token_label'];assert not d['full_endpoint_url_label']"
+
+  dashboard_contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - run: python verification/operations/op2/run_op2_verification.py --section dashboard-alerts
+
+  critical_alerts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - run: python verification/operations/op2/run_op2_verification.py --section dashboard-alerts
+
+  warning_alerts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - run: python verification/operations/op2/run_op2_verification.py --section dashboard-alerts
+
+  kill_switch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - uses: actions/setup-java@v5
+        with: {distribution: temurin, java-version: '21'}
+      - uses: gradle/actions/setup-gradle@v6
+      - run: chmod +x jc-backend/gradlew && cd jc-backend && ./gradlew :test --tests '*Rca2RuntimeOrchestratorTest'
+
+  rollback_levels:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - run: python verification/operations/op2/run_op2_verification.py --section rollback-gate
+
+  effective_zero_traffic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - run: python verification/operations/op2/run_op2_verification.py --section protection
+
+  runtime_side_effect_protection:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - uses: actions/setup-java@v5
+        with: {distribution: temurin, java-version: '21'}
+      - uses: gradle/actions/setup-gradle@v6
+      - run: chmod +x jc-backend/gradlew && cd jc-backend && ./gradlew :test --tests '*Rca2RuntimeOrchestratorTest'
+
+  historical_evidence_protection:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - run: python verification/operations/op2/run_op2_verification.py --section protection
+
+  sql_protection:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - run: python verification/operations/op2/run_op2_verification.py --section protection
+
+  independent_verifier:
+    needs:
+      - authoritative_baseline
+      - op1_continuity
+      - application_compile
+      - unit_tests
+      - integration_tests
+      - metric_continuity
+      - metric_instrumentation
+      - metric_redaction
+      - dashboard_contract
+      - critical_alerts
+      - warning_alerts
+      - kill_switch
+      - rollback_levels
+      - effective_zero_traffic
+      - runtime_side_effect_protection
+      - historical_evidence_protection
+      - sql_protection
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ env.EXACT_HEAD }}'}
+      - run: >-
+          python verification/operations/op2/run_op2_verification.py
+          --output verification/operations/op2/op2-exact-head-evidence.json
+          | tee op2-verification.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: op2-observability-safety-evidence
+          path: |
+            verification/operations/op2/op2-evidence.json
+            verification/operations/op2/op2-exact-head-evidence.json
+            verification/operations/op2/contracts/*.json
+            op2-verification.txt
+          retention-days: 90

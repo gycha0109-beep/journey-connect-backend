@@ -1,0 +1,25 @@
+{
+  "work_start_sha": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "source_op1_exact_head": "6c89e78e32f54a1f830d0c84db07a01de951e39c",
+  "source_op1_merge_commit": "f17fc3e515264eefcf2ca2b113a0e5875bbde6ae",
+  "artifact_version": "metric-implementation-status-v1",
+  "status": "APPLICATION_METRICS_READY",
+  "owner": "OPERATIONS",
+  "updated_at": "2026-07-27T00:30:00Z",
+  "exact_head_binding": "GITHUB_SHA",
+  "backlog_count": 7,
+  "labels_bounded": true,
+  "label_cardinality_limit": 96,
+  "raw_identity_label": false,
+  "token_label": false,
+  "full_endpoint_url_label": false,
+  "metrics": [
+    {"name":"traffic_selected_count","type":"COUNTER","unit":"count","source":"Rca2EnvironmentAccessGate selected cohort","owner":"OPERATIONS","labels":["environment","lane","result_class","breaker_state"],"cardinality_limit":96,"retention":"EXTERNAL_BACKEND_UNRESOLVED","alert_dependency":"traffic_ceiling_violation","redaction_policy":"NO_IDENTITY_TOKEN_URL_ERROR_TEXT","unit_test":"Rca2Op2MetricsTest","integration_test":"Rca2Op1EnvironmentAccessIntegrationTest","dashboard_panel":"Traffic selection","acceptance_criteria":"increment once for selected eligible cohort"},
+    {"name":"traffic_skipped_count","type":"COUNTER","unit":"count","source":"Rca2EnvironmentAccessGate zero and skip decisions","owner":"OPERATIONS","labels":["environment","lane","result_class","breaker_state"],"cardinality_limit":96,"retention":"EXTERNAL_BACKEND_UNRESOLVED","alert_dependency":"allowlist_lookup_failure","redaction_policy":"BOUNDED_RESULT_CLASS","unit_test":"Rca2Op2MetricsTest","integration_test":"Rca2Op1EnvironmentAccessIntegrationTest","dashboard_panel":"Traffic selection","acceptance_criteria":"increment for effective zero or cohort skip"},
+    {"name":"executor_active_count","type":"GAUGE","unit":"count","source":"Rca2BoundedExecutor active lifecycle","owner":"RELIABILITY","labels":["environment","lane","result_class","breaker_state"],"cardinality_limit":96,"retention":"EXTERNAL_BACKEND_UNRESOLVED","alert_dependency":"executor_saturation","redaction_policy":"NO_DYNAMIC_LABEL","unit_test":"Rca2Op2MetricsTest","integration_test":"Rca2RuntimeOrchestratorTest","dashboard_panel":"Executor active count","acceptance_criteria":"nonnegative lifecycle sample"},
+    {"name":"executor_queue_depth","type":"GAUGE","unit":"count","source":"Rca2BoundedExecutor queue depth","owner":"RELIABILITY","labels":["environment","lane","result_class","breaker_state"],"cardinality_limit":96,"retention":"EXTERNAL_BACKEND_UNRESOLVED","alert_dependency":"executor_saturation","redaction_policy":"NO_DYNAMIC_LABEL","unit_test":"Rca2Op2MetricsTest","integration_test":"Rca2RuntimeOrchestratorTest","dashboard_panel":"Executor queue depth","acceptance_criteria":"nonnegative and bounded by 100"},
+    {"name":"shadow_task_age_ms","type":"HISTOGRAM","unit":"milliseconds","source":"Rca2BoundedExecutor queueAgeMillis","owner":"RELIABILITY","labels":["environment","lane","result_class","breaker_state"],"cardinality_limit":96,"retention":"EXTERNAL_BACKEND_UNRESOLVED","alert_dependency":"task_age","redaction_policy":"NO_DYNAMIC_LABEL","unit_test":"Rca2BoundedExecutorTest","integration_test":"Rca2RuntimeOrchestratorTest","dashboard_panel":"Task age","acceptance_criteria":"nonnegative queue age recorded on completion"},
+    {"name":"shadow_cancelled_count","type":"COUNTER","unit":"count","source":"Rca2RuntimeOrchestrator timeout and interruption","owner":"OPERATIONS","labels":["environment","lane","result_class","breaker_state"],"cardinality_limit":96,"retention":"EXTERNAL_BACKEND_UNRESOLVED","alert_dependency":"kill_switch","redaction_policy":"BOUNDED_RESULT_CLASS","unit_test":"Rca2Op2MetricsTest","integration_test":"Rca2RuntimeOrchestratorTest","dashboard_panel":"Cancellation","acceptance_criteria":"increment for timeout cancellation or interruption"},
+    {"name":"checkpoint_lag_ms","type":"HISTOGRAM","unit":"milliseconds","source":"Rca2Comparator measuredLagMillis","owner":"DATA","labels":["environment","lane","result_class","breaker_state"],"cardinality_limit":96,"retention":"EXTERNAL_BACKEND_UNRESOLVED","alert_dependency":"checkpoint_lag","redaction_policy":"NO_CHECKPOINT_IDENTITY_LABEL","unit_test":"Rca2Op2MetricsTest","integration_test":"Rca2RuntimeOrchestratorTest","dashboard_panel":"Checkpoint lag","acceptance_criteria":"record comparator lag without changing SC-6 threshold"}
+  ]
+}
