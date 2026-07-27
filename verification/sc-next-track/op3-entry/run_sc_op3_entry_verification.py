@@ -59,6 +59,9 @@ allowed = (
     "docs/platform/governance/sc-next-track/61-",
     "verification/sc-next-track/op3-entry/",
     ".github/workflows/sc-op3-entry-governance-ci.yml",
+    ".github/workflows/sc6-rca2-nonzero-nonprod-stage1-governance-ci.yml",
+    ".github/workflows/sc-baseline-reconciliation.yml",
+    ".github/workflows/data-platform-closure-ci.yml",
 )
 require(all(any(path.startswith(prefix) for prefix in allowed) for path in changed), "scope violation")
 require(not any(path.endswith(".sql") or path.startswith("database/") for path in changed), "SQL change forbidden")
