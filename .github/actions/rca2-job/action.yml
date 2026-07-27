@@ -18,14 +18,14 @@ runs:
     - shell: bash
       run: |
         chmod +x jc-backend/gradlew verification/rca2/run_rca2_ci_job.sh
-        chmod +x verification/operations/op1/run_rca2_protected_regression_continuity.sh
+        chmod +x verification/operations/op2/run_rca2_protected_regression_continuity.sh
     - id: gate
       shell: bash
       run: |
         set +e
         log="rca2-${{ inputs.lane }}.log"
         if [[ '${{ inputs.lane }}' == 'protected-regression' ]]; then
-          verification/operations/op1/run_rca2_protected_regression_continuity.sh '${{ inputs.expected-head }}' 2>&1 | tee "$log"
+          verification/operations/op2/run_rca2_protected_regression_continuity.sh '${{ inputs.expected-head }}' 2>&1 | tee "$log"
         else
           verification/rca2/run_rca2_ci_job.sh '${{ inputs.lane }}' '${{ inputs.expected-head }}' 2>&1 | tee "$log"
         fi
