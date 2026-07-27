@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Test;
 
 class Rca2BoundedExecutorTest {
@@ -24,6 +25,19 @@ class Rca2BoundedExecutorTest {
             assertThat(timeout.await(2, TimeUnit.SECONDS)).isTrue();
             assertThat(attempts).hasValue(1);
             assertThat(executor.timeoutCount()).isEqualTo(1);
+        }
+    }
+
+    @Test void exposesNonnegativeQueueAgeForEveryCompletion() throws Exception {
+        try (var executor = new Rca2BoundedExecutor()) {
+            CountDownLatch done = new CountDownLatch(1);
+            AtomicLong queueAgeMillis = new AtomicLong(-1L);
+            assertThat(executor.submit(() -> "ok", completion -> {
+                queueAgeMillis.set(completion.queueAgeMillis());
+                done.countDown();
+            })).isTrue();
+            assertThat(done.await(2, TimeUnit.SECONDS)).isTrue();
+            assertThat(queueAgeMillis.get()).isGreaterThanOrEqualTo(0L);
         }
     }
 
