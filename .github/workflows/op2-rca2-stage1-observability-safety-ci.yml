@@ -37,7 +37,7 @@ jobs:
       - uses: actions/setup-java@v5
         with: {distribution: temurin, java-version: '21'}
       - uses: gradle/actions/setup-gradle@v6
-      - run: chmod +x jc-backend/gradlew && cd jc-backend && ./gradlew compileJava test --tests '*Rca2Op2MetricsTest'
+      - run: chmod +x jc-backend/gradlew && cd jc-backend && ./gradlew :compileJava :test --tests '*Rca2Op2MetricsTest'
 
   metric_continuity:
     runs-on: ubuntu-latest
