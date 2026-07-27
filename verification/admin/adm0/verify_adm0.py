@@ -38,15 +38,15 @@ def load():
     except json.JSONDecodeError as exc:
         raise Failure(f'artifact JSON invalid at line {exc.lineno}, column {exc.colno}: {exc.msg}') from exc
 
-def http_json(url):
+def http_json(url, use_token=True):
     req=urllib.request.Request(url,headers={'Accept':'application/vnd.github+json','User-Agent':'jc-adm0-verifier'})
-    token=os.getenv('GITHUB_TOKEN')
+    token=os.getenv('GITHUB_TOKEN') if use_token else None
     if token: req.add_header('Authorization',f'Bearer {token}')
     with urllib.request.urlopen(req,timeout=20) as response:
         return json.load(response)
 
 def http_repo_file(repository, path, ref):
-    payload=http_json(f"https://api.github.com/repos/{repository}/contents/{path}?ref={ref}")
+    payload=http_json(f"https://api.github.com/repos/{repository}/contents/{path}?ref={ref}", use_token=False)
     expect(payload.get('encoding')=='base64' and payload.get('content'),'GitHub contents response is missing base64 content')
     return base64.b64decode(payload['content']).decode('utf-8')
 
@@ -72,7 +72,7 @@ def check_authoritative_backend(data,offline):
 def check_youngtak(data,offline):
     expect(data['bundle_metadata']['ui_source_head_sha']==EXPECTED_UI,'UI SHA contract mismatch')
     if offline: return
-    actual=http_json('https://api.github.com/repos/YTAK99/Journey-Connect/commits/youngtak')['sha']
+    actual=http_json('https://api.github.com/repos/YTAK99/Journey-Connect/commits/youngtak', use_token=False)['sha']
     expect(actual==EXPECTED_UI,f'youngtak source drift: {actual}')
     admin=http_repo_file('YTAK99/Journey-Connect','jc-frontend/src/pages/AdminPage.jsx',EXPECTED_UI)
     app=http_repo_file('YTAK99/Journey-Connect','jc-frontend/src/App.jsx',EXPECTED_UI)
