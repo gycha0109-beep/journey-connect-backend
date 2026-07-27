@@ -17,8 +17,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-  GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  ADM0_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  ADM0_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   authoritative_backend_baseline:
