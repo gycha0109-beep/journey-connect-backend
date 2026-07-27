@@ -1,23 +1,8 @@
 {
-  "artifact_version": "sc-op3-evidence-acceptance-v2-parallel-preparation",
+  "artifact_version": "sc-op3-evidence-acceptance-v3-sc-architecture-approved-not-provisioned",
   "authoritative_main": "fcd930550eb0f8b4c529ac53fb8f2aa9bce767a9",
   "programme_issue": 36,
   "required_work_order_issues": [37, 38, 39, 40, 41, 42, 43],
-  "required_envelope_fields": [
-    "issue",
-    "accountable_role",
-    "executing_actor",
-    "tested_revision",
-    "environment_reference",
-    "started_at",
-    "ended_at",
-    "procedure",
-    "expected_result",
-    "actual_result",
-    "artifact_reference",
-    "reviewer",
-    "accepted_at"
-  ],
   "required_envelope_fields_v2": [
     "work_order_issue",
     "accountable_role",
@@ -39,6 +24,7 @@
     "MOCK_ONLY",
     "LOCALHOST_ONLY",
     "CONFIGURATION_ONLY",
+    "TEMPLATE_ONLY",
     "UNATTRIBUTED_SCREENSHOT",
     "MISSING_ENVIRONMENT_REFERENCE",
     "MISSING_TESTED_REVISION",
@@ -49,18 +35,31 @@
     "PROTECTED_VALUE_EXPOSED",
     "PRIMARY_RESPONSE_MUTATED",
     "CANDIDATE_SERVED",
-    "AUTHORITY_TRANSFERRED"
+    "AUTHORITY_TRANSFERRED",
+    "PLACEHOLDER_REPORTED_AS_DEPLOYED",
+    "GITHUB_ARTIFACT_REPORTED_AS_AUTHORITATIVE_STORE",
+    "UNAUTHORIZED_BUCKET_RETENTION_LOCK",
+    "UNAUTHORIZED_RESOURCE_CREATION",
+    "UNAUTHORIZED_BILLING_CHANGE",
+    "UNAUTHORIZED_IAM_MUTATION"
   ],
   "preparation_is_not_acceptance": true,
-  "preparation_states": [
-    "PLAN_READY_ENVIRONMENT_BLOCKED",
-    "READY_FOR_PROVIDER_BINDING_NOT_ISSUED",
-    "RECOMMENDED_SC_DECISION_REQUIRED",
-    "DECIDED_NOT_CONNECTED",
-    "APPLICATION_RULES_READY_DELIVERY_NOT_EXECUTED",
-    "PLAN_EXISTS_EXTERNAL_DRILL_BLOCKED",
-    "REQUEST_MATRIX_READY_EXTERNAL_ASSIGNMENTS_MISSING"
-  ],
+  "architecture_approval_is_not_provisioning_evidence": true,
+  "evidence_transport": {
+    "transport": "GITHUB_ACTIONS_ARTIFACTS_V4",
+    "approved": true,
+    "authority": "INTERMEDIATE_ONLY",
+    "may_satisfy_authoritative_retention": false
+  },
+  "authoritative_evidence_store": {
+    "type": "GCP_CLOUD_STORAGE_RETENTION_POLICY_BUCKET",
+    "status": "DESIGN_APPROVED_NOT_PROVISIONED",
+    "bucket_id": "UNASSIGNED",
+    "retention_period_days": "UNASSIGNED",
+    "retention_lock_status": "NOT_AUTHORIZED",
+    "writer": "UNASSIGNED",
+    "sc_reviewer": "UNASSIGNED"
+  },
   "work_order_current_acceptance": [
     {"issue": 37, "acceptance_status": "BLOCKED_NO_BACKEND_QUERY_EVIDENCE"},
     {"issue": 38, "acceptance_status": "BLOCKED_NO_ALERT_DELIVERY_EVIDENCE"},
@@ -70,22 +69,12 @@
     {"issue": 42, "acceptance_status": "BLOCKED_DRILL_NOT_EXECUTED"},
     {"issue": 43, "acceptance_status": "BLOCKED_NOT_EXECUTED"}
   ],
-  "operations_control_plane_current_acceptance": {
-    "work_order_issue": 43,
-    "status": "REJECTED_MISSING_REQUIRED_EXTERNAL_ASSIGNMENTS",
-    "executing_actor": "UNASSIGNED",
-    "reviewing_actor": "UNASSIGNED",
-    "incident_commander_or_on_call": "UNASSIGNED",
-    "nonproduction_environment_id": "UNASSIGNED",
-    "immutable_artifact_or_run_reference": "UNASSIGNED",
-    "evidence_store_candidate": "GITHUB_ACTIONS_ARTIFACTS_V4",
-    "evidence_store_candidate_status": "AVAILABLE_ACCEPTANCE_NOT_EXECUTED",
-    "protected_data_review": "PASS_NO_PROTECTED_VALUE_RECORDED",
-    "acceptance_status": "BLOCKED_NOT_EXECUTED",
-    "accepted_at": null
-  },
   "all_work_orders_required": true,
   "parallel_preparation_allowed": true,
   "separate_sc_execution_approval_required": true,
+  "cloud_resource_creation_authorized": false,
+  "billing_spend_authorized": false,
+  "iam_mutation_authorized": false,
+  "retention_lock_authorized": false,
   "current_acceptance_result": "NOT_READY"
 }
