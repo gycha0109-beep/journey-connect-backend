@@ -1,0 +1,24 @@
+{
+  "artifact_version": "sc-op3-external-blockers-v1",
+  "work_start_sha": "83da5e5a075cdde2e5fd7c3e81d81f77d8c987f8",
+  "source_op2_exact_head": "79009cf047fe67775b972d43a5f3f72aa8351908",
+  "source_op2_merge_commit": "83da5e5a075cdde2e5fd7c3e81d81f77d8c987f8",
+  "owner": "System Coordination",
+  "status": "OPEN",
+  "blockers": [
+    {"id":"metrics-backend","accountable_role":"Observability Owner","state":"UNRESOLVED"},
+    {"id":"dashboard-deployment","accountable_role":"Observability Owner","state":"UNRESOLVED"},
+    {"id":"alert-routing","accountable_role":"Incident Response Owner","state":"UNRESOLVED"},
+    {"id":"workload-credential","accountable_role":"Security Owner","state":"UNRESOLVED"},
+    {"id":"credential-revoke-drill","accountable_role":"Security Owner","state":"BLOCKED_EXTERNAL_DEPENDENCY"},
+    {"id":"network-route","accountable_role":"Platform Owner","state":"UNRESOLVED"},
+    {"id":"network-revoke-drill","accountable_role":"Platform Owner","state":"BLOCKED_EXTERNAL_DEPENDENCY"},
+    {"id":"allowlist-store","accountable_role":"Security/Data Owner","state":"UNRESOLVED"},
+    {"id":"candidate-source-protocol-version","accountable_role":"Recommendation Owner","state":"UNRESOLVED"},
+    {"id":"candidate-adapter","accountable_role":"Recommendation Owner","state":"UNRESOLVED"},
+    {"id":"deployment-rollback-drill","accountable_role":"Release Owner","state":"NOT_EXECUTED"},
+    {"id":"manual-operator","accountable_role":"Operations Owner","state":"UNASSIGNED"},
+    {"id":"incident-commander","accountable_role":"Incident Response Owner","state":"UNASSIGNED"}
+  ],
+  "updated_at": "2026-07-27T00:00:00+09:00"
+}

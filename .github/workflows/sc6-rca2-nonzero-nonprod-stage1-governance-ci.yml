@@ -10,7 +10,9 @@ on:
       - "docs/platform/governance/SC-HANDOFF.md"
       - "docs/platform/governance/sc-next-track/**"
       - "verification/sc-next-track/rca2-nonzero-nonprod-entry/**"
+      - "verification/sc-next-track/op3-entry/**"
       - ".github/workflows/sc6-rca2-nonzero-nonprod-stage1-governance-ci.yml"
+      - ".github/workflows/sc-op3-entry-governance-ci.yml"
   workflow_dispatch:
 
 permissions:
@@ -32,7 +34,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - run: python verification/sc-next-track/rca2-nonzero-nonprod-entry/run_sc6_rca2_nonzero_nonprod_entry_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only authoritative_baseline
+      - run: python verification/sc-next-track/op3-entry/run_sc6_successor_continuity.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only authoritative_baseline
 
   document_completeness:
     runs-on: ubuntu-latest
@@ -45,7 +47,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - run: python verification/sc-next-track/rca2-nonzero-nonprod-entry/run_sc6_rca2_nonzero_nonprod_entry_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only document_completeness
+      - run: python verification/sc-next-track/op3-entry/run_sc6_successor_continuity.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only document_completeness
 
   machine_readable_evidence:
     runs-on: ubuntu-latest
@@ -58,7 +60,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - run: python verification/sc-next-track/rca2-nonzero-nonprod-entry/run_sc6_rca2_nonzero_nonprod_entry_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only machine_readable_evidence
+      - run: python verification/sc-next-track/op3-entry/run_sc6_successor_continuity.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only machine_readable_evidence
 
   governance_only_diff:
     runs-on: ubuntu-latest
@@ -71,7 +73,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - run: python verification/sc-next-track/rca2-nonzero-nonprod-entry/run_sc6_rca2_nonzero_nonprod_entry_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only governance_only_diff
+      - run: python verification/sc-next-track/op3-entry/run_sc6_successor_continuity.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only governance_only_diff
 
   historical_evidence_protection:
     runs-on: ubuntu-latest
@@ -84,7 +86,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - run: python verification/sc-next-track/rca2-nonzero-nonprod-entry/run_sc6_rca2_nonzero_nonprod_entry_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only historical_evidence_protection
+      - run: python verification/sc-next-track/op3-entry/run_sc6_successor_continuity.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only historical_evidence_protection
 
   sql_protection:
     runs-on: ubuntu-latest
@@ -97,7 +99,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - run: python verification/sc-next-track/rca2-nonzero-nonprod-entry/run_sc6_rca2_nonzero_nonprod_entry_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only sql_protection
+      - run: python verification/sc-next-track/op3-entry/run_sc6_successor_continuity.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only sql_protection
 
   rca2_production_authority_boundary:
     runs-on: ubuntu-latest
@@ -110,7 +112,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - run: python verification/sc-next-track/rca2-nonzero-nonprod-entry/run_sc6_rca2_nonzero_nonprod_entry_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only rca2_production_authority_boundary
+      - run: python verification/sc-next-track/op3-entry/run_sc6_successor_continuity.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --only rca2_production_authority_boundary
 
   independent_verifier:
     runs-on: ubuntu-latest
@@ -132,7 +134,7 @@ jobs:
         with:
           python-version: "3.13"
       - name: Run exact-head independent verifier
-        run: python verification/sc-next-track/rca2-nonzero-nonprod-entry/run_sc6_rca2_nonzero_nonprod_entry_verification.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}"
+        run: python verification/sc-next-track/op3-entry/run_sc6_successor_continuity.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}"
       - name: Upload exact-head governance evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -142,6 +144,8 @@ jobs:
           if-no-files-found: error
           path: |
             verification/sc-next-track/rca2-nonzero-nonprod-entry/runtime/**
+            verification/sc-next-track/op3-entry/run_sc6_successor_continuity.py
+            verification/sc-next-track/op3-entry/run_sc_rca2_entry_continuity.py
             verification/sc-next-track/rca2-entry/run_sc_rca2_entry_verification.py
             verification/data-platform-closure/run_data_platform_closure_verification.py
             verification/dp6/run_dp6_allocation_verification.py
