@@ -40,19 +40,19 @@ class Rca2Op2MetricsTest {
 
     @Test
     void registersMicrometerCounterGaugeAndTimerWithBoundedTags() {
-        try (var registry = new SimpleMeterRegistry()) {
-            Rca2Metrics metrics = new Rca2Metrics(registry);
-            metrics.increment("traffic_selected_count", LANE, "selected", BREAKER);
-            metrics.setGauge("executor_active_count", LANE, "executor", BREAKER, 2);
-            metrics.setGauge("executor_active_count", LANE, "executor", BREAKER, 1);
-            metrics.recordMillis("shadow_task_age_ms", LANE, "success", BREAKER, 25);
+        var registry = new SimpleMeterRegistry();
+        Rca2Metrics metrics = new Rca2Metrics(registry);
+        metrics.increment("traffic_selected_count", LANE, "selected", BREAKER);
+        metrics.setGauge("executor_active_count", LANE, "executor", BREAKER, 2);
+        metrics.setGauge("executor_active_count", LANE, "executor", BREAKER, 1);
+        metrics.recordMillis("shadow_task_age_ms", LANE, "success", BREAKER, 25);
 
-            assertThat(registry.get("rca2.traffic_selected_count").counter().count()).isEqualTo(1.0);
-            assertThat(registry.get("rca2.executor_active_count").gauge().value()).isEqualTo(1.0);
-            assertThat(registry.get("rca2.shadow_task_age_ms").timer().count()).isEqualTo(1L);
-            assertThat(registry.get("rca2.shadow_task_age_ms").timer().totalTime(java.util.concurrent.TimeUnit.MILLISECONDS))
-                    .isEqualTo(25.0);
-        }
+        assertThat(registry.get("rca2.traffic_selected_count").counter().count()).isEqualTo(1.0);
+        assertThat(registry.get("rca2.executor_active_count").gauge().value()).isEqualTo(1.0);
+        assertThat(registry.get("rca2.shadow_task_age_ms").timer().count()).isEqualTo(1L);
+        assertThat(registry.get("rca2.shadow_task_age_ms").timer().totalTime(java.util.concurrent.TimeUnit.MILLISECONDS))
+                .isEqualTo(25.0);
+        registry.close();
     }
 
     @Test
