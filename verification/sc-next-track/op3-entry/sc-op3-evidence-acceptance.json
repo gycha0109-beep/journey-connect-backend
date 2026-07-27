@@ -1,16 +1,8 @@
 {
-  "artifact_version": "sc-op3-evidence-acceptance-v1",
+  "artifact_version": "sc-op3-evidence-acceptance-v2-parallel-preparation",
   "authoritative_main": "fcd930550eb0f8b4c529ac53fb8f2aa9bce767a9",
   "programme_issue": 36,
-  "required_work_order_issues": [
-    37,
-    38,
-    39,
-    40,
-    41,
-    42,
-    43
-  ],
+  "required_work_order_issues": [37, 38, 39, 40, 41, 42, 43],
   "required_envelope_fields": [
     "issue",
     "accountable_role",
@@ -59,6 +51,25 @@
     "CANDIDATE_SERVED",
     "AUTHORITY_TRANSFERRED"
   ],
+  "preparation_is_not_acceptance": true,
+  "preparation_states": [
+    "PLAN_READY_ENVIRONMENT_BLOCKED",
+    "READY_FOR_PROVIDER_BINDING_NOT_ISSUED",
+    "RECOMMENDED_SC_DECISION_REQUIRED",
+    "DECIDED_NOT_CONNECTED",
+    "APPLICATION_RULES_READY_DELIVERY_NOT_EXECUTED",
+    "PLAN_EXISTS_EXTERNAL_DRILL_BLOCKED",
+    "REQUEST_MATRIX_READY_EXTERNAL_ASSIGNMENTS_MISSING"
+  ],
+  "work_order_current_acceptance": [
+    {"issue": 37, "acceptance_status": "BLOCKED_NO_BACKEND_QUERY_EVIDENCE"},
+    {"issue": 38, "acceptance_status": "BLOCKED_NO_ALERT_DELIVERY_EVIDENCE"},
+    {"issue": 39, "acceptance_status": "BLOCKED_NO_ISSUANCE_OR_REVOCATION_EVIDENCE"},
+    {"issue": 40, "acceptance_status": "BLOCKED_NO_ROUTE_OR_WITHDRAWAL_EVIDENCE"},
+    {"issue": 41, "acceptance_status": "BLOCKED_NO_ENDPOINT_INTEGRATION_EVIDENCE"},
+    {"issue": 42, "acceptance_status": "BLOCKED_DRILL_NOT_EXECUTED"},
+    {"issue": 43, "acceptance_status": "BLOCKED_NOT_EXECUTED"}
+  ],
   "operations_control_plane_current_acceptance": {
     "work_order_issue": 43,
     "status": "REJECTED_MISSING_REQUIRED_EXTERNAL_ASSIGNMENTS",
@@ -67,11 +78,14 @@
     "incident_commander_or_on_call": "UNASSIGNED",
     "nonproduction_environment_id": "UNASSIGNED",
     "immutable_artifact_or_run_reference": "UNASSIGNED",
+    "evidence_store_candidate": "GITHUB_ACTIONS_ARTIFACTS_V4",
+    "evidence_store_candidate_status": "AVAILABLE_ACCEPTANCE_NOT_EXECUTED",
     "protected_data_review": "PASS_NO_PROTECTED_VALUE_RECORDED",
     "acceptance_status": "BLOCKED_NOT_EXECUTED",
     "accepted_at": null
   },
   "all_work_orders_required": true,
+  "parallel_preparation_allowed": true,
   "separate_sc_execution_approval_required": true,
   "current_acceptance_result": "NOT_READY"
 }
