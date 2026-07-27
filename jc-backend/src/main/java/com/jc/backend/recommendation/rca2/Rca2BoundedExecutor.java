@@ -19,7 +19,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 public final class Rca2BoundedExecutor implements AutoCloseable {
-    public record Completion<T>(Rca2RuntimeContracts.ExecutionStatus status, T value, Throwable error, long elapsedMillis) {}
+    public record Completion<T>(
+            Rca2RuntimeContracts.ExecutionStatus status,
+            T value,
+            Throwable error,
+            long elapsedMillis,
+            long queueAgeMillis) {}
     private record QueuedTask<T>(long enqueuedAtNanos, Callable<T> callable, Consumer<Completion<T>> completion) {}
 
     private final ArrayBlockingQueue<QueuedTask<?>> queue;
@@ -88,11 +93,12 @@ public final class Rca2BoundedExecutor implements AutoCloseable {
     private <T> void execute(QueuedTask<?> raw) {
         QueuedTask<T> task = (QueuedTask<T>) raw;
         try {
-            long age = System.nanoTime() - task.enqueuedAtNanos();
-            if (age > Rca2RuntimeContracts.MAX_TASK_AGE.toNanos()) {
+            long queueAgeMillis = TimeUnit.NANOSECONDS.toMillis(
+                    Math.max(0L, System.nanoTime() - task.enqueuedAtNanos()));
+            if (queueAgeMillis > Rca2RuntimeContracts.MAX_TASK_AGE.toMillis()) {
                 lateDiscarded.incrementAndGet();
                 task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.LATE_DISCARDED,
-                        null, null, TimeUnit.NANOSECONDS.toMillis(age)));
+                        null, null, queueAgeMillis, queueAgeMillis));
                 return;
             }
             active.incrementAndGet();
@@ -103,7 +109,7 @@ public final class Rca2BoundedExecutor implements AutoCloseable {
             } catch (RejectedExecutionException exception) {
                 rejected.incrementAndGet();
                 task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.EXCEPTION,
-                        null, exception, elapsed(started)));
+                        null, exception, elapsed(started), queueAgeMillis));
                 return;
             }
             try {
@@ -112,24 +118,24 @@ public final class Rca2BoundedExecutor implements AutoCloseable {
                 if (elapsed > Rca2RuntimeContracts.TOTAL_TIMEOUT.toMillis()) {
                     lateDiscarded.incrementAndGet();
                     task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.LATE_DISCARDED,
-                            null, null, elapsed));
+                            null, null, elapsed, queueAgeMillis));
                 } else {
                     task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.SUCCESS,
-                            result, null, elapsed));
+                            result, null, elapsed, queueAgeMillis));
                 }
             } catch (TimeoutException exception) {
                 timedOut.incrementAndGet();
                 future.cancel(true);
                 task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.TIMEOUT,
-                        null, exception, elapsed(started)));
+                        null, exception, elapsed(started), queueAgeMillis));
             } catch (InterruptedException exception) {
                 future.cancel(true);
                 Thread.currentThread().interrupt();
                 task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.CANCELLED,
-                        null, exception, elapsed(started)));
+                        null, exception, elapsed(started), queueAgeMillis));
             } catch (ExecutionException exception) {
                 task.completion().accept(new Completion<>(Rca2RuntimeContracts.ExecutionStatus.EXCEPTION,
-                        null, exception.getCause(), elapsed(started)));
+                        null, exception.getCause(), elapsed(started), queueAgeMillis));
             } finally {
                 active.decrementAndGet();
             }
