@@ -14,7 +14,9 @@ RECENT_MERGED_PR_TITLE=docs(op): defer deployment platform selection
 UI_SOURCE_REPOSITORY=YTAK99/Journey-Connect
 UI_SOURCE_DEFAULT_BRANCH=master
 UI_SOURCE_BRANCH=youngtak
-UI_SOURCE_HEAD_SHA=e2c2c283e7f10e32806d4fb5285081e7254b5782
+UI_SOURCE_INITIAL_HEAD_SHA=e2c2c283e7f10e32806d4fb5285081e7254b5782
+UI_SOURCE_HEAD_SHA=44435f04df439647d282bd15ae960349d0ee5f84
+UI_SOURCE_DRIFT_RECONCILED=YES
 ADMIN_PAGE_PATH=jc-frontend/src/pages/AdminPage.jsx
 ADMIN_ROUTE_PATH=/admin
 
@@ -25,6 +27,8 @@ SQL_CHANGE=NO
 DB_CHANGE=NONE
 YOUNGTAK_BRANCH_MUTATION=NO
 ```
+
+The source branch moved during ADM-0 from the initial intake SHA to the final verified SHA. The AdminPage and App blob SHAs remained unchanged (`d911614492d01b3736b946bad38e457c64474b3b`, `e438ade981ca3051c6731ec19f665d457ea5dcaa`).
 
 ## Verified source findings
 
