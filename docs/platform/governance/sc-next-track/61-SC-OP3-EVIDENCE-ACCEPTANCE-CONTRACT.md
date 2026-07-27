@@ -2,51 +2,53 @@
 
 ## Rule
 
-OP-3 external work orders are accepted only through evidence that is attributable, reproducible, environment-bound and retained. A claim, checklist tick or issue closure is not sufficient.
+Actual OP-3 work-order acceptance requires attributable, reproducible, environment-bound and retained evidence. Governance-only documentation is not external execution evidence.
 
-## Mandatory evidence envelope
+## Current timing
 
-Every work order must provide:
+```text
+CLOUD_PROVISIONING_REQUIRED_NOW=NO
+DEPLOYMENT_IMPLEMENTATION=DEFERRED
+INDEPENDENT_APPROVER_REQUIRED_NOW=NO
+INDEPENDENT_APPROVER_STATUS=DEFERRED_UNTIL_EXECUTION
+CURRENT_ACCEPTANCE_RESULT=NOT_READY
+```
 
-1. work-order issue number
-2. accountable role and executing actor
-3. exact tested application or configuration revision
-4. non-production environment identifier
-5. start and end timestamps
-6. commands, queries or procedures used
-7. expected and actual result
-8. immutable artifact, run or resource reference
-9. protected-data review result
-10. reviewer and acceptance timestamp
+An independent approver is not required to edit governance contracts when no cloud mutation, drill, deployment or traffic event occurs. The approver becomes mandatory before actual execution evidence can be accepted.
 
-## Evidence classes
+## Mandatory future evidence envelope
 
-| Class | Minimum acceptable evidence |
-|---|---|
-| Observability | backend query result, dashboard panel mapping, retention and label review |
-| Incident response | synthetic alert delivery, acknowledgement and escalation record |
-| Security/Data | bounded-access metadata, revocation result, allowlist expiry and audit result |
-| Platform | route inventory, production-deny result, route withdrawal and restoration record |
-| Recommendation | source/version decision, schema compatibility and non-serving integration result |
-| Release | rollback start/stop record, restored artifact identity and health result |
-| Operations | named operator and approver, manual control path and retained execution template |
+Every executed work order must provide:
+
+1. work-order issue number;
+2. accountable role, executing actor and independent reviewer;
+3. exact repository revision;
+4. selected non-production environment and resource identity;
+5. start and completion timestamps;
+6. commands or procedures;
+7. expected and actual results;
+8. immutable audit and artefact references;
+9. digest and protected-data review;
+10. acceptance status and timestamp.
+
+## Platform-neutral requirement
+
+The authoritative store and audit references must be selected with the final deployment platform. GCP Cloud Storage is reference-only; AWS or another platform is not selected.
+
+GitHub Actions Artifacts v4 may remain an intermediate transport, but it does not by itself satisfy authoritative retention.
 
 ## Automatic rejection conditions
 
-Evidence is rejected when any of the following applies:
+Evidence is rejected when it:
 
-- environment identity is absent or ambiguous
-- only mock, localhost or static configuration evidence is supplied
-- a protected value is embedded in the repository or issue
-- production access is used
-- the tested revision is not recorded
-- timestamps or actor identity are absent
-- result-serving, primary mutation or authority transfer occurs
-- the evidence cannot be retained or independently reviewed
+- uses only templates, mocks or localhost;
+- omits environment, revision, actor, timestamp or immutable reference;
+- exposes a raw credential, token or personal identity;
+- uses production access;
+- reports a placeholder as deployed;
+- serves candidate output or changes primary authority;
+- performs an unauthorised resource, billing, IAM or retention-lock mutation.
 
 ## Gate impact
 
-- one rejected or missing evidence item keeps its work order open
-- one open work order keeps `OP3_ENTRY=BLOCKED`
-- all accepted work orders permit reassessment only
-- a separate SC decision is required to set `SC_OP3_EXECUTION_APPROVED=YES`
+Open work orders keep `OP3_ENTRY=BLOCKED`. All accepted work orders permit reassessment only; a separate SC execution decision remains required.
