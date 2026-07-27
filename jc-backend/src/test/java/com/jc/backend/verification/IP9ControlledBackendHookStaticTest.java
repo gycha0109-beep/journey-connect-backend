@@ -17,6 +17,8 @@ class IP9ControlledBackendHookStaticTest {
             "jc-backend/src/main/java/com/jc/backend/post/PostController.java";
     private static final String RCA2_FEED_SERVICE =
             "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java";
+    private static final String ADM1_SECURITY_CONFIG =
+            "jc-backend/src/main/kotlin/com/jc/backend/config/SecurityConfig.kt";
 
     @Test
     void controllerUsesLegacyServiceResultAsTheOnlyResponseAuthority() throws Exception {
@@ -98,24 +100,30 @@ class IP9ControlledBackendHookStaticTest {
     }
 
     @Test
-    void backendProtectedDeltaIsLimitedToTheApprovedController() throws Exception {
+    void backendProtectedDeltaAllowsApprovedControllerAndAdm1SecurityBoundary() throws Exception {
         Path manifest = RepositoryLayout.resolve("verification/ip9/IP9_PRECHANGE_BACKEND_PROTECTED_SHA256.txt");
         List<String> lines = Files.readAllLines(manifest, StandardCharsets.UTF_8).stream()
                 .filter(line -> !line.isBlank())
                 .toList();
-        int approvedDeltas = 0;
+        int approvedControllerDeltas = 0;
+        int approvedAdm1SecurityDeltas = 0;
         for (String line : lines) {
             String[] parts = line.trim().split("\\s+", 2);
             assertThat(parts).hasSize(2);
             String current = sha256(RepositoryLayout.resolve(parts[1]));
             if (CONTROLLER.equals(parts[1])) {
                 assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
-                approvedDeltas++;
+                approvedControllerDeltas++;
+            } else if (ADM1_SECURITY_CONFIG.equals(parts[1])) {
+                assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
+                assertApprovedAdm1SecurityBoundary(Files.readString(RepositoryLayout.resolve(parts[1])));
+                approvedAdm1SecurityDeltas++;
             } else {
                 assertThat(current).as(parts[1]).isEqualTo(parts[0]);
             }
         }
-        assertThat(approvedDeltas).isEqualTo(1);
+        assertThat(approvedControllerDeltas).isEqualTo(1);
+        assertThat(approvedAdm1SecurityDeltas).isEqualTo(1);
     }
 
     @Test
@@ -145,6 +153,20 @@ class IP9ControlledBackendHookStaticTest {
                 "return rca2Registrar",
                 "return Rca2RequestRegistrar",
                 "SHADOW_RESULT_SERVING");
+    }
+
+    private static void assertApprovedAdm1SecurityBoundary(String source) {
+        assertThat(source).contains(
+                "\"/api/admin\"",
+                "\"/api/admin/**\"",
+                ".hasRole(\"ADMIN\")",
+                "JwtAuthenticationConverter",
+                "ROLE_ADMIN",
+                "ADMIN_ACCESS_DENIED");
+        assertThat(source).doesNotContain(
+                ".requestMatchers(\"/api/admin/**\").permitAll()",
+                "SHADOW_RESULT_SERVING",
+                "SearchShadowDispatchReceiptV1");
     }
 
     private static int count(String value, String token) {
