@@ -79,6 +79,7 @@ public final class DatabaseRoleCapabilityVerifier implements SmartInitializingSi
         Set<String> allowed = Set.of(
                 DatabaseRole.APP.sqlName(),
                 DatabaseRole.AUTH.sqlName(),
+                DatabaseRole.ADMIN.sqlName(),
                 DatabaseRole.RECOMMENDATION.sqlName());
         List<String> unexpected = memberships.stream()
                 .filter(role -> !allowed.contains(role))

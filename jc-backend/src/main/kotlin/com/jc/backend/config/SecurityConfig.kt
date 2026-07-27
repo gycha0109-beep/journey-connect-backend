@@ -14,10 +14,12 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
 import org.springframework.security.web.SecurityFilterChain
@@ -26,6 +28,7 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import java.nio.charset.StandardCharsets
+import java.util.Locale
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
 
@@ -52,7 +55,10 @@ class SecurityConfig(
         FilterRegistrationBean(filter).apply { isEnabled = false }
 
     @Bean
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+    fun securityFilterChain(
+        http: HttpSecurity,
+        jwtAuthenticationConverter: JwtAuthenticationConverter,
+    ): SecurityFilterChain {
         http
             // JWT 기반 API는 서버 세션을 저장하지 않으므로 CSRF 토큰을 사용하지 않습니다.
             .csrf { it.disable() }
@@ -60,6 +66,7 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
                 auth
+                    .requestMatchers("/api/admin", "/api/admin/**").hasRole("ADMIN")
                     .requestMatchers(
                         "/api/v1/auth/signup",
                         "/api/v1/auth/login",
@@ -95,16 +102,20 @@ class SecurityConfig(
                         ApiErrorResponse.authenticationRequired(),
                     )
                 }
-                exceptions.accessDeniedHandler { _, response, _ ->
+                exceptions.accessDeniedHandler { request, response, _ ->
                     writeSecurityError(
                         response,
                         HttpServletResponse.SC_FORBIDDEN,
-                        ApiErrorResponse.accessDenied(),
+                        if (isAdminPath(request.requestURI)) {
+                            ApiErrorResponse.of("ADMIN_ACCESS_DENIED", "관리자 접근 권한이 없습니다.")
+                        } else {
+                            ApiErrorResponse.accessDenied()
+                        },
                     )
                 }
             }
             .oauth2ResourceServer { oauth ->
-                oauth.jwt { }
+                oauth.jwt { jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter) }
                 oauth.authenticationEntryPoint { _, response, _ ->
                     writeSecurityError(
                         response,
@@ -120,6 +131,20 @@ class SecurityConfig(
 
         return http.build()
     }
+
+
+    @Bean
+    fun jwtAuthenticationConverter(): JwtAuthenticationConverter =
+        JwtAuthenticationConverter().apply {
+            setJwtGrantedAuthoritiesConverter { jwt ->
+                when (jwt.getClaimAsString("role")?.lowercase(Locale.ROOT)) {
+                    "admin" -> listOf(SimpleGrantedAuthority("ROLE_ADMIN"))
+                    "moderator" -> listOf(SimpleGrantedAuthority("ROLE_MODERATOR"))
+                    "user" -> listOf(SimpleGrantedAuthority("ROLE_USER"))
+                    else -> emptyList()
+                }
+            }
+        }
 
     @Bean
     fun jwtEncoder(@Value("\${app.security.jwt-secret}") secret: String): JwtEncoder =
@@ -151,6 +176,9 @@ class SecurityConfig(
             registerCorsConfiguration("/**", configuration)
         }
     }
+
+    private fun isAdminPath(requestUri: String): Boolean =
+        requestUri == "/api/admin" || requestUri.startsWith("/api/admin/")
 
     private fun secretKey(secret: String): SecretKey {
         val bytes = secret.toByteArray(StandardCharsets.UTF_8)

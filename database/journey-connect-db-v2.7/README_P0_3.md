@@ -19,7 +19,7 @@ CREATE ROLE jc_backend
   NOBYPASSRLS
   PASSWORD 'deployment-secret';
 
-GRANT jc_app, jc_auth, jc_recommendation TO jc_backend;
+GRANT jc_app, jc_auth, jc_admin, jc_recommendation TO jc_backend;
 ```
 
 `jc_backend`에는 직접 테이블·시퀀스·함수 권한을 부여하지 않습니다.
@@ -41,12 +41,14 @@ DB_ROLE_ROUTING_REQUIRE_RESTRICTED_LOGIN=true
 - `SET LOCAL ROLE jc_app` 가능
 - `SET LOCAL ROLE jc_auth` 가능
 - `SET LOCAL ROLE jc_recommendation` 가능
+- `SET LOCAL ROLE jc_admin` 가능
 
 ## 트랜잭션 규칙
 
 - 일반 콘텐츠: `DatabaseRole.APP`
 - 회원가입·로그인·프로필 자격증명: `DatabaseRole.AUTH`
 - 추천 후보·snapshot·run·event: `DatabaseRole.RECOMMENDATION`
+- 관리자 권한·상태 조회 및 감사 함수 진입: `DatabaseRole.ADMIN`
 - 전파 모드는 `REQUIRED`, `REQUIRES_NEW`만 허용
 - 하나의 트랜잭션 안에서 역할 변경 금지
 - `jc.current_user_id`는 검증된 JWT `sub`만 transaction-local로 주입

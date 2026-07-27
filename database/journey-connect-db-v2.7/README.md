@@ -103,7 +103,7 @@ SELECT set_config('jc.current_user_id', :verified_user_id::text, true);
 
 PostgreSQL 역할은 클러스터 전체에 존재하므로 이 다섯 이름을 Journey Connect 전용으로 사용해야 합니다. 기존 같은 이름의 역할이 로그인·슈퍼유저·복제·BYPASSRLS 권한이나 다른 역할 상속을 가지면 `05`가 실패합니다.
 
-Spring 백엔드는 **직접 테이블 권한이 없는 단일 로그인 역할**로 접속하고, 각 서비스 트랜잭션 시작 시 `SET LOCAL ROLE`로 `jc_app`, `jc_auth`, `jc_recommendation` 중 하나만 선택합니다. 로그인은 반드시 `NOINHERIT`, `NOSUPERUSER`, `NOBYPASSRLS`여야 합니다. 비밀번호는 SQL 파일이나 Git에 저장하지 않습니다.
+Spring 백엔드는 **직접 테이블 권한이 없는 단일 로그인 역할**로 접속하고, 각 서비스 트랜잭션 시작 시 `SET LOCAL ROLE`로 `jc_app`, `jc_auth`, `jc_admin`, `jc_recommendation` 중 하나만 선택합니다. 로그인은 반드시 `NOINHERIT`, `NOSUPERUSER`, `NOBYPASSRLS`여야 합니다. 비밀번호는 SQL 파일이나 Git에 저장하지 않습니다.
 
 ```sql
 CREATE ROLE jc_backend
@@ -116,10 +116,10 @@ CREATE ROLE jc_backend
   NOBYPASSRLS
   PASSWORD '배포 환경의 secret으로 주입';
 
-GRANT jc_app, jc_auth, jc_recommendation TO jc_backend;
+GRANT jc_app, jc_auth, jc_admin, jc_recommendation TO jc_backend;
 ```
 
-`jc_backend` 자체에는 테이블·시퀀스·함수 권한을 직접 부여하지 않습니다. 관리자 기능은 별도 트랙이며, 현재 일반 백엔드 로그인에 `jc_admin`을 부여하지 않습니다. 애플리케이션은 기본적으로 제한 로그인 여부와 세 역할 전환 가능 여부를 시작 시 검증합니다.
+`jc_backend` 자체에는 테이블·시퀀스·함수 권한을 직접 부여하지 않습니다. ADM-1부터 같은 제한 로그인에 `jc_admin` membership도 부여하되, `NOINHERIT`를 유지해 관리자 트랜잭션이 명시적으로 `SET LOCAL ROLE jc_admin`을 수행할 때만 권한이 활성화되게 합니다. 애플리케이션은 제한 로그인 여부와 네 역할 전환 가능 여부를 시작 시 검증합니다.
 
 ## 애플리케이션 계층 책임
 

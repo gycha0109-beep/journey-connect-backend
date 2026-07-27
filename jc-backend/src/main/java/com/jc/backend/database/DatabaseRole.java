@@ -4,6 +4,7 @@ package com.jc.backend.database;
 public enum DatabaseRole {
     APP("jc_app"),
     AUTH("jc_auth"),
+    ADMIN("jc_admin"),
     RECOMMENDATION("jc_recommendation");
 
     private final String sqlName;

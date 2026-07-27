@@ -74,6 +74,20 @@ class DatabaseRoleRoutingIntegrationTest {
     }
 
     @Test
+    void adminRoleReadsAuthorityStateButCannotReadPasswordOrMutateDirectly() {
+        UserAccount user = users.saveAndFlush(
+                new UserAccount("role-admin@example.com", "admin-hash", "role-admin"));
+
+        assertThat(roleProbe.adminAccountStatus(user.getId())).isEqualTo("active");
+        assertThatThrownBy(() -> roleProbe.adminPasswordHash(user.getId()))
+                .isInstanceOf(DataAccessException.class)
+                .hasMessageContaining("app_users");
+        assertThatThrownBy(() -> roleProbe.adminSuspendDirectly(user.getId()))
+                .isInstanceOf(DataAccessException.class)
+                .hasMessageContaining("app_users");
+    }
+
+    @Test
     void recommendationRoleReadsCandidateDataButCannotReadRefreshTokens() {
         assertThat(roleProbe.recommendationPostCount()).isGreaterThanOrEqualTo(0L);
         assertThatThrownBy(roleProbe::recommendationRefreshTokenCount)
@@ -106,7 +120,7 @@ class DatabaseRoleRoutingIntegrationTest {
                             + " login noinherit nosuperuser nocreatedb nocreaterole"
                             + " noreplication nobypassrls password '" + password + "'");
             adminJdbcTemplate.execute(
-                    "grant jc_app, jc_auth, jc_recommendation to " + roleName);
+                    "grant jc_app, jc_auth, jc_admin, jc_recommendation to " + roleName);
 
             String jdbcUrl;
             try (Connection connection = dataSource.getConnection()) {
@@ -137,7 +151,7 @@ class DatabaseRoleRoutingIntegrationTest {
                             + " login inherit nosuperuser nocreatedb nocreaterole"
                             + " noreplication nobypassrls password '" + password + "'");
             adminJdbcTemplate.execute(
-                    "grant jc_app, jc_auth, jc_recommendation to " + roleName);
+                    "grant jc_app, jc_auth, jc_admin, jc_recommendation to " + roleName);
 
             String jdbcUrl;
             try (Connection connection = dataSource.getConnection()) {
@@ -245,6 +259,29 @@ class DatabaseRoleRoutingIntegrationTest {
         public long authPostCount() {
             Long value = jdbcTemplate.queryForObject("select count(*) from public.posts", Long.class);
             return value == null ? 0L : value;
+        }
+
+        @DatabaseTransactional(role = DatabaseRole.ADMIN, readOnly = true)
+        public String adminAccountStatus(long userId) {
+            return jdbcTemplate.queryForObject(
+                    "select account_status from public.app_users where id = ?",
+                    String.class,
+                    userId);
+        }
+
+        @DatabaseTransactional(role = DatabaseRole.ADMIN, readOnly = true)
+        public String adminPasswordHash(long userId) {
+            return jdbcTemplate.queryForObject(
+                    "select password_hash from public.app_users where id = ?",
+                    String.class,
+                    userId);
+        }
+
+        @DatabaseTransactional(role = DatabaseRole.ADMIN)
+        public void adminSuspendDirectly(long userId) {
+            jdbcTemplate.update(
+                    "update public.app_users set account_status = 'suspended' where id = ?",
+                    userId);
         }
 
         @DatabaseTransactional(role = DatabaseRole.RECOMMENDATION, readOnly = true)
