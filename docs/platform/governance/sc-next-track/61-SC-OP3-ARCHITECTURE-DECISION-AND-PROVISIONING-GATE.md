@@ -1,156 +1,127 @@
-# SC OP-3 Architecture Decision and Provisioning Gate
+# SC OP-3 Deployment Platform Governance and Provisioning Gate
 
-## Decision status
+## Current decision
 
 ```text
-OP3_EXTERNAL_RESOLUTION_PARTIAL
+OP3_GOVERNANCE_CONSISTENT=YES
 
-PLATFORM_ARCHITECTURE=GCP_CLOUD_RUN
-PLATFORM_ARCHITECTURE_STATUS=SC_APPROVED_NOT_PROVISIONED
+FINAL_DEPLOYMENT_PLATFORM=UNDECIDED
+DEPLOYMENT_PLATFORM_SELECTION_REQUIRED=YES
+DEPLOYMENT_IMPLEMENTATION=DEFERRED
 
-REGION_CANDIDATE=asia-northeast3
-REGION_STATUS=PENDING_COST_AND_RESOURCE_OWNER
+PLATFORM_ARCHITECTURE_REFERENCE=GCP_CLOUD_RUN
+PLATFORM_ARCHITECTURE_REFERENCE_STATUS=DESIGN_ONLY
+GCP_ARCHITECTURE_STATUS=REFERENCE_ONLY
+GCP_PROVISIONING_PLANNED=NO
 
-CANDIDATE_CONTRACT_DECISION=APPROVED_NOT_CONNECTED
+EXPECTED_TRAINING_DEPLOYMENT_PLATFORM=AWS
+AWS_DEPLOYMENT_DECISION_STATUS=PENDING_CURRICULUM_CONFIRMATION
 
-EVIDENCE_TRANSPORT=GITHUB_ACTIONS_ARTIFACTS_V4
-EVIDENCE_TRANSPORT_STATUS=SC_APPROVED_INTERMEDIATE_ONLY
-
-AUTHORITATIVE_EVIDENCE_STORE=GCP_CLOUD_STORAGE_RETENTION_POLICY_BUCKET
-EVIDENCE_STORE_STATUS=DESIGN_APPROVED_NOT_PROVISIONED
-RETENTION_LOCK_STATUS=NOT_AUTHORIZED
-
-CLOUD_PROVISIONING_STATUS=BLOCKED_REQUIRED_INPUTS
-CLOUD_RESOURCE_CREATION_AUTHORIZED=NO
-BILLING_SPEND_AUTHORIZED=NO
-SC_OP3_EXECUTION_APPROVED=NO
+CLOUD_PROVISIONING_REQUIRED_NOW=NO
+CLOUD_PROVISIONING_STATUS=DEFERRED_PLATFORM_UNDECIDED
+OP3_CLOUD_PROVISIONING=DEFERRED_PLATFORM_UNDECIDED
 ```
 
-This is an architecture and preparation decision only. It does not identify or create a Google Cloud project, billing relationship, Cloud Run service, workload identity pool, IAM binding, bucket, monitoring workspace, endpoint, revision or route.
+This decision corrects the role of the GCP Cloud Run package merged through PR #45. It is retained as a reference architecture, not as the selected deployment target. AWS is an expected academy candidate only; it is not selected by this decision.
 
-## Preserved execution boundary
+## Cost and mutation boundary
 
 ```text
+PERSONAL_CLOUD_SPEND_ALLOWED=NO
+PAID_CLOUD_USAGE=FORBIDDEN
+COST_CEILING=0
+BILLING_ACCOUNT_LINKAGE_AUTHORIZED=NO
+
+GCP_RESOURCE_CREATION_AUTHORIZED=NO
+GCP_BILLING_SPEND_AUTHORIZED=NO
+GCP_IAM_MUTATION_AUTHORIZED=NO
+
+AWS_RESOURCE_CREATION_AUTHORIZED=NO
+AWS_BILLING_SPEND_AUTHORIZED=NO
+AWS_IAM_MUTATION_AUTHORIZED=NO
+
+CLOUD_RESOURCE_CREATION=FORBIDDEN
+RETENTION_LOCK_AUTHORIZED=NO
+```
+
+No personal billing method, paid cloud account, project, service, bucket, monitoring resource or IAM trust may be created or changed under this governance state. Academy-funded accounts or separately granted free credits require a later explicit contract; they are not automatically approved.
+
+## Preserved OP-3 safety state
+
+```text
+SC_OP3_EXECUTION_APPROVED=NO
 OP3_ENTRY=BLOCKED
 STAGE1_ENABLEMENT=BLOCKED
 FEATURE_FLAG=OFF
+NONPRODUCTION_TRAFFIC=0
 EFFECTIVE_NONPRODUCTION_TRAFFIC_PERCENT=0
 PRODUCTION_TRAFFIC_PERCENT=0
 PRIMARY_RESULT_AUTHORITY=CURRENT_P1_P2_ONLY
-SHADOW_RESULT_AUTHORITY=NONE
 CANDIDATE_SERVING=FORBIDDEN
 AUTOMATIC_ROLLOUT=FORBIDDEN
 AUTHORITY_TRANSFER=FORBIDDEN
 ```
 
-Work orders #37 through #43 remain open and incomplete. GitHub or repository preparation is not accepted as external runtime evidence.
+This governance correction does not execute OP-3, connect a candidate endpoint, enable traffic or close work orders #37-#43.
 
-## Approved architecture target
+## GCP reference architecture
 
-The approved target is one dedicated, isolated, non-production Cloud Run environment. The service must:
+The existing GCP design remains useful only as a portable control model for:
 
-- use a separately approved Google Cloud project;
-- use final region approval before provisioning;
-- remain private and IAM-authenticated;
-- create immutable revisions;
-- deploy a new candidate revision at zero traffic;
-- expose only the approved read-only path `/v1/candidates/read`;
-- have no production route and no database route;
-- reject redirects;
-- never serve candidate results to users;
-- preserve current P1/P2 output authority;
-- use request-based billing, minimum instances `0`, and an approved maximum instance ceiling;
-- remain unavailable for execution until actor, cost, IAM, evidence and teardown inputs are assigned.
+- immutable revision identity;
+- a zero-traffic candidate deployment concept;
+- private invocation and least-privilege IAM separation;
+- default-deny test-identity allowlisting;
+- observability, audit and evidence envelopes;
+- rollback and drill design;
+- separation of execution writer and independent reviewer;
+- later translation to the actually selected platform.
 
-Cloud Run creates an immutable revision for each deployment or configuration change and supports a revision receiving no traffic. These platform properties are design inputs, not evidence that any revision currently exists.
+GCP-specific project IDs, regions, Cloud Run services, Workload Identity resources, buckets, dashboards and alert policies are not current provisioning inputs. They are `NOT_APPLICABLE` while GCP is reference-only.
 
-## Region decision
-
-`asia-northeast3` is the candidate region. Final region binding remains pending both:
-
-1. an assigned billing/resource owner; and
-2. explicit confirmation that the cost and resource lifecycle are accepted.
-
-No resource name may embed or imply an approved region until that approval exists.
-
-## Candidate contract decision
-
-The following compatibility combination is approved but not connected:
+## Expected academy AWS candidate
 
 ```text
-CANDIDATE_SOURCE=JOURNEY_CONNECT_RCA2_CANDIDATE_SHADOW_SERVICE
-TRANSPORT_PROTOCOL=HTTPS_JSON
-HTTP_METHOD=POST
-PATH=/v1/candidates/read
-API_SCHEMA_VERSION=recommendation-runtime-dark-read-v1
-QUERY_REGISTRY_VERSION=recommendation-runtime-dark-read-query-registry-v1
-OPERATION=READ_ONLY_CANDIDATE_COMPARISON
-SERVING=FORBIDDEN
-STATUS=APPROVED_NOT_CONNECTED
+EXPECTED_TRAINING_DEPLOYMENT_PLATFORM=AWS
+AWS_DEPLOYMENT_DECISION_STATUS=PENDING_CURRICULUM_CONFIRMATION
 ```
 
-This source identifier is logical. It is not a hostname, deployed service, service account or endpoint.
+Before selecting an AWS implementation, SC must confirm:
 
-## Evidence architecture
+1. the academy-provided service scope, including whether EC2, ECS, Fargate, Elastic Beanstalk or another service is used;
+2. whether RDS is in scope;
+3. whether an academy account or practice credits are provided;
+4. whether personal payment-method registration is required;
+5. whether any personal cost can occur;
+6. deployment duration;
+7. shutdown and resource-deletion policy.
 
-### Intermediate transport
+Until those facts are confirmed, no AWS architecture, account, IAM model, resource name or provisioning branch is authorised.
 
-GitHub Actions Artifacts v4 is approved only as the intermediate evidence transport. A workflow artifact may carry exact-head evidence to the authoritative store after external execution is separately approved.
+## Required-input classification
 
-It is not the authoritative long-term evidence store and does not satisfy #43 by itself.
-
-### Authoritative store
-
-The design target is a dedicated Cloud Storage bucket with a retention policy. The bucket is not provisioned.
-
-The design requires:
-
-- one dedicated bucket in an approved project and region/location;
-- a variable retention period supplied as a required input;
-- SHA-256 checksum metadata;
-- exact tested revision and actor metadata;
-- write access only for the approved execution process;
-- read access for the SC reviewer;
-- Cloud Audit Logs Admin Activity and Data Access coverage;
-- detailed audit logging review;
-- an explicit pre-lock verification and approval gate.
-
-`RETENTION_LOCK_STATUS=NOT_AUTHORIZED`.
-
-Locking a bucket retention policy is irreversible, prevents reducing or removing the policy, can prevent bucket deletion while objects remain retained, and can create a project lien. The project, retention period, cost owner and deletion impact must therefore be approved before any lock action.
-
-## Required-input source
-
-The authoritative required-input matrix is:
+The authoritative matrix is:
 
 `verification/sc-next-track/op3-entry/sc-op3-required-input-decision-matrix.json`
 
-No `UNASSIGNED`, `REQUIRED_INPUT` or pending value may be inferred from repository ownership, existing unrelated Vercel/Supabase resources, placeholder strings, or GitHub artifact metadata.
-
-## Provisioning control
-
-All provisioning material in this phase is template-only:
+Current governance consistency does not require GCP identifiers, cloud actors, an evidence bucket or an independent approver. Those inputs are deferred until a deployment platform is selected and an actual mutation, drill or acceptance activity is separately authorised.
 
 ```text
-EXECUTION_MODE=TEMPLATE_ONLY
-ACTUAL_EXECUTION=FORBIDDEN
-PROJECT_ID=REQUIRED_INPUT
-REGION=REQUIRED_INPUT
-BILLING_CHANGE=FORBIDDEN
-IAM_MUTATION=FORBIDDEN
-RESOURCE_CREATION=FORBIDDEN
+INDEPENDENT_APPROVER_REQUIRED_NOW=NO
+INDEPENDENT_APPROVER_STATUS=DEFERRED_UNTIL_EXECUTION
 ```
 
-The templates may validate and render proposed commands. They must not invoke `gcloud`, Google APIs, Cloud Run endpoints, bucket operations, IAM operations or billing operations.
+The independent approver role remains defined and becomes mandatory before actual cloud mutation, traffic drill or operational acceptance.
 
-## Official design references
+## Re-entry gate
 
-- Cloud Run revisions and zero-traffic deployment: https://cloud.google.com/run/docs/managing/revisions
-- Cloud Run rollouts and `--no-traffic`: https://cloud.google.com/run/docs/rollouts-rollbacks-traffic-migration
-- Cloud Run authentication: https://cloud.google.com/run/docs/authenticating/overview
-- Cloud Run service identity: https://cloud.google.com/run/docs/securing/service-identity
-- Workload Identity Federation for deployment pipelines: https://cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines
-- Cloud Storage Bucket Lock: https://cloud.google.com/storage/docs/bucket-lock
-- Cloud Storage audit logging: https://cloud.google.com/storage/docs/audit-logging
-- Cloud Monitoring dashboards API: https://cloud.google.com/monitoring/dashboards/api-dashboard
-- Cloud Billing budgets: https://cloud.google.com/billing/docs/how-to/budgets
+Provisioning may be reconsidered only after:
+
+- final platform selection;
+- academy curriculum and account/cost responsibility confirmation;
+- platform-specific required inputs;
+- explicit resource-creation, billing and IAM authorisations;
+- a non-zero personal-spend exception only when separately approved;
+- exact teardown and evidence-retention responsibilities.
+
+No such gate is satisfied by this document.
