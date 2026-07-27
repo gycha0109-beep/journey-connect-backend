@@ -32,5 +32,5 @@ jobs:
         with:
           python-version: "3.13"
       - run: python verification/sc-next-track/op3-entry/run_data_platform_closure_continuity.py
-      - run: python verification/dp7/run_dp7_allocation_verification.py
+      - run: python verification/sc-next-track/op3-entry/run_dp7_allocation_continuity.py
       - run: python verification/sc-next-track/op3-entry/run_sc_baseline_reconciliation_continuity.py
