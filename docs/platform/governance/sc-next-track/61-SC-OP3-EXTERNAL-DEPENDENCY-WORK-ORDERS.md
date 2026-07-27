@@ -1,47 +1,54 @@
 # SC OP-3 External Dependency Work Orders
 
-## Authoritative baseline
+## Current governance classification
 
-- merged SC package: `fcd930550eb0f8b4c529ac53fb8f2aa9bce767a9`
-- programme issue: `#36`
-- work orders: `#37` through `#43`
+```text
+FINAL_DEPLOYMENT_PLATFORM=UNDECIDED
+CLOUD_PROVISIONING_REQUIRED_NOW=NO
+OP3_CLOUD_PROVISIONING=DEFERRED_PLATFORM_UNDECIDED
+```
 
-## Current control state
-
-- `OP3_ENTRY=BLOCKED`
-- `STAGE1_ENABLEMENT=BLOCKED`
-- `EFFECTIVE_NONPRODUCTION_TRAFFIC_PERCENT=0`
-- `PRODUCTION_TRAFFIC_PERCENT=0`
-- `PRIMARY_RESULT_AUTHORITY=CURRENT_P1_P2_ONLY`
-- `CANDIDATE_SERVING=FORBIDDEN`
+Work orders #37-#43 remain open for eventual external evidence. Their cloud-specific inputs are deferred until a final platform and funded execution path are selected.
 
 ## Work-order allocation
 
-| Issue | Accountable role | Scope | Current state |
-|---|---|---|---|
-| #37 | Observability Owner | metrics backend, dashboard, retention policy | BLOCKED |
-| #38 | Incident Response Owner | alert delivery, acknowledgement, incident command | BLOCKED |
-| #39 | Security/Data Owner | bounded access material, revocation drill, test allowlist | BLOCKED |
-| #40 | Platform Owner | non-production route, deny proof, route withdrawal drill | BLOCKED |
-| #41 | Recommendation Owner | source, protocol, version, adapter integration | BLOCKED |
-| #42 | Release Owner | deployment rollback drill | NOT_EXECUTED |
-| #43 | Operations Owner | manual operator, independent approver, evidence location | UNASSIGNED |
+| Issue | Accountable role | Current state |
+|---|---|---|
+| #37 | Observability Owner | `DEFERRED_PLATFORM_BINDING` |
+| #38 | Incident Response Owner | `DEFERRED_UNTIL_EXECUTION` |
+| #39 | Security/Data Owner | `DEFERRED_PLATFORM_BINDING` |
+| #40 | Platform Owner | `DEFERRED_PLATFORM_UNDECIDED` |
+| #41 | Recommendation Owner | `APPROVED_NOT_CONNECTED` |
+| #42 | Release Owner | `DEFERRED_UNTIL_DEPLOYMENT` |
+| #43 | Operations Owner | `DEFERRED_UNTIL_EXECUTION` |
 
 ## Completion rule
 
-A role assignment is not completion. Each issue must close with runtime or environment evidence accepted under `61-SC-OP3-EVIDENCE-ACCEPTANCE-CONTRACT.md`.
+A deferred state is not completion. Each work order still requires attributable, environment-bound and independently reviewable evidence before it can close.
 
-All seven work orders must be complete before SC may reassess OP-3 entry. Work-order completion does not itself grant execution authority.
+## Current non-requirement
+
+Missing GCP project, Cloud Run, Workload Identity, monitoring or bucket identifiers do not make the governance correction incomplete because GCP is reference-only and cloud provisioning is not required now.
+
+Missing operator or independent approver assignments also do not block governance-only repository changes. Those roles become mandatory before actual resource mutation, traffic drill or acceptance.
 
 ## Prohibited shortcuts
 
-The following do not satisfy a work order by themselves:
+- selecting AWS solely because it is expected in the academy curriculum;
+- treating reference GCP names as deployable resources;
+- using personal billing or payment details;
+- repurposing K-beauty or existing Supabase resources;
+- closing issues without accepted evidence;
+- enabling traffic or candidate serving.
 
-- application configuration text
-- mock-only or localhost-only tests
-- screenshots without immutable resource identity
-- issue closure without attached evidence
-- generated placeholders presented as deployed resources
-- repository files containing protected values
+## Preserved state
 
-While any work order remains open, traffic and feature enablement remain forbidden.
+```text
+OP3_ENTRY=BLOCKED
+STAGE1_ENABLEMENT=BLOCKED
+FEATURE_FLAG=OFF
+EFFECTIVE_NONPRODUCTION_TRAFFIC_PERCENT=0
+PRODUCTION_TRAFFIC_PERCENT=0
+PRIMARY_RESULT_AUTHORITY=CURRENT_P1_P2_ONLY
+CANDIDATE_SERVING=FORBIDDEN
+```
