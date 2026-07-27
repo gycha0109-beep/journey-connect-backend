@@ -34,7 +34,7 @@ The following concepts remain valid regardless of the final platform:
 - no raw identity storage or logging;
 - no production route and no database route;
 - candidate non-serving and primary-result preservation;
-- metrics, dashboard, alert and audit evidence;
+- observability, metrics, dashboard, alert and audit evidence;
 - rollback, route-withdrawal and teardown verification;
 - retained evidence with checksums and independent review.
 
