@@ -11,7 +11,7 @@ ADM1_ENTRY=BLOCKED_PENDING_USER_APPROVAL
 ## Authority
 
 - Backend authority: `gycha0109-beep/journey-connect-backend` at work-start `main` `251f2d14c91c6e5bebb9dcb245aa8b1d7e859976`
-- Admin UI reference: `YTAK99/Journey-Connect` branch `youngtak` at `e2c2c283e7f10e32806d4fb5285081e7254b5782`
+- Admin UI reference: `YTAK99/Journey-Connect` branch `youngtak` final verified head `44435f04df439647d282bd15ae960349d0ee5f84` (initial intake `e2c2c283e7f10e32806d4fb5285081e7254b5782`)
 - Work branch: `agent/adm0-admin-capability-schema-integration-baseline`
 - Full source branch merge: `FORBIDDEN`
 - Selective UI port: `YES`
