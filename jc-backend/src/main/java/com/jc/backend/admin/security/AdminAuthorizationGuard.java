@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 /** Resolves an active Admin from the verified JWT subject and current app_users state. */
 @Service
-public final class AdminAuthorizationGuard {
+public class AdminAuthorizationGuard {
 
     private static final String ADMIN_ROLE = "admin";
     private static final String ACTIVE_STATUS = "active";
