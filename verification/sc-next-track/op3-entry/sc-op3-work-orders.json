@@ -1,11 +1,11 @@
 {
-  "artifact_version": "sc-op3-work-orders-v2-parallel-preparation",
+  "artifact_version": "sc-op3-work-orders-v3-sc-architecture-approved-not-provisioned",
   "authoritative_main": "fcd930550eb0f8b4c529ac53fb8f2aa9bce767a9",
   "latest_remote_main": "25ad5148dd0e9eac2131f18b8020145b6389fc93",
   "exact_head_binding": "SELF_HEAD",
-  "remote_state_verified_at": "2026-07-27T14:20:22+09:00",
   "programme_issue": 36,
   "programme_state": "OPEN",
+  "current_resolution_result": "OP3_EXTERNAL_RESOLUTION_PARTIAL",
   "op3_entry": "BLOCKED",
   "stage1_enablement": "BLOCKED",
   "sc_op3_execution_approved": false,
@@ -18,6 +18,27 @@
   "automatic_rollout": "FORBIDDEN",
   "authority_transfer": "FORBIDDEN",
   "parallel_resolution_allowed": true,
+  "sc_architecture_decision": {
+    "platform_architecture": "GCP_CLOUD_RUN",
+    "environment_class": "DEDICATED_GCP_CLOUD_RUN_NONPRODUCTION",
+    "platform_architecture_status": "SC_APPROVED_NOT_PROVISIONED",
+    "architecture_target_approved": true,
+    "region_candidate": "asia-northeast3",
+    "region_status": "PENDING_COST_AND_RESOURCE_OWNER",
+    "region_final_approval": "PENDING_COST_OWNER",
+    "candidate_contract_decision": "APPROVED_NOT_CONNECTED",
+    "evidence_transport": "GITHUB_ACTIONS_ARTIFACTS_V4",
+    "evidence_transport_status": "SC_APPROVED_INTERMEDIATE_ONLY",
+    "authoritative_evidence_store": "GCP_CLOUD_STORAGE_RETENTION_POLICY_BUCKET",
+    "evidence_store_status": "DESIGN_APPROVED_NOT_PROVISIONED",
+    "retention_lock_status": "NOT_AUTHORIZED",
+    "cloud_provisioning_status": "BLOCKED_REQUIRED_INPUTS",
+    "cloud_resource_creation_authorized": false,
+    "billing_spend_authorized": false,
+    "iam_mutation_authorized": false,
+    "bucket_creation_authorized": false,
+    "endpoint_call_authorized": false
+  },
   "work_orders": [
     {
       "issue": 37,
@@ -28,6 +49,8 @@
       "dashboard_candidate": "GCP_CLOUD_MONITORING_DASHBOARD",
       "workspace_id": "UNASSIGNED",
       "dashboard_id": "UNASSIGNED",
+      "metric_writer": "UNASSIGNED",
+      "acceptance_status": "BLOCKED_NO_BACKEND_QUERY_EVIDENCE",
       "dependencies": [40, 39]
     },
     {
@@ -37,6 +60,8 @@
       "preparation_status": "APPLICATION_RULES_READY_DELIVERY_NOT_EXECUTED",
       "critical_receiver": "UNASSIGNED",
       "warning_receiver": "UNASSIGNED",
+      "incident_commander_or_on_call": "UNASSIGNED",
+      "acceptance_status": "BLOCKED_NO_ALERT_DELIVERY_EVIDENCE",
       "dependencies": [37, 43]
     },
     {
@@ -62,17 +87,22 @@
       "allowlist_purpose": "READ_ONLY_CANDIDATE_COMPARISON",
       "allowlist_max_entry_duration_days": 30,
       "raw_identity_storage": "FORBIDDEN",
+      "acceptance_status": "BLOCKED_NO_ISSUANCE_OR_REVOCATION_EVIDENCE",
       "dependencies": [40]
     },
     {
       "issue": 40,
       "role": "Platform Owner",
       "state": "BLOCKED_EXTERNAL_ENVIRONMENT",
-      "preparation_status": "RECOMMENDED_SC_DECISION_REQUIRED",
-      "environment_class_candidate": "DEDICATED_GCP_CLOUD_RUN_NONPRODUCTION",
+      "preparation_status": "SC_APPROVED_NOT_PROVISIONED",
+      "environment_class": "DEDICATED_GCP_CLOUD_RUN_NONPRODUCTION",
+      "platform_architecture": "GCP_CLOUD_RUN",
       "environment_id": "UNASSIGNED",
-      "cloud_project_id": "UNASSIGNED",
-      "region": "UNASSIGNED",
+      "gcp_project_id": "UNASSIGNED",
+      "region_candidate": "asia-northeast3",
+      "region_final_approval": "PENDING_COST_OWNER",
+      "service_id": "UNASSIGNED",
+      "revision_id": "UNASSIGNED",
       "source_runtime_id": "UNASSIGNED",
       "destination_service_id": "UNASSIGNED",
       "protocol": "HTTPS",
@@ -82,13 +112,16 @@
       "production_route": "FORBIDDEN",
       "database_route": "FORBIDDEN",
       "redirects": "FORBIDDEN",
+      "cloud_resource_creation_authorized": false,
+      "billing_spend_authorized": false,
+      "acceptance_status": "BLOCKED_NO_ROUTE_OR_WITHDRAWAL_EVIDENCE",
       "dependencies": []
     },
     {
       "issue": 41,
       "role": "Recommendation Owner",
       "state": "BLOCKED_EXTERNAL_ENDPOINT",
-      "preparation_status": "DECIDED_NOT_CONNECTED",
+      "preparation_status": "APPROVED_NOT_CONNECTED",
       "candidate_source": "JOURNEY_CONNECT_RCA2_CANDIDATE_SHADOW_SERVICE",
       "transport_protocol": "HTTPS_JSON",
       "http_method": "POST",
@@ -106,6 +139,8 @@
       "total_timeout_ms": 500,
       "max_request_bytes": 16384,
       "max_response_bytes": 65536,
+      "endpoint": "UNASSIGNED",
+      "acceptance_status": "BLOCKED_NO_ENDPOINT_INTEGRATION_EVIDENCE",
       "dependencies": [40, 39]
     },
     {
@@ -113,6 +148,7 @@
       "role": "Release Owner",
       "state": "NOT_EXECUTED",
       "preparation_status": "PLAN_EXISTS_EXTERNAL_DRILL_BLOCKED",
+      "acceptance_status": "BLOCKED_DRILL_NOT_EXECUTED",
       "dependencies": [40, 39, 43]
     },
     {
@@ -127,48 +163,23 @@
       "least_privilege_access_reference": "BLOCKED_EXTERNAL_DEPENDENCY",
       "manual_enable_path": "BLOCKED_EXTERNAL_DEPENDENCY",
       "manual_disable_path": "BLOCKED_EXTERNAL_DEPENDENCY",
-      "immutable_evidence_store": "UNASSIGNED",
-      "evidence_store_candidate": "GITHUB_ACTIONS_ARTIFACTS_V4",
-      "evidence_store_candidate_status": "AVAILABLE_ACCEPTANCE_NOT_EXECUTED",
+      "evidence_transport": "GITHUB_ACTIONS_ARTIFACTS_V4",
+      "evidence_transport_status": "SC_APPROVED_INTERMEDIATE_ONLY",
+      "authoritative_evidence_store": "GCP_CLOUD_STORAGE_RETENTION_POLICY_BUCKET",
+      "authoritative_store_id": "UNASSIGNED",
+      "evidence_store_status": "DESIGN_APPROVED_NOT_PROVISIONED",
+      "evidence_retention_period_days": "UNASSIGNED",
+      "retention_lock_status": "NOT_AUTHORIZED",
       "two_person_confirmation": "BLOCKED_EXTERNAL_DEPENDENCY",
       "acceptance_status": "BLOCKED_NOT_EXECUTED",
       "dependencies": [40]
     }
   ],
-  "sc_or_user_decisions_required": [
-    "ASSIGN_OPERATOR",
-    "ASSIGN_INDEPENDENT_APPROVER",
-    "ASSIGN_INCIDENT_COMMANDER_OR_ON_CALL",
-    "APPROVE_NONPRODUCTION_PLATFORM_CANDIDATE",
-    "SUPPLY_CLOUD_PROJECT_OR_INFRASTRUCTURE_REPOSITORY",
-    "APPROVE_REGION_AND_RESOURCE_OWNER",
-    "APPROVE_WORKLOAD_IDENTITY_TRUST_ADMIN",
-    "APPROVE_ALLOWLIST_STORE_OWNER",
-    "APPROVE_METRICS_AND_ALERT_ADMINISTRATORS",
-    "DECIDE_EVIDENCE_RETENTION_BACKEND"
-  ],
-  "github_or_code_immediately_possible": [
-    "CANDIDATE_COMPATIBILITY_CONTRACT",
-    "WORKLOAD_ACCESS_CONTRACT",
-    "ALLOWLIST_CONTRACT",
-    "NETWORK_ACCEPTANCE_INVENTORY",
-    "METRIC_RESOURCE_INVENTORY",
-    "EVIDENCE_ENVELOPE_AND_PROTECTED_DATA_CHECKS",
-    "TRAFFIC_ZERO_CONTINUITY_CI"
-  ],
-  "external_environment_access_required": [
-    "CREATE_OR_IDENTIFY_DEDICATED_NONPRODUCTION_PROJECT",
-    "CREATE_SERVICE_AND_IMMUTABLE_REVISION",
-    "CREATE_AND_WITHDRAW_HTTPS_ROUTE",
-    "BIND_OIDC_WORKLOAD_IDENTITY",
-    "ISSUE_REVOKE_AND_REISSUE_SHORT_LIVED_ACCESS",
-    "CREATE_AND_EXERCISE_DEFAULT_DENY_ALLOWLIST",
-    "CREATE_METRICS_BACKEND_AND_DASHBOARD",
-    "DELIVER_SYNTHETIC_ALERTS",
-    "EXECUTE_DEPLOYMENT_ROLLBACK"
-  ],
-  "operations_control_plane_document": "docs/platform/governance/sc-next-track/61-SC-OP3-OPERATIONS-CONTROL-PLANE-PREPARATION.md",
-  "parallel_preparation_document": "docs/platform/governance/sc-next-track/61-SC-OP3-PARALLEL-EXTERNAL-PREPARATION.md",
-  "current_resolution_result": "OP3_EXTERNAL_RESOLUTION_PARTIAL",
-  "completion_rule": "ALL_WORK_ORDERS_CLOSED_WITH_ACCEPTED_EVIDENCE_AND_SEPARATE_SC_APPROVAL"
+  "required_input_matrix": "verification/sc-next-track/op3-entry/sc-op3-required-input-decision-matrix.json",
+  "dry_run_contract": "verification/sc-next-track/op3-entry/sc-op3-gcp-dry-run-contract.json",
+  "cost_teardown_contract": "verification/sc-next-track/op3-entry/sc-op3-cost-teardown-contract.json",
+  "architecture_decision_document": "docs/platform/governance/sc-next-track/61-SC-OP3-ARCHITECTURE-DECISION-AND-PROVISIONING-GATE.md",
+  "dry_run_package_document": "docs/platform/governance/sc-next-track/61-SC-OP3-GCP-CLOUD-RUN-DRY-RUN-PROVISIONING-PACKAGE.md",
+  "cost_teardown_document": "docs/platform/governance/sc-next-track/61-SC-OP3-COST-AND-TEARDOWN-BOUNDARY.md",
+  "completion_rule": "ALL_WORK_ORDERS_CLOSED_WITH_ACCEPTED_EXTERNAL_EVIDENCE_AND_SEPARATE_SC_APPROVAL"
 }
