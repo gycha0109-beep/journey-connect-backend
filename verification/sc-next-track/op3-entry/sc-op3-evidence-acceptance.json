@@ -1,0 +1,34 @@
+{
+  "artifact_version": "sc-op3-evidence-acceptance-v1",
+  "authoritative_main": "fcd930550eb0f8b4c529ac53fb8f2aa9bce767a9",
+  "programme_issue": 36,
+  "required_work_order_issues": [37, 38, 39, 40, 41, 42, 43],
+  "required_envelope_fields": [
+    "issue",
+    "accountable_role",
+    "executing_actor",
+    "tested_revision",
+    "environment_reference",
+    "started_at",
+    "ended_at",
+    "procedure",
+    "expected_result",
+    "actual_result",
+    "artifact_reference",
+    "reviewer",
+    "accepted_at"
+  ],
+  "rejected_evidence_classes": [
+    "MOCK_ONLY",
+    "LOCALHOST_ONLY",
+    "CONFIGURATION_ONLY",
+    "UNATTRIBUTED_SCREENSHOT",
+    "MISSING_ENVIRONMENT_REFERENCE",
+    "MISSING_TESTED_REVISION",
+    "PRODUCTION_ACCESS_USED",
+    "PROTECTED_VALUE_EXPOSED"
+  ],
+  "all_work_orders_required": true,
+  "separate_sc_execution_approval_required": true,
+  "current_acceptance_result": "NOT_READY"
+}

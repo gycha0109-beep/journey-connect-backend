@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: read
+  issues: read
 
 jobs:
   sc_op3_entry_gate:
@@ -28,5 +29,11 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - run: python verification/sc-next-track/op3-entry/run_sc_op3_entry_verification.py
+      - name: Verify OP-3 entry remains blocked
+        run: python verification/sc-next-track/op3-entry/run_sc_op3_entry_verification.py
+      - name: Verify external work orders and live issue state
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python verification/sc-next-track/op3-entry/run_sc_op3_external_resolution_verification.py --require-live-issues
       - run: echo "EXACT_TESTED_SHA=${{ github.event.pull_request.head.sha || github.sha }}"
