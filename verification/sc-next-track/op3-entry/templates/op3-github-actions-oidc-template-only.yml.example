@@ -1,0 +1,65 @@
+# TEMPLATE_ONLY. This file is outside .github/workflows and cannot run as a workflow.
+# Move or enable only after separate SC, billing, IAM and resource-creation approvals.
+name: OP3 GCP template only
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  template_only:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    environment: op3-nonproduction
+    env:
+      EXECUTION_MODE: TEMPLATE_ONLY
+      ACTUAL_EXECUTION: FORBIDDEN
+      BILLING_CHANGE: FORBIDDEN
+      IAM_MUTATION: FORBIDDEN
+      RESOURCE_CREATION: FORBIDDEN
+      PROJECT_ID: REQUIRED_INPUT
+      PROJECT_NUMBER: REQUIRED_INPUT
+      REGION: REQUIRED_INPUT
+      WORKLOAD_IDENTITY_PROVIDER: REQUIRED_INPUT
+      DEPLOY_SERVICE_ACCOUNT: REQUIRED_INPUT
+      SERVICE_URL: REQUIRED_INPUT
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject unresolved inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${EXECUTION_MODE}" = "TEMPLATE_ONLY"
+          test "${ACTUAL_EXECUTION}" = "FORBIDDEN"
+          test "${BILLING_CHANGE}" = "FORBIDDEN"
+          test "${IAM_MUTATION}" = "FORBIDDEN"
+          test "${RESOURCE_CREATION}" = "FORBIDDEN"
+          test "${PROJECT_ID}" != "REQUIRED_INPUT"
+          test "${PROJECT_NUMBER}" != "REQUIRED_INPUT"
+          test "${REGION}" != "REQUIRED_INPUT"
+          test "${WORKLOAD_IDENTITY_PROVIDER}" != "REQUIRED_INPUT"
+          test "${DEPLOY_SERVICE_ACCOUNT}" != "REQUIRED_INPUT"
+          test "${SERVICE_URL}" != "REQUIRED_INPUT"
+          echo "TEMPLATE_ONLY_VALIDATION_COMPLETE"
+      - name: Authentication template
+        if: ${{ false }}
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.DEPLOY_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_lifetime: 900s
+      - name: Cloud SDK template
+        if: ${{ false }}
+        uses: google-github-actions/setup-gcloud@v3
+      - name: Render only
+        run: |
+          echo "WOULD_VALIDATE_PROJECT=${PROJECT_ID}"
+          echo "WOULD_VALIDATE_REGION=${REGION}"
+          echo "WOULD_VALIDATE_SERVICE_URL_REFERENCE=REDACTED"
+          echo "NO_AUTHENTICATION_PERFORMED=YES"
+          echo "NO_GCLOUD_COMMAND_EXECUTED=YES"
