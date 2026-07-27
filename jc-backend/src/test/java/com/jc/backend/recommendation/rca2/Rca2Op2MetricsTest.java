@@ -3,6 +3,7 @@ package com.jc.backend.recommendation.rca2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 class Rca2Op2MetricsTest {
@@ -30,8 +31,28 @@ class Rca2Op2MetricsTest {
         assertThat(metrics.total("traffic_selected_count")).isEqualTo(1);
         assertThat(metrics.total("executor_active_count")).isEqualTo(2);
         assertThat(metrics.total("shadow_task_age_ms")).isEqualTo(25);
+        assertThat(metrics.sampleCount("traffic_selected_count")).isEqualTo(1);
+        assertThat(metrics.sampleCount("executor_active_count")).isEqualTo(1);
+        assertThat(metrics.sampleCount("shadow_task_age_ms")).isEqualTo(1);
         assertThat(Rca2Metrics.ALLOWED_LABELS).containsExactlyInAnyOrder(
                 "environment", "lane", "result_class", "breaker_state");
+    }
+
+    @Test
+    void registersMicrometerCounterGaugeAndTimerWithBoundedTags() {
+        try (var registry = new SimpleMeterRegistry()) {
+            Rca2Metrics metrics = new Rca2Metrics(registry);
+            metrics.increment("traffic_selected_count", LANE, "selected", BREAKER);
+            metrics.setGauge("executor_active_count", LANE, "executor", BREAKER, 2);
+            metrics.setGauge("executor_active_count", LANE, "executor", BREAKER, 1);
+            metrics.recordMillis("shadow_task_age_ms", LANE, "success", BREAKER, 25);
+
+            assertThat(registry.get("rca2.traffic_selected_count").counter().count()).isEqualTo(1.0);
+            assertThat(registry.get("rca2.executor_active_count").gauge().value()).isEqualTo(1.0);
+            assertThat(registry.get("rca2.shadow_task_age_ms").timer().count()).isEqualTo(1L);
+            assertThat(registry.get("rca2.shadow_task_age_ms").timer().totalTime(java.util.concurrent.TimeUnit.MILLISECONDS))
+                    .isEqualTo(25.0);
+        }
     }
 
     @Test
