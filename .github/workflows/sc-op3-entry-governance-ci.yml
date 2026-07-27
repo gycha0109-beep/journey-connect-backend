@@ -1,0 +1,32 @@
+name: SC OP-3 Entry Governance CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "docs/platform/governance/sc-next-track/57-*"
+      - "docs/platform/governance/sc-next-track/58-*"
+      - "docs/platform/governance/sc-next-track/59-*"
+      - "docs/platform/governance/sc-next-track/60-*"
+      - "docs/platform/governance/sc-next-track/61-*"
+      - "verification/sc-next-track/op3-entry/**"
+      - ".github/workflows/sc-op3-entry-governance-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sc_op3_entry_gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: python verification/sc-next-track/op3-entry/run_sc_op3_entry_verification.py
+      - run: echo "EXACT_TESTED_SHA=${{ github.event.pull_request.head.sha || github.sha }}"
