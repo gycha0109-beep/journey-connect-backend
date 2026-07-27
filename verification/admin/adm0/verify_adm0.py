@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, hashlib, json, os, re, subprocess, sys, urllib.request
+import argparse, base64, hashlib, json, os, re, subprocess, sys, urllib.request
 from pathlib import Path
 
 ROOT=Path(os.getenv('GITHUB_WORKSPACE') or Path(__file__).resolve().parents[3]).resolve()
@@ -45,10 +45,10 @@ def http_json(url):
     with urllib.request.urlopen(req,timeout=20) as response:
         return json.load(response)
 
-def http_text(url):
-    req=urllib.request.Request(url,headers={'User-Agent':'jc-adm0-verifier'})
-    with urllib.request.urlopen(req,timeout=20) as response:
-        return response.read().decode('utf-8')
+def http_repo_file(repository, path, ref):
+    payload=http_json(f"https://api.github.com/repos/{repository}/contents/{path}?ref={ref}")
+    expect(payload.get('encoding')=='base64' and payload.get('content'),'GitHub contents response is missing base64 content')
+    return base64.b64decode(payload['content']).decode('utf-8')
 
 def changed_files():
     base=os.getenv('ADM0_BASE_SHA')
@@ -74,8 +74,8 @@ def check_youngtak(data,offline):
     if offline: return
     actual=http_json('https://api.github.com/repos/YTAK99/Journey-Connect/commits/youngtak')['sha']
     expect(actual==EXPECTED_UI,f'youngtak source drift: {actual}')
-    admin=http_text(f'https://raw.githubusercontent.com/YTAK99/Journey-Connect/{EXPECTED_UI}/jc-frontend/src/pages/AdminPage.jsx')
-    app=http_text(f'https://raw.githubusercontent.com/YTAK99/Journey-Connect/{EXPECTED_UI}/jc-frontend/src/App.jsx')
+    admin=http_repo_file('YTAK99/Journey-Connect','jc-frontend/src/pages/AdminPage.jsx',EXPECTED_UI)
+    app=http_repo_file('YTAK99/Journey-Connect','jc-frontend/src/App.jsx',EXPECTED_UI)
     for pattern in ['/users/me/posts','isLogin()','createPost','deletePost','filteredPosts.slice','posts.reduce']:
         expect(pattern in admin,f'AdminPage source assertion missing: {pattern}')
     for pattern in ['ROLE_ADMIN','hasRole','user?.role','user.role']:
