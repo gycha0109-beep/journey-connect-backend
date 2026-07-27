@@ -10,7 +10,7 @@ ADM-1 Admin Database and Security Foundation
 
 - Repository: `gycha0109-beep/journey-connect-backend`
 - Base: the actual merged ADM-0 commit on `main`; never assume this document's work-start SHA is still current.
-- ADM-0 source UI remains `YTAK99/Journey-Connect@youngtak` exact intake `e2c2c283e7f10e32806d4fb5285081e7254b5782` and is read-only.
+- ADM-0 source UI remains `YTAK99/Journey-Connect@youngtak` exact intake `44435f04df439647d282bd15ae960349d0ee5f84` and is read-only.
 
 ## Mandatory start checks
 
