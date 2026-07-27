@@ -1,0 +1,94 @@
+name: OP-2 RCA-2 Stage 1 Observability and Safety CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'jc-backend/src/main/java/com/jc/backend/recommendation/rca2/**'
+      - 'jc-backend/src/test/java/com/jc/backend/recommendation/rca2/**'
+      - 'docs/platform/operations/op2/**'
+      - 'verification/operations/op2/**'
+      - '.github/workflows/op2-rca2-stage1-observability-safety-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: op2-observability-safety-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  EXPECTED_WORK_START_SHA: f17fc3e515264eefcf2ca2b113a0e5875bbde6ae
+
+jobs:
+  authoritative_baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ github.event.pull_request.head.sha || github.sha }}'}
+      - run: git merge-base --is-ancestor "$EXPECTED_WORK_START_SHA" HEAD
+
+  application_compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ github.event.pull_request.head.sha || github.sha }}'}
+      - uses: actions/setup-java@v5
+        with: {distribution: temurin, java-version: '21'}
+      - uses: gradle/actions/setup-gradle@v6
+      - run: chmod +x jc-backend/gradlew && cd jc-backend && ./gradlew compileJava test --tests '*Rca2Op2MetricsTest'
+
+  metric_continuity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ github.event.pull_request.head.sha || github.sha }}'}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.13'}
+      - run: python verification/operations/op2/run_op2_verification.py
+
+  dashboard_contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ github.event.pull_request.head.sha || github.sha }}'}
+      - run: python -c "import json;d=json.load(open('verification/operations/op2/op2-evidence.json'));assert len(d['dashboard']['sections'])==22 and d['dashboard']['application_contract_ready'] and not d['dashboard']['external_dashboard_ready']"
+
+  critical_and_warning_alerts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ github.event.pull_request.head.sha || github.sha }}'}
+      - run: python -c "import json;d=json.load(open('verification/operations/op2/op2-evidence.json'));assert d['alerts']['zero_tolerance'] and len(d['alerts']['critical'])>=11 and len(d['alerts']['warning'])>=11 and not d['alerts']['critical_route_ready']"
+
+  rollback_levels_and_effective_zero_traffic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ github.event.pull_request.head.sha || github.sha }}'}
+      - run: python -c "import json;d=json.load(open('verification/operations/op2/op2-evidence.json'));assert [x['level'] for x in d['rollback']]==list(range(1,8));assert d['traffic']['effective_nonproduction_percent']==0 and d['traffic']['production_percent']==0"
+
+  historical_evidence_and_sql_protection:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ github.event.pull_request.head.sha || github.sha }}'}
+      - run: |
+          changed="$(git diff --name-only "$EXPECTED_WORK_START_SHA"...HEAD)"
+          ! grep -E '\.sql$|^verification/rca2/|^verification/operations/op1/' <<< "$changed"
+
+  independent_verifier:
+    needs: [authoritative_baseline, application_compile, metric_continuity, dashboard_contract, critical_and_warning_alerts, rollback_levels_and_effective_zero_traffic, historical_evidence_and_sql_protection]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0, ref: '${{ github.event.pull_request.head.sha || github.sha }}'}
+      - run: python verification/operations/op2/run_op2_verification.py | tee op2-verification.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: op2-observability-safety-evidence
+          path: |
+            verification/operations/op2/op2-evidence.json
+            op2-verification.txt
+          retention-days: 90
