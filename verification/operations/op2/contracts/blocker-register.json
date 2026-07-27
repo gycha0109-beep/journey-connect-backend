@@ -1,0 +1,5 @@
+{
+  "work_start_sha":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","source_op1_exact_head":"6c89e78e32f54a1f830d0c84db07a01de951e39c","source_op1_merge_commit":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","artifact_version":"blocker-register-v1","status":"ACTIVE","owner":"SYSTEM_COORDINATION","updated_at":"2026-07-27T00:30:00Z","exact_head_binding":"GITHUB_SHA",
+  "blockers":[{"name":"metrics backend","blocks_op3":true},{"name":"dashboard path","blocks_op3":true},{"name":"critical alert route","blocks_op3":true},{"name":"credential revoke provider","blocks_op3":true},{"name":"network route control","blocks_op3":true},{"name":"external endpoint","blocks_op3":true},{"name":"external credential","blocks_op3":true},{"name":"external allowlist","blocks_op3":true},{"name":"candidate source/protocol/version","blocks_op3":true}],
+  "security_gap":"external control-plane evidence unavailable","scope_violation":false
+}

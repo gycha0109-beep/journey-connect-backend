@@ -1,0 +1,4 @@
+{
+  "work_start_sha":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","source_op1_exact_head":"6c89e78e32f54a1f830d0c84db07a01de951e39c","source_op1_merge_commit":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","artifact_version":"kill-switch-status-v1","status":"PASS_APPLICATION_BOUNDARY","owner":"OPERATIONS","updated_at":"2026-07-27T00:30:00Z","exact_head_binding":"GITHUB_SHA",
+  "feature_flag_off":true,"lane_kill_switch":true,"global_shadow_disable":true,"candidate_invocation_blocked":true,"queued_cancellation_contract":true,"late_result_discard":true,"inflight_timeout":true,"primary_retained":true,"automatic_restart_or_ramp":false,"restart_default_safe":true
+}
