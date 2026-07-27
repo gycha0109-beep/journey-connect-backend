@@ -2,7 +2,15 @@
   "artifact_version": "sc-op3-evidence-acceptance-v1",
   "authoritative_main": "fcd930550eb0f8b4c529ac53fb8f2aa9bce767a9",
   "programme_issue": 36,
-  "required_work_order_issues": [37, 38, 39, 40, 41, 42, 43],
+  "required_work_order_issues": [
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43
+  ],
   "required_envelope_fields": [
     "issue",
     "accountable_role",
@@ -18,6 +26,23 @@
     "reviewer",
     "accepted_at"
   ],
+  "required_envelope_fields_v2": [
+    "work_order_issue",
+    "accountable_role",
+    "executing_actor",
+    "reviewing_actor",
+    "exact_tested_revision",
+    "nonproduction_environment_id",
+    "started_at",
+    "completed_at",
+    "procedure_or_commands",
+    "expected_result",
+    "actual_result",
+    "immutable_artifact_or_run_reference",
+    "protected_data_review",
+    "acceptance_status",
+    "accepted_at"
+  ],
   "rejected_evidence_classes": [
     "MOCK_ONLY",
     "LOCALHOST_ONLY",
@@ -25,9 +50,27 @@
     "UNATTRIBUTED_SCREENSHOT",
     "MISSING_ENVIRONMENT_REFERENCE",
     "MISSING_TESTED_REVISION",
+    "MISSING_ACTOR",
+    "MISSING_TIMESTAMP",
+    "MISSING_IMMUTABLE_REFERENCE",
     "PRODUCTION_ACCESS_USED",
-    "PROTECTED_VALUE_EXPOSED"
+    "PROTECTED_VALUE_EXPOSED",
+    "PRIMARY_RESPONSE_MUTATED",
+    "CANDIDATE_SERVED",
+    "AUTHORITY_TRANSFERRED"
   ],
+  "operations_control_plane_current_acceptance": {
+    "work_order_issue": 43,
+    "status": "REJECTED_MISSING_REQUIRED_EXTERNAL_ASSIGNMENTS",
+    "executing_actor": "UNASSIGNED",
+    "reviewing_actor": "UNASSIGNED",
+    "incident_commander_or_on_call": "UNASSIGNED",
+    "nonproduction_environment_id": "UNASSIGNED",
+    "immutable_artifact_or_run_reference": "UNASSIGNED",
+    "protected_data_review": "PASS_NO_PROTECTED_VALUE_RECORDED",
+    "acceptance_status": "BLOCKED_NOT_EXECUTED",
+    "accepted_at": null
+  },
   "all_work_orders_required": true,
   "separate_sc_execution_approval_required": true,
   "current_acceptance_result": "NOT_READY"
