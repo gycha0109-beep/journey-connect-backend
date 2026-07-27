@@ -85,6 +85,7 @@ public final class Rca2EnvironmentAccessGate {
         }
         if (!testFixtureMode && configuration.effectiveTrafficPercent() == 0) {
             metrics.increment("shadow_cohort_skipped_total", lane, "effective_traffic_zero", breakerState);
+            metrics.increment("traffic_skipped_count", lane, "effective_traffic_zero", breakerState);
             return blocked(Status.EFFECTIVE_TRAFFIC_ZERO, Rca2RuntimeContracts.SubmissionStatus.TRAFFIC_ZERO,
                     hashedSubjectRef, -1);
         }
@@ -94,6 +95,7 @@ public final class Rca2EnvironmentAccessGate {
         }
         if (configuredPercent == 0) {
             metrics.increment("shadow_cohort_skipped_total", lane, "configured_traffic_zero", breakerState);
+            metrics.increment("traffic_skipped_count", lane, "configured_traffic_zero", breakerState);
             return blocked(Status.EFFECTIVE_TRAFFIC_ZERO, Rca2RuntimeContracts.SubmissionStatus.TRAFFIC_ZERO,
                     hashedSubjectRef, -1);
         }
@@ -147,10 +149,12 @@ public final class Rca2EnvironmentAccessGate {
         var cohort = cohortSelector.select(hashedSubjectRef, configuredPercent, true, request.environment());
         if (!cohort.selected()) {
             metrics.increment("shadow_cohort_skipped_total", lane, cohort.status().name().toLowerCase(), breakerState);
+            metrics.increment("traffic_skipped_count", lane, cohort.status().name().toLowerCase(), breakerState);
             return blocked(Status.COHORT_SKIPPED, Rca2RuntimeContracts.SubmissionStatus.FLAG_OFF,
                     hashedSubjectRef, cohort.bucket());
         }
         metrics.increment("shadow_cohort_selected_total", lane, "selected", breakerState);
+        metrics.increment("traffic_selected_count", lane, "selected", breakerState);
 
         if (!candidateSource.ready()) {
             metrics.increment("shadow_candidate_invocation_blocked_total", lane, "source_unresolved", breakerState);
