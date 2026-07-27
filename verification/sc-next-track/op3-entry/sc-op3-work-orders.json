@@ -1,20 +1,68 @@
 {
   "artifact_version": "sc-op3-work-orders-v1",
   "authoritative_main": "fcd930550eb0f8b4c529ac53fb8f2aa9bce767a9",
+  "latest_remote_main": "25ad5148dd0e9eac2131f18b8020145b6389fc93",
+  "remote_state_verified_at": "2026-07-27T14:20:22+09:00",
   "programme_issue": 36,
   "programme_state": "OPEN",
   "op3_entry": "BLOCKED",
   "stage1_enablement": "BLOCKED",
+  "feature_flag": "OFF",
   "effective_nonproduction_traffic_percent": 0,
   "production_traffic_percent": 0,
+  "primary_result_authority": "CURRENT_P1_P2_ONLY",
+  "shadow_result_authority": "NONE",
+  "candidate_serving": "FORBIDDEN",
+  "automatic_rollout": "FORBIDDEN",
+  "authority_transfer": "FORBIDDEN",
   "work_orders": [
-    {"issue": 37, "role": "Observability Owner", "state": "BLOCKED"},
-    {"issue": 38, "role": "Incident Response Owner", "state": "BLOCKED"},
-    {"issue": 39, "role": "Security Data Owner", "state": "BLOCKED"},
-    {"issue": 40, "role": "Platform Owner", "state": "BLOCKED"},
-    {"issue": 41, "role": "Recommendation Owner", "state": "BLOCKED"},
-    {"issue": 42, "role": "Release Owner", "state": "NOT_EXECUTED"},
-    {"issue": 43, "role": "Operations Owner", "state": "UNASSIGNED"}
+    {
+      "issue": 37,
+      "role": "Observability Owner",
+      "state": "BLOCKED"
+    },
+    {
+      "issue": 38,
+      "role": "Incident Response Owner",
+      "state": "BLOCKED"
+    },
+    {
+      "issue": 39,
+      "role": "Security Data Owner",
+      "state": "BLOCKED"
+    },
+    {
+      "issue": 40,
+      "role": "Platform Owner",
+      "state": "BLOCKED"
+    },
+    {
+      "issue": 41,
+      "role": "Recommendation Owner",
+      "state": "BLOCKED"
+    },
+    {
+      "issue": 42,
+      "role": "Release Owner",
+      "state": "NOT_EXECUTED"
+    },
+    {
+      "issue": 43,
+      "role": "Operations Owner",
+      "state": "UNASSIGNED",
+      "executing_actor": "UNASSIGNED",
+      "reviewing_actor": "UNASSIGNED",
+      "incident_commander_or_on_call": "UNASSIGNED",
+      "nonproduction_environment_id": "UNASSIGNED",
+      "least_privilege_access_reference": "BLOCKED_EXTERNAL_DEPENDENCY",
+      "manual_enable_path": "BLOCKED_EXTERNAL_DEPENDENCY",
+      "manual_disable_path": "BLOCKED_EXTERNAL_DEPENDENCY",
+      "immutable_evidence_store": "UNASSIGNED",
+      "two_person_confirmation": "BLOCKED_EXTERNAL_DEPENDENCY",
+      "acceptance_status": "BLOCKED_NOT_EXECUTED"
+    }
   ],
+  "operations_control_plane_document": "docs/platform/governance/sc-next-track/61-SC-OP3-OPERATIONS-CONTROL-PLANE-PREPARATION.md",
+  "current_resolution_result": "OP3_EXTERNAL_RESOLUTION_BLOCKED",
   "completion_rule": "ALL_WORK_ORDERS_CLOSED_WITH_ACCEPTED_EVIDENCE_AND_SEPARATE_SC_APPROVAL"
 }
