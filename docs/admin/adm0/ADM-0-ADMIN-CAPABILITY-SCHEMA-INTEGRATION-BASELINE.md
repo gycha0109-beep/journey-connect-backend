@@ -38,7 +38,8 @@ The DB folder README is stale because it labels itself v2.5 and lists only `01..
 |---|---|
 | Repository | `YTAK99/Journey-Connect` |
 | Default branch | `master` |
-| Source branch/head | `youngtak@e2c2c283e7f10e32806d4fb5285081e7254b5782` |
+| Initial source head | `youngtak@e2c2c283e7f10e32806d4fb5285081e7254b5782` |
+| Final verified source head | `youngtak@44435f04df439647d282bd15ae960349d0ee5f84` |
 | Admin source | `jc-frontend/src/pages/AdminPage.jsx` |
 | Route | `/admin` |
 | API base | `/api/v1` |
@@ -53,7 +54,7 @@ FULL_SOURCE_BRANCH_MERGE=FORBIDDEN
 SELECTIVE_UI_PORT=YES
 ```
 
-The page loads `/users/me/posts?size=100`, checks only `isLogin()`, computes search/statistics/pagination in the browser, and uses ordinary create/update/delete post APIs. It is a personal-content console with an Admin shell, not an Admin console.
+The branch moved during ADM-0, but the reviewed `AdminPage.jsx` and `App.jsx` blob SHAs remained unchanged. The page loads `/users/me/posts?size=100`, checks only `isLogin()`, computes search/statistics/pagination in the browser, and uses ordinary create/update/delete post APIs. It is a personal-content console with an Admin shell, not an Admin console.
 
 ## 4. Admin UI reuse assessment
 
@@ -260,7 +261,7 @@ Pages: dashboard, users/user-detail, posts/post-detail, reports/report-detail an
 | Responsibility | Authority |
 |---|---|
 | Backend Admin DB/security/API | `gycha0109-beep/journey-connect-backend/main` |
-| UI source | `YTAK99/Journey-Connect/youngtak@e2c2c283...` read-only |
+| UI source | `YTAK99/Journey-Connect/youngtak@44435f04...` read-only |
 | Frontend target | `YTAK99/Journey-Connect/master` provisional |
 | Frontend work | `feature/admin-integration` from target |
 | Final monorepo sync | ADM-5 integration branch only |
