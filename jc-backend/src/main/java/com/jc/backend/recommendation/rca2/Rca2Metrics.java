@@ -1,5 +1,6 @@
 package com.jc.backend.recommendation.rca2;
 
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import java.time.Duration;
@@ -50,7 +51,11 @@ public final class Rca2Metrics {
         String key = key(metric, lane, resultClass, breakerState);
         AtomicLong holder = values.computeIfAbsent(key, ignored -> new AtomicLong());
         holder.set(value);
-        if (registry != null) registry.gauge("rca2." + metric, tags(lane, resultClass, breakerState), holder);
+        if (registry != null) {
+            Gauge.builder("rca2." + metric, holder, AtomicLong::get)
+                    .tags(tags(lane, resultClass, breakerState))
+                    .register(registry);
+        }
     }
 
     public void recordMillis(String metric, Rca2RuntimeContracts.Lane lane, String resultClass,
