@@ -10,7 +10,7 @@ ENTRY=ROOT/'docs/admin/adm0/ADM-0-ENTRY-VERIFICATION.md'
 WORKFLOW=ROOT/'.github/workflows/adm0-admin-baseline-governance.yml'
 EVIDENCE=ROOT/'verification/admin/adm0/evidence/adm0-verification-evidence.json'
 EXPECTED_BACKEND='251f2d14c91c6e5bebb9dcb245aa8b1d7e859976'
-EXPECTED_UI='e2c2c283e7f10e32806d4fb5285081e7254b5782'
+EXPECTED_UI='44435f04df439647d282bd15ae960349d0ee5f84'
 ALLOWED=(
  '.github/workflows/adm0-admin-baseline-governance.yml',
  'docs/admin/adm0/',
