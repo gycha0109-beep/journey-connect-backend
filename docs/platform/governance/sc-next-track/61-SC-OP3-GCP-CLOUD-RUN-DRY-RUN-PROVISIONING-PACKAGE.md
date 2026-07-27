@@ -28,7 +28,7 @@ The following concepts remain valid regardless of the final platform:
 - immutable deployment or revision identity bound to an exact repository revision;
 - candidate deployment at zero traffic;
 - private authenticated invocation;
-- separated deployment and runtime identities;
+- least-privilege separation of deployment and runtime identities;
 - finite credentials and no long-lived static secret;
 - default-deny allowlist using synthetic or approved test identities;
 - no raw identity storage or logging;
