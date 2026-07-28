@@ -109,12 +109,15 @@ def main() -> int:
     check("production_route_absent", "production-route-allowed: false" in cfg and not re.search(r"https?://|jdbc:", cfg), "no concrete endpoint/DB route")
     check("actual_credential_absent", "credential-secret-ref: ${RCA2_NONPRODUCTION_CREDENTIAL_SECRET_REF:}" in cfg and not re.search(r"(?i)(password|token|secret):\s*[^$\s][^\n]*", cfg), "placeholder only")
 
+    canonical=repo/"database/journey-connect-db-v2.7"
     sql=[]
-    for p in (repo/"database").rglob("*.sql"):
-        m=re.match(r"(?:V)?(\d+)",p.name)
+    for p in canonical.glob("*.sql"):
+        m=re.fullmatch(r"(\d{2})_.*\.sql",p.name)
         if m: sql.append((int(m.group(1)),str(p.relative_to(repo))))
-    check("sql_01_52_protected", bool(sql) and max(n for n,_ in sql)==52, f"max_sql={max(n for n,_ in sql) if sql else 'none'}")
-    check("sql_53_plus_absent", not any(n>=53 for n,_ in sql), "SQL 53+ absent")
+    inventory={}
+    for number,path in sql: inventory.setdefault(number,[]).append(path)
+    check("sql_01_52_protected", set(range(1,53)).issubset(inventory) and all(len(inventory[n])==1 for n in range(1,53)), "canonical SQL 01..52 unique")
+    check("sql_53_54_successor_only", set(inventory)==set(range(1,55)) and all(len(paths)==1 for paths in inventory.values()) and inventory[53][0].endswith("53_admin_control_plane_hardening.sql") and inventory[54][0].endswith("54_admin_control_plane_hardening_smoke_test.sql"), "exact ADM-3 successor SQL 53/54")
     check("db_change_none", not any("rca2" in path.lower() for _,path in sql), "no RCA-2 SQL")
 
     docs=sorted((repo/"docs/platform/recommendation/rca2").glob("*.md"))

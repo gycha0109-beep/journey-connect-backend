@@ -102,7 +102,7 @@ public class AdminReportService {
     @DatabaseTransactional(role = DatabaseRole.ADMIN, readOnly = true)
     public AdminDtos.ReportDetail detail(long reportId) {
         guard.requireActiveAdmin();
-        return findDetail(reportId);
+        return findDetail(AdminQueryPolicy.targetId(reportId));
     }
 
     @DatabaseTransactional(role = DatabaseRole.ADMIN)
@@ -120,6 +120,7 @@ public class AdminReportService {
             AdminDtos.CommandRequest request,
             String desiredStatus) {
         guard.requireActiveAdmin();
+        reportId = AdminQueryPolicy.targetId(reportId);
         String reason = AdminQueryPolicy.reason(request == null ? null : request.reason());
         ReportState before = findState(reportId);
         if (before == null) {
@@ -132,29 +133,15 @@ public class AdminReportService {
             throw AdminQueryPolicy.conflict("이미 다른 상태로 종결된 신고입니다.");
         }
 
-        try {
-            jdbc.queryForObject(
-                    "select public.admin_finish_report(?, ?, ?)",
-                    Object.class,
-                    reportId,
-                    desiredStatus,
-                    reason);
-        } catch (DataAccessException exception) {
-            ReportState current = findState(reportId);
-            if (current == null) {
-                throw AdminQueryPolicy.notFound();
-            }
-            if (desiredStatus.equals(current.status())) {
-                return result(reportId, current.status(), false, current.updatedAt());
-            }
-            if (isTerminal(current.status())) {
-                throw AdminQueryPolicy.conflict("동시 처리로 신고가 다른 상태로 종결됐습니다.");
-            }
-            throw exception;
-        }
+        Boolean changed = jdbc.queryForObject(
+                "select public.admin_finish_report_command(?, ?, ?)",
+                Boolean.class,
+                reportId,
+                desiredStatus,
+                reason);
 
         ReportState after = findState(reportId);
-        return result(reportId, after.status(), true, after.updatedAt());
+        return result(reportId, after.status(), Boolean.TRUE.equals(changed), after.updatedAt());
     }
 
     private AdminDtos.ReportDetail findDetail(long reportId) {

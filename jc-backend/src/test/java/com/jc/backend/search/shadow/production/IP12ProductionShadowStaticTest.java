@@ -54,8 +54,8 @@ class IP12ProductionShadowStaticTest {
                 .filter(name -> name.matches("^[0-9]{2}_.*\\.sql$"))
                 .sorted()
                 .toList();
-        assertThat(canonicalSql).hasSize(52);
-        for (int number = 1; number <= 52; number++) {
+        assertThat(canonicalSql).hasSize(54);
+        for (int number = 1; number <= 54; number++) {
             String prefix = String.format(java.util.Locale.ROOT, "%02d_", number);
             assertThat(canonicalSql.stream().filter(name -> name.startsWith(prefix)).toList())
                     .as("canonical SQL %s must exist exactly once", prefix)
@@ -85,7 +85,9 @@ class IP12ProductionShadowStaticTest {
                 "49_cross_track_contract_mapping_and_boundary_evidence.sql",
                 "50_cross_track_integration_verdict_and_conflict.sql",
                 "51_cross_track_integration_persistence_roles_and_safe_view.sql",
-                "52_cross_track_integration_validation.sql");
-        assertThat(canonicalSql).noneMatch(name -> name.matches("^(5[3-9]|[6-9][0-9])_.*\\.sql$"));
+                "52_cross_track_integration_validation.sql",
+                "53_admin_control_plane_hardening.sql",
+                "54_admin_control_plane_hardening_smoke_test.sql");
+        assertThat(canonicalSql).noneMatch(name -> name.matches("^(5[5-9]|[6-9][0-9])_.*\\.sql$"));
     }
 }

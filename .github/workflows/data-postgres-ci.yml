@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - "database/journey-connect-db-v2.7/[2-4][0-9]_*.sql"
-      - "database/journey-connect-db-v2.7/5[0-2]_*.sql"
+      - "database/journey-connect-db-v2.7/5[0-4]_*.sql"
       - "verification/dp2/**"
       - "verification/dp3/**"
       - "verification/dp4-5/**"
@@ -60,12 +60,17 @@ jobs:
           sudo apt-get install -y -qq postgresql-client
       - name: Run DP-5 through closure static verification
         run: |
-          python verification/dp5/run_dp5_static_verification.py
-          python verification/dp6/run_dp6_allocation_verification.py
-          python verification/dp6/run_dp6_static_verification.py
-          python verification/dp7/run_dp7_allocation_verification.py
-          python verification/dp7/run_dp7_static_verification.py
-          python verification/data-platform-closure/run_data_platform_closure_verification.py
+          if python verification/admin/adm3/run_baseline_data_verifiers.py --check-active; then
+            python verification/admin/adm3/run_baseline_data_verifiers.py --run
+            python verification/admin/adm3/verify_adm3.py --check migration
+          else
+            python verification/dp5/run_dp5_static_verification.py
+            python verification/dp6/run_dp6_allocation_verification.py
+            python verification/dp6/run_dp6_static_verification.py
+            python verification/dp7/run_dp7_allocation_verification.py
+            python verification/dp7/run_dp7_static_verification.py
+            python verification/data-platform-closure/run_data_platform_closure_verification.py
+          fi
       - name: Verify protected SQL and DP-7 allocation
         shell: bash
         run: |
@@ -79,15 +84,23 @@ jobs:
           fi
           changed_sql="$(git diff --name-only origin/main...HEAD -- database/journey-connect-db-v2.7 \
             | grep -E '\.sql$' | sort || true)"
-          expected_sql="$(printf '%s\n' \
-            database/journey-connect-db-v2.7/48_cross_track_integration_validation_foundation.sql \
-            database/journey-connect-db-v2.7/49_cross_track_contract_mapping_and_boundary_evidence.sql \
-            database/journey-connect-db-v2.7/50_cross_track_integration_verdict_and_conflict.sql \
-            database/journey-connect-db-v2.7/51_cross_track_integration_persistence_roles_and_safe_view.sql \
-            database/journey-connect-db-v2.7/52_cross_track_integration_validation.sql | sort)"
+          if python verification/admin/adm3/run_baseline_data_verifiers.py --check-active; then
+            expected_sql="$(printf '%s\n' \
+              database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql \
+              database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql | sort)"
+            label="ADM-3 successor"
+          else
+            expected_sql="$(printf '%s\n' \
+              database/journey-connect-db-v2.7/48_cross_track_integration_validation_foundation.sql \
+              database/journey-connect-db-v2.7/49_cross_track_contract_mapping_and_boundary_evidence.sql \
+              database/journey-connect-db-v2.7/50_cross_track_integration_verdict_and_conflict.sql \
+              database/journey-connect-db-v2.7/51_cross_track_integration_persistence_roles_and_safe_view.sql \
+              database/journey-connect-db-v2.7/52_cross_track_integration_validation.sql | sort)"
+            label="DP-7"
+          fi
           if [[ -n "$changed_sql" && "$changed_sql" != "$expected_sql" ]]; then
-            printf 'DP-7 SQL diff mismatch.\nExpected either no SQL change or:\n%s\nObserved:\n%s\n' \
-              "$expected_sql" "$changed_sql" >&2
+            printf '%s SQL diff mismatch.\nExpected either no SQL change or:\n%s\nObserved:\n%s\n' \
+              "$label" "$expected_sql" "$changed_sql" >&2
             exit 1
           fi
       - name: Apply canonical state SQL through DP-7
@@ -115,6 +128,14 @@ jobs:
             echo "APPLY $validation" | tee -a "$log"
             psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$validation" 2>&1 | tee -a "$log"
           done
+          if python verification/admin/adm3/run_baseline_data_verifiers.py --check-active; then
+            for successor in \
+              database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql \
+              database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql; do
+              echo "APPLY $successor" | tee -a "$log"
+              psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$successor" 2>&1 | tee -a "$log"
+            done
+          fi
       - name: Run protected and DP-7 concurrency regressions
         shell: bash
         run: |
@@ -163,5 +184,5 @@ jobs:
             verification/dp7/run_dp7_concurrency.sh
             verification/dp7/sql/**
             database/journey-connect-db-v2.7/4[8-9]_*.sql
-            database/journey-connect-db-v2.7/5[0-2]_*.sql
+            database/journey-connect-db-v2.7/5[0-4]_*.sql
           if-no-files-found: error

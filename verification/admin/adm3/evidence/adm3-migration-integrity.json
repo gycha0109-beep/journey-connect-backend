@@ -1,0 +1,20 @@
+{
+  "schema_version": "adm3-migration-integrity-v1",
+  "status": "PASS",
+  "files": {
+    "53_admin_control_plane_hardening.sql": {
+      "sha256": "3de6080bc345a066f28af69818851f621e2f190a3bade9b76e466aa3d5117389",
+      "bytes": 14754,
+      "utf8": "PASS",
+      "newline": "LF",
+      "ends_with_newline": true
+    },
+    "54_admin_control_plane_hardening_smoke_test.sql": {
+      "sha256": "b78b8395df738fb6426ad942e411ff8e05e1d7d7ebc388f93503fd2375a1240d",
+      "bytes": 2334,
+      "utf8": "PASS",
+      "newline": "LF",
+      "ends_with_newline": true
+    }
+  }
+}

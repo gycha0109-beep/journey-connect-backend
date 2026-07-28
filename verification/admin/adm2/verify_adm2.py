@@ -160,14 +160,26 @@ def check_scope() -> None:
         changed = git("diff", "--name-only", f"{base}...HEAD").splitlines()
     except subprocess.CalledProcessError:
         changed = git("diff", "--name-only", "HEAD").splitlines()
+
+    adm3_contract = ROOT / "verification/admin/adm3/adm3-contract.json"
+    adm3_complete = False
+    if adm3_contract.is_file():
+        adm3 = json.loads(adm3_contract.read_text(encoding="utf-8"))
+        adm3_complete = adm3.get("result", {}).get("ADM3_ADMIN_API_HARDENING_COMPLETE") == "YES"
+    adm3_sql = {
+        "database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql",
+        "database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql",
+        "jc-backend/src/test/resources/db/canonical/53_admin_control_plane_hardening.sql",
+        "jc-backend/src/test/resources/db/canonical/54_admin_control_plane_hardening_smoke_test.sql",
+    }
+
     forbidden = []
     for path in changed:
         lower = path.lower()
         if "frontend" in lower or "youngtak" in lower:
             forbidden.append(path)
-        if path.endswith(".sql"):
-            forbidden.append(path)
-        if path.startswith("database/") and not path.endswith(".md"):
+        if (path.endswith(".sql") or (path.startswith("database/") and not path.endswith(".md"))) \
+                and not (adm3_complete and path in adm3_sql):
             forbidden.append(path)
     require(not forbidden, f"forbidden scope changes: {forbidden}")
 

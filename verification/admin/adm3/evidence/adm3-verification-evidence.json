@@ -1,0 +1,59 @@
+{
+  "schema_version": "adm3-evidence-v1",
+  "status": "PASS",
+  "checked": [
+    "contract",
+    "migration",
+    "runtime",
+    "tests",
+    "docs",
+    "scope"
+  ],
+  "head_sha": "GENERATED_AT_EXACT_HEAD",
+  "base_sha": "e7dd0d11de9104e2be62f9ba886ddc20cfe27fad",
+  "contract_sha256": "9dbd666d20da60587d428804f145daae98450699b82ad778a225bd38f11cdbdc",
+  "result": {
+    "ADM3_ADMIN_API_HARDENING_COMPLETE": "YES",
+    "ADM3_ACCEPTANCE_COMPLETE": "YES",
+    "CROSS_ADMIN_SELF_SUSPEND_BLOCKED": "YES",
+    "LAST_ACTIVE_ADMIN_PROTECTED": "YES",
+    "CROSS_ADMIN_TOTAL_LOCKOUT_PROTECTED": "YES",
+    "AUDIT_FAILURE_ROLLS_BACK_MUTATION": "YES",
+    "MUTATION_FAILURE_CREATES_NO_AUDIT": "YES",
+    "DUPLICATE_AUDIT_ON_RETRY": "NO",
+    "CONCURRENT_REPORT_COMMANDS_SAFE": "YES",
+    "CONCURRENT_POST_COMMANDS_SAFE": "YES",
+    "CONCURRENT_USER_COMMANDS_SAFE": "YES",
+    "AUDIT_PRIVACY_VERIFIED": "YES",
+    "API_RESPONSE_PRIVACY_VERIFIED": "YES",
+    "ERROR_RESPONSE_PRIVACY_VERIFIED": "YES",
+    "ADMIN_INPUT_BOUNDS_VERIFIED": "YES",
+    "ADMIN_MVP_ACCEPTANCE_FLOW": "PASS",
+    "ADMIN_AUTHORIZATION_GUARD_REUSED": "YES",
+    "ADMIN_DATABASE_ROLE": "JC_ADMIN",
+    "PHYSICAL_DELETE_IMPLEMENTED": "NO",
+    "ROLE_MANAGEMENT_IMPLEMENTED": "NO",
+    "ADMIN_APPOINTMENT_IMPLEMENTED": "NO",
+    "FRONTEND_SOURCE_CHANGE": "NO",
+    "YOUNGTAK_SOURCE_CHANGE": "NO",
+    "ADMIN_UI_PORT_EXECUTED": "NO",
+    "ADMIN_MVP_FEATURE_EXPANSION": "NO",
+    "BACKEND_HARDENING": "STRONG",
+    "UI_COMPLEXITY": "LOW",
+    "SQL_CHANGE": "53_admin_control_plane_hardening.sql,54_admin_control_plane_hardening_smoke_test.sql",
+    "DB_SCHEMA_CHANGE": "FUNCTION_HARDENING_AND_COMMAND_ADAPTERS",
+    "ADM4_ENTRY": "BLOCKED_PENDING_USER_APPROVAL",
+    "TABLE_CHANGE": "NONE",
+    "COLUMN_CHANGE": "NONE",
+    "INDEX_CHANGE": "NONE",
+    "DATA_MIGRATION": "NONE",
+    "EXISTING_MIGRATION_MODIFIED": "NO"
+  },
+  "migration": {
+    "files": [
+      "database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql",
+      "database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql"
+    ],
+    "integrity_evidence": "verification/admin/adm3/evidence/adm3-migration-integrity.json"
+  }
+}

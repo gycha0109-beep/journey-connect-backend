@@ -150,14 +150,29 @@ def check_tests() -> None:
 
 
 def check_scope() -> None:
+    adm3_contract = ROOT / "verification/admin/adm3/adm3-contract.json"
+    adm3_complete = False
+    if adm3_contract.is_file():
+        adm3 = json.loads(adm3_contract.read_text(encoding="utf-8"))
+        adm3_complete = adm3.get("result", {}).get("ADM3_ADMIN_API_HARDENING_COMPLETE") == "YES"
+    adm3_sql = {
+        "database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql",
+        "database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql",
+        "jc-backend/src/test/resources/db/canonical/53_admin_control_plane_hardening.sql",
+        "jc-backend/src/test/resources/db/canonical/54_admin_control_plane_hardening_smoke_test.sql",
+    }
+
     forbidden = []
     for path in changed_files():
         lower = path.lower()
-        if lower.endswith(".sql") or "/db/migration/" in lower or "frontend" in lower:
+        sql_or_database = lower.endswith(".sql") or "/db/migration/" in lower or (
+            lower.startswith("database/") and not lower.endswith(("readme.md", "readme_p0_3.md"))
+        )
+        if sql_or_database and not (adm3_complete and path in adm3_sql):
+            forbidden.append(path)
+        if "frontend" in lower:
             forbidden.append(path)
         if path == ".github/workflows/adm1-source-intake.yml":
-            forbidden.append(path)
-        if lower.startswith("database/") and not lower.endswith(("readme.md", "readme_p0_3.md")):
             forbidden.append(path)
     expect(not forbidden, f"forbidden ADM-1 scope: {sorted(set(forbidden))}")
 

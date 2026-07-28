@@ -94,12 +94,13 @@ public class AdminUserService {
     @DatabaseTransactional(role = DatabaseRole.ADMIN, readOnly = true)
     public AdminDtos.UserDetail detail(long userId) {
         guard.requireActiveAdmin();
-        return findDetail(userId);
+        return findDetail(AdminQueryPolicy.targetId(userId));
     }
 
     @DatabaseTransactional(role = DatabaseRole.ADMIN)
     public AdminDtos.CommandResult suspend(long userId, AdminDtos.CommandRequest request) {
         AdminActor actor = guard.requireActiveAdmin();
+        userId = AdminQueryPolicy.targetId(userId);
         String reason = AdminQueryPolicy.reason(request == null ? null : request.reason());
         if (actor.adminUserId() == userId) {
             throw AdminQueryPolicy.conflict("관리자는 자기 자신을 정지할 수 없습니다.");
@@ -110,6 +111,7 @@ public class AdminUserService {
     @DatabaseTransactional(role = DatabaseRole.ADMIN)
     public AdminDtos.CommandResult unsuspend(long userId, AdminDtos.CommandRequest request) {
         guard.requireActiveAdmin();
+        userId = AdminQueryPolicy.targetId(userId);
         String reason = AdminQueryPolicy.reason(request == null ? null : request.reason());
         return transition(userId, reason, "active", "admin_restore_user");
     }
@@ -136,28 +138,14 @@ public class AdminUserService {
             throw AdminQueryPolicy.conflict("정지 계정만 정지 해제할 수 있습니다.");
         }
 
-        try {
-            jdbc.queryForObject(
-                    "select public." + function + "(?, ?)",
-                    Object.class,
-                    userId,
-                    reason);
-        } catch (DataAccessException exception) {
-            UserState current = findState(userId);
-            if (current == null) {
-                throw AdminQueryPolicy.notFound();
-            }
-            if (desiredState.equals(current.accountStatus())) {
-                return result(userId, desiredState, false, current.updatedAt());
-            }
-            if ("withdrawn".equals(current.accountStatus())) {
-                throw AdminQueryPolicy.conflict("탈퇴 또는 삭제보관 계정은 이 명령으로 복구할 수 없습니다.");
-            }
-            throw AdminQueryPolicy.conflict("동시 처리로 사용자 상태가 변경됐습니다.");
-        }
+        Boolean changed = jdbc.queryForObject(
+                "select public." + function + "_command(?, ?)",
+                Boolean.class,
+                userId,
+                reason);
 
         UserState after = findState(userId);
-        return result(userId, after.accountStatus(), true, after.updatedAt());
+        return result(userId, after.accountStatus(), Boolean.TRUE.equals(changed), after.updatedAt());
     }
 
     private AdminDtos.UserDetail findDetail(long userId) {
