@@ -33,16 +33,13 @@ jobs:
           cat .adm5-bootstrap/adm5-final.00 .adm5-bootstrap/adm5-final.01 | base64 --decode > /tmp/adm5-final.tar.gz
           echo "95090645d4f83722a5dd5369255b03e2853fb97f4b2c6d6cc085c2e909b28035  /tmp/adm5-final.tar.gz" | sha256sum --check -
           tar -tzf /tmp/adm5-final.tar.gz > /tmp/adm5-archive-files.txt
-      - name: Extract final files
+      - name: Extract non-workflow final files
         shell: bash
-        run: tar -xzf /tmp/adm5-final.tar.gz
-      - name: Remove transfer-only files
+        run: tar --exclude='.github/workflows/*' -xzf /tmp/adm5-final.tar.gz
+      - name: Remove transfer archive
         shell: bash
-        run: |
-          rm -rf .adm5-bootstrap
-          rm -f .github/workflows/adm5-materialize.yml
-          rm -f .github/workflows/adm5-source-export.yml
-      - name: Commit final files
+        run: rm -rf .adm5-bootstrap
+      - name: Commit final non-workflow files
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
@@ -50,6 +47,6 @@ jobs:
           git add -A
           git status --short
           git commit -m "test(admin-ui): complete integration acceptance and delivery"
-      - name: Push final commit
+      - name: Push final non-workflow commit
         shell: bash
         run: git push origin HEAD:agent/adm5-frontend-integration-acceptance-delivery
