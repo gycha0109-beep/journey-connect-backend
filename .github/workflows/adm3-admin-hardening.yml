@@ -7,10 +7,10 @@ on:
       - "jc-backend/src/main/java/com/jc/backend/admin/**"
       - "jc-backend/src/test/java/com/jc/backend/admin/**"
       - "jc-backend/src/test/java/com/jc/backend/CanonicalPostgresInitializer.java"
-      - "jc-backend/src/test/resources/db/canonical/29_admin_control_plane_hardening.sql"
-      - "jc-backend/src/test/resources/db/canonical/30_admin_control_plane_hardening_smoke_test.sql"
-      - "database/journey-connect-db-v2.7/29_admin_control_plane_hardening.sql"
-      - "database/journey-connect-db-v2.7/30_admin_control_plane_hardening_smoke_test.sql"
+      - "jc-backend/src/test/resources/db/canonical/53_admin_control_plane_hardening.sql"
+      - "jc-backend/src/test/resources/db/canonical/54_admin_control_plane_hardening_smoke_test.sql"
+      - "database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql"
+      - "database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql"
       - "docs/admin/adm3/**"
       - "verification/admin/adm1/verify_adm1.py"
       - "verification/admin/adm2/verify_adm2.py"
@@ -75,27 +75,31 @@ jobs:
           set -euo pipefail
           createdb -h 127.0.0.1 -U postgres adm3_clean
           createdb -h 127.0.0.1 -U postgres adm3_upgrade
-          for n in $(seq -w 1 30); do
-            file=$(find jc-backend/src/test/resources/db/canonical -maxdepth 1 -name "${n}_*.sql" -print -quit)
-            test -n "$file"
-            psql -v ON_ERROR_STOP=1 -h 127.0.0.1 -U postgres -d adm3_clean -f "$file"
+          for n in $(seq -w 1 54); do
+            mapfile -t files < <(find database/journey-connect-db-v2.7 -maxdepth 1 -type f -name "${n}_*.sql" | sort)
+            test "${#files[@]}" -eq 1
+            psql -v ON_ERROR_STOP=1 -h 127.0.0.1 -U postgres -d adm3_clean -f "${files[0]}"
           done
-          for n in $(seq -w 1 28); do
-            file=$(find jc-backend/src/test/resources/db/canonical -maxdepth 1 -name "${n}_*.sql" -print -quit)
-            test -n "$file"
-            psql -v ON_ERROR_STOP=1 -h 127.0.0.1 -U postgres -d adm3_upgrade -f "$file"
+          for n in $(seq -w 1 52); do
+            mapfile -t files < <(find database/journey-connect-db-v2.7 -maxdepth 1 -type f -name "${n}_*.sql" | sort)
+            test "${#files[@]}" -eq 1
+            psql -v ON_ERROR_STOP=1 -h 127.0.0.1 -U postgres -d adm3_upgrade -f "${files[0]}"
           done
           psql -v ON_ERROR_STOP=1 -h 127.0.0.1 -U postgres -d adm3_upgrade \
-            -f jc-backend/src/test/resources/db/canonical/29_admin_control_plane_hardening.sql
+            -f database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql
           psql -v ON_ERROR_STOP=1 -h 127.0.0.1 -U postgres -d adm3_upgrade \
-            -f jc-backend/src/test/resources/db/canonical/30_admin_control_plane_hardening_smoke_test.sql
+            -f database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql
       - name: Record migration evidence
         shell: bash
         run: |
           mkdir -p verification/admin/adm3/evidence
           {
             echo "CLEAN_MIGRATION=PASS"
-            echo "UPGRADE_1_28_TO_29_30=PASS"
+            echo "UPGRADE_1_52_TO_53_54=PASS"
+            echo "MIGRATION_53_SHA256=$(sha256sum database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql | awk '{print $1}')"
+            echo "MIGRATION_54_SHA256=$(sha256sum database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql | awk '{print $1}')"
+            echo "MIGRATION_53_BYTES=$(wc -c < database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql)"
+            echo "MIGRATION_54_BYTES=$(wc -c < database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql)"
             echo "POSTGRES_VERSION=$(psql -At -h 127.0.0.1 -U postgres -d adm3_clean -c 'show server_version')"
           } > verification/admin/adm3/evidence/adm3-migration-evidence.txt
       - uses: actions/upload-artifact@v6
