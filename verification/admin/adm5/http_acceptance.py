@@ -198,7 +198,10 @@ def main() -> None:
 
     # Reproducible local-only content fixtures.
     region_id = int(sql("select id from public.regions where slug = 'kr-seoul'"))
-    place_id = int(sql("select id from public.places where region_id in (select id from public.regions where slug like 'kr-seoul%') order by id limit 1"))
+    place_id = int(sql(
+        f"insert into public.places(region_id,name_local,name_ko,name_en,address,latitude,longitude,category,is_active) "
+        f"values ({region_id},'ADM5 Demo Place','ADM5 시연 장소','ADM5 Demo Place','Local-only fixture',37.566500,126.978000,'demo',true) returning id"
+    ))
     post_id = int(sql(
         f"insert into public.posts(author_id, main_region_id, title, content, visibility, status) values ({normal_id}, {region_id}, 'ADM5 visible post', 'ADM5 integration content', 'public', 'draft') returning id"
     ))
