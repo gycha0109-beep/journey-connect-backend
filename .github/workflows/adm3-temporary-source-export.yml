@@ -18,11 +18,11 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Package source snapshot
         run: |
-          tar --exclude=.git --exclude=adm3-source.tar.gz -czf adm3-source.tar.gz .
+          git archive --format=tar.gz --output=/tmp/adm3-source.tar.gz HEAD
       - name: Upload source snapshot
         uses: actions/upload-artifact@v4
         with:
           name: adm3-temporary-source-export
-          path: adm3-source.tar.gz
+          path: /tmp/adm3-source.tar.gz
           if-no-files-found: error
           retention-days: 1
