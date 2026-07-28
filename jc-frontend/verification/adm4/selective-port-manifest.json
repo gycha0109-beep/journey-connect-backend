@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "adm4-selective-port-v1",
+  "sourceRepository": "YTAK99/Journey-Connect",
+  "sourceBranch": "youngtak",
+  "sourceSha": "47f8cceeaaa4f9afdd90896bc0793a34e9cefefb",
+  "targetRepository": "gycha0109-beep/journey-connect-backend",
+  "targetBaseBranch": "main",
+  "targetBaseSha": "dc4800814f690d2e6b0f8cf7abba56c6a3a32d30",
+  "ongoingSourceSync": false,
+  "fullSourceBranchMerge": false,
+  "ported": [
+    {
+      "source": "jc-frontend/src/pages/AdminPage.jsx",
+      "targets": [
+        "jc-frontend/src/admin/AdminLayout.jsx",
+        "jc-frontend/src/admin/AdminUi.jsx",
+        "jc-frontend/src/admin/AdminCommandDialog.jsx",
+        "jc-frontend/src/pages/admin/AdminDashboardPage.jsx",
+        "jc-frontend/src/pages/admin/AdminReportsPage.jsx",
+        "jc-frontend/src/pages/admin/AdminPostsPage.jsx",
+        "jc-frontend/src/pages/admin/AdminUsersPage.jsx",
+        "jc-frontend/src/pages/AdminLoginPage.jsx"
+      ],
+      "elements": [
+        "responsive sidebar layout idea",
+        "sticky page header arrangement",
+        "summary card arrangement",
+        "table spacing and empty/loading presentation",
+        "modal visual shell"
+      ]
+    }
+  ],
+  "rejected": [
+    "mock and current-user post data",
+    "hardcoded administrator identity",
+    "temporary API assumptions",
+    "client-only pagination masquerading as server state",
+    "create and edit post controls",
+    "physical delete semantics",
+    "window.confirm dependency",
+    "disabled unsupported menus",
+    "whole source branch merge",
+    "Datta Able template and media directory",
+    "unused dependencies and duplicated styles",
+    "source repository application shell and user routes",
+    "source repository authentication assumptions"
+  ]
+}
