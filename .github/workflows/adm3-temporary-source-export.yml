@@ -1,0 +1,28 @@
+name: ADM-3 Temporary Source Export
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  export-source:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact pull request head
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Package source snapshot
+        run: |
+          tar --exclude=.git --exclude=adm3-source.tar.gz -czf adm3-source.tar.gz .
+      - name: Upload source snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: adm3-temporary-source-export
+          path: adm3-source.tar.gz
+          if-no-files-found: error
+          retention-days: 1
