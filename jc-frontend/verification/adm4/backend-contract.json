@@ -1,0 +1,9 @@
+{
+  "repository": "gycha0109-beep/journey-connect-backend",
+  "mainSha": "dc4800814f690d2e6b0f8cf7abba56c6a3a32d30",
+  "adm3ExactHead": "15c9cef39786e0cb418be384c32d000ecfec3130",
+  "endpointCount": 13,
+  "backendRuntimeChange": "NO",
+  "backendSqlChange": "NO",
+  "dbSchemaChange": "NONE"
+}
