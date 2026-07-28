@@ -75,6 +75,7 @@ jobs:
               ('               echo "APPLY $successor" | tee -a "$log"\n', '              echo "APPLY $successor" | tee -a "$log"\n', 1),
               ('               psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$successor" 2>&1 | tee -a "$log"\n', '              psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$successor" 2>&1 | tee -a "$log"\n', 1),
               ('             done\n           fi\n', '            done\n          fi\n', 1),
+              ('    if tracked.startswith("verification/admin/adm3/fix/") or tracked.startswith(\n        "verification/admin/adm3/snapshot/"\n    ):\n        continue\n', '    if (\n        tracked == "verification/admin/adm3/verify_adm3.py"\n        or tracked.startswith("verification/admin/adm3/fix/")\n        or tracked.startswith("verification/admin/adm3/snapshot/")\n    ):\n        continue\n', 1),
           )
           for old, new, count in replacements:
               if text.count(old) < count:
@@ -82,7 +83,7 @@ jobs:
               text = text.replace(old, new, count)
           path.write_text(text, encoding='utf-8')
           PY
-          echo "4e5c09340dc24f554ebe451c280706c1f5462b106e2470e7883d88907c224f30  /tmp/adm3-recovery.sh" | sha256sum --check --strict
+          echo "6c3a98764941f7d7ce9ac63f32914b7da9946c85742d3b413c5c897924083d01  /tmp/adm3-recovery.sh" | sha256sum --check --strict
           rm -rf verification/admin/adm3/recovery
           bash /tmp/adm3-recovery.sh > /tmp/adm3-recovery.log 2>&1
       - name: Upload ADM-3 recovery diagnostics
