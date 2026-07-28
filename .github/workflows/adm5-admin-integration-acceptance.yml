@@ -45,12 +45,27 @@ jobs:
           fi
           ADM5_CHANGED_FILES="$(cat /tmp/adm5-changed-files.txt)" \
             python verification/admin/adm5/verify_adm5.py --check all
-      - name: Run inherited static verifiers
+      - name: ADM-1 inherited invariant verifier
         run: |
-          python verification/admin/adm1/verify_adm1.py --check all
-          python verification/admin/adm2/verify_adm2.py --check all
-          python verification/admin/adm3/verify_adm3.py --check all
-          node jc-frontend/verification/adm4/verify-adm4.mjs
+          python verification/admin/adm1/verify_adm1.py --check contract
+          python verification/admin/adm1/verify_adm1.py --check source
+          python verification/admin/adm1/verify_adm1.py --check tests
+          python verification/admin/adm1/verify_adm1.py --check docs
+      - name: ADM-2 inherited invariant verifier
+        run: |
+          python verification/admin/adm2/verify_adm2.py --check contract
+          python verification/admin/adm2/verify_adm2.py --check files
+          python verification/admin/adm2/verify_adm2.py --check runtime
+          python verification/admin/adm2/verify_adm2.py --check tests
+      - name: ADM-3 inherited invariant verifier
+        run: |
+          python verification/admin/adm3/verify_adm3.py --check contract
+          python verification/admin/adm3/verify_adm3.py --check migration
+          python verification/admin/adm3/verify_adm3.py --check runtime
+          python verification/admin/adm3/verify_adm3.py --check tests
+          python verification/admin/adm3/verify_adm3.py --check docs
+      - name: ADM-4 inherited verifier
+        run: node jc-frontend/verification/adm4/verify-adm4.mjs
 
   frontend:
     runs-on: ubuntu-24.04
@@ -217,6 +232,7 @@ jobs:
         run: |
           set -euo pipefail
           cp jc-backend/src/main/resources/application.yml.sample jc-backend/src/main/resources/application.yml
+          chmod +x jc-backend/gradlew
           (
             cd jc-backend
             DB_HOST=127.0.0.1 DB_PORT=5432 DB_NAME=journey_connect \
