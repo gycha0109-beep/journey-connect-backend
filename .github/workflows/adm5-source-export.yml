@@ -1,6 +1,10 @@
 name: ADM-5 Exact Source Export
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/adm5-source-export.yml"
   push:
     branches:
       - agent/adm5-frontend-integration-acceptance-delivery
@@ -18,7 +22,7 @@ jobs:
       - name: Checkout exact branch head
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Package exact source
@@ -30,7 +34,7 @@ jobs:
           sha256sum adm5-source.tar.gz > ADM5-SOURCE-SHA256.txt
       - uses: actions/upload-artifact@v6
         with:
-          name: adm5-exact-source-${{ github.sha }}
+          name: adm5-exact-source-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
             adm5-source.tar.gz
             ADM5-SOURCE-HEAD.txt
