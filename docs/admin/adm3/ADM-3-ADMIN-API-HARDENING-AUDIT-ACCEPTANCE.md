@@ -57,7 +57,7 @@ COLUMN_CHANGE=NONE
 DATA_MIGRATION=NONE
 ```
 
-Existing migration files are unchanged. The migration is forward-only because the original functions were already deployed. Function ownership remains `jc_security_owner`; runtime execution remains restricted to `jc_admin`. Clean bootstrap and 1-28 to 29-30 upgrade paths are independently executed in CI.
+Existing migration files are unchanged. The migration is forward-only because the original functions were already deployed. Function ownership remains `jc_security_owner`; runtime execution remains restricted to `jc_admin`. Clean bootstrap through 54 and upgrade from the protected 01-52 baseline through 53-54 are independently executed in CI.
 
 ## 5. Failure injection
 

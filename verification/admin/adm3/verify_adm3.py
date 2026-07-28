@@ -157,8 +157,8 @@ def check_migration() -> None:
     canonical = read("jc-backend/src/test/resources/db/canonical/53_admin_control_plane_hardening.sql")
     smoke = read("database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql")
     canonical_smoke = read("jc-backend/src/test/resources/db/canonical/54_admin_control_plane_hardening_smoke_test.sql")
-    require(production == canonical, "29 migration canonical copy mismatch")
-    require(smoke == canonical_smoke, "30 smoke canonical copy mismatch")
+    require(production == canonical, "53 migration canonical copy mismatch")
+    require(smoke == canonical_smoke, "54 smoke canonical copy mismatch")
     for function in ["admin_suspend_user", "admin_withdraw_user", "admin_change_user_role", "admin_finish_report_command", "admin_hide_post_command", "admin_restore_post_command", "admin_suspend_user_command", "admin_restore_user_command"]:
         require(f"CREATE OR REPLACE FUNCTION public.{function}" in production, f"missing function replacement: {function}")
     for token in [
@@ -207,9 +207,16 @@ def check_migration() -> None:
         path for path in changed
         if path == ".github/workflows/adm3-successor-fix-materialize.yml"
         or path == ".github/workflows/adm3-recovery-materialize.yml"
+        or path == ".github/workflows/adm3-temporary-source-export.yml"
         or path.startswith("verification/admin/adm3/fix/")
         or path.startswith("verification/admin/adm3/snapshot/")
-        or any(token in path.lower() for token in ("payload", "chunk-", "part-"))
+        or any(
+            token in path.lower()
+            for token in (
+                "materializ", "payload", "chunk-", "part-", "base64", "hex-snapshot",
+                "extract-script", "staging-only", "debug-output",
+            )
+        )
     ]
     require(not temporary, f"temporary materialization artifact remains: {temporary}")
 
@@ -300,6 +307,9 @@ def check_scope() -> None:
         ".github/workflows/data-postgres-ci.yml",
         "jc-backend/src/test/java/com/jc/backend/search/shadow/production/IP12ProductionShadowStaticTest.java",
         "jc-backend/src/test/java/com/jc/backend/recommendation/dataadoption/reconciliation/database/Rca1bDatabaseReconciliationTest.java",
+        "jc-backend/src/test/java/com/jc/backend/recommendation/rca2/Rca2StaticBoundaryTest.java",
+        "verification/rca1b/run_rca1b_verification.py",
+        "verification/rca2/run_rca2_verification.py",
         *SQL_PATHS,
     }
     for path in changed:

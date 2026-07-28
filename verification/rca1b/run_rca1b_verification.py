@@ -136,14 +136,16 @@ def static_checks(head: str) -> list[dict[str, str]]:
 
     def sql_protection() -> str:
         directory = ROOT / "database/journey-connect-db-v2.7"
-        inventory = []
+        scripts: dict[int, list[Path]] = {}
         for path in directory.glob("*.sql"):
-            match = re.match(r"(\d+)_", path.name)
+            match = re.fullmatch(r"(\d{2})_.*\.sql", path.name)
             if match:
-                inventory.append(int(match.group(1)))
-        need(len(inventory) == 52 and set(inventory) == set(range(1, 53)), "SQL 01..52 inventory")
-        need(not list(directory.glob("5[3-9]_*.sql")) and not list(directory.glob("[6-9][0-9]_*.sql")), "SQL 53+ exists")
-        return "canonical SQL 01..52 exact and 53+ absent"
+                scripts.setdefault(int(match.group(1)), []).append(path)
+        need(set(scripts) == set(range(1, 55)), "SQL 01..54 inventory")
+        need(all(len(paths) == 1 for paths in scripts.values()), "duplicate canonical SQL version")
+        need(scripts[53][0].name == "53_admin_control_plane_hardening.sql", "unexpected SQL 53 owner")
+        need(scripts[54][0].name == "54_admin_control_plane_hardening_smoke_test.sql", "unexpected SQL 54 owner")
+        return "canonical SQL 01..52 protected with exact ADM-3 successor 53/54"
     record("canonical_sql_protection", sql_protection)
 
     def query_registry() -> str:
