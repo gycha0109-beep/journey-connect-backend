@@ -62,3 +62,7 @@ named("empty_state_renders", read("admin/AdminUi.jsx").includes("AdminEmpty"));
 named("error_state_renders", read("admin/AdminUi.jsx").includes("AdminError"));
 named("dialog_accessibility_baseline", dialog.includes('role="dialog"') && dialog.includes('aria-modal="true"') && dialog.includes("event.key === \"Escape\"") && dialog.includes("event.key !== \"Tab\""));
 named("all_six_commands_are_connected", ["resolveAdminReport", "dismissAdminReport", "hideAdminPost", "restoreAdminPost", "suspendAdminUser", "unsuspendAdminUser"].every((name) => api.includes(`export const ${name}`)));
+named("forbidden_user_can_switch_account_safely", guard.includes("clearStoredAuth") && guard.includes("다른 계정으로 로그인") && !guard.includes("/feedpage"));
+named("stale_state_refreshes_detail_and_dashboard", [reportDetail, postDetail, userDetail].every((source) => source.includes("Promise.all([load(), refreshDashboard()])")));
+named("reason_is_trimmed_before_command", dialog.includes("const normalized = reason.trim()"));
+named("error_500_is_safe", read("admin/adminErrors.js").includes("ADMIN_OPERATION_FAILED") && !read("admin/adminErrors.js").includes("response?.data?.message"));
