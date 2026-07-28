@@ -69,7 +69,7 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p ../verification/admin/adm1/evidence
-          ./gradlew test \
+          ./gradlew :test \
             --tests com.jc.backend.admin.security.AdminSecurityIntegrationTest \
             --tests com.jc.backend.database.DatabaseRoleRoutingIntegrationTest \
             --console=plain --no-daemon 2>&1 \
