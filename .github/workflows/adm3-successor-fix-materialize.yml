@@ -20,6 +20,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref || 'agent/adm3-admin-api-hardening-audit-acceptance' }}
           fetch-depth: 0
           persist-credentials: true
+          show-progress: false
       - name: Apply successor correction
         shell: bash
         run: |
@@ -28,8 +29,7 @@ jobs:
             | gzip --decompress > /tmp/adm3-successor.patch
           echo "c938814fe7b860a0203d36945ac9b47c239b1ac88e47f42e0881a6a8d5097e90  /tmp/adm3-successor.patch" \
             | sha256sum --check --strict
-          git apply --check /tmp/adm3-successor.patch
-          git apply --index /tmp/adm3-successor.patch
+          git apply --3way --index --verbose /tmp/adm3-successor.patch
           git rm -r verification/admin/adm3/fix
           git diff --cached --check
       - name: Commit and push successor correction
@@ -37,6 +37,6 @@ jobs:
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898206+github-actions[bot]@users.noreply.github.com"
           git commit -m "fix(admin): allocate unique forward migration sequence"
           git push origin HEAD:agent/adm3-admin-api-hardening-audit-acceptance
