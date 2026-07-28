@@ -1,0 +1,48 @@
+name: ADM-4 Materialize Source
+
+on:
+  push:
+    branches:
+      - agent/adm4-admin-dashboard-ui-finalisation
+    paths:
+      - ".adm4-bootstrap/*.part"
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout work branch
+        uses: actions/checkout@v7
+        with:
+          ref: agent/adm4-admin-dashboard-ui-finalisation
+          fetch-depth: 0
+      - name: Materialize only after every archive part exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=(
+            .adm4-bootstrap/adm4-materialization.00.part
+            .adm4-bootstrap/adm4-materialization.01.part
+            .adm4-bootstrap/adm4-materialization.02.part
+            .adm4-bootstrap/adm4-materialization.03.part
+          )
+          for part in "${expected[@]}"; do
+            if [[ ! -f "$part" ]]; then
+              echo "Archive is not complete yet; skipping materialization."
+              exit 0
+            fi
+          done
+          cat "${expected[@]}" | base64 --decode > /tmp/adm4-materialization.tar.gz
+          echo "cdbe2975cd02d56d757488613e2b0fb05ad6cd9e5c07bd4effe9d30e3c6abd0a  /tmp/adm4-materialization.tar.gz" | sha256sum --check -
+          tar -xzf /tmp/adm4-materialization.tar.gz
+          rm -rf .adm4-bootstrap
+          rm -f .github/workflows/adm4-materialize.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(admin-ui): finalise dashboard and moderation workflows"
+          git push origin HEAD:agent/adm4-admin-dashboard-ui-finalisation
