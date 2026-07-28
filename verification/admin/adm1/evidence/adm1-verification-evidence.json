@@ -1,0 +1,16 @@
+{
+  "schema_version": "adm1-verification-evidence-v1",
+  "status": "PASS",
+  "checked": [
+    "contract",
+    "source",
+    "tests",
+    "scope",
+    "docs",
+    "workflow"
+  ],
+  "head": "LOCAL_STATIC",
+  "contract_sha256": "2b1e25c4027d93565c4a5e1decc8a451697ff57ab343e0e676a6fe6a80789c78",
+  "sql_change": "NONE",
+  "db_schema_change": "NONE"
+}

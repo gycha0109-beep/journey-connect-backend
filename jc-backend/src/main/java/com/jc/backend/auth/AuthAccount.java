@@ -92,6 +92,14 @@ public class AuthAccount extends BaseTimeEntity {
         return profileImageUrl;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public String getAccountStatus() {
+        return accountStatus;
+    }
+
     private static String usernameFrom(String nickname, String email) {
         String normalized = Normalizer.normalize(nickname, Normalizer.Form.NFKD)
                 .toLowerCase(Locale.ROOT)
