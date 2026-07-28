@@ -36,8 +36,13 @@ jobs:
             | sha256sum --check --strict
           git apply --check /tmp/adm2.patch
           git apply --index /tmp/adm2.patch
+
+          # Publish workflow changes through the GitHub connector after this commit.
+          git restore --source=HEAD --staged --worktree .github/workflows/adm2-source-intake.yml
+          git reset HEAD -- .github/workflows/adm2-admin-basic-apis.yml
+          rm -f .github/workflows/adm2-admin-basic-apis.yml
+
           git rm -r verification/admin/adm2/materialize
-          git rm .github/workflows/adm2-materialize.yml
           git diff --cached --check
           git status --short
       - name: Commit and push implementation
