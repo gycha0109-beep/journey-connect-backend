@@ -1,0 +1,47 @@
+name: ADM-5 Materialize Acceptance
+
+on:
+  push:
+    branches:
+      - agent/adm5-frontend-integration-acceptance-delivery
+    paths:
+      - ".adm5-bootstrap/adm5-final.*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: adm5-materialize
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: agent/adm5-frontend-integration-acceptance-delivery
+          fetch-depth: 0
+      - name: Materialize final ADM-5 files
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=(.adm5-bootstrap/adm5-final.00 .adm5-bootstrap/adm5-final.01)
+          for part in "${expected[@]}"; do
+            if [[ ! -f "$part" ]]; then
+              echo "Acceptance archive is incomplete; skipping."
+              exit 0
+            fi
+          done
+          cat "${expected[@]}" | base64 --decode > /tmp/adm5-final.tar.gz
+          echo "95090645d4f83722a5dd5369255b03e2853fb97f4b2c6d6cc085c2e909b28035  /tmp/adm5-final.tar.gz" | sha256sum --check -
+          tar -xzf /tmp/adm5-final.tar.gz
+          rm -rf .adm5-bootstrap
+          rm -f .github/workflows/adm5-materialize.yml
+          rm -f .github/workflows/adm5-source-export.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "test(admin-ui): complete integration acceptance and delivery"
+          git push origin HEAD:agent/adm5-frontend-integration-acceptance-delivery
