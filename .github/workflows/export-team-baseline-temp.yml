@@ -1,0 +1,30 @@
+name: Export Team Baseline Temp
+
+on:
+  pull_request:
+    branches:
+      - temp/team-baseline-export-base
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Create repository archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          zip -r team-minimal-baseline-v2.zip . \
+            -x '.git/*' \
+            -x 'team-minimal-baseline-v2.zip'
+      - name: Upload archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: team-minimal-baseline-v2
+          path: team-minimal-baseline-v2.zip
+          if-no-files-found: error
