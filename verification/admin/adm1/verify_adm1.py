@@ -161,9 +161,38 @@ def check_scope() -> None:
             forbidden.append(path)
     expect(not forbidden, f"forbidden ADM-1 scope: {sorted(set(forbidden))}")
 
-    for path in (ROOT / "jc-backend/src/main").rglob("*Controller*"):
-        if path.is_file() and "admin" in {part.lower() for part in path.parts}:
-            raise Failure(f"production Admin controller remains: {path.relative_to(ROOT)}")
+    admin_controllers = {
+        str(path.relative_to(ROOT)).replace("\\", "/")
+        for path in (ROOT / "jc-backend/src/main").rglob("*Controller*")
+        if path.is_file() and "admin" in {part.lower() for part in path.parts}
+    }
+    if admin_controllers:
+        adm2_contract_path = ROOT / "verification/admin/adm2/adm2-contract.json"
+        expect(adm2_contract_path.is_file(), "production Admin controller exists without ADM-2 contract")
+        adm2 = json.loads(adm2_contract_path.read_text(encoding="utf-8"))
+        expect(
+            adm2.get("result", {}).get("ADM2_ADMIN_BASIC_APIS_IMPLEMENTED") == "YES",
+            "production Admin controller exists without completed ADM-2 contract",
+        )
+        expected_controllers = {
+            "jc-backend/src/main/java/com/jc/backend/admin/AdminDashboardController.java",
+            "jc-backend/src/main/java/com/jc/backend/admin/AdminReportController.java",
+            "jc-backend/src/main/java/com/jc/backend/admin/AdminPostController.java",
+            "jc-backend/src/main/java/com/jc/backend/admin/AdminUserController.java",
+        }
+        expect(
+            admin_controllers == expected_controllers,
+            f"unexpected ADM-2 Admin controllers: {sorted(admin_controllers ^ expected_controllers)}",
+        )
+        for service in [
+            "AdminDashboardService.java",
+            "AdminReportService.java",
+            "AdminPostService.java",
+            "AdminUserService.java",
+        ]:
+            source = read(f"jc-backend/src/main/java/com/jc/backend/admin/{service}")
+            expect("requireActiveAdmin()" in source, f"ADM-2 guard reuse missing: {service}")
+            expect("DatabaseRole.ADMIN" in source, f"ADM-2 DB role routing missing: {service}")
 
 
 def check_docs_and_workflow() -> None:
