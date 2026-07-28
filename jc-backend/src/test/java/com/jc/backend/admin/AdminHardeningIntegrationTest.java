@@ -121,11 +121,18 @@ class AdminHardeningIntegrationTest {
             assertThat(outcomes).extracting(CommandOutcome::status).containsExactlyInAnyOrder(200, 409);
         }
 
-        long activeAdmins = count("select count(*) from public.app_users where role='admin' and account_status='active'");
-        long suspendedAdmins = count("select count(*) from public.app_users where role='admin' and account_status='suspended'");
+        long activeAdmins = count(
+                "select count(*) from public.app_users where id in (" + adminA.id() + "," + adminB.id()
+                        + ") and role='admin' and account_status='active'");
+        long suspendedAdmins = count(
+                "select count(*) from public.app_users where id in (" + adminA.id() + "," + adminB.id()
+                        + ") and role='admin' and account_status='suspended'");
         assertThat(activeAdmins).isEqualTo(1);
         assertThat(suspendedAdmins).isEqualTo(1);
-        assertThat(count("select count(*) from public.admin_actions where action_type='user_suspend'")).isEqualTo(1);
+        assertThat(count(
+                        "select count(*) from public.admin_actions where action_type='user_suspend' "
+                                + "and target_entity_id in (" + adminA.id() + "," + adminB.id() + ")"))
+                .isEqualTo(1);
     }
 
     @Test
