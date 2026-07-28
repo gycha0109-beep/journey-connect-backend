@@ -30,7 +30,8 @@ jobs:
         run: |
           set -euo pipefail
           git rev-parse HEAD > ADM5-SOURCE-HEAD.txt
-          tar --exclude=.git --exclude=adm5-source.tar.gz -czf adm5-source.tar.gz .
+          tar --exclude=.git -czf /tmp/adm5-source.tar.gz .
+          cp /tmp/adm5-source.tar.gz ./adm5-source.tar.gz
           sha256sum adm5-source.tar.gz > ADM5-SOURCE-SHA256.txt
       - uses: actions/upload-artifact@v6
         with:
