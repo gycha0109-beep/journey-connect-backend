@@ -1,27 +1,28 @@
 name: ADM-5 Materialize Acceptance
 
 on:
-  push:
-    branches:
-      - agent/adm5-frontend-integration-acceptance-delivery
+  pull_request:
+    branches: [main]
     paths:
-      - ".adm5-bootstrap/adm5-final.*"
+      - ".adm5-bootstrap/**"
+      - ".github/workflows/adm5-materialize.yml"
 
 permissions:
   contents: write
 
 concurrency:
-  group: adm5-materialize
+  group: adm5-materialize-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
   materialize:
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: agent/adm5-frontend-integration-acceptance-delivery
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
       - name: Materialize final ADM-5 files
         shell: bash
