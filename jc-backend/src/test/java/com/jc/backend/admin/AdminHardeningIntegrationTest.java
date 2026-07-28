@@ -507,18 +507,18 @@ class AdminHardeningIntegrationTest {
         long postId = createPost(admin.id(), "accept post", "accept body");
         long reportId = createReport(user.id(), postId, "spam", "accept report");
 
-        get(admin, "/api/admin/dashboard").andExpect(status().isOk());
-        get(admin, "/api/admin/reports?status=pending").andExpect(status().isOk());
-        get(admin, "/api/admin/reports/" + reportId).andExpect(status().isOk());
-        get(admin, "/api/admin/posts/" + postId).andExpect(status().isOk());
+        adminGet(admin, "/api/admin/dashboard").andExpect(status().isOk());
+        adminGet(admin, "/api/admin/reports?status=pending").andExpect(status().isOk());
+        adminGet(admin, "/api/admin/reports/" + reportId).andExpect(status().isOk());
+        adminGet(admin, "/api/admin/posts/" + postId).andExpect(status().isOk());
         command(admin, "/api/admin/posts/" + postId + "/hide", "accept hide")
                 .andExpect(status().isOk()).andExpect(jsonPath("$.data.changed").value(true));
         command(admin, "/api/admin/reports/" + reportId + "/resolve", "accept resolve")
                 .andExpect(status().isOk()).andExpect(jsonPath("$.data.changed").value(true));
-        get(admin, "/api/admin/users/" + user.id()).andExpect(status().isOk());
+        adminGet(admin, "/api/admin/users/" + user.id()).andExpect(status().isOk());
         command(admin, "/api/admin/users/" + user.id() + "/suspend", "accept suspend")
                 .andExpect(status().isOk()).andExpect(jsonPath("$.data.changed").value(true));
-        get(admin, "/api/admin/dashboard")
+        adminGet(admin, "/api/admin/dashboard")
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.pendingReportCount").value(0))
                 .andExpect(jsonPath("$.data.suspendedUserCount").value(1));
@@ -555,9 +555,9 @@ class AdminHardeningIntegrationTest {
     @Test
     void suspended_admin_loses_access_mid_flow() throws Exception {
         AccountToken admin = activeAdmin("accept-mid-flow");
-        get(admin, "/api/admin/dashboard").andExpect(status().isOk());
+        adminGet(admin, "/api/admin/dashboard").andExpect(status().isOk());
         setStatus(admin.id(), "suspended");
-        get(admin, "/api/admin/reports")
+        adminGet(admin, "/api/admin/reports")
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value("ADMIN_ACCESS_DENIED"));
     }
@@ -728,7 +728,7 @@ class AdminHardeningIntegrationTest {
     }
 
     private JsonNode getJson(AccountToken admin, String path) throws Exception {
-        return objectMapper.readTree(get(admin, path).andReturn().getResponse().getContentAsString());
+        return objectMapper.readTree(adminGet(admin, path).andReturn().getResponse().getContentAsString());
     }
 
     private JsonNode data(JsonNode response) {
@@ -741,7 +741,7 @@ class AdminHardeningIntegrationTest {
         assertThat(actual).containsExactlyInAnyOrder(fields);
     }
 
-    private org.springframework.test.web.servlet.ResultActions get(AccountToken admin, String path) throws Exception {
+    private org.springframework.test.web.servlet.ResultActions adminGet(AccountToken admin, String path) throws Exception {
         return mockMvc.perform(get(path).header("Authorization", bearer(admin.token())));
     }
 
