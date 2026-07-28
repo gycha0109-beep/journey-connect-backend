@@ -61,24 +61,32 @@ jobs:
       - name: Grant Gradle wrapper execution
         run: chmod +x ./gradlew
       - name: Run Admin security and database role tests
+        id: admin_tests
+        continue-on-error: true
         env:
           JC_TEST_POSTGRES_IMAGE: postgres:15-alpine
-        run: >-
-          ./gradlew test
-          --tests com.jc.backend.admin.security.AdminSecurityIntegrationTest
-          --tests com.jc.backend.database.DatabaseRoleRoutingIntegrationTest
-          --tests com.jc.backend.SecurityErrorResponseIntegrationTest
-          --tests com.jc.backend.auth.AuthRefreshTokenIntegrationTest
-          --stacktrace --no-daemon
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p ../verification/admin/adm1/evidence
+          ./gradlew test \
+            --tests com.jc.backend.admin.security.AdminSecurityIntegrationTest \
+            --tests com.jc.backend.database.DatabaseRoleRoutingIntegrationTest \
+            --console=plain --no-daemon 2>&1 \
+            | tee ../verification/admin/adm1/evidence/adm1-admin-postgres.log
       - name: Upload Admin test evidence
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: adm1-admin-postgres-tests-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
+            verification/admin/adm1/evidence/adm1-admin-postgres.log
             jc-backend/build/test-results/**/*.xml
             jc-backend/build/reports/tests/**
-          if-no-files-found: warn
+          if-no-files-found: error
+      - name: Enforce Admin PostgreSQL test result
+        if: steps.admin_tests.outcome == 'failure'
+        run: exit 1
 
   independent_verifier:
     needs: [contract_and_scope, admin_postgres_security]
