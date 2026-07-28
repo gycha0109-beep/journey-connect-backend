@@ -44,7 +44,7 @@
       "jc-backend/src/test/resources/db/canonical/29_admin_control_plane_hardening.sql",
       "jc-backend/src/test/resources/db/canonical/30_admin_control_plane_hardening_smoke_test.sql"
     ],
-    "db_schema_change": "FUNCTION_REPLACEMENT_ONLY",
+    "db_schema_change": "FUNCTION_HARDENING_AND_COMMAND_ADAPTERS",
     "table_change": "NONE",
     "column_change": "NONE",
     "data_migration": "NONE",
@@ -90,7 +90,7 @@
     "BACKEND_HARDENING": "STRONG",
     "UI_COMPLEXITY": "LOW",
     "SQL_CHANGE": "29_30_FORWARD_ONLY",
-    "DB_SCHEMA_CHANGE": "FUNCTION_REPLACEMENT_ONLY",
+    "DB_SCHEMA_CHANGE": "FUNCTION_HARDENING_AND_COMMAND_ADAPTERS",
     "ADM4_ENTRY": "BLOCKED_PENDING_USER_APPROVAL"
   }
 }

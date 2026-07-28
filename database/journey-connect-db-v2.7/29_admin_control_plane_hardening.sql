@@ -252,6 +252,140 @@ BEGIN
 END;
 $$;
 
+
+-- ADM-3 command adapters convert same-state races into an explicit boolean no-op.
+-- The exception block is a PostgreSQL subtransaction: an expected P0002 from the
+-- legacy command is rolled back locally, allowing an authoritative state read
+-- without leaving the outer application transaction aborted.
+CREATE OR REPLACE FUNCTION public.admin_finish_report_command(
+  p_report_id bigint,
+  p_resolution varchar,
+  p_note varchar
+)
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public, pg_temp
+AS $$
+DECLARE
+  v_status varchar(20);
+BEGIN
+  BEGIN
+    PERFORM public.admin_finish_report(p_report_id, p_resolution, p_note);
+    RETURN true;
+  EXCEPTION WHEN SQLSTATE 'P0002' THEN
+    SELECT r.status INTO v_status FROM public.reports r WHERE r.id = p_report_id;
+    IF NOT FOUND THEN
+      RAISE EXCEPTION 'Admin target was not found.' USING ERRCODE = 'P0002';
+    END IF;
+    IF v_status = p_resolution THEN
+      RETURN false;
+    END IF;
+    RAISE EXCEPTION 'Report state conflict.' USING ERRCODE = '23514';
+  END;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.admin_hide_post_command(p_post_id bigint, p_reason varchar)
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public, pg_temp
+AS $$
+DECLARE
+  v_state varchar(20);
+BEGIN
+  BEGIN
+    PERFORM public.admin_hide_post(p_post_id, p_reason);
+    RETURN true;
+  EXCEPTION WHEN SQLSTATE 'P0002' THEN
+    SELECT p.moderation_status INTO v_state FROM public.posts p WHERE p.id = p_post_id;
+    IF NOT FOUND THEN
+      RAISE EXCEPTION 'Admin target was not found.' USING ERRCODE = 'P0002';
+    END IF;
+    IF v_state = 'hidden' THEN
+      RETURN false;
+    END IF;
+    RAISE EXCEPTION 'Post state conflict.' USING ERRCODE = '23514';
+  END;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.admin_restore_post_command(p_post_id bigint, p_reason varchar)
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public, pg_temp
+AS $$
+DECLARE
+  v_state varchar(20);
+BEGIN
+  BEGIN
+    PERFORM public.admin_restore_post(p_post_id, p_reason);
+    RETURN true;
+  EXCEPTION WHEN SQLSTATE 'P0002' THEN
+    SELECT p.moderation_status INTO v_state FROM public.posts p WHERE p.id = p_post_id;
+    IF NOT FOUND THEN
+      RAISE EXCEPTION 'Admin target was not found.' USING ERRCODE = 'P0002';
+    END IF;
+    IF v_state = 'visible' THEN
+      RETURN false;
+    END IF;
+    RAISE EXCEPTION 'Post state conflict.' USING ERRCODE = '23514';
+  END;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.admin_suspend_user_command(p_target_user_id bigint, p_reason varchar)
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public, pg_temp
+AS $$
+DECLARE
+  v_state varchar(20);
+BEGIN
+  BEGIN
+    PERFORM public.admin_suspend_user(p_target_user_id, p_reason);
+    RETURN true;
+  EXCEPTION WHEN SQLSTATE 'P0002' THEN
+    SELECT u.account_status INTO v_state FROM public.app_users u WHERE u.id = p_target_user_id;
+    IF NOT FOUND THEN
+      RAISE EXCEPTION 'Admin target was not found.' USING ERRCODE = 'P0002';
+    END IF;
+    IF v_state = 'suspended' THEN
+      RETURN false;
+    END IF;
+    RAISE EXCEPTION 'User state conflict.' USING ERRCODE = '23514';
+  END;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.admin_restore_user_command(p_target_user_id bigint, p_reason varchar)
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public, pg_temp
+AS $$
+DECLARE
+  v_state varchar(20);
+BEGIN
+  BEGIN
+    PERFORM public.admin_restore_user(p_target_user_id, p_reason);
+    RETURN true;
+  EXCEPTION WHEN SQLSTATE 'P0002' THEN
+    SELECT u.account_status INTO v_state FROM public.app_users u WHERE u.id = p_target_user_id;
+    IF NOT FOUND THEN
+      RAISE EXCEPTION 'Admin target was not found.' USING ERRCODE = 'P0002';
+    END IF;
+    IF v_state = 'active' THEN
+      RETURN false;
+    END IF;
+    RAISE EXCEPTION 'User state conflict.' USING ERRCODE = '23514';
+  END;
+END;
+$$;
+
 ALTER FUNCTION public.admin_suspend_user(bigint, varchar) OWNER TO jc_security_owner;
 ALTER FUNCTION public.admin_withdraw_user(bigint, varchar) OWNER TO jc_security_owner;
 ALTER FUNCTION public.admin_change_user_role(bigint, varchar, varchar) OWNER TO jc_security_owner;
@@ -262,5 +396,21 @@ REVOKE EXECUTE ON FUNCTION public.admin_change_user_role(bigint, varchar, varcha
 GRANT EXECUTE ON FUNCTION public.admin_suspend_user(bigint, varchar) TO jc_admin;
 GRANT EXECUTE ON FUNCTION public.admin_withdraw_user(bigint, varchar) TO jc_admin;
 GRANT EXECUTE ON FUNCTION public.admin_change_user_role(bigint, varchar, varchar) TO jc_admin;
+
+ALTER FUNCTION public.admin_finish_report_command(bigint, varchar, varchar) OWNER TO jc_security_owner;
+ALTER FUNCTION public.admin_hide_post_command(bigint, varchar) OWNER TO jc_security_owner;
+ALTER FUNCTION public.admin_restore_post_command(bigint, varchar) OWNER TO jc_security_owner;
+ALTER FUNCTION public.admin_suspend_user_command(bigint, varchar) OWNER TO jc_security_owner;
+ALTER FUNCTION public.admin_restore_user_command(bigint, varchar) OWNER TO jc_security_owner;
+REVOKE EXECUTE ON FUNCTION public.admin_finish_report_command(bigint, varchar, varchar) FROM PUBLIC, jc_app, jc_auth, jc_recommendation;
+REVOKE EXECUTE ON FUNCTION public.admin_hide_post_command(bigint, varchar) FROM PUBLIC, jc_app, jc_auth, jc_recommendation;
+REVOKE EXECUTE ON FUNCTION public.admin_restore_post_command(bigint, varchar) FROM PUBLIC, jc_app, jc_auth, jc_recommendation;
+REVOKE EXECUTE ON FUNCTION public.admin_suspend_user_command(bigint, varchar) FROM PUBLIC, jc_app, jc_auth, jc_recommendation;
+REVOKE EXECUTE ON FUNCTION public.admin_restore_user_command(bigint, varchar) FROM PUBLIC, jc_app, jc_auth, jc_recommendation;
+GRANT EXECUTE ON FUNCTION public.admin_finish_report_command(bigint, varchar, varchar) TO jc_admin;
+GRANT EXECUTE ON FUNCTION public.admin_hide_post_command(bigint, varchar) TO jc_admin;
+GRANT EXECUTE ON FUNCTION public.admin_restore_post_command(bigint, varchar) TO jc_admin;
+GRANT EXECUTE ON FUNCTION public.admin_suspend_user_command(bigint, varchar) TO jc_admin;
+GRANT EXECUTE ON FUNCTION public.admin_restore_user_command(bigint, varchar) TO jc_admin;
 
 COMMIT;

@@ -143,25 +143,14 @@ public class AdminPostService {
             return result(postId, desiredState, false, before.updatedAt());
         }
 
-        try {
-            jdbc.queryForObject(
-                    "select public." + function + "(?, ?)",
-                    Object.class,
-                    postId,
-                    reason);
-        } catch (DataAccessException exception) {
-            PostState current = findState(postId);
-            if (current == null) {
-                throw AdminQueryPolicy.notFound();
-            }
-            if (desiredState.equals(current.moderationStatus())) {
-                return result(postId, desiredState, false, current.updatedAt());
-            }
-            throw AdminQueryPolicy.conflict("동시 처리로 게시물 moderation 상태가 변경됐습니다.");
-        }
+        Boolean changed = jdbc.queryForObject(
+                "select public." + function + "_command(?, ?)",
+                Boolean.class,
+                postId,
+                reason);
 
         PostState after = findState(postId);
-        return result(postId, after.moderationStatus(), true, after.updatedAt());
+        return result(postId, after.moderationStatus(), Boolean.TRUE.equals(changed), after.updatedAt());
     }
 
     private AdminDtos.PostDetail findDetail(long postId) {

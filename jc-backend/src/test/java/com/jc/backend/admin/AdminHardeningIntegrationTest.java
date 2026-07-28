@@ -506,6 +506,7 @@ class AdminHardeningIntegrationTest {
         AccountToken user = signupUser("accept-user");
         long postId = createPost(admin.id(), "accept post", "accept body");
         long reportId = createReport(user.id(), postId, "spam", "accept report");
+        long auditBefore = count("select count(*) from public.admin_actions");
 
         adminGet(admin, "/api/admin/dashboard").andExpect(status().isOk());
         adminGet(admin, "/api/admin/reports?status=pending").andExpect(status().isOk());
@@ -541,7 +542,7 @@ class AdminHardeningIntegrationTest {
         assertThat(postModerationStatus(postId)).isEqualTo("visible");
         assertThat(userStatus(user.id())).isEqualTo("active");
         assertThat(reportStatus(reportId)).isEqualTo("resolved");
-        assertThat(count("select count(*) from public.admin_actions")).isEqualTo(5);
+        assertThat(count("select count(*) from public.admin_actions")).isEqualTo(auditBefore + 5);
     }
 
     @Test

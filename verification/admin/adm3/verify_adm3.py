@@ -44,7 +44,7 @@ EXPECTED = {
     "BACKEND_HARDENING": "STRONG",
     "UI_COMPLEXITY": "LOW",
     "SQL_CHANGE": "29_30_FORWARD_ONLY",
-    "DB_SCHEMA_CHANGE": "FUNCTION_REPLACEMENT_ONLY",
+    "DB_SCHEMA_CHANGE": "FUNCTION_HARDENING_AND_COMMAND_ADAPTERS",
     "ADM4_ENTRY": "BLOCKED_PENDING_USER_APPROVAL",
 }
 
@@ -154,7 +154,7 @@ def check_migration() -> None:
     canonical_smoke = read("jc-backend/src/test/resources/db/canonical/30_admin_control_plane_hardening_smoke_test.sql")
     require(production == canonical, "29 migration canonical copy mismatch")
     require(smoke == canonical_smoke, "30 smoke canonical copy mismatch")
-    for function in ["admin_suspend_user", "admin_withdraw_user", "admin_change_user_role"]:
+    for function in ["admin_suspend_user", "admin_withdraw_user", "admin_change_user_role", "admin_finish_report_command", "admin_hide_post_command", "admin_restore_post_command", "admin_suspend_user_command", "admin_restore_user_command"]:
         require(f"CREATE OR REPLACE FUNCTION public.{function}" in production, f"missing function replacement: {function}")
     for token in [
         "pg_advisory_xact_lock(1245789, 3)",
@@ -194,7 +194,7 @@ def check_runtime() -> None:
     for token in ["getParameterMap", "getParameterValues", "지원하지 않는", "중복"]:
         require(token in interceptor, f"request boundary missing: {token}")
     advice = read("jc-backend/src/main/java/com/jc/backend/admin/AdminExceptionHandler.java")
-    for token in ["INVALID_ADMIN_COMMAND", "ADMIN_OPERATION_FAILED", "DataAccessException"]:
+    for token in ["INVALID_ADMIN_COMMAND", "ADMIN_OPERATION_FAILED", "ADMIN_STATE_CONFLICT", "ADMIN_TARGET_NOT_FOUND", "DataAccessException", "SQLException"]:
         require(token in advice, f"error privacy handler missing: {token}")
     combined = controller_text + policy + interceptor + advice
     require("admin_change_user_role" not in controller_text, "role management endpoint introduced")
