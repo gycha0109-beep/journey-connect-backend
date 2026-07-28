@@ -29,6 +29,12 @@ jobs:
             .adm4-bootstrap/adm4-materialization.01.part
             .adm4-bootstrap/adm4-materialization.02.part
             .adm4-bootstrap/adm4-materialization.03.part
+            .adm4-bootstrap/adm4-materialization.04.part
+            .adm4-bootstrap/adm4-materialization.05.part
+            .adm4-bootstrap/adm4-materialization.06.part
+            .adm4-bootstrap/adm4-materialization.07.part
+            .adm4-bootstrap/adm4-materialization.08.part
+            .adm4-bootstrap/adm4-materialization.09.part
           )
           for part in "${expected[@]}"; do
             if [[ ! -f "$part" ]]; then
