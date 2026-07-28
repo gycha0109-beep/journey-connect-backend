@@ -1,0 +1,179 @@
+name: Team Handoff Prune
+
+on:
+  push:
+    branches:
+      - handoff/team-minimal-baseline-v2
+
+permissions:
+  contents: write
+
+jobs:
+  prune:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: handoff/team-minimal-baseline-v2
+      - name: Build minimal team baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Remove enterprise-only architecture and phase-governance documents.
+          if [ -d docs ]; then
+            find docs -type f \( \
+              -iname '*DP-*' -o -iname '*IP-*' -o -iname '*RCA-*' -o -iname '*OP-*' -o \
+              -iname '*SYSTEM-CONTRACT*' -o -iname '*TRACK-GOVERNANCE*' -o \
+              -iname '*PLATFORM-CONTRACT*' -o -iname '*PLATFORM-ARCHITECTURE*' -o \
+              -iname '*HANDOFF*' -o -iname '*HOLD*' -o -iname '*DECISION*' \
+            \) -delete || true
+
+            find docs -type d \( \
+              -iname '*data-platform*' -o -iname '*intelligence-platform*' -o \
+              -iname '*operations-platform*' -o -iname '*governance*' -o \
+              -iname '*handoff*' -o -iname '*rca*' \
+            \) -prune -exec rm -rf {} + || true
+
+            # Replace phase-heavy Admin and recommendation documents with short team docs.
+            rm -rf docs/admin docs/recommendation 2>/dev/null || true
+          fi
+
+          # Remove enterprise/phase contract verifiers and evidence packs.
+          if [ -d verification ]; then
+            find verification -mindepth 1 -maxdepth 2 -type d \( \
+              -iname '*dp*' -o -iname '*ip*' -o -iname '*rca*' -o -iname '*op*' -o \
+              -iname 'adm1' -o -iname 'adm2' -o -iname 'adm3' -o -iname 'adm4' -o -iname 'adm5' \
+            \) -prune -exec rm -rf {} + || true
+          fi
+
+          # Remove phase-specific and one-shot automation. Keep generic CI only.
+          if [ -d .github/workflows ]; then
+            find .github/workflows -maxdepth 1 -type f | while read -r file; do
+              base="$(basename "$file")"
+              case "$base" in
+                team-handoff-prune.yml) ;;
+                *adm*|*ADM*|*dp*|*DP*|*ip*|*IP*|*rca*|*RCA*|*op-*|*OP-*|*material*|*transfer*|*intake*|*evidence*|*contract*) rm -f "$file" ;;
+              esac
+            done
+          fi
+
+          # Remove root-level enterprise-only contract documents if present.
+          find . -maxdepth 2 -type f \( \
+            -iname 'DP-*.md' -o -iname 'IP-*.md' -o -iname 'RCA-*.md' -o -iname 'OP-*.md' -o \
+            -iname '*SYSTEM-CONTRACT*.md' -o -iname '*TRACK-GOVERNANCE*.md' -o \
+            -iname '*PLATFORM-ARCHITECTURE*.md' -o -iname '*PLATFORM-CONTRACT*.md' \
+          \) -delete || true
+
+          mkdir -p docs/team
+
+          cat > TEAM_HANDOFF_SCOPE.md <<'EOF'
+          # Journey Connect Team Handoff Scope
+
+          This branch is the minimized team-delivery baseline derived from the full enterprise archive.
+
+          ## Included
+          - Authentication and user features
+          - Posts, regions, feeds and interactions
+          - Recommendation runtime required by the team service
+          - Admin runtime and Admin UI
+          - Database schema and executable migrations
+          - Runtime tests and generic CI that remain applicable
+
+          ## Simplified presentation scope
+          - Recommendation is presented as one service feature, not as P0/P1/P2 internal phases.
+          - Admin is presented as user, report and post moderation with authorization and audit history.
+
+          ## Excluded
+          - Data Platform and Intelligence Platform contracts
+          - RCA and Operations Platform governance packages
+          - System-wide enterprise contracts and phase handoff records
+          - Phase-specific contract verifiers, evidence packs and one-shot materialization workflows
+
+          ## Current limitation
+          Production deployment and runtime-operation ownership have not yet been assigned by the team.
+          EOF
+
+          cat > docs/team/RECOMMENDATION.md <<'EOF'
+          # Recommendation
+
+          The team baseline retains only the recommendation code, database objects and tests required by the running service.
+
+          Presentation flow:
+
+          1. Collect post, region and interaction data.
+          2. Query eligible recommendation candidates.
+          3. Apply the current ordering policy.
+          4. Return recommendation results to the feed.
+          5. Verify behavior through database and regression tests.
+
+          Internal P0/P1/P2 phase history and enterprise authority contracts are intentionally excluded from this branch.
+          EOF
+
+          cat > docs/team/ADMIN.md <<'EOF'
+          # Admin
+
+          The team baseline presents Admin as a compact service-operation feature.
+
+          Included capabilities:
+          - Administrator authorization
+          - User suspension and restoration
+          - Report review and resolution
+          - Post hiding and restoration
+          - Audit-history recording
+          - Admin user interface
+
+          ADM-0 through ADM-5 phase documents and contract evidence are intentionally excluded from this branch.
+          EOF
+
+          cat > docs/team/OWNERSHIP.md <<'EOF'
+          # Ownership
+
+          | Area | Status |
+          |---|---|
+          | Backend implementation | Implemented |
+          | Recommendation runtime | Implemented |
+          | Admin backend and UI | Implemented |
+          | Production deployment owner | Not assigned |
+          | Runtime operations owner | Not assigned |
+          | Incident-response owner | Not assigned |
+          EOF
+
+          cat > docs/team/README.md <<'EOF'
+          # Team Delivery Notes
+
+          Start with the repository root README and the following compact documents:
+
+          - `TEAM_HANDOFF_SCOPE.md`
+          - `docs/team/RECOMMENDATION.md`
+          - `docs/team/ADMIN.md`
+          - `docs/team/OWNERSHIP.md`
+
+          The complete enterprise architecture and phase history remain on the original archive branch/repository and are not required for the team presentation ZIP.
+          EOF
+
+          # Add a visible branch notice without rewriting the full existing README.
+          if [ -f README.md ] && ! grep -q 'TEAM MINIMAL HANDOFF BRANCH' README.md; then
+            tmp="$(mktemp)"
+            cat > "$tmp" <<'EOF'
+          > **TEAM MINIMAL HANDOFF BRANCH**
+          > This branch contains the minimized team-delivery baseline. See `TEAM_HANDOFF_SCOPE.md` before using or presenting it.
+
+          EOF
+            cat README.md >> "$tmp"
+            mv "$tmp" README.md
+          fi
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No pruning changes detected."
+            exit 0
+          fi
+
+          git commit -m "chore(handoff): minimize team delivery baseline"
+          git push origin HEAD:handoff/team-minimal-baseline-v2
