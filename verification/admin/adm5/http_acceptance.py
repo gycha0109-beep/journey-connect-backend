@@ -72,7 +72,8 @@ def sql(statement: str) -> str:
         ["psql", "-v", "ON_ERROR_STOP=1", "-At", "-h", DB_HOST, "-p", DB_PORT, "-U", DB_USER, "-d", DB_NAME, "-c", statement],
         check=True, text=True, capture_output=True, env=env,
     )
-    return result.stdout.strip()
+    lines = [line for line in result.stdout.splitlines() if line.strip()]
+    return lines[0].strip() if lines else ""
 
 
 def signup(email: str, nickname: str) -> dict[str, Any]:
@@ -311,5 +312,5 @@ if __name__ == "__main__":
         main()
     except Exception as exc:
         OUT.parent.mkdir(parents=True, exist_ok=True)
-        OUT.write_text(json.dumps({"schemaVersion": "adm5-http-acceptance-v1", "status": "FAIL", "failure": type(exc).__name__, "checks": checks}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        OUT.write_text(json.dumps({"schemaVersion": "adm5-http-acceptance-v1", "status": "FAIL", "failure": type(exc).__name__, "message": str(exc), "checks": checks}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         raise
