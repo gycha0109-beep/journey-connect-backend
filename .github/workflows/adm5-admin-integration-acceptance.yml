@@ -1,0 +1,285 @@
+name: ADM-5 Admin Integration Acceptance
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "jc-frontend/**"
+      - "docs/admin/adm5/**"
+      - "verification/admin/adm5/**"
+      - ".github/workflows/adm5-admin-integration-acceptance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: adm5-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  ADM5_BASE_SHA: ${{ github.event.pull_request.base.sha || '1466e26ff8e810175d4c7098f3902c36a24f1478' }}
+  ADM5_EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  contract-and-scope:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Verify no backend runtime, SQL, schema or endpoint expansion
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --name-only "$ADM5_BASE_SHA" "$ADM5_EXACT_HEAD" > /tmp/adm5-changed-files.txt
+          if grep -E '^(jc-backend/src/main/|database/.*\.sql$|jc-backend/src/test/resources/db/canonical/.*\.sql$)' /tmp/adm5-changed-files.txt; then
+            echo "ADM-5 scope violation: backend runtime or SQL changed" >&2
+            exit 1
+          fi
+          ADM5_CHANGED_FILES="$(cat /tmp/adm5-changed-files.txt)" \
+            python verification/admin/adm5/verify_adm5.py --check all
+      - name: Run inherited static verifiers
+        run: |
+          python verification/admin/adm1/verify_adm1.py --check all
+          python verification/admin/adm2/verify_adm2.py --check all
+          python verification/admin/adm3/verify_adm3.py --check all
+          node jc-frontend/verification/adm4/verify-adm4.mjs
+
+  frontend:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        working-directory: jc-frontend
+        run: npm install --no-audit --no-fund
+      - name: Frontend tests
+        working-directory: jc-frontend
+        run: npm test
+      - name: Lint
+        working-directory: jc-frontend
+        run: npm run lint
+      - name: Production build
+        working-directory: jc-frontend
+        run: npm run build
+      - name: ADM-4 verifier
+        working-directory: jc-frontend
+        run: npm run verify:adm4
+      - name: ADM-5 static verifier
+        env:
+          ADM5_FRONTEND_TEST_RESULT: PASS
+          ADM5_LINT_RESULT: PASS
+          ADM5_BUILD_RESULT: PASS
+        run: python verification/admin/adm5/verify_adm5.py --check all
+
+  backend-regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Run inherited Admin PostgreSQL tests
+        id: regression
+        continue-on-error: true
+        working-directory: jc-backend
+        env:
+          JC_TEST_POSTGRES_IMAGE: postgres:15-alpine
+        shell: bash
+        run: |
+          set -o pipefail
+          chmod +x ./gradlew
+          mkdir -p ../verification/admin/adm5/evidence/backend
+          ./gradlew :test \
+            --tests com.jc.backend.admin.AdminHardeningIntegrationTest \
+            --tests com.jc.backend.admin.AdminBasicApisIntegrationTest \
+            --tests com.jc.backend.admin.security.AdminSecurityIntegrationTest \
+            --tests com.jc.backend.database.DatabaseRoleRoutingIntegrationTest \
+            --console=plain --no-daemon 2>&1 \
+            | tee ../verification/admin/adm5/evidence/backend/adm5-backend-regression.log
+      - name: Upload backend regression evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: adm5-backend-regression-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            verification/admin/adm5/evidence/backend/**
+            jc-backend/build/test-results/**/*.xml
+            jc-backend/build/reports/tests/**
+          if-no-files-found: error
+      - name: Enforce backend regression
+        if: steps.regression.outcome == 'failure'
+        run: exit 1
+
+  live-integration-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: journey_connect
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d journey_connect"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 30
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: "5432"
+      PGDATABASE: journey_connect
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      JWT_SECRET: adm5-test-only-jwt-secret-0123456789abcdef0123456789abcdef
+      ADM5_FIXTURE_PASSWORD: Adm5-local-only-Password-42!
+      ADM5_BROWSER_FIXTURE: /tmp/adm5-browser-fixture.json
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Confirm Chromium browser
+        run: google-chrome --version
+      - name: Apply canonical PostgreSQL package
+        shell: bash
+        run: |
+          set -euo pipefail
+          scripts=(
+            01_initial_schema.sql 02_seed.sql 03_smoke_test.sql 04_admin_support.sql
+            05_security_roles.sql 06_security_smoke_test.sql 07_recommendation_storage.sql
+            08_recommendation_security_roles.sql 09_recommendation_smoke_test.sql
+            10_backend_runtime.sql 11_backend_runtime_security_roles.sql 12_backend_runtime_smoke_test.sql
+            13_backend_role_routing.sql 14_backend_role_routing_smoke_test.sql
+            15_backend_role_runtime_fix.sql 16_backend_role_runtime_fix_smoke_test.sql
+            17_recommendation_run_exploration_partition_fix.sql
+            18_recommendation_run_exploration_partition_fix_smoke_test.sql
+            19_recommendation_replay_audit.sql 20_recommendation_replay_audit_smoke_test.sql
+            21_recommendation_behavior_runtime.sql 22_recommendation_behavior_runtime_smoke_test.sql
+            23_recommendation_p1_profile_policy.sql 24_recommendation_p1_profile_policy_smoke_test.sql
+            25_recommendation_p2_evaluation_release.sql 26_recommendation_p2_evaluation_release_smoke_test.sql
+            27_search_document_projection.sql 28_search_document_projection_smoke_test.sql
+            53_admin_control_plane_hardening.sql 54_admin_control_plane_hardening_smoke_test.sql
+          )
+          for script in "${scripts[@]}"; do
+            psql -v ON_ERROR_STOP=1 -f "jc-backend/src/test/resources/db/canonical/$script"
+          done
+      - name: Provision restricted backend database login
+        shell: bash
+        run: |
+          set -euo pipefail
+          psql -v ON_ERROR_STOP=1 <<'SQL'
+          CREATE ROLE jc_backend_adm5 LOGIN NOINHERIT NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD 'adm5-db-login-only';
+          GRANT jc_app, jc_auth, jc_admin, jc_recommendation TO jc_backend_adm5;
+          SQL
+          test "$(psql -Atc "select count(*) from pg_auth_members m join pg_roles r on r.oid=m.roleid join pg_roles u on u.oid=m.member where u.rolname='jc_backend_adm5' and r.rolname in ('jc_app','jc_auth','jc_admin','jc_recommendation')")" = "4"
+          test "$(psql -Atc "select rolinherit::text || ':' || rolsuper::text || ':' || rolbypassrls::text from pg_roles where rolname='jc_backend_adm5'")" = "false:false:false"
+      - name: Start backend
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp jc-backend/src/main/resources/application.yml.sample jc-backend/src/main/resources/application.yml
+          (
+            cd jc-backend
+            DB_HOST=127.0.0.1 DB_PORT=5432 DB_NAME=journey_connect \
+            DB_USERNAME=jc_backend_adm5 DB_PASSWORD=adm5-db-login-only \
+            FLYWAY_ENABLED=false DB_ROLE_ROUTING_VERIFY=true DB_ROLE_ROUTING_REQUIRE_RESTRICTED_LOGIN=true \
+            JWT_SECRET="$JWT_SECRET" CORS_ALLOWED_ORIGINS=http://127.0.0.1:4173 SERVER_PORT=8080 \
+            ./gradlew bootRun --no-daemon > ../verification/admin/adm5/evidence/backend-live.log 2>&1 &
+            echo $! > /tmp/adm5-backend.pid
+          )
+          for attempt in $(seq 1 180); do
+            if curl -fsS http://127.0.0.1:8080/api/v1/regions >/dev/null; then exit 0; fi
+            if ! kill -0 "$(cat /tmp/adm5-backend.pid)" 2>/dev/null; then cat verification/admin/adm5/evidence/backend-live.log; exit 1; fi
+            sleep 1
+          done
+          cat verification/admin/adm5/evidence/backend-live.log
+          exit 1
+      - name: Run live HTTP acceptance
+        run: python verification/admin/adm5/http_acceptance.py
+      - name: Build and start production frontend preview
+        working-directory: jc-frontend
+        shell: bash
+        env:
+          VITE_API_BASE_URL: http://127.0.0.1:8080/api/v1
+          VITE_ADMIN_API_BASE_URL: http://127.0.0.1:8080/api/admin
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          npm run build
+          npm run preview -- --host 127.0.0.1 --port 4173 > ../verification/admin/adm5/evidence/frontend-preview.log 2>&1 &
+          echo $! > /tmp/adm5-frontend.pid
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:4173/login >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat ../verification/admin/adm5/evidence/frontend-preview.log
+          exit 1
+      - name: Run Chromium responsive, accessibility and SPA acceptance
+        run: node verification/admin/adm5/browser_acceptance.mjs
+      - name: Run final ADM-5 verifier with runtime evidence
+        env:
+          ADM5_REQUIRE_RUNTIME_EVIDENCE: "true"
+          ADM5_FRONTEND_TEST_RESULT: PASS
+          ADM5_LINT_RESULT: PASS
+          ADM5_BUILD_RESULT: PASS
+          ADM5_BACKEND_RESULT: PASS
+          ADM5_AUTH_MATRIX_RESULT: PASS
+          ADM5_ERROR_MATRIX_RESULT: PASS
+          ADM5_RESPONSIVE_RESULT: PASS
+          ADM5_ACCESSIBILITY_RESULT: PASS
+          ADM5_SPA_RESULT: PASS
+        run: python verification/admin/adm5/verify_adm5.py --check all
+      - name: Upload live integration and browser evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: adm5-live-integration-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            verification/admin/adm5/evidence/**
+            jc-frontend/dist/**
+          if-no-files-found: error
+      - name: Stop processes
+        if: always()
+        shell: bash
+        run: |
+          test ! -f /tmp/adm5-frontend.pid || kill "$(cat /tmp/adm5-frontend.pid)" 2>/dev/null || true
+          test ! -f /tmp/adm5-backend.pid || kill "$(cat /tmp/adm5-backend.pid)" 2>/dev/null || true
