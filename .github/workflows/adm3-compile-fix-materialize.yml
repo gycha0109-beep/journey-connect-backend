@@ -1,0 +1,42 @@
+name: ADM-3 Compile Fix Materialize
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/adm3-compile-fix-materialize.yml"
+      - "verification/admin/adm3/fix/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.ref || 'agent/adm3-admin-api-hardening-audit-acceptance' }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Apply compile fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 --decode verification/admin/adm3/fix/compile-helper-rename.patch.gz.b64 \
+            | gzip --decompress > /tmp/adm3-fix.patch
+          echo "65cd366f5449422596451988990a83c2360a7b8358af3a92225af98e93159ae1  /tmp/adm3-fix.patch" \
+            | sha256sum --check --strict
+          git apply --check /tmp/adm3-fix.patch
+          git apply --index /tmp/adm3-fix.patch
+          git rm -r verification/admin/adm3/fix
+          git diff --cached --check
+      - name: Commit and push compile fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "test(admin): avoid MockMvc request helper shadowing"
+          git push origin HEAD:agent/adm3-admin-api-hardening-audit-acceptance
