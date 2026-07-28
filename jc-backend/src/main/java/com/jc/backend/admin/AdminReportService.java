@@ -102,7 +102,7 @@ public class AdminReportService {
     @DatabaseTransactional(role = DatabaseRole.ADMIN, readOnly = true)
     public AdminDtos.ReportDetail detail(long reportId) {
         guard.requireActiveAdmin();
-        return findDetail(reportId);
+        return findDetail(AdminQueryPolicy.targetId(reportId));
     }
 
     @DatabaseTransactional(role = DatabaseRole.ADMIN)
@@ -120,6 +120,7 @@ public class AdminReportService {
             AdminDtos.CommandRequest request,
             String desiredStatus) {
         guard.requireActiveAdmin();
+        reportId = AdminQueryPolicy.targetId(reportId);
         String reason = AdminQueryPolicy.reason(request == null ? null : request.reason());
         ReportState before = findState(reportId);
         if (before == null) {

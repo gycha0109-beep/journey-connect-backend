@@ -94,12 +94,13 @@ public class AdminUserService {
     @DatabaseTransactional(role = DatabaseRole.ADMIN, readOnly = true)
     public AdminDtos.UserDetail detail(long userId) {
         guard.requireActiveAdmin();
-        return findDetail(userId);
+        return findDetail(AdminQueryPolicy.targetId(userId));
     }
 
     @DatabaseTransactional(role = DatabaseRole.ADMIN)
     public AdminDtos.CommandResult suspend(long userId, AdminDtos.CommandRequest request) {
         AdminActor actor = guard.requireActiveAdmin();
+        userId = AdminQueryPolicy.targetId(userId);
         String reason = AdminQueryPolicy.reason(request == null ? null : request.reason());
         if (actor.adminUserId() == userId) {
             throw AdminQueryPolicy.conflict("관리자는 자기 자신을 정지할 수 없습니다.");
@@ -110,6 +111,7 @@ public class AdminUserService {
     @DatabaseTransactional(role = DatabaseRole.ADMIN)
     public AdminDtos.CommandResult unsuspend(long userId, AdminDtos.CommandRequest request) {
         guard.requireActiveAdmin();
+        userId = AdminQueryPolicy.targetId(userId);
         String reason = AdminQueryPolicy.reason(request == null ? null : request.reason());
         return transition(userId, reason, "active", "admin_restore_user");
     }

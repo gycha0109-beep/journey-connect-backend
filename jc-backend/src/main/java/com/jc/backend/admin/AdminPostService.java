@@ -114,7 +114,7 @@ public class AdminPostService {
     @DatabaseTransactional(role = DatabaseRole.ADMIN, readOnly = true)
     public AdminDtos.PostDetail detail(long postId) {
         guard.requireActiveAdmin();
-        return findDetail(postId);
+        return findDetail(AdminQueryPolicy.targetId(postId));
     }
 
     @DatabaseTransactional(role = DatabaseRole.ADMIN)
@@ -133,6 +133,7 @@ public class AdminPostService {
             String desiredState,
             String function) {
         guard.requireActiveAdmin();
+        postId = AdminQueryPolicy.targetId(postId);
         String reason = AdminQueryPolicy.reason(request == null ? null : request.reason());
         PostState before = findState(postId);
         if (before == null) {
