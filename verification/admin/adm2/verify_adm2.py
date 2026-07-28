@@ -167,10 +167,10 @@ def check_scope() -> None:
         adm3 = json.loads(adm3_contract.read_text(encoding="utf-8"))
         adm3_complete = adm3.get("result", {}).get("ADM3_ADMIN_API_HARDENING_COMPLETE") == "YES"
     adm3_sql = {
-        "database/journey-connect-db-v2.7/29_admin_control_plane_hardening.sql",
-        "database/journey-connect-db-v2.7/30_admin_control_plane_hardening_smoke_test.sql",
-        "jc-backend/src/test/resources/db/canonical/29_admin_control_plane_hardening.sql",
-        "jc-backend/src/test/resources/db/canonical/30_admin_control_plane_hardening_smoke_test.sql",
+        "database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql",
+        "database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql",
+        "jc-backend/src/test/resources/db/canonical/53_admin_control_plane_hardening.sql",
+        "jc-backend/src/test/resources/db/canonical/54_admin_control_plane_hardening_smoke_test.sql",
     }
 
     forbidden = []

@@ -50,7 +50,7 @@ The actor and target rows are locked in ascending ID order before `require_staff
 ## 4. SQL migration decision
 
 ```text
-SQL_CHANGE=29_admin_control_plane_hardening.sql,30_admin_control_plane_hardening_smoke_test.sql
+SQL_CHANGE=53_admin_control_plane_hardening.sql,54_admin_control_plane_hardening_smoke_test.sql
 DB_SCHEMA_CHANGE=FUNCTION_HARDENING_AND_COMMAND_ADAPTERS
 TABLE_CHANGE=NONE
 COLUMN_CHANGE=NONE

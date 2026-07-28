@@ -43,8 +43,13 @@ EXPECTED = {
     "ADMIN_MVP_FEATURE_EXPANSION": "NO",
     "BACKEND_HARDENING": "STRONG",
     "UI_COMPLEXITY": "LOW",
-    "SQL_CHANGE": "29_30_FORWARD_ONLY",
+    "SQL_CHANGE": "53_admin_control_plane_hardening.sql,54_admin_control_plane_hardening_smoke_test.sql",
     "DB_SCHEMA_CHANGE": "FUNCTION_HARDENING_AND_COMMAND_ADAPTERS",
+    "TABLE_CHANGE": "NONE",
+    "COLUMN_CHANGE": "NONE",
+    "INDEX_CHANGE": "NONE",
+    "DATA_MIGRATION": "NONE",
+    "EXISTING_MIGRATION_MODIFIED": "NO",
     "ADM4_ENTRY": "BLOCKED_PENDING_USER_APPROVAL",
 }
 
@@ -88,10 +93,10 @@ REQUIRED_TESTS = {
 }
 
 SQL_PATHS = {
-    "database/journey-connect-db-v2.7/29_admin_control_plane_hardening.sql",
-    "database/journey-connect-db-v2.7/30_admin_control_plane_hardening_smoke_test.sql",
-    "jc-backend/src/test/resources/db/canonical/29_admin_control_plane_hardening.sql",
-    "jc-backend/src/test/resources/db/canonical/30_admin_control_plane_hardening_smoke_test.sql",
+    "database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql",
+    "database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql",
+    "jc-backend/src/test/resources/db/canonical/53_admin_control_plane_hardening.sql",
+    "jc-backend/src/test/resources/db/canonical/54_admin_control_plane_hardening_smoke_test.sql",
 }
 
 
@@ -148,10 +153,10 @@ def check_contract() -> None:
 
 
 def check_migration() -> None:
-    production = read("database/journey-connect-db-v2.7/29_admin_control_plane_hardening.sql")
-    canonical = read("jc-backend/src/test/resources/db/canonical/29_admin_control_plane_hardening.sql")
-    smoke = read("database/journey-connect-db-v2.7/30_admin_control_plane_hardening_smoke_test.sql")
-    canonical_smoke = read("jc-backend/src/test/resources/db/canonical/30_admin_control_plane_hardening_smoke_test.sql")
+    production = read("database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql")
+    canonical = read("jc-backend/src/test/resources/db/canonical/53_admin_control_plane_hardening.sql")
+    smoke = read("database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql")
+    canonical_smoke = read("jc-backend/src/test/resources/db/canonical/54_admin_control_plane_hardening_smoke_test.sql")
     require(production == canonical, "29 migration canonical copy mismatch")
     require(smoke == canonical_smoke, "30 smoke canonical copy mismatch")
     for function in ["admin_suspend_user", "admin_withdraw_user", "admin_change_user_role", "admin_finish_report_command", "admin_hide_post_command", "admin_restore_post_command", "admin_suspend_user_command", "admin_restore_user_command"]:
@@ -169,8 +174,62 @@ def check_migration() -> None:
     require("CREATE TABLE" not in production.upper(), "ADM-3 creates a table")
     require("ALTER TABLE" not in production.upper(), "ADM-3 changes a table")
     initializer = read("jc-backend/src/test/java/com/jc/backend/CanonicalPostgresInitializer.java")
-    require("29_admin_control_plane_hardening.sql" in initializer, "canonical bootstrap missing 29")
-    require("30_admin_control_plane_hardening_smoke_test.sql" in initializer, "canonical bootstrap missing 30")
+    require("53_admin_control_plane_hardening.sql" in initializer, "canonical bootstrap missing 53")
+    require("54_admin_control_plane_hardening_smoke_test.sql" in initializer, "canonical bootstrap missing 54")
+
+    production_dir = ROOT / "database/journey-connect-db-v2.7"
+    for number in range(1, 55):
+        matches = list(production_dir.glob(f"{number:02d}_*.sql"))
+        require(len(matches) == 1, f"canonical SQL {number:02d} must exist exactly once")
+    require(
+        not list(production_dir.glob("5[5-9]_*.sql"))
+        and not list(production_dir.glob("[6-9][0-9]_*.sql")),
+        "unexpected SQL 55+ present",
+    )
+
+    forbidden_drafts = [
+        ROOT / "database/journey-connect-db-v2.7/29_admin_control_plane_hardening.sql",
+        ROOT / "database/journey-connect-db-v2.7/30_admin_control_plane_hardening_smoke_test.sql",
+        ROOT / "jc-backend/src/test/resources/db/canonical/29_admin_control_plane_hardening.sql",
+        ROOT / "jc-backend/src/test/resources/db/canonical/30_admin_control_plane_hardening_smoke_test.sql",
+    ]
+    require(not any(path.exists() for path in forbidden_drafts), "ADM-3 29/30 draft remains")
+
+    changed = changed_files()
+    protected_existing = []
+    for path in changed:
+        match = re.fullmatch(r"database/journey-connect-db-v2\.7/(\d{2})_.*\.sql", path)
+        if match and int(match.group(1)) <= 52:
+            protected_existing.append(path)
+    require(not protected_existing, f"existing migration modified: {protected_existing}")
+
+    temporary = [
+        path for path in changed
+        if path == ".github/workflows/adm3-successor-fix-materialize.yml"
+        or path == ".github/workflows/adm3-recovery-materialize.yml"
+        or path.startswith("verification/admin/adm3/fix/")
+        or path.startswith("verification/admin/adm3/snapshot/")
+        or any(token in path.lower() for token in ("payload", "chunk-", "part-"))
+    ]
+    require(not temporary, f"temporary materialization artifact remains: {temporary}")
+
+    combined_sql = production + "\n" + smoke
+    for token in ("CREATE TABLE", "ALTER TABLE", "CREATE INDEX", "ALTER INDEX"):
+        require(token not in combined_sql.upper(), f"ADM-3 schema expansion detected: {token}")
+
+    integrity_path = ROOT / "verification/admin/adm3/evidence/adm3-migration-integrity.json"
+    integrity = json.loads(integrity_path.read_text(encoding="utf-8"))
+    require(integrity.get("status") == "PASS", "migration integrity evidence is not PASS")
+    for path in (
+        "database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql",
+        "database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql",
+    ):
+        raw = (ROOT / path).read_bytes()
+        item = integrity["files"][Path(path).name]
+        require(hashlib.sha256(raw).hexdigest() == item["sha256"], f"SHA mismatch: {path}")
+        require(len(raw) == item["bytes"], f"byte-size mismatch: {path}")
+        require(item["utf8"] == "PASS" and item["newline"] == "LF", f"encoding mismatch: {path}")
+        require(raw.endswith(b"\n"), f"missing final newline: {path}")
 
 
 def check_runtime() -> None:
@@ -213,7 +272,7 @@ def check_docs() -> None:
     main = read("docs/admin/adm3/ADM-3-ADMIN-API-HARDENING-AUDIT-ACCEPTANCE.md")
     operations = read("docs/admin/adm3/ADM-3-OPERATIONAL-ACCEPTANCE.md")
     handoff = read("docs/admin/adm3/ADM-4-ENTRY-GATE-AND-HANDOFF.md")
-    for token in ["CROSS_ADMIN_TOTAL_LOCKOUT_PROTECTED", "failure", "privacy", "acceptance", "29_admin_control_plane_hardening.sql"]:
+    for token in ["CROSS_ADMIN_TOTAL_LOCKOUT_PROTECTED", "failure", "privacy", "acceptance", "53_admin_control_plane_hardening.sql"]:
         require(token.lower() in main.lower(), f"ADM-3 documentation missing: {token}")
     for token in ["ADMIN_USER_PROVISIONING_METHOD", "ALL_ADMIN_LOCKOUT_RECOVERY_PROCEDURE", "PENDING_OWNER_ASSIGNMENT"]:
         require(token in operations, f"operational condition missing: {token}")
@@ -236,6 +295,11 @@ def check_scope() -> None:
         "jc-backend/src/main/java/com/jc/backend/admin/AdminUserService.java",
         "verification/admin/adm1/verify_adm1.py",
         "verification/admin/adm2/verify_adm2.py",
+        ".github/workflows/backend-pr-ci.yml",
+        ".github/workflows/recommendation-p0-db-ci.yml",
+        ".github/workflows/data-postgres-ci.yml",
+        "jc-backend/src/test/java/com/jc/backend/search/shadow/production/IP12ProductionShadowStaticTest.java",
+        "jc-backend/src/test/java/com/jc/backend/recommendation/dataadoption/reconciliation/database/Rca1bDatabaseReconciliationTest.java",
         *SQL_PATHS,
     }
     for path in changed:
@@ -262,6 +326,14 @@ def write_evidence(checks: list[str]) -> None:
         "head_sha": os.getenv("ADM3_HEAD_SHA") or git("rev-parse", "HEAD"),
         "base_sha": os.getenv("ADM3_BASE_SHA", BASE),
         "contract_sha256": hashlib.sha256(CONTRACT.read_bytes()).hexdigest(),
+        "migration_sha256": {
+            path: hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
+            for path in sorted(SQL_PATHS)
+        },
+        "migration_bytes": {
+            path: len((ROOT / path).read_bytes())
+            for path in sorted(SQL_PATHS)
+        },
         "result": EXPECTED,
     }
     EVIDENCE.parent.mkdir(parents=True, exist_ok=True)
