@@ -26,13 +26,26 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
       - name: Verify and execute ADM-3 recovery
+        id: recovery
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
+          : > /tmp/adm3-recovery.log
           payload=verification/admin/adm3/recovery/recovery.sh.gz.b64
           base64 --decode "$payload" > /tmp/adm3-recovery.sh.gz
           echo "37018c9cd078711b4c38645dc724ea29e91f39c6c1a732f94a00c21bb53e72a2  /tmp/adm3-recovery.sh.gz" | sha256sum --check --strict
           gzip --decompress --stdout /tmp/adm3-recovery.sh.gz > /tmp/adm3-recovery.sh
           echo "a7a5836fa36033affd693fc5f81b8ca73793eca4ff3225eb8e33b6487c78c065  /tmp/adm3-recovery.sh" | sha256sum --check --strict
           rm -rf verification/admin/adm3/recovery
-          bash /tmp/adm3-recovery.sh
+          bash /tmp/adm3-recovery.sh > /tmp/adm3-recovery.log 2>&1
+      - name: Upload ADM-3 recovery diagnostics
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: adm3-recovery-diagnostics-${{ github.sha }}
+          path: /tmp/adm3-recovery.log
+          if-no-files-found: error
+      - name: Enforce ADM-3 recovery
+        if: steps.recovery.outcome == 'failure'
+        run: exit 1
