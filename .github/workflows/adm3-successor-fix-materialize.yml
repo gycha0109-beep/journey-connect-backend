@@ -64,9 +64,25 @@ jobs:
                   if line.count("'''") % 2 == 1:
                       in_triple = not in_triple
               output.append(line)
-          path.write_text('\n'.join(output) + '\n', encoding='utf-8')
+          text = '\n'.join(output) + '\n'
+          replacements = (
+              ("'''             echo \"APPLY $validation\"", "'''            echo \"APPLY $validation\"", 2),
+              ('             psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$validation" 2>&1 | tee -a "$log"\n           done\n', '            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$validation" 2>&1 | tee -a "$log"\n          done\n', 2),
+              ('\n           if python verification/admin/adm3/run_baseline_data_verifiers.py --check-active; then\n', '\n          if python verification/admin/adm3/run_baseline_data_verifiers.py --check-active; then\n', 1),
+              ('             for successor in \\\\\n', '            for successor in \\\\\n', 1),
+              ('               database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql \\\\\n', '              database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql \\\\\n', 1),
+              ('               database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql; do\n', '              database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql; do\n', 1),
+              ('               echo "APPLY $successor" | tee -a "$log"\n', '              echo "APPLY $successor" | tee -a "$log"\n', 1),
+              ('               psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$successor" 2>&1 | tee -a "$log"\n', '              psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$successor" 2>&1 | tee -a "$log"\n', 1),
+              ('             done\n           fi\n', '            done\n          fi\n', 1),
+          )
+          for old, new, count in replacements:
+              if text.count(old) < count:
+                  raise SystemExit(f'missing deterministic recovery correction: {old[:80]!r}')
+              text = text.replace(old, new, count)
+          path.write_text(text, encoding='utf-8')
           PY
-          echo "0d157232996231206adc18ba200ccbbe6bbced04080ccc364f07114d5bc7cf85  /tmp/adm3-recovery.sh" | sha256sum --check --strict
+          echo "4e5c09340dc24f554ebe451c280706c1f5462b106e2470e7883d88907c224f30  /tmp/adm3-recovery.sh" | sha256sum --check --strict
           rm -rf verification/admin/adm3/recovery
           bash /tmp/adm3-recovery.sh > /tmp/adm3-recovery.log 2>&1
       - name: Upload ADM-3 recovery diagnostics
