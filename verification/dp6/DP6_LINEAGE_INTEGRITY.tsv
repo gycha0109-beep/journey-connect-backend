@@ -1,6 +1,0 @@
-check	expected	failure_code	java	postgresql
-record_coverage	100_percent	lineage_missing	LOCAL_PASS	PENDING_CI
-orphan	zero	lineage_orphan	LOCAL_PASS	PENDING_CI
-duplicate	zero	lineage_duplicate	LOCAL_PASS	PENDING_CI
-source_fingerprint	authority_match	lineage_source_fingerprint_mismatch	LOCAL_PASS	PENDING_CI
-checkpoint_policy	exact	lineage_checkpoint_mismatch	LOCAL_PASS	PENDING_CI

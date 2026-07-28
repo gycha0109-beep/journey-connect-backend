@@ -1,8 +1,0 @@
-metric	exposed	raw_dimension
-run and terminal status counts	yes	no
-track scope verdict counts	yes	no
-failure severity counts	yes	no
-boundary violation counts	yes	no
-oldest inconclusive age	yes	no
-latest compatible validation time	yes	no
-identity snapshot exposure lineage fingerprint	no	prohibited

@@ -1,9 +1,0 @@
-key	value	status
-db_change	NONE	PASS
-sql_allocation	NOT_REQUIRED	PASS
-sql_01_52	PROTECTED	PASS
-sql_53_plus	ABSENT	PASS
-new_table	NO	PASS
-new_view	NO	PASS
-new_role	NO	PASS
-new_grant	NO	PASS

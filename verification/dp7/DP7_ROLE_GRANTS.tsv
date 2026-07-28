@@ -1,5 +1,0 @@
-role	allowed	denied
-jc_data_integration_writer	execute persistence function	direct table write and DDL
-jc_data_integration_reader	select aggregate safe view	raw evidence and write
-jc_data_integration_function_owner	minimum source read and evidence insert	login superuser broad owner
-PUBLIC	none	function view and raw evidence

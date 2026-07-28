@@ -1,8 +1,0 @@
-decision	value
-authoritative_base	d18c91a28b271c9f9891b522c6371017a3d0dd79
-recommendation_profile	CONDITIONALLY_COMPATIBLE
-recommendation_outcome	CONDITIONALLY_COMPATIBLE
-intelligence	INCONCLUSIVE
-search	INCONCLUSIVE
-production_authority	NONE
-final_completion	REQUIRES_EXACT_HEAD_CI_AND_USER_MERGE_APPROVAL

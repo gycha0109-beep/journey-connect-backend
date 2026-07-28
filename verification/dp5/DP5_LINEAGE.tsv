@@ -1,6 +1,0 @@
-check	expected	status
-record_without_lineage	blocked	IMPLEMENTED
-canonical_source_validation	required	IMPLEMENTED
-adapter_source_validation	mapped_only	IMPLEMENTED
-p2_exposure_validation	required	IMPLEMENTED
-raw_payload_copy	absent	PASS

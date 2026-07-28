@@ -1,4 +1,0 @@
-case	disposition	mutation
-new logical identity	NEW	insert complete evidence graph
-same identity same input and verdict	DUPLICATE	return existing
-same identity different input or verdict	CONFLICT	append conflict only

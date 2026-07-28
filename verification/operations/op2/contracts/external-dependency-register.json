@@ -1,4 +1,0 @@
-{
-  "work_start_sha":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","source_op1_exact_head":"6c89e78e32f54a1f830d0c84db07a01de951e39c","source_op1_merge_commit":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","artifact_version":"external-dependency-register-v1","status":"ACTIVE_BLOCKERS","owner":"SYSTEM_COORDINATION","updated_at":"2026-07-27T00:30:00Z","exact_head_binding":"GITHUB_SHA","fake_resources_created":false,
-  "dependencies":["metrics backend","dashboard system/path","critical alert route","credential revoke provider","network route control","external endpoint","external credential","external allowlist","candidate source/protocol/version"]
-}

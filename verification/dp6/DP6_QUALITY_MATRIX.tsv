@@ -1,9 +1,0 @@
-scope	required	metric	threshold	blocker	status
-SOURCE_COMPLETENESS	yes	source_completeness_rate	1.0	source_count_mismatch	IMPLEMENTED
-PROJECTION_COMPLETENESS	yes	projection_coverage_rate	1.0	projection_record_missing	IMPLEMENTED
-SNAPSHOT_CONSISTENCY	yes	snapshot_record_reconciliation_rate	1.0	snapshot_record_count_mismatch	IMPLEMENTED
-LINEAGE_INTEGRITY	yes	lineage_completeness_rate	1.0	lineage_missing	IMPLEMENTED
-IDENTITY_INTEGRITY	conditional	identity_binding_valid_rate	1.0	identity_namespace_conflict	IMPLEMENTED
-EXPOSURE_INTEGRITY	outcome	exposure_binding_valid_rate	1.0	general_exposure_used_as_p2	IMPLEMENTED
-DETERMINISTIC_REBUILD	yes	rebuild_match_rate	1.0	non_deterministic_output	IMPLEMENTED
-FULL	yes	required_metric_set	complete	quality_evidence_incomplete	IMPLEMENTED

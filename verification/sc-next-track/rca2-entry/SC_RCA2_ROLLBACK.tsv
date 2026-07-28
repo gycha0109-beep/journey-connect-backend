@@ -1,8 +1,0 @@
-level	action	trigger	owner	verification	recovery_criteria
-LEVEL_1	FLAG_OFF	timeout/exception/queue threshold or operator stop	Operations	flag OFF and execution_count stops	SC plus owners approve re-enable
-LEVEL_2	LANE_KILL_SWITCH	lane semantic or dependency failure	Operations plus lane owner	affected lane stops and other lane remains visible	lane owner plus Operations plus SC
-LEVEL_3	GLOBAL_SHADOW_DISABLE	critical violation or multi-lane failure	Operations/SC	all shadow execution stops	all blocking approvals
-LEVEL_4	CONFIG_ROLLBACK	bad flag/resource/endpoint config	Operations	previous signed config active	Operations plus SC
-LEVEL_5	DEPLOYMENT_ROLLBACK	code regression or readiness failure	Operations	previous image digest restored	Operations plus SC
-LEVEL_6	CREDENTIAL_REVOKE	credential exposure or misuse	Operations/Privacy-Security	credential invalid and access denied	new credential plus security approval
-LEVEL_7	NETWORK_ROUTE_REVOKE	route escape or unauthorized endpoint	Operations/Privacy-Security	route absent and deny-by-default verified	network review plus SC

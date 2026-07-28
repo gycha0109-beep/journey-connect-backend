@@ -1,3 +1,0 @@
-checks=146
-issues=0
-result=PASS

@@ -1,4 +1,0 @@
-total=7
-match=7
-fail=0
-result=PASS

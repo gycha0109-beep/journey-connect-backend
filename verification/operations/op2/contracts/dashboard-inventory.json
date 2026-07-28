@@ -1,5 +1,0 @@
-{
-  "work_start_sha":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","source_op1_exact_head":"6c89e78e32f54a1f830d0c84db07a01de951e39c","source_op1_merge_commit":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","artifact_version":"dashboard-inventory-v1","status":"APPLICATION_CONTRACT_READY","owner":"OPERATIONS","updated_at":"2026-07-27T00:30:00Z","exact_head_binding":"GITHUB_SHA",
-  "section_count":22,
-  "sections":["Traffic selection","Executor active count","Executor queue depth","Task age","Cancellation","Latency","Timeout","Exception","Queue rejection","Late discard","Circuit breaker","Kill switch","P1 mismatch","P2 mismatch","Checkpoint lag","Lineage mismatch","Identity blocked","Redaction","Response mutation","Write/event violations","Production route detection","Authority mismatch"]
-}

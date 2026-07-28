@@ -1,6 +1,0 @@
-item	owner	wire_owner	status
-endpoint	Operations	OPERATIONS	PASS
-credential	Operations	OPERATIONS	PASS
-identity_allowlist	Privacy/Security	PRIVACY_SECURITY	PASS
-alert	Operations	OPERATIONS	PASS
-rollback_execution	Operations	OPERATIONS	PASS

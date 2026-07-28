@@ -1,6 +1,0 @@
-case	expected	status
-new_identity	NEW	IMPLEMENTED
-same_identity_same_fingerprint	DUPLICATE	IMPLEMENTED
-same_identity_different_fingerprint	CONFLICT	IMPLEMENTED
-conflict_code	PROJECTION_SNAPSHOT_CONFLICT	IMPLEMENTED
-partial_insert	transaction_rollback	IMPLEMENTED

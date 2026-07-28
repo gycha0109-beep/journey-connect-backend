@@ -1,6 +1,0 @@
-check	expected	status
-immutable	true	IMPLEMENTED
-event_ingestion_boundary	separate	IMPLEMENTED
-source_count_match	required	IMPLEMENTED
-source_fingerprint_match	required	IMPLEMENTED
-late_event	new_checkpoint_required	IMPLEMENTED

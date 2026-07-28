@@ -1,3 +1,6 @@
+> **TEAM MINIMAL HANDOFF BRANCH**
+> This branch contains the minimized team-delivery baseline. See `TEAM_HANDOFF_SCOPE.md` before using or presenting it.
+
 # 🗺️ Journey Connect (서비스명: **여정**)
 
 "여정"을 강조처리

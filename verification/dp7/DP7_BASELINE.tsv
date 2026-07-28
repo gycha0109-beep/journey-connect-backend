@@ -1,7 +1,0 @@
-item	value	status
-authoritative_main	d18c91a28b271c9f9891b522c6371017a3d0dd79	CONFIRMED
-allocation_pr	19 MERGED	CONFIRMED
-sql_allocation	48..52	AUTHORIZED
-sql_protected	01..47	PROTECTED
-sql_unallocated	53+	PROHIBITED
-implementation_branch	agent/dp7-cross-track-integration-implementation	CANDIDATE

@@ -1,6 +1,0 @@
-check	observed	result	failure_code
-search_projection	search-document-projection-v1 exists	PASS	
-data_input_contract	absent	SKIPPED	search_contract_missing
-direct_subject_document_mapping	prohibited	FAIL	search_document_identity_mismatch
-index_or_cutover	false	PASS	
-scope_verdict	INCONCLUSIVE	INCONCLUSIVE	search_contract_missing

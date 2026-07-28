@@ -1,5 +1,0 @@
-{
-  "work_start_sha":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","source_op1_exact_head":"6c89e78e32f54a1f830d0c84db07a01de951e39c","source_op1_merge_commit":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","artifact_version":"manual-enablement-runbook-v1","status":"READY_USER_APPROVED_EXECUTION_BLOCKED","owner":"OPERATIONS","updated_at":"2026-07-27T00:30:00Z","exact_head_binding":"GITHUB_SHA",
-  "ready":true,"approved":true,"execution_authorized":false,"op2_execution_limit":"steps 1-11 preparation only",
-  "steps":["verify exact deployment/version","verify external endpoint","verify credential validity","verify allowlist","verify candidate source/version","verify metrics","verify dashboard","verify critical alert route","verify rollback owner","verify role approvals","verify effective traffic 0","confirm manual 1 percent approval","execute enablement","inspect immediate metrics","observe 30 minutes and 100 requests","exit or rollback"]
-}

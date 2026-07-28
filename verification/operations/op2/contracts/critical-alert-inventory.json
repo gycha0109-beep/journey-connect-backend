@@ -1,6 +1,0 @@
-{
-  "work_start_sha":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","source_op1_exact_head":"6c89e78e32f54a1f830d0c84db07a01de951e39c","source_op1_merge_commit":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","artifact_version":"critical-alert-inventory-v1","status":"RULES_READY_ROUTE_BLOCKED","owner":"RELIABILITY","updated_at":"2026-07-27T00:30:00Z","exact_head_binding":"GITHUB_SHA",
-  "zero_tolerance":true,"threshold":0,
-  "alerts":["response_mutation_detected","database_write_detected","cache_write_detected","event_emission_detected","notification_emission_detected","redaction_failure_detected","production_route_detected","production_identity_detected","authority_mismatch_detected","traffic_ceiling_violation","credential_scope_violation"],
-  "safety_actions":["FLAG_OFF","LANE_KILL_SWITCH","GLOBAL_SHADOW_DISABLE","CREDENTIAL_REVOKE","NETWORK_ROUTE_REVOKE"],"sc6_thresholds_changed":false
-}

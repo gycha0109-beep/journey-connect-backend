@@ -1,5 +1,0 @@
-role	allowed	denied	status
-jc_data_projection_writer	approved_functions	direct_tables	IMPLEMENTED
-jc_data_projection_reader	safe_view	raw_tables_and_write	IMPLEMENTED
-jc_data_projection_function_owner	minimum_object_access	login_superuser_bypassrls	IMPLEMENTED
-PUBLIC	none	functions_and_view	IMPLEMENTED

@@ -1,5 +1,0 @@
-evidence	retention	purge	status
-checkpoint_run_status	90_days	disabled	IMPLEMENTED
-records_snapshot	90_days	disabled	IMPLEMENTED
-lineage_validation_conflict	90_days	disabled	IMPLEMENTED
-physical_delete	not_authorized	absent	PASS

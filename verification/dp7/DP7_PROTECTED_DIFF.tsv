@@ -1,8 +1,0 @@
-path	policy
-database SQL 01..47	unchanged
-database SQL 48..52	exact additions
-database SQL 53+	absent
-Recommendation production source	unchanged
-Intelligence production source	unchanged
-Search production source	unchanged
-backend production config and api explore	unchanged

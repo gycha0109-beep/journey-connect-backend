@@ -1,3 +1,0 @@
-count=320
-pass=320
-fail=0

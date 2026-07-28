@@ -1,6 +1,0 @@
-rule	expected	failure_code
-target_days	less than or equal source_days	cross_track_retention_conflict
-integration_evidence_days	90	cross_track_retention_conflict
-deletion_semantics	aligned	cross_track_deletion_semantic_conflict
-automatic_purge	false	cross_track_retention_conflict
-physical_delete	false	cross_track_deletion_semantic_conflict

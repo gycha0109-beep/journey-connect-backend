@@ -1,6 +1,0 @@
-item	expected	observed	status
-main_head	67a9b7515dbfd41360160c8059ac387e74cbdf6b	67a9b7515dbfd41360160c8059ac387e74cbdf6b	PASS
-allocation_pr	merged	#15 merged	PASS
-sql_01_37	protected	unchanged locally	PASS
-sql_38_42	authorized	implemented	PASS
-sql_43_plus	absent	absent	PASS

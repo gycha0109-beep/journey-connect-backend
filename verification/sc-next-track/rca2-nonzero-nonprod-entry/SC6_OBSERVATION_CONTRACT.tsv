@@ -1,5 +1,0 @@
-key	value	status
-minimum_observation_duration_minutes	30	PASS
-minimum_shadow_execution_count	100	PASS
-both_conditions_required	YES	PASS
-runtime_observation	NOT_EXECUTED	NOT_EXECUTED

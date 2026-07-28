@@ -1,2 +1,0 @@
-[IP-7 test] Java 21 -Xlint:all -Werror
-test_compile=PASS

@@ -1,6 +1,0 @@
-source_status	persistence	integration_result	failure_code
-VALIDATED	allowed	continue	
-REJECTED	blocked	INCOMPATIBLE	quality_verdict_rejected
-INCONCLUSIVE	blocked	INCONCLUSIVE	quality_verdict_inconclusive
-missing	blocked	INCONCLUSIVE	quality_verdict_missing
-conflicted	blocked	INCOMPATIBLE	quality_verdict_conflicted

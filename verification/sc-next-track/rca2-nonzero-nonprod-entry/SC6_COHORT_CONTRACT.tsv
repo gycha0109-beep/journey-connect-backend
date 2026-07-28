@@ -1,8 +1,0 @@
-key	value	status
-cohort_selection	STABLE_HASH_PERCENTAGE	PASS
-cohort_key	HASHED_NONPRODUCTION_TEST_SUBJECT_REF	PASS
-raw_identity_cohort_key	FORBIDDEN	PASS
-cohort_stability_required	YES	PASS
-cohort_reseed_within_stage	FORBIDDEN	PASS
-allowlist_required	YES	PASS
-implementation_status	NOT_IMPLEMENTED	NOT_EXECUTED

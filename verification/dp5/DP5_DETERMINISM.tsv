@@ -1,6 +1,0 @@
-check	expected	status
-repeated_run	same_fingerprint	LOCAL_PASS
-insertion_order	independent	LOCAL_PASS
-map_order	independent	LOCAL_PASS
-locale_timezone	independent	LOCAL_PASS
-build_id	independent	LOCAL_PASS

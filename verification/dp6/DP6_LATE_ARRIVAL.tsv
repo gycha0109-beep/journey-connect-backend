@@ -1,6 +1,0 @@
-policy_class	condition	action	status
-WITHIN_TOLERANCE	lateness_within_policy	append_observation	IMPLEMENTED
-REBUILD_RECOMMENDED	material_nonblocking	append_recommendation_only	IMPLEMENTED
-REBUILD_REQUIRED	blocking_policy	append_blocking_observation	IMPLEMENTED
-IGNORED_BY_POLICY	ineligible_source	append_reason	IMPLEMENTED
-automatic_rebuild_replay_backfill	forbidden	none	PASS_STATIC

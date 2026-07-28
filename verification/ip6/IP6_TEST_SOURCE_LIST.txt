@@ -1,1 +1,0 @@
-com/jc/intelligence/integration/search/SearchIntegrationContractTest.java

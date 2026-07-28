@@ -1,4 +1,0 @@
-{
-  "work_start_sha":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","source_op1_exact_head":"6c89e78e32f54a1f830d0c84db07a01de951e39c","source_op1_merge_commit":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","artifact_version":"dashboard-readiness-v1","status":"BLOCKED_EXTERNAL_DEPENDENCY","owner":"OPERATIONS","updated_at":"2026-07-27T00:30:00Z","exact_head_binding":"GITHUB_SHA",
-  "application_dashboard_contract_ready":true,"external_dashboard_ready":false,"external_dashboard_identifier":null,"blocker":"dashboard system and path unresolved"
-}

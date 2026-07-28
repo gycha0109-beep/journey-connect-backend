@@ -1,2 +1,0 @@
-STATUS: NOT EXECUTED — USER-DIRECTED SKIP
-JUnit XML files for IP-11.5 were not generated. Source manifest is provided separately.

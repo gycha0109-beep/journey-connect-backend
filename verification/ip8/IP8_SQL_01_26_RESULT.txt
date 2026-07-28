@@ -1,3 +1,0 @@
-expected=26
-current=26
-exact_match=PASS

@@ -1,4 +1,0 @@
-protected_source_total=320
-protected_source_match=320
-protected_source_fail=0
-result=PASS

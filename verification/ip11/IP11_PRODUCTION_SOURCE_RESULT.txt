@@ -1,4 +1,0 @@
-total=674
-match=674
-fail=0
-result=PASS

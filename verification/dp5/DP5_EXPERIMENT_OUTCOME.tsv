@@ -1,6 +1,0 @@
-check	expected	status
-exposure_authority	recommendation_p2_experiment_exposure	IMPLEMENTED
-outcomes	click_like_save_share	IMPLEMENTED
-window	inclusive_exposure_exclusive_plus_7d	IMPLEMENTED
-fallback	bound_run_status	IMPLEMENTED
-metric_denominator	unchanged	PASS

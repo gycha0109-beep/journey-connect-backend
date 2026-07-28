@@ -1,5 +1,0 @@
-check	expected	failure_code	java	postgresql
-authority	recommendation_p2_experiment_exposure	exposure_binding_missing	LOCAL_PASS	PENDING_CI
-subject_variant_experiment_time	exact	exposure_binding_invalid	LOCAL_PASS	PENDING_CI
-general_substitution	forbidden	general_exposure_used_as_p2	LOCAL_PASS	PENDING_CI
-metric_denominator	unchanged	privacy_policy_violation	PASS_STATIC	PENDING_REGRESSION_CI

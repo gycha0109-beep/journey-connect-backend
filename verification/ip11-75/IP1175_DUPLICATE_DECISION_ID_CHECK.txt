@@ -1,3 +1,0 @@
-PASS	decision_count_12	12
-PASS	decision_unique
-SUMMARY	checks=50	pass=50	fail=0

@@ -1,6 +1,0 @@
-case	expected	status
-p2_authority	recommendation_p2_experiment_exposure	IMPLEMENTED
-general_exposure_as_p2	blocked	IMPLEMENTED
-missing_exposure	blocked	IMPLEMENTED
-wrong_variant_subject_session	blocked	IMPLEMENTED
-outcome_outside_window	blocked	IMPLEMENTED

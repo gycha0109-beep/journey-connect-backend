@@ -1,8 +1,0 @@
-object	owner	dp7_write	dp7_production
-canonical event	Data	false	false
-quality verdict	Data quality	false	false
-Recommendation decision	Recommendation	false	false
-P2 exposure	Recommendation Reliability	false	false
-Intelligence result	Intelligence	false	false
-Search document index	Search	false	false
-integration evidence	Data DP-7	atomic function	false

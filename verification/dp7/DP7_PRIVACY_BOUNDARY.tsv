@@ -1,6 +1,0 @@
-field_class	allowed_raw	allowed_safe_view	failure_code
-raw payload	false	false	cross_track_raw_payload_exposure
-PII	false	false	cross_track_pii_exposure
-precise location	false	false	cross_track_precise_location_exposure
-raw lineage	purpose bound only	false	cross_track_lineage_access_violation
-identity dimension	purpose bound only	false	cross_track_reidentification_risk

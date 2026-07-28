@@ -1,5 +1,0 @@
-check	expected	failure_code	java	postgresql
-namespace	subject_and_user_distinct	identity_namespace_conflict	LOCAL_PASS	PENDING_CI
-binding_fingerprint	exact	identity_binding_fingerprint_mismatch	LOCAL_PASS	PENDING_CI
-binding_scope	compatible	identity_binding_scope_mismatch	LOCAL_PASS	PENDING_CI
-automatic_join	absent	privacy_policy_violation	PASS_STATIC	PASS_STATIC

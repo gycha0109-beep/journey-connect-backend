@@ -1,5 +1,0 @@
-check	observed	result	failure_code
-generic_envelope	intelligence-input-snapshot-v1 exists	PASS	
-domain_mapping	Data-specific mapping absent	SKIPPED	intelligence_domain_mapping_missing
-runtime_activation	false	PASS	
-scope_verdict	INCONCLUSIVE	INCONCLUSIVE	intelligence_domain_mapping_missing

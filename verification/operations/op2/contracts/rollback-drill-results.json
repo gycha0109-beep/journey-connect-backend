@@ -1,5 +1,0 @@
-{
-  "work_start_sha":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","source_op1_exact_head":"6c89e78e32f54a1f830d0c84db07a01de951e39c","source_op1_merge_commit":"f17fc3e515264eefcf2ca2b113a0e5875bbde6ae","artifact_version":"rollback-drill-results-v1","status":"PARTIAL","owner":"RELIABILITY","updated_at":"2026-07-27T00:30:00Z","exact_head_binding":"GITHUB_SHA",
-  "results":[{"level":1,"status":"PASS"},{"level":2,"status":"PASS"},{"level":3,"status":"PASS"},{"level":4,"status":"NOT_EXECUTED"},{"level":5,"status":"NOT_EXECUTED"},{"level":6,"status":"BLOCKED_EXTERNAL_DEPENDENCY"},{"level":7,"status":"BLOCKED_EXTERNAL_DEPENDENCY"}],
-  "unexecuted_reported_as_pass":false
-}
