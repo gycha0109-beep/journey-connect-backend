@@ -1,0 +1,95 @@
+name: ADM-4 Admin Dashboard UI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "jc-frontend/**"
+      - "docs/admin/ADM-4-ADMIN-DASHBOARD-UI-FINALISATION.md"
+      - ".github/workflows/adm4-admin-ui.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: adm4-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact pull request head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Install frontend dependencies
+        working-directory: jc-frontend
+        run: npm install --no-audit --no-fund
+      - name: Run ADM-4 frontend tests
+        working-directory: jc-frontend
+        run: npm test
+      - name: Run lint
+        working-directory: jc-frontend
+        run: npm run lint
+      - name: Build frontend
+        working-directory: jc-frontend
+        run: npm run build
+      - name: Run ADM-4 verifier
+        working-directory: jc-frontend
+        run: npm run verify:adm4
+      - uses: actions/upload-artifact@v6
+        with:
+          name: adm4-frontend-evidence-${{ github.event.pull_request.head.sha || github.sha }}
+          path: jc-frontend/verification/adm4/adm4-evidence.json
+
+  backend-integration-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgis/postgis:15-3.4
+        env:
+          POSTGRES_DB: journey_connect
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d journey_connect"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Checkout exact pull request head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Verify exact backend endpoint and DTO contract
+        run: node jc-frontend/verification/adm4/verify-backend-contract.mjs .
+      - name: Run inherited Admin PostgreSQL integration tests
+        working-directory: jc-backend
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/journey_connect
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: postgres
+        run: |
+          chmod +x gradlew
+          ./gradlew test \
+            --tests '*AdminHardeningIntegrationTest' \
+            --tests '*AdminBasicApisIntegrationTest' \
+            --tests '*AdminSecurityIntegrationTest' \
+            --tests '*DatabaseRoleRoutingIntegrationTest'
