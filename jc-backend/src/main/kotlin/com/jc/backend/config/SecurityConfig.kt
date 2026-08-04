@@ -60,7 +60,6 @@ class SecurityConfig(
         jwtAuthenticationConverter: JwtAuthenticationConverter,
     ): SecurityFilterChain {
         http
-            // JWT 기반 API는 서버 세션을 저장하지 않으므로 CSRF 토큰을 사용하지 않습니다.
             .csrf { it.disable() }
             .cors { }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
@@ -77,7 +76,6 @@ class SecurityConfig(
                         "/swagger-ui.html",
                         "/api-docs/**",
                     ).permitAll()
-                    // 공개 와일드카드보다 구체적인 보호 경로를 먼저 선언합니다.
                     .requestMatchers("/api/v1/users/me", "/api/v1/users/me/**").authenticated()
                     .requestMatchers(HttpMethod.GET, "/api/v1/crews/*/applications").authenticated()
                     .requestMatchers(
@@ -94,7 +92,6 @@ class SecurityConfig(
                     .anyRequest().authenticated()
             }
             .exceptionHandling { exceptions ->
-                // Spring Security 단계에서 발생한 401/403도 도메인 오류와 동일한 JSON 구조로 반환합니다.
                 exceptions.authenticationEntryPoint { _, response, _ ->
                     writeSecurityError(
                         response,
@@ -132,7 +129,6 @@ class SecurityConfig(
         return http.build()
     }
 
-
     @Bean
     fun jwtAuthenticationConverter(): JwtAuthenticationConverter =
         JwtAuthenticationConverter().apply {
@@ -168,6 +164,13 @@ class SecurityConfig(
                 "X-Recommendation-Run-Id",
                 "X-Recommendation-Event-Id",
                 "X-Recommendation-Occurred-At",
+                "X-Search-Snapshot",
+            )
+            exposedHeaders = listOf(
+                "X-Search-Snapshot",
+                "X-Search-Run-Id",
+                "X-Search-Policy-Version",
+                "X-Search-Result-Context",
             )
             allowCredentials = true
         }

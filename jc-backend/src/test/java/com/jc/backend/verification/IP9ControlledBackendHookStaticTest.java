@@ -29,10 +29,12 @@ class IP9ControlledBackendHookStaticTest {
         assertApprovedSearchControllerBoundary(source);
         assertThat(searchService).contains(
                 "${app.recommendation.search.enabled:false}",
-                "return legacyResponse;",
+                "SearchExploreResult.legacy(legacyResponse)",
                 "catch (RuntimeException exception)",
-                "Search recommendation failed open")
-                .doesNotContain("ExploreSearchShadowBridge", "SearchShadowDispatchReceiptV1");
+                "Search recommendation failed open",
+                "SEARCH_SNAPSHOT_EXPIRED")
+                .doesNotContain("ExploreSearchShadowBridge", "SearchShadowDispatchReceiptV1",
+                        "RecommendationExposureStore");
         assertThat(count(source, "postService.explore(keyword, region, pageable)"))
                 .as("legacy service invocation count")
                 .isEqualTo(1);
@@ -149,14 +151,16 @@ class IP9ControlledBackendHookStaticTest {
                 "RecommendationSearchService recommendationSearchService",
                 "PageResponse<PostDtos.Summary> legacyResponse = postService.explore(keyword, region, pageable);",
                 "exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);",
-                "PageResponse<PostDtos.Summary> response = recommendationSearchService.explore(",
-                "userIdOrNull(token)",
+                "SearchExploreResult result = recommendationSearchService.exploreWithContext(",
+                "snapshotToken",
                 "legacyResponse);",
-                "if (response == legacyResponse)",
+                "if (result.page() == legacyResponse)",
                 "return ApiResponse.ok(legacyResponse);",
-                "return ApiResponse.ok(response);");
+                "writeSearchHeaders(servletResponse, result);",
+                "return ApiResponse.ok(result.page());");
         assertThat(source).doesNotContain(
                 "return ApiResponse.ok(exploreSearchShadowBridge",
+                "return exploreSearchShadowBridge",
                 "SearchShadowDispatchReceiptV1");
     }
 
@@ -182,7 +186,9 @@ class IP9ControlledBackendHookStaticTest {
                 ".hasRole(\"ADMIN\")",
                 "JwtAuthenticationConverter",
                 "ROLE_ADMIN",
-                "ADMIN_ACCESS_DENIED");
+                "ADMIN_ACCESS_DENIED",
+                "X-Search-Snapshot",
+                "X-Search-Result-Context");
         assertThat(source).doesNotContain(
                 ".requestMatchers(\"/api/admin/**\").permitAll()",
                 "SHADOW_RESULT_SERVING",

@@ -13,12 +13,14 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jc.backend.common.ApiResponse;
 import com.jc.backend.common.PageResponse;
 import com.jc.backend.intelligence.search.RecommendationSearchService;
+import com.jc.backend.intelligence.search.RecommendationSearchService.SearchExploreResult;
 import com.jc.backend.recommendation.application.RecommendationFeedService;
 import com.jc.backend.recommendation.application.RecommendationPostInteractionService;
 import com.jc.backend.search.shadow.DefaultExploreSearchShadowBridge;
@@ -32,6 +34,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -49,16 +52,18 @@ class PostControllerSearchShadowHookTest {
         PostController controller = new PostController(service, feed, interactions, bridge, search);
         Pageable pageable = org.springframework.data.domain.PageRequest.of(2, 5);
         PageResponse<PostDtos.Summary> legacy = pageResponse();
+        MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         when(service.explore("seoul", "KR-SEOUL", pageable)).thenReturn(legacy);
 
         ApiResponse<PageResponse<PostDtos.Summary>> response =
-                controller.explore("seoul", "KR-SEOUL", pageable, null);
+                controller.explore("seoul", "KR-SEOUL", pageable, null, null, servletResponse);
 
         assertSame(legacy, response.data());
         assertEquals(ApiResponse.ok(legacy), response);
+        assertEquals(null, servletResponse.getHeader("X-Search-Snapshot"));
         verify(service).explore("seoul", "KR-SEOUL", pageable);
         verify(bridge).afterExplore("seoul", "KR-SEOUL", pageable, legacy);
-        verify(search).explore("seoul", "KR-SEOUL", pageable, null, legacy);
+        verify(search).exploreWithContext("seoul", "KR-SEOUL", pageable, null, null, legacy);
         verifyNoInteractions(feed, interactions);
     }
 
@@ -88,6 +93,7 @@ class PostControllerSearchShadowHookTest {
                         .param("size", "5"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(header().doesNotExist("X-Search-Snapshot"))
                 .andReturn();
 
         assertEquals(mapper.writeValueAsString(ApiResponse.ok(legacy)), result.getResponse().getContentAsString());
@@ -96,7 +102,48 @@ class PostControllerSearchShadowHookTest {
         assertEquals(2, pageable.getValue().getPageNumber());
         assertEquals(5, pageable.getValue().getPageSize());
         verify(bridge).afterExplore(eq("서울"), eq("KR-SEOUL"), any(Pageable.class), eq(legacy));
-        verify(search).explore(eq("서울"), eq("KR-SEOUL"), any(Pageable.class), eq(null), eq(legacy));
+        verify(search).exploreWithContext(
+                eq("서울"), eq("KR-SEOUL"), any(Pageable.class), eq(null), eq(null), eq(legacy));
+    }
+
+    @Test
+    void rankedResponseWritesSearchContextHeadersWithoutChangingBodyContract() throws Exception {
+        PostService service = mock(PostService.class);
+        RecommendationFeedService feed = mock(RecommendationFeedService.class);
+        RecommendationPostInteractionService interactions = mock(RecommendationPostInteractionService.class);
+        ExploreSearchShadowBridge bridge = mock(ExploreSearchShadowBridge.class);
+        RecommendationSearchService search = mock(RecommendationSearchService.class);
+        PostController controller = new PostController(service, feed, interactions, bridge, search);
+        PageResponse<PostDtos.Summary> legacy = pageResponse();
+        PageResponse<PostDtos.Summary> ranked = new PageResponse<>(legacy.items(), 0, 5, 1, 1, true);
+        when(service.explore(eq("서울"), eq("KR-SEOUL"), any(Pageable.class))).thenReturn(legacy);
+        when(search.exploreWithContext(
+                        eq("서울"), eq("KR-SEOUL"), any(Pageable.class), eq(null), eq(null), eq(legacy)))
+                .thenReturn(new SearchExploreResult(
+                        ranked,
+                        "sc1.snapshot",
+                        "search:run-1",
+                        "search-ranking-policy-v1",
+                        "src1.context"));
+
+        ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
+        MockMvc mvc = MockMvcBuilders.standaloneSetup(controller)
+                .setCustomArgumentResolvers(
+                        new AuthenticationPrincipalArgumentResolver(),
+                        new PageableHandlerMethodArgumentResolver())
+                .setMessageConverters(new MappingJackson2HttpMessageConverter(mapper))
+                .build();
+
+        mvc.perform(get("/api/v1/explore")
+                        .param("keyword", "서울")
+                        .param("region", "KR-SEOUL")
+                        .param("size", "5"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-Search-Snapshot", "sc1.snapshot"))
+                .andExpect(header().string("X-Search-Run-Id", "search:run-1"))
+                .andExpect(header().string("X-Search-Policy-Version", "search-ranking-policy-v1"))
+                .andExpect(header().string("X-Search-Result-Context", "src1.context"))
+                .andExpect(content().json(mapper.writeValueAsString(ApiResponse.ok(ranked))));
     }
 
     @Test
@@ -118,12 +165,17 @@ class PostControllerSearchShadowHookTest {
         PageResponse<PostDtos.Summary> legacy = pageResponse();
         when(service.explore(null, null, pageable)).thenReturn(legacy);
 
-        ApiResponse<PageResponse<PostDtos.Summary>> response =
-                controller.explore(null, null, pageable, null);
+        ApiResponse<PageResponse<PostDtos.Summary>> response = controller.explore(
+                null,
+                null,
+                pageable,
+                null,
+                null,
+                new MockHttpServletResponse());
 
         assertSame(legacy, response.data());
         verify(service).explore(null, null, pageable);
-        verify(search).explore(null, null, pageable, null, legacy);
+        verify(search).exploreWithContext(null, null, pageable, null, null, legacy);
     }
 
     @Test
@@ -139,7 +191,13 @@ class PostControllerSearchShadowHookTest {
         when(service.explore("bad", null, pageable)).thenThrow(failure);
 
         RuntimeException thrown = assertThrows(RuntimeException.class,
-                () -> controller.explore("bad", null, pageable, null));
+                () -> controller.explore(
+                        "bad",
+                        null,
+                        pageable,
+                        null,
+                        null,
+                        new MockHttpServletResponse()));
 
         assertSame(failure, thrown);
         verify(service).explore("bad", null, pageable);
@@ -150,13 +208,14 @@ class PostControllerSearchShadowHookTest {
     @SuppressWarnings("unchecked")
     private static RecommendationSearchService legacySearch() {
         RecommendationSearchService search = mock(RecommendationSearchService.class);
-        when(search.explore(
+        when(search.exploreWithContext(
                         nullable(String.class),
                         nullable(String.class),
                         any(Pageable.class),
                         nullable(Long.class),
+                        nullable(String.class),
                         any(PageResponse.class)))
-                .thenAnswer(invocation -> invocation.getArgument(4));
+                .thenAnswer(invocation -> SearchExploreResult.legacy(invocation.getArgument(5)));
         return search;
     }
 
