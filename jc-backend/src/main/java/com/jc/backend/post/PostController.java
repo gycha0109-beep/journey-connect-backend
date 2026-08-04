@@ -3,6 +3,7 @@ package com.jc.backend.post;
 import com.jc.backend.common.ApiResponse;
 import com.jc.backend.common.CursorPageResponse;
 import com.jc.backend.common.PageResponse;
+import com.jc.backend.intelligence.search.RecommendationSearchService;
 import com.jc.backend.recommendation.application.RecommendationFeedService;
 import com.jc.backend.recommendation.application.RecommendationPostInteractionService;
 import com.jc.backend.recommendation.application.RecommendationPostInteractionService.TrackingContext;
@@ -39,16 +40,19 @@ public class PostController {
     private final RecommendationFeedService recommendationFeedService;
     private final RecommendationPostInteractionService recommendationPostInteractionService;
     private final ExploreSearchShadowBridge exploreSearchShadowBridge;
+    private final RecommendationSearchService recommendationSearchService;
 
     public PostController(
             PostService postService,
             RecommendationFeedService recommendationFeedService,
             RecommendationPostInteractionService recommendationPostInteractionService,
-            ExploreSearchShadowBridge exploreSearchShadowBridge) {
+            ExploreSearchShadowBridge exploreSearchShadowBridge,
+            RecommendationSearchService recommendationSearchService) {
         this.postService = postService;
         this.recommendationFeedService = recommendationFeedService;
         this.recommendationPostInteractionService = recommendationPostInteractionService;
         this.exploreSearchShadowBridge = exploreSearchShadowBridge;
+        this.recommendationSearchService = recommendationSearchService;
     }
 
     @GetMapping("/feed")
@@ -74,10 +78,16 @@ public class PostController {
     ApiResponse<PageResponse<PostDtos.Summary>> explore(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String region,
-            @PageableDefault(size = 20) Pageable pageable) {
+            @PageableDefault(size = 20) Pageable pageable,
+            @AuthenticationPrincipal Jwt token) {
         PageResponse<PostDtos.Summary> legacyResponse = postService.explore(keyword, region, pageable);
         exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);
-        return ApiResponse.ok(legacyResponse);
+        return ApiResponse.ok(recommendationSearchService.explore(
+                keyword,
+                region,
+                pageable,
+                userIdOrNull(token),
+                legacyResponse));
     }
 
     @GetMapping("/posts/{postId}")
