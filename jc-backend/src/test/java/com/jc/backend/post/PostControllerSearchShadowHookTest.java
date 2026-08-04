@@ -32,6 +32,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -74,7 +75,9 @@ class PostControllerSearchShadowHookTest {
 
         ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
         MockMvc mvc = MockMvcBuilders.standaloneSetup(controller)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+                .setCustomArgumentResolvers(
+                        new AuthenticationPrincipalArgumentResolver(),
+                        new PageableHandlerMethodArgumentResolver())
                 .setMessageConverters(new MappingJackson2HttpMessageConverter(mapper))
                 .build();
 
