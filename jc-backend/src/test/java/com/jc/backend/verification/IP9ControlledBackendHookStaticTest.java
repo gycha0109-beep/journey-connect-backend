@@ -26,15 +26,7 @@ class IP9ControlledBackendHookStaticTest {
     void controllerUsesLegacyResultAsSearchFallbackAndKeepsShadowReadOnly() throws Exception {
         String source = RepositoryLayout.read(CONTROLLER);
         String searchService = RepositoryLayout.read(SEARCH_SERVICE);
-        assertThat(source).contains(
-                "PageResponse<PostDtos.Summary> legacyResponse = postService.explore(keyword, region, pageable);",
-                "exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);",
-                "return ApiResponse.ok(recommendationSearchService.explore(",
-                "legacyResponse));");
-        assertThat(source).doesNotContain(
-                "return ApiResponse.ok(exploreSearchShadowBridge",
-                "return exploreSearchShadowBridge",
-                "SearchShadowDispatchReceiptV1");
+        assertApprovedSearchControllerBoundary(source);
         assertThat(searchService).contains(
                 "${app.recommendation.search.enabled:false}",
                 "return legacyResponse;",
@@ -157,9 +149,12 @@ class IP9ControlledBackendHookStaticTest {
                 "RecommendationSearchService recommendationSearchService",
                 "PageResponse<PostDtos.Summary> legacyResponse = postService.explore(keyword, region, pageable);",
                 "exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);",
-                "return ApiResponse.ok(recommendationSearchService.explore(",
+                "PageResponse<PostDtos.Summary> response = recommendationSearchService.explore(",
                 "userIdOrNull(token)",
-                "legacyResponse));");
+                "legacyResponse);",
+                "if (response == legacyResponse)",
+                "return ApiResponse.ok(legacyResponse);",
+                "return ApiResponse.ok(response);");
         assertThat(source).doesNotContain(
                 "return ApiResponse.ok(exploreSearchShadowBridge",
                 "SearchShadowDispatchReceiptV1");
