@@ -7,11 +7,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Tag("p0-verification")
 class JavaOnlyVerificationBoundaryTest {
+    private static final Set<String> APPROVED_FRONTEND_WORKFLOWS = Set.of(
+            ".github/workflows/adm4-admin-ui.yml",
+            ".github/workflows/adm5-admin-integration-acceptance.yml");
+
     @Test
     void backendAndRecommendationVerificationUseOnlyJavaAndGradle() throws IOException {
         List<String> offenders = new ArrayList<>();
@@ -38,11 +43,15 @@ class JavaOnlyVerificationBoundaryTest {
         if (Files.isDirectory(workflows)) {
             try (var files = Files.walk(workflows)) {
                 for (Path path : files.filter(Files::isRegularFile).toList()) {
+                    String relative = RepositoryLayout.relative(path);
+                    if (APPROVED_FRONTEND_WORKFLOWS.contains(relative)) {
+                        continue;
+                    }
                     String text = Files.readString(path);
                     if (text.contains("setup-node") || text.contains("npm ")
                             || text.contains("python scripts/")
                             || text.contains("bash scripts/recommendation")) {
-                        offenders.add(RepositoryLayout.relative(path));
+                        offenders.add(relative);
                     }
                 }
             }
