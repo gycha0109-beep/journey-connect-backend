@@ -94,10 +94,16 @@ class RecommendationSearchCandidateSourceIntegrationTest {
                 "update public.posts set moderation_status = 'hidden' where id = ?",
                 hidden.getId());
 
-        List<RecommendationSearchCandidateRow> result = find("카페", "룩셈부르크");
+        try {
+            List<RecommendationSearchCandidateRow> result = find("카페", "룩셈부르크");
 
-        assertThat(result).extracting(RecommendationSearchCandidateRow::postId)
-                .containsExactly(visible.getId());
+            assertThat(result).extracting(RecommendationSearchCandidateRow::postId)
+                    .containsExactly(visible.getId());
+        } finally {
+            jdbcTemplate.update(
+                    "update public.posts set moderation_status = 'visible' where id = ?",
+                    hidden.getId());
+        }
     }
 
     @Test
