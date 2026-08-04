@@ -49,6 +49,16 @@ jobs:
             --tests 'com.jc.backend.intelligence.search.*' \
             --tests 'com.jc.backend.post.PostControllerSearchShadowHookTest' \
             --tests 'com.jc.backend.post.PostApiIntegrationTest'
+      - name: Upload focused test evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: sr-search-focused-test-evidence
+          path: |
+            jc-backend/build/test-results/test
+            jc-backend/build/reports/tests/test
+          if-no-files-found: warn
+          retention-days: 30
       - name: Run protected recommendation contracts
         working-directory: jc-backend
         run: |
