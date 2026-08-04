@@ -19,18 +19,20 @@ class IP12ProductionShadowStaticTest {
         assertThat(controller).contains(
                 "postService.explore(keyword, region, pageable)",
                 "exploreSearchShadowBridge.afterExplore",
-                "PageResponse<PostDtos.Summary> response = recommendationSearchService.explore(",
-                "if (response == legacyResponse)",
+                "recommendationSearchService.exploreWithContext(",
+                "if (result.page() == legacyResponse)",
                 "return ApiResponse.ok(legacyResponse);",
-                "return ApiResponse.ok(response);");
+                "return ApiResponse.ok(result.page());");
         assertThat(controller).doesNotContain(
                 "ProductionSearchShadowProperties",
                 "return ApiResponse.ok(exploreSearchShadowBridge");
         assertThat(searchService).contains(
                 "${app.recommendation.search.enabled:false}",
-                "return legacyResponse;",
-                "catch (RuntimeException exception)")
-                .doesNotContain("ProductionSearchShadowProperties", "SearchShadowDispatchReceiptV1");
+                "SearchExploreResult.legacy(legacyResponse)",
+                "catch (RuntimeException exception)",
+                "SEARCH_SNAPSHOT_EXPIRED")
+                .doesNotContain("ProductionSearchShadowProperties", "SearchShadowDispatchReceiptV1",
+                        "RecommendationExposureStore");
 
         String properties = Files.readString(ROOT.resolve(
                 "jc-backend/src/main/java/com/jc/backend/search/shadow/production/ProductionSearchShadowProperties.java"));
