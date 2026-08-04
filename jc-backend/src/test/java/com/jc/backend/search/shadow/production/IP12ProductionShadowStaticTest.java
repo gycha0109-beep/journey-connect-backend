@@ -19,8 +19,10 @@ class IP12ProductionShadowStaticTest {
         assertThat(controller).contains(
                 "postService.explore(keyword, region, pageable)",
                 "exploreSearchShadowBridge.afterExplore",
-                "recommendationSearchService.explore(",
-                "legacyResponse));");
+                "PageResponse<PostDtos.Summary> response = recommendationSearchService.explore(",
+                "if (response == legacyResponse)",
+                "return ApiResponse.ok(legacyResponse);",
+                "return ApiResponse.ok(response);");
         assertThat(controller).doesNotContain(
                 "ProductionSearchShadowProperties",
                 "return ApiResponse.ok(exploreSearchShadowBridge");
