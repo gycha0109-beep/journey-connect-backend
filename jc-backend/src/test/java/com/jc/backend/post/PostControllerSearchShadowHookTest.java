@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -17,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jc.backend.common.ApiResponse;
 import com.jc.backend.common.PageResponse;
+import com.jc.backend.intelligence.search.RecommendationSearchService;
 import com.jc.backend.recommendation.application.RecommendationFeedService;
 import com.jc.backend.recommendation.application.RecommendationPostInteractionService;
 import com.jc.backend.search.shadow.DefaultExploreSearchShadowBridge;
@@ -42,18 +44,20 @@ class PostControllerSearchShadowHookTest {
         RecommendationFeedService feed = mock(RecommendationFeedService.class);
         RecommendationPostInteractionService interactions = mock(RecommendationPostInteractionService.class);
         ExploreSearchShadowBridge bridge = mock(ExploreSearchShadowBridge.class);
-        PostController controller = new PostController(service, feed, interactions, bridge);
+        RecommendationSearchService search = legacySearch();
+        PostController controller = new PostController(service, feed, interactions, bridge, search);
         Pageable pageable = org.springframework.data.domain.PageRequest.of(2, 5);
         PageResponse<PostDtos.Summary> legacy = pageResponse();
         when(service.explore("seoul", "KR-SEOUL", pageable)).thenReturn(legacy);
 
         ApiResponse<PageResponse<PostDtos.Summary>> response =
-                controller.explore("seoul", "KR-SEOUL", pageable);
+                controller.explore("seoul", "KR-SEOUL", pageable, null);
 
         assertSame(legacy, response.data());
         assertEquals(ApiResponse.ok(legacy), response);
         verify(service).explore("seoul", "KR-SEOUL", pageable);
         verify(bridge).afterExplore("seoul", "KR-SEOUL", pageable, legacy);
+        verify(search).explore("seoul", "KR-SEOUL", pageable, null, legacy);
         verifyNoInteractions(feed, interactions);
     }
 
@@ -63,7 +67,8 @@ class PostControllerSearchShadowHookTest {
         RecommendationFeedService feed = mock(RecommendationFeedService.class);
         RecommendationPostInteractionService interactions = mock(RecommendationPostInteractionService.class);
         ExploreSearchShadowBridge bridge = mock(ExploreSearchShadowBridge.class);
-        PostController controller = new PostController(service, feed, interactions, bridge);
+        RecommendationSearchService search = legacySearch();
+        PostController controller = new PostController(service, feed, interactions, bridge, search);
         PageResponse<PostDtos.Summary> legacy = pageResponse();
         when(service.explore(eq("서울"), eq("KR-SEOUL"), any(Pageable.class))).thenReturn(legacy);
 
@@ -88,6 +93,7 @@ class PostControllerSearchShadowHookTest {
         assertEquals(2, pageable.getValue().getPageNumber());
         assertEquals(5, pageable.getValue().getPageSize());
         verify(bridge).afterExplore(eq("서울"), eq("KR-SEOUL"), any(Pageable.class), eq(legacy));
+        verify(search).explore(eq("서울"), eq("KR-SEOUL"), any(Pageable.class), eq(null), eq(legacy));
     }
 
     @Test
@@ -103,15 +109,18 @@ class PostControllerSearchShadowHookTest {
                 request -> {
                     throw new AssertionError("hook must not be reached");
                 });
-        PostController controller = new PostController(service, feed, interactions, bridge);
+        RecommendationSearchService search = legacySearch();
+        PostController controller = new PostController(service, feed, interactions, bridge, search);
         Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 20);
         PageResponse<PostDtos.Summary> legacy = pageResponse();
         when(service.explore(null, null, pageable)).thenReturn(legacy);
 
-        ApiResponse<PageResponse<PostDtos.Summary>> response = controller.explore(null, null, pageable);
+        ApiResponse<PageResponse<PostDtos.Summary>> response =
+                controller.explore(null, null, pageable, null);
 
         assertSame(legacy, response.data());
         verify(service).explore(null, null, pageable);
+        verify(search).explore(null, null, pageable, null, legacy);
     }
 
     @Test
@@ -120,17 +129,32 @@ class PostControllerSearchShadowHookTest {
         RecommendationFeedService feed = mock(RecommendationFeedService.class);
         RecommendationPostInteractionService interactions = mock(RecommendationPostInteractionService.class);
         ExploreSearchShadowBridge bridge = mock(ExploreSearchShadowBridge.class);
-        PostController controller = new PostController(service, feed, interactions, bridge);
+        RecommendationSearchService search = legacySearch();
+        PostController controller = new PostController(service, feed, interactions, bridge, search);
         Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 20);
         RuntimeException failure = new IllegalArgumentException("legacy_failure");
         when(service.explore("bad", null, pageable)).thenThrow(failure);
 
         RuntimeException thrown = assertThrows(RuntimeException.class,
-                () -> controller.explore("bad", null, pageable));
+                () -> controller.explore("bad", null, pageable, null));
 
         assertSame(failure, thrown);
         verify(service).explore("bad", null, pageable);
         verify(bridge, never()).afterExplore(any(), any(), any(), any());
+        verifyNoInteractions(search);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static RecommendationSearchService legacySearch() {
+        RecommendationSearchService search = mock(RecommendationSearchService.class);
+        when(search.explore(
+                        nullable(String.class),
+                        nullable(String.class),
+                        any(Pageable.class),
+                        nullable(Long.class),
+                        any(PageResponse.class)))
+                .thenAnswer(invocation -> invocation.getArgument(4));
+        return search;
     }
 
     private static PageResponse<PostDtos.Summary> pageResponse() {
