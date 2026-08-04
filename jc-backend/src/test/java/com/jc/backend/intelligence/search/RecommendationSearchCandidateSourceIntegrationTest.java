@@ -43,7 +43,7 @@ class RecommendationSearchCandidateSourceIntegrationTest {
         activeAuthor = users.save(new UserAccount(
                 "search-author@example.com", "hash", "search-author"));
         seoul = region(regions, "KR-SEOUL");
-        luxembourg = createLuxembourg();
+        luxembourg = ensureLuxembourg();
     }
 
     @Test
@@ -145,28 +145,30 @@ class RecommendationSearchCandidateSourceIntegrationTest {
                 tagId);
     }
 
-    private Region createLuxembourg() {
-        Long countryId = jdbcTemplate.queryForObject(
-                """
-                insert into public.regions (
-                  name_local, name_ko, name_en, slug, region_type, country_code, timezone
-                ) values (
-                  'Lëtzebuerg', '룩셈부르크', 'Luxembourg', 'lu', 'country', 'LU',
-                  'Europe/Luxembourg'
-                )
-                returning id
-                """,
-                Long.class);
-        jdbcTemplate.update(
-                """
-                insert into public.regions (
-                  parent_id, name_local, name_ko, name_en, slug, region_type,
-                  country_code, timezone
-                ) values (?, 'Luxembourg', '룩셈부르크', 'Luxembourg', 'lu-lux',
-                  'city', 'LU', 'Europe/Luxembourg')
-                """,
-                countryId);
-        return regions.findByCodeIgnoreCase("LU-LUX")
-                .orElseThrow(() -> new AssertionError("Luxembourg region missing"));
+    private Region ensureLuxembourg() {
+        return regions.findByCodeIgnoreCase("LU-LUX").orElseGet(() -> {
+            Long countryId = jdbcTemplate.queryForObject(
+                    """
+                    insert into public.regions (
+                      name_local, name_ko, name_en, slug, region_type, country_code, timezone
+                    ) values (
+                      'Lëtzebuerg', '룩셈부르크', 'Luxembourg', 'lu', 'country', 'LU',
+                      'Europe/Luxembourg'
+                    )
+                    returning id
+                    """,
+                    Long.class);
+            jdbcTemplate.update(
+                    """
+                    insert into public.regions (
+                      parent_id, name_local, name_ko, name_en, slug, region_type,
+                      country_code, timezone
+                    ) values (?, 'Luxembourg', '룩셈부르크', 'Luxembourg', 'lu-lux',
+                      'city', 'LU', 'Europe/Luxembourg')
+                    """,
+                    countryId);
+            return regions.findByCodeIgnoreCase("LU-LUX")
+                    .orElseThrow(() -> new AssertionError("Luxembourg region missing"));
+        });
     }
 }
