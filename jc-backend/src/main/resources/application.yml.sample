@@ -49,12 +49,6 @@ app:
     canary-allocation-basis-points: ${RECOMMENDATION_CANARY_ALLOCATION_BPS:0}
     canary-cursor-secret: ${RECOMMENDATION_CANARY_CURSOR_SECRET:}
     canary-release-id: ${RECOMMENDATION_CANARY_RELEASE_ID:}
-    search:
-      # Search ranking remains OFF until an environment explicitly enables it.
-      enabled: ${SEARCH_RECOMMENDATION_ENABLED:false}
-      candidate-limit: ${SEARCH_RECOMMENDATION_CANDIDATE_LIMIT:1000}
-      snapshot-secret: ${SEARCH_SNAPSHOT_SECRET:${JWT_SECRET}}
-      snapshot-ttl-seconds: ${SEARCH_SNAPSHOT_TTL_SECONDS:900}
 
 springdoc:
   api-docs:
