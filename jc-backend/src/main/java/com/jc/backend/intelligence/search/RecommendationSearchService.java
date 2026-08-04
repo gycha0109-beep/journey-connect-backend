@@ -195,7 +195,7 @@ public class RecommendationSearchService {
             if (continuation) {
                 throw exception;
             }
-            log.warn("Search recommendation first page failed open: {}", exception.code());
+            log.warn("Search recommendation first page failed open: {}", exception.getCode());
             return SearchExploreResult.legacy(legacyResponse);
         } catch (RuntimeException exception) {
             if (continuation) {
