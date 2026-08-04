@@ -5,13 +5,13 @@
 ```text
 Stage: SR-6B
 Contract: search-exposure-v1
-Java contract implementation: COMPLETE
+Java contract implementation: VERIFIED
 Runtime endpoint: NOT_IMPLEMENTED
 Persistence writer: DISABLED_PENDING_APPROVAL
 Database/Flyway/canonical SQL: UNCHANGED
-Local contract verification: 9/9 PASS
-GitHub Actions: PENDING
-Overall: IMPLEMENTED_UNVERIFIED
+SR focused/full backend CI: VERIFIED
+Common repository CI: RED_EXISTING_ADM3_DATA_VERIFIER
+Overall: VERIFIED_CONTRACTS_HOLD_RUNTIME_APPROVAL
 ```
 
 ## 목적
@@ -166,7 +166,13 @@ disabledPendingApproval()
 - P2 experiment exposure 변경 없음
 - frontend `IMPRESSION` 활성화 없음
 
-## 테스트
+## 검증 결과
+
+코드 exact head:
+
+```text
+63abf69dff9710b2de8dad003b7454778ebd9dec
+```
 
 로컬 Java 21 독립 검증:
 
@@ -178,7 +184,59 @@ disabled persistence port: 1 PASS
 total: 9/9 PASS
 ```
 
-검증 시나리오:
+GitHub Actions `SR Search Recommendation` run `30915953636`:
+
+```text
+search-ranking-postgresql: SUCCESS
+full-backend-regression: SUCCESS
+protected recommendation contracts: SUCCESS
+```
+
+focused artifact:
+
+```text
+artifact ID: 8895108049
+digest: sha256:d6657c759c87ec3d5ebcf3b9232a24ac0c66bb68309bd5ba2bef5211a9cf79eb
+47 tests, failures/errors/skipped: 0/0/0
+SR-6B new contracts: 9/9 PASS
+```
+
+full backend artifact:
+
+```text
+artifact ID: 8895225171
+digest: sha256:5fb497398c94a2b848c96b7973ad7c941d22a4be6b1712096a80ab8156a35838
+91 suites, 321 tests
+failures/errors/skipped: 0/0/0
+```
+
+보호 계약:
+
+```text
+recommendation core foundation/golden: PASS
+P1 core: 17 scenarios PASS
+P2 core: 23 scenarios PASS
+IP-1 intelligence: 739 PASS
+Search compatibility: 584 PASS
+Search domain: 425 PASS
+IP-6 integration: 972 PASS
+IP-8 readiness: 2590 PASS
+IP-5 runtime: 850 PASS
+IP-7 shadow wiring: 1700 PASS
+IP-11.5 production shadow: 147 PASS
+IP-12.5 protected readiness Gradle gate: BUILD SUCCESSFUL
+```
+
+공통 `Backend PR CI`와 `Recommendation P0 Database CI`는 SR-6B compile/test 및 Gradle readiness 성공 후 기존 ADM-3/Data baseline verifier가 임시 detached worktree에서 다음 명령을 실행하며 종료됐다.
+
+```text
+git diff --name-only origin/main...HEAD
+exit status 128
+```
+
+이 결함은 SR-0~SR-4에서도 확인된 기존 repository verifier 문제다. SR-6B는 Data/Admin verifier와 DB 파일을 변경하지 않았으므로 본 단계에서 수정하지 않는다.
+
+## 검증 시나리오
 
 - valid actor/context/item/page binding
 - wrong user context 거절
@@ -191,8 +249,6 @@ total: 9/9 PASS
 - input item ordering independence
 - evidence 변경 fingerprint change
 - disabled port zero-write result
-
-GitHub Actions의 focused Search test와 full backend regression을 통과한 뒤 단계 상태를 `VERIFIED`로 전환할 수 있다.
 
 ## 다음 승인 게이트
 
