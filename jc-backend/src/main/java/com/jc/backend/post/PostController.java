@@ -4,11 +4,13 @@ import com.jc.backend.common.ApiResponse;
 import com.jc.backend.common.CursorPageResponse;
 import com.jc.backend.common.PageResponse;
 import com.jc.backend.intelligence.search.RecommendationSearchService;
+import com.jc.backend.intelligence.search.RecommendationSearchService.SearchExploreResult;
 import com.jc.backend.recommendation.application.RecommendationFeedService;
 import com.jc.backend.recommendation.application.RecommendationPostInteractionService;
 import com.jc.backend.recommendation.application.RecommendationPostInteractionService.TrackingContext;
 import com.jc.backend.recommendation.persistence.RecommendationPostInteractionStore.Action;
 import com.jc.backend.search.shadow.ExploreSearchShadowBridge;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -79,19 +81,23 @@ public class PostController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String region,
             @PageableDefault(size = 20) Pageable pageable,
-            @AuthenticationPrincipal Jwt token) {
+            @RequestHeader(name = "X-Search-Snapshot", required = false) String snapshotToken,
+            @AuthenticationPrincipal Jwt token,
+            HttpServletResponse servletResponse) {
         PageResponse<PostDtos.Summary> legacyResponse = postService.explore(keyword, region, pageable);
         exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);
-        PageResponse<PostDtos.Summary> response = recommendationSearchService.explore(
+        SearchExploreResult result = recommendationSearchService.exploreWithContext(
                 keyword,
                 region,
                 pageable,
                 userIdOrNull(token),
+                snapshotToken,
                 legacyResponse);
-        if (response == legacyResponse) {
+        if (result.page() == legacyResponse) {
             return ApiResponse.ok(legacyResponse);
         }
-        return ApiResponse.ok(response);
+        writeSearchHeaders(servletResponse, result);
+        return ApiResponse.ok(result.page());
     }
 
     @GetMapping("/posts/{postId}")
@@ -213,6 +219,23 @@ public class PostController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteComment(@AuthenticationPrincipal Jwt token, @PathVariable Long commentId) {
         postService.deleteComment(userId(token), commentId);
+    }
+
+    private void writeSearchHeaders(
+            HttpServletResponse response,
+            SearchExploreResult result) {
+        if (result.snapshotToken() != null) {
+            response.setHeader("X-Search-Snapshot", result.snapshotToken());
+        }
+        if (result.runId() != null) {
+            response.setHeader("X-Search-Run-Id", result.runId());
+        }
+        if (result.policyVersion() != null) {
+            response.setHeader("X-Search-Policy-Version", result.policyVersion());
+        }
+        if (result.resultContextToken() != null) {
+            response.setHeader("X-Search-Result-Context", result.resultContextToken());
+        }
     }
 
     private long userId(Jwt token) {
