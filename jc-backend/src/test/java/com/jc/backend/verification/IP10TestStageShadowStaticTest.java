@@ -109,9 +109,12 @@ class IP10TestStageShadowStaticTest {
                 "RecommendationSearchService recommendationSearchService",
                 "PageResponse<PostDtos.Summary> legacyResponse = postService.explore(keyword, region, pageable);",
                 "exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);",
-                "return ApiResponse.ok(recommendationSearchService.explore(",
+                "PageResponse<PostDtos.Summary> response = recommendationSearchService.explore(",
                 "userIdOrNull(token)",
-                "legacyResponse));");
+                "legacyResponse);",
+                "if (response == legacyResponse)",
+                "return ApiResponse.ok(legacyResponse);",
+                "return ApiResponse.ok(response);");
         assertThat(source).doesNotContain(
                 "return ApiResponse.ok(exploreSearchShadowBridge",
                 "SearchShadowDispatchReceiptV1");
