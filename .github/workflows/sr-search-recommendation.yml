@@ -45,7 +45,7 @@ jobs:
         env:
           JC_TEST_POSTGRES_IMAGE: postgres:15-alpine
         run: |
-          ./gradlew clean test --no-build-cache --no-daemon \
+          ./gradlew :clean :test --no-build-cache --no-daemon \
             --tests 'com.jc.backend.intelligence.search.*' \
             --tests 'com.jc.backend.post.PostControllerSearchShadowHookTest' \
             --tests 'com.jc.backend.post.PostApiIntegrationTest'
@@ -57,6 +57,6 @@ jobs:
             :jc-recommendation-core:javaCoreGoldenFixtureContractTest \
             :jc-recommendation-core:p1CoreContractTest \
             :jc-recommendation-core:p2CoreContractTest \
-            p1ContractVerification \
-            p2ContractVerification \
+            :p1ContractVerification \
+            :p2ContractVerification \
             --no-build-cache --no-daemon
