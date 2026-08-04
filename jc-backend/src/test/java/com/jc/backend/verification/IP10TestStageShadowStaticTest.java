@@ -11,6 +11,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class IP10TestStageShadowStaticTest {
+    private static final String CONTROLLER =
+            "jc-backend/src/main/java/com/jc/backend/post/PostController.java";
+    private static final String SEARCH_SERVICE =
+            "jc-backend/src/main/java/com/jc/backend/intelligence/search/RecommendationSearchService.java";
     private static final String ADM1_SECURITY_CONFIG =
             "jc-backend/src/main/kotlin/com/jc/backend/config/SecurityConfig.kt";
 
@@ -19,13 +23,18 @@ class IP10TestStageShadowStaticTest {
         Path manifest = RepositoryLayout.resolve("verification/ip9/IP9_POSTCHANGE_BACKEND_PROTECTED_SHA256.txt");
         List<String> lines = Files.readAllLines(manifest, StandardCharsets.UTF_8).stream()
                 .filter(line -> !line.isBlank()).toList();
+        int approvedControllerDeltas = 0;
         int approvedAdm1SecurityDeltas = 0;
         for (String line : lines) {
             String[] parts = line.trim().split("\\s+", 2);
             assertThat(parts).hasSize(2);
             Path path = RepositoryLayout.resolve(parts[1]);
             String current = sha256(path);
-            if (ADM1_SECURITY_CONFIG.equals(parts[1])) {
+            if (CONTROLLER.equals(parts[1])) {
+                assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
+                assertApprovedSearchControllerBoundary(Files.readString(path));
+                approvedControllerDeltas++;
+            } else if (ADM1_SECURITY_CONFIG.equals(parts[1])) {
                 assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
                 assertApprovedAdm1SecurityBoundary(Files.readString(path));
                 approvedAdm1SecurityDeltas++;
@@ -33,6 +42,7 @@ class IP10TestStageShadowStaticTest {
                 assertThat(current).as(parts[1]).isEqualTo(parts[0]);
             }
         }
+        assertThat(approvedControllerDeltas).isEqualTo(1);
         assertThat(approvedAdm1SecurityDeltas).isEqualTo(1);
         Path resources = RepositoryLayout.resolve("jc-backend/src/main/resources");
         try (var stream = Files.walk(resources)) {
@@ -44,15 +54,15 @@ class IP10TestStageShadowStaticTest {
     }
 
     @Test
-    void activationIsProfileAndExplicitAllowGuardedWithNoProductionCutoverAuthority() throws Exception {
+    void activationIsProfileAndExplicitAllowGuardedWithNoShadowCutoverAuthority() throws Exception {
         String config = RepositoryLayout.read(
                 "jc-backend/src/main/java/com/jc/backend/search/shadow/stage/StageSearchShadowConfiguration.java");
         String condition = RepositoryLayout.read(
                 "jc-backend/src/main/java/com/jc/backend/search/shadow/stage/StageSearchShadowActivationCondition.java");
         String properties = RepositoryLayout.read(
                 "jc-backend/src/main/java/com/jc/backend/search/shadow/stage/StageSearchShadowProperties.java");
-        String controller = RepositoryLayout.read(
-                "jc-backend/src/main/java/com/jc/backend/post/PostController.java");
+        String controller = RepositoryLayout.read(CONTROLLER);
+        String searchService = RepositoryLayout.read(SEARCH_SERVICE);
         assertThat(config).contains("StageSearchShadowActivationCondition", "DefaultExploreSearchShadowBridge")
                 .doesNotContain("@Profile(\"prod\")", "Repository", "EntityManager", "SearchRunRepository");
         assertThat(condition).contains("activationAllowed");
@@ -61,7 +71,11 @@ class IP10TestStageShadowStaticTest {
                         "SearchShadowWiringConfigV1.STAGE_PROFILE",
                         "sample-basis-points")
                 .doesNotContain("SHADOW_CANDIDATE", "production enabled");
-        assertThat(controller).contains("return ApiResponse.ok(legacyResponse);")
+        assertApprovedSearchControllerBoundary(controller);
+        assertThat(searchService).contains(
+                        "${app.recommendation.search.enabled:false}",
+                        "return legacyResponse;",
+                        "catch (RuntimeException exception)")
                 .doesNotContain("stageSearch", "SearchRuntime", "SearchShadowDispatchReceiptV1");
     }
 
@@ -88,6 +102,19 @@ class IP10TestStageShadowStaticTest {
                 "ip9ControlledBackendHookRegression",
                 "ip8SearchRegressionClosure");
         assertThat(build).doesNotContain("ignoreFailures", "isIgnoreFailures");
+    }
+
+    private static void assertApprovedSearchControllerBoundary(String source) {
+        assertThat(source).contains(
+                "RecommendationSearchService recommendationSearchService",
+                "PageResponse<PostDtos.Summary> legacyResponse = postService.explore(keyword, region, pageable);",
+                "exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);",
+                "return ApiResponse.ok(recommendationSearchService.explore(",
+                "userIdOrNull(token)",
+                "legacyResponse));");
+        assertThat(source).doesNotContain(
+                "return ApiResponse.ok(exploreSearchShadowBridge",
+                "SearchShadowDispatchReceiptV1");
     }
 
     private static void assertApprovedAdm1SecurityBoundary(String source) {
