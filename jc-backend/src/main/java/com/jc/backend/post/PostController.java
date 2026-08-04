@@ -82,12 +82,16 @@ public class PostController {
             @AuthenticationPrincipal Jwt token) {
         PageResponse<PostDtos.Summary> legacyResponse = postService.explore(keyword, region, pageable);
         exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);
-        return ApiResponse.ok(recommendationSearchService.explore(
+        PageResponse<PostDtos.Summary> response = recommendationSearchService.explore(
                 keyword,
                 region,
                 pageable,
                 userIdOrNull(token),
-                legacyResponse));
+                legacyResponse);
+        if (response == legacyResponse) {
+            return ApiResponse.ok(legacyResponse);
+        }
+        return ApiResponse.ok(response);
     }
 
     @GetMapping("/posts/{postId}")
