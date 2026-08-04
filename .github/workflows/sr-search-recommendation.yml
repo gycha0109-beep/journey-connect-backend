@@ -2,13 +2,17 @@ name: SR Search Recommendation
 
 on:
   pull_request:
-    branches: [main]
+    branches:
+      - main
+      - agent/sr0-sr2-search-recommendation-ranking
     paths:
       - "jc-backend/src/main/java/com/jc/backend/intelligence/search/**"
       - "jc-backend/src/main/java/com/jc/backend/post/PostController.java"
+      - "jc-backend/src/main/kotlin/com/jc/backend/config/SecurityConfig.kt"
+      - "jc-backend/src/main/resources/application.yml.sample"
       - "jc-backend/src/test/java/com/jc/backend/intelligence/search/**"
       - "jc-backend/src/test/java/com/jc/backend/post/PostControllerSearchShadowHookTest.java"
-      - "docs/recommendation/SR-0-SEARCH-RECOMMENDATION-DESIGN.md"
+      - "docs/recommendation/SR-*.md"
       - ".github/workflows/sr-search-recommendation.yml"
   workflow_dispatch:
 
@@ -40,7 +44,7 @@ jobs:
       - name: Grant Gradle wrapper execution
         working-directory: jc-backend
         run: chmod +x ./gradlew
-      - name: Run SR-0 to SR-2 focused tests
+      - name: Run SR-0 to SR-4 focused tests
         working-directory: jc-backend
         env:
           JC_TEST_POSTGRES_IMAGE: postgres:15-alpine
