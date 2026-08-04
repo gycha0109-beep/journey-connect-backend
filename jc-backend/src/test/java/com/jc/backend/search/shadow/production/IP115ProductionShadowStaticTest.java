@@ -11,13 +11,26 @@ class IP115ProductionShadowStaticTest {
     private static final Path ROOT = Path.of("..").toAbsolutePath().normalize();
 
     @Test
-    void legacyAuthorityAndProductionActivationRemainProtected() throws Exception {
+    void legacyFallbackAndProductionShadowActivationRemainProtected() throws Exception {
         String controller = Files.readString(ROOT.resolve(
                 "jc-backend/src/main/java/com/jc/backend/post/PostController.java"));
-        assertThat(controller).contains("postService.explore(keyword, region, pageable)");
-        assertThat(controller).contains("exploreSearchShadowBridge.afterExplore");
-        assertThat(controller).contains("ApiResponse.ok(legacyResponse)");
-        assertThat(controller).doesNotContain("ProductionShadowTechnicalGate");
+        String searchService = Files.readString(ROOT.resolve(
+                "jc-backend/src/main/java/com/jc/backend/intelligence/search/RecommendationSearchService.java"));
+        assertThat(controller).contains(
+                "postService.explore(keyword, region, pageable)",
+                "exploreSearchShadowBridge.afterExplore",
+                "PageResponse<PostDtos.Summary> response = recommendationSearchService.explore(",
+                "if (response == legacyResponse)",
+                "return ApiResponse.ok(legacyResponse);",
+                "return ApiResponse.ok(response);");
+        assertThat(controller).doesNotContain(
+                "ProductionShadowTechnicalGate",
+                "return ApiResponse.ok(exploreSearchShadowBridge");
+        assertThat(searchService).contains(
+                "${app.recommendation.search.enabled:false}",
+                "return legacyResponse;",
+                "catch (RuntimeException exception)")
+                .doesNotContain("ProductionShadowTechnicalGate", "SearchShadowDispatchReceiptV1");
 
         String configuration = Files.readString(ROOT.resolve(
                 "jc-backend/src/main/java/com/jc/backend/search/shadow/production/ProductionSearchShadowTechnicalConfiguration.java"));

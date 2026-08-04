@@ -15,22 +15,24 @@ import org.junit.jupiter.api.Test;
 class IP9ControlledBackendHookStaticTest {
     private static final String CONTROLLER =
             "jc-backend/src/main/java/com/jc/backend/post/PostController.java";
+    private static final String SEARCH_SERVICE =
+            "jc-backend/src/main/java/com/jc/backend/intelligence/search/RecommendationSearchService.java";
     private static final String RCA2_FEED_SERVICE =
             "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java";
     private static final String ADM1_SECURITY_CONFIG =
             "jc-backend/src/main/kotlin/com/jc/backend/config/SecurityConfig.kt";
 
     @Test
-    void controllerUsesLegacyServiceResultAsTheOnlyResponseAuthority() throws Exception {
+    void controllerUsesLegacyResultAsSearchFallbackAndKeepsShadowReadOnly() throws Exception {
         String source = RepositoryLayout.read(CONTROLLER);
-        assertThat(source).contains(
-                "PageResponse<PostDtos.Summary> legacyResponse = postService.explore(keyword, region, pageable);",
-                "exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);",
-                "return ApiResponse.ok(legacyResponse);");
-        assertThat(source).doesNotContain(
-                "return ApiResponse.ok(exploreSearchShadowBridge",
-                "return exploreSearchShadowBridge",
-                "SearchShadowDispatchReceiptV1");
+        String searchService = RepositoryLayout.read(SEARCH_SERVICE);
+        assertApprovedSearchControllerBoundary(source);
+        assertThat(searchService).contains(
+                "${app.recommendation.search.enabled:false}",
+                "return legacyResponse;",
+                "catch (RuntimeException exception)",
+                "Search recommendation failed open")
+                .doesNotContain("ExploreSearchShadowBridge", "SearchShadowDispatchReceiptV1");
         assertThat(count(source, "postService.explore(keyword, region, pageable)"))
                 .as("legacy service invocation count")
                 .isEqualTo(1);
@@ -113,6 +115,8 @@ class IP9ControlledBackendHookStaticTest {
             String current = sha256(RepositoryLayout.resolve(parts[1]));
             if (CONTROLLER.equals(parts[1])) {
                 assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
+                assertApprovedSearchControllerBoundary(
+                        Files.readString(RepositoryLayout.resolve(parts[1])));
                 approvedControllerDeltas++;
             } else if (ADM1_SECURITY_CONFIG.equals(parts[1])) {
                 assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
@@ -138,6 +142,22 @@ class IP9ControlledBackendHookStaticTest {
             assertThat(sha256(RepositoryLayout.resolve(parts[1]))).as(parts[1]).isEqualTo(parts[0]);
         }
         assertThat(lines).hasSize(26);
+    }
+
+    private static void assertApprovedSearchControllerBoundary(String source) {
+        assertThat(source).contains(
+                "RecommendationSearchService recommendationSearchService",
+                "PageResponse<PostDtos.Summary> legacyResponse = postService.explore(keyword, region, pageable);",
+                "exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);",
+                "PageResponse<PostDtos.Summary> response = recommendationSearchService.explore(",
+                "userIdOrNull(token)",
+                "legacyResponse);",
+                "if (response == legacyResponse)",
+                "return ApiResponse.ok(legacyResponse);",
+                "return ApiResponse.ok(response);");
+        assertThat(source).doesNotContain(
+                "return ApiResponse.ok(exploreSearchShadowBridge",
+                "SearchShadowDispatchReceiptV1");
     }
 
     private static void assertApprovedRca2FeedRegistrationBoundary(String source) {

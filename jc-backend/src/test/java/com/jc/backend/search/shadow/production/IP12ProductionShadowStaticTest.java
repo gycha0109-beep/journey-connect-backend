@@ -11,13 +11,26 @@ class IP12ProductionShadowStaticTest {
     private static final Path ROOT = Path.of("..").toAbsolutePath().normalize();
 
     @Test
-    void productionDefaultsCeilingPrivacyAndLegacyAuthorityAreProtected() throws Exception {
+    void productionDefaultsCeilingPrivacyAndLegacyFallbackAreProtected() throws Exception {
         String controller = Files.readString(ROOT.resolve(
                 "jc-backend/src/main/java/com/jc/backend/post/PostController.java"));
-        assertThat(controller).contains("postService.explore(keyword, region, pageable)");
-        assertThat(controller).contains("exploreSearchShadowBridge.afterExplore");
-        assertThat(controller).contains("ApiResponse.ok(legacyResponse)");
-        assertThat(controller).doesNotContain("ProductionSearchShadowProperties");
+        String searchService = Files.readString(ROOT.resolve(
+                "jc-backend/src/main/java/com/jc/backend/intelligence/search/RecommendationSearchService.java"));
+        assertThat(controller).contains(
+                "postService.explore(keyword, region, pageable)",
+                "exploreSearchShadowBridge.afterExplore",
+                "PageResponse<PostDtos.Summary> response = recommendationSearchService.explore(",
+                "if (response == legacyResponse)",
+                "return ApiResponse.ok(legacyResponse);",
+                "return ApiResponse.ok(response);");
+        assertThat(controller).doesNotContain(
+                "ProductionSearchShadowProperties",
+                "return ApiResponse.ok(exploreSearchShadowBridge");
+        assertThat(searchService).contains(
+                "${app.recommendation.search.enabled:false}",
+                "return legacyResponse;",
+                "catch (RuntimeException exception)")
+                .doesNotContain("ProductionSearchShadowProperties", "SearchShadowDispatchReceiptV1");
 
         String properties = Files.readString(ROOT.resolve(
                 "jc-backend/src/main/java/com/jc/backend/search/shadow/production/ProductionSearchShadowProperties.java"));
@@ -40,8 +53,11 @@ class IP12ProductionShadowStaticTest {
                         "jc-backend/src/main/java/com/jc/backend/search/shadow/production"))
                 .filter(path -> path.toString().endsWith(".java"))
                 .map(path -> {
-                    try { return Files.readString(path); }
-                    catch (java.io.IOException exception) { throw new java.io.UncheckedIOException(exception); }
+                    try {
+                        return Files.readString(path);
+                    } catch (java.io.IOException exception) {
+                        throw new java.io.UncheckedIOException(exception);
+                    }
                 })
                 .collect(Collectors.joining("\n"));
         assertThat(source).doesNotContain("legacyResponse.items().stream().map");
