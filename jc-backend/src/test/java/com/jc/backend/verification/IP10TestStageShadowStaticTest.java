@@ -74,9 +74,11 @@ class IP10TestStageShadowStaticTest {
         assertApprovedSearchControllerBoundary(controller);
         assertThat(searchService).contains(
                         "${app.recommendation.search.enabled:false}",
-                        "return legacyResponse;",
-                        "catch (RuntimeException exception)")
-                .doesNotContain("stageSearch", "SearchRuntime", "SearchShadowDispatchReceiptV1");
+                        "SearchExploreResult.legacy(legacyResponse)",
+                        "catch (RuntimeException exception)",
+                        "SEARCH_SNAPSHOT_EXPIRED")
+                .doesNotContain("stageSearch", "SearchRuntime", "SearchShadowDispatchReceiptV1",
+                        "RecommendationExposureStore");
     }
 
     @Test
@@ -109,12 +111,13 @@ class IP10TestStageShadowStaticTest {
                 "RecommendationSearchService recommendationSearchService",
                 "PageResponse<PostDtos.Summary> legacyResponse = postService.explore(keyword, region, pageable);",
                 "exploreSearchShadowBridge.afterExplore(keyword, region, pageable, legacyResponse);",
-                "PageResponse<PostDtos.Summary> response = recommendationSearchService.explore(",
-                "userIdOrNull(token)",
+                "SearchExploreResult result = recommendationSearchService.exploreWithContext(",
+                "snapshotToken",
                 "legacyResponse);",
-                "if (response == legacyResponse)",
+                "if (result.page() == legacyResponse)",
                 "return ApiResponse.ok(legacyResponse);",
-                "return ApiResponse.ok(response);");
+                "writeSearchHeaders(servletResponse, result);",
+                "return ApiResponse.ok(result.page());");
         assertThat(source).doesNotContain(
                 "return ApiResponse.ok(exploreSearchShadowBridge",
                 "SearchShadowDispatchReceiptV1");
@@ -127,7 +130,9 @@ class IP10TestStageShadowStaticTest {
                 ".hasRole(\"ADMIN\")",
                 "JwtAuthenticationConverter",
                 "ROLE_ADMIN",
-                "ADMIN_ACCESS_DENIED");
+                "ADMIN_ACCESS_DENIED",
+                "X-Search-Snapshot",
+                "X-Search-Result-Context");
         assertThat(source).doesNotContain(
                 ".requestMatchers(\"/api/admin/**\").permitAll()",
                 "search.shadow.stage",
