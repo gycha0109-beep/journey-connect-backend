@@ -14,7 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public final class SearchExposureStore implements SearchExposurePersistencePort {
+public class SearchExposureStore implements SearchExposurePersistencePort {
 
     private static final String INSERT = """
             insert into public.search_exposure_event_v1 (
