@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
-public final class SearchExposureService {
+public class SearchExposureService {
 
     private final SearchIdentityMappingReadPort identityMappingPort;
     private final SearchExposureValidator validator;
