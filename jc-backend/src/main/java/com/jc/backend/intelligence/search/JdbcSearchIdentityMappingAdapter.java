@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public final class JdbcSearchIdentityMappingAdapter implements SearchIdentityMappingReadPort {
+public class JdbcSearchIdentityMappingAdapter implements SearchIdentityMappingReadPort {
 
     private static final String RESOLVE = """
             select subject_ref, identity_scheme, mapping_version
