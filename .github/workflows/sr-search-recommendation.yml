@@ -7,6 +7,7 @@ on:
       - agent/sr0-sr2-search-recommendation-ranking
       - agent/sr6-search-exposure-contract-design
       - agent/sr6b-search-exposure-java-contracts
+      - agent/sr6f-search-ctr-metric-design
     paths:
       - "database/journey-connect-db-v2.8/**"
       - "jc-backend/src/main/java/com/jc/backend/intelligence/search/**"
@@ -54,7 +55,7 @@ jobs:
       - name: Grant Gradle wrapper execution
         working-directory: jc-backend
         run: chmod +x ./gradlew
-      - name: Run SR-0 to SR-6C focused tests
+      - name: Run SR-0 to SR-6F-B focused tests
         working-directory: jc-backend
         env:
           JC_TEST_POSTGRES_IMAGE: postgres:15-alpine
