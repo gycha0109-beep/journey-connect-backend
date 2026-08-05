@@ -11,9 +11,8 @@ import org.junit.jupiter.api.Test;
 class SearchExposureSqlContractTest {
 
     @Test
-    void canonicalAndFlywayDeclareTheSameAuthorityBoundaries() throws IOException {
-        String canonical = resource("/db/canonical/55_search_exposure_persistence.sql");
-        String flyway = resource("/db/migration/V55__search_exposure_persistence.sql");
+    void canonicalSqlDeclaresApprovedAuthorityAndRoleBoundaries() throws IOException {
+        String sql = resource("/db/canonical/55_search_exposure_persistence.sql");
 
         for (String required : new String[] {
                 "CREATE TABLE public.platform_identity_mapping_v1",
@@ -27,8 +26,7 @@ class SearchExposureSqlContractTest {
                 "GRANT SELECT,INSERT ON public.search_exposure_event_v1 TO jc_recommendation",
                 "REVOKE UPDATE,DELETE,TRUNCATE ON public.search_exposure_event_v1 FROM jc_recommendation"
         }) {
-            assertTrue(canonical.contains(required), "canonical missing: " + required);
-            assertTrue(flyway.contains(required), "Flyway missing: " + required);
+            assertTrue(sql.contains(required), "canonical SQL missing: " + required);
         }
     }
 
@@ -41,7 +39,12 @@ class SearchExposureSqlContractTest {
         assertTrue(sql.contains("retention_until=exposed_at+interval '180 days'"));
         assertFalse(sql.contains("INSERT INTO public.recommendation_exposure_event"));
         assertFalse(sql.contains("ALTER TABLE public.recommendation_p2_experiment_exposure"));
-        assertFalse(sql.contains(" user_id bigint NOT NULL REFERENCES public.app_users(id) ON DELETE RESTRICT, identity_scheme"));
+        assertFalse(sql.contains("CREATE TABLE public.search_exposure_event_v1 ( user_id"));
+    }
+
+    @Test
+    void noFlywayAutodiscoveryMigrationIsIntroduced() {
+        assertTrue(getClass().getResource("/db/migration/V55__search_exposure_persistence.sql") == null);
     }
 
     private String resource(String path) throws IOException {
