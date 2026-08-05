@@ -7,6 +7,7 @@ public record SearchExposureCommand(
         String schemaVersion,
         String subjectRef,
         String identityScheme,
+        String identityMappingVersion,
         String sessionId,
         String searchRunId,
         String resultSnapshotRef,
@@ -14,11 +15,33 @@ public record SearchExposureCommand(
         String rankingPolicyVersion,
         String pageOccurrenceId,
         String visibilityRuleVersion,
+        String retentionPolicyVersion,
         String producerBuildId,
         List<Item> items) {
 
     public SearchExposureCommand {
         items = List.copyOf(items);
+    }
+
+    public SearchExposureCommand(
+            String schemaVersion,
+            String subjectRef,
+            String identityScheme,
+            String sessionId,
+            String searchRunId,
+            String resultSnapshotRef,
+            String queryFingerprint,
+            String rankingPolicyVersion,
+            String pageOccurrenceId,
+            String visibilityRuleVersion,
+            String producerBuildId,
+            List<Item> items) {
+        this(
+                schemaVersion, subjectRef, identityScheme,
+                SearchExposureContract.IDENTITY_MAPPING_VERSION, sessionId,
+                searchRunId, resultSnapshotRef, queryFingerprint, rankingPolicyVersion,
+                pageOccurrenceId, visibilityRuleVersion,
+                SearchExposureContract.RETENTION_POLICY_VERSION, producerBuildId, items);
     }
 
     public record Item(
@@ -29,5 +52,22 @@ public record SearchExposureCommand(
             int pagePosition,
             int visibleRatioBasisPoints,
             long dwellMilliseconds,
-            Instant exposedAt) {}
+            Instant exposedAt,
+            Instant retentionUntil) {
+
+        public Item(
+                String exposureId,
+                String idempotencyKey,
+                long postId,
+                int absoluteRank,
+                int pagePosition,
+                int visibleRatioBasisPoints,
+                long dwellMilliseconds,
+                Instant exposedAt) {
+            this(
+                    exposureId, idempotencyKey, postId, absoluteRank, pagePosition,
+                    visibleRatioBasisPoints, dwellMilliseconds, exposedAt,
+                    exposedAt.plus(SearchExposureContract.RAW_RETENTION));
+        }
+    }
 }

@@ -4,7 +4,9 @@ import com.jc.backend.recommendation.application.RecommendationCanonicalPayload;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
+@Component
 public final class SearchExposureCanonicalizer {
 
     private final RecommendationCanonicalPayload canonicalPayload;
@@ -51,6 +53,7 @@ public final class SearchExposureCanonicalizer {
                     item.dwellMilliseconds(),
                     item.exposedAt().toString(),
                     item.exposureId(),
+                    command.identityMappingVersion(),
                     command.identityScheme(),
                     item.idempotencyKey(),
                     command.pageOccurrenceId(),
@@ -58,6 +61,8 @@ public final class SearchExposureCanonicalizer {
                     command.producerBuildId(),
                     command.queryFingerprint(),
                     command.rankingPolicyVersion(),
+                    command.retentionPolicyVersion(),
+                    item.retentionUntil().toString(),
                     item.postId(),
                     SearchExposureContract.RESULT_ENTITY_TYPE,
                     command.resultSnapshotRef(),
@@ -70,6 +75,7 @@ public final class SearchExposureCanonicalizer {
                     command.visibilityRuleVersion());
             RecommendationCanonicalPayload.Encoded encodedItem = canonicalPayload.encode(itemPayload);
             encodedItems.add(new CanonicalItem(
+                    item,
                     item.exposureId(),
                     item.idempotencyKey(),
                     SearchHashing.sha256(encodedItem.json()),
@@ -78,6 +84,7 @@ public final class SearchExposureCanonicalizer {
         }
 
         return new CanonicalBatch(
+                command,
                 command.schemaVersion(),
                 SearchHashing.sha256(encodedBatch.json()),
                 encodedBatch.bytes(),
@@ -99,6 +106,7 @@ public final class SearchExposureCanonicalizer {
     }
 
     public record CanonicalBatch(
+            SearchExposureCommand command,
             String schemaVersion,
             String fingerprint,
             byte[] bytes,
@@ -109,6 +117,15 @@ public final class SearchExposureCanonicalizer {
             items = List.copyOf(items);
         }
 
+        public CanonicalBatch(
+                String schemaVersion,
+                String fingerprint,
+                byte[] bytes,
+                String json,
+                List<CanonicalItem> items) {
+            this(null, schemaVersion, fingerprint, bytes, json, items);
+        }
+
         @Override
         public byte[] bytes() {
             return bytes.clone();
@@ -116,6 +133,7 @@ public final class SearchExposureCanonicalizer {
     }
 
     public record CanonicalItem(
+            SearchExposureCommand.Item item,
             String exposureId,
             String idempotencyKey,
             String fingerprint,
@@ -123,6 +141,15 @@ public final class SearchExposureCanonicalizer {
             String json) {
         public CanonicalItem {
             bytes = bytes.clone();
+        }
+
+        public CanonicalItem(
+                String exposureId,
+                String idempotencyKey,
+                String fingerprint,
+                byte[] bytes,
+                String json) {
+            this(null, exposureId, idempotencyKey, fingerprint, bytes, json);
         }
 
         @Override
@@ -162,6 +189,7 @@ public final class SearchExposureCanonicalizer {
             long dwellMilliseconds,
             String exposedAt,
             String exposureId,
+            String identityMappingVersion,
             String identityScheme,
             String idempotencyKey,
             String pageOccurrenceId,
@@ -169,6 +197,8 @@ public final class SearchExposureCanonicalizer {
             String producerBuildId,
             String queryFingerprint,
             String rankingPolicyVersion,
+            String retentionPolicyVersion,
+            String retentionUntil,
             long resultEntityId,
             String resultEntityType,
             String resultSnapshotRef,

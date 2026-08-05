@@ -6,12 +6,20 @@ on:
       - main
       - agent/sr0-sr2-search-recommendation-ranking
       - agent/sr6-search-exposure-contract-design
+      - agent/sr6b-search-exposure-java-contracts
     paths:
+      - "database/journey-connect-db-v2.7/55_search_exposure_persistence.sql"
+      - "database/journey-connect-db-v2.7/56_search_exposure_persistence_smoke_test.sql"
       - "jc-backend/src/main/java/com/jc/backend/intelligence/search/**"
       - "jc-backend/src/main/java/com/jc/backend/post/PostController.java"
       - "jc-backend/src/main/kotlin/com/jc/backend/config/SecurityConfig.kt"
       - "jc-backend/src/main/resources/application.yml.sample"
+      - "jc-backend/src/main/resources/db/migration/V55__search_exposure_persistence.sql"
+      - "jc-backend/src/test/java/com/jc/backend/CanonicalPostgresInitializer.java"
       - "jc-backend/src/test/java/com/jc/backend/intelligence/search/**"
+      - "jc-backend/src/test/resources/db/canonical/55_search_exposure_persistence.sql"
+      - "jc-backend/src/test/resources/db/canonical/56_search_exposure_persistence_smoke_test.sql"
+      - "jc-backend/src/test/resources/db/canonical/cleanup.sql"
       - "jc-backend/src/test/resources/intelligence/search/**"
       - "jc-backend/src/test/java/com/jc/backend/post/PostControllerSearchShadowHookTest.java"
       - "docs/recommendation/SR-*.md"
@@ -47,7 +55,7 @@ jobs:
       - name: Grant Gradle wrapper execution
         working-directory: jc-backend
         run: chmod +x ./gradlew
-      - name: Run SR-0 to SR-6B focused tests
+      - name: Run SR-0 to SR-6C focused tests
         working-directory: jc-backend
         env:
           JC_TEST_POSTGRES_IMAGE: postgres:15-alpine
