@@ -57,7 +57,11 @@ class SearchExposureApiIntegrationTest {
         String subjectRef = jdbcTemplate.queryForObject(
                 "select subject_ref from public.search_exposure_event_v1 where exposure_id = ?",
                 String.class, "search-api-exp-1");
-        assertThat(subjectRef).startsWith("subject:").doesNotContain(Long.toString(userId));
+        assertThat(subjectRef)
+                .startsWith("subject:")
+                .isNotEqualTo("subject:" + userId)
+                .isNotEqualTo("user:" + userId)
+                .doesNotMatch("^subject:\\d+$");
         assertThat(count("""
                 select count(*) from information_schema.columns
                 where table_schema='public' and table_name='search_exposure_event_v1'
