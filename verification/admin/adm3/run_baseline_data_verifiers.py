@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 CONTRACT = ROOT / "verification/admin/adm3/adm3-contract.json"
 DATA_CLOSURE_MAIN = "c528f6fb0942389b70a348cb9aa672eb7819a392"
+DATA_CLOSURE_WRAPPER = Path("verification/data-platform-closure/run_data_platform_closure_verification.py")
 EXPECTED_SQL = {
     "database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql",
     "database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql",
@@ -22,7 +23,7 @@ COMMANDS = (
     ("python", "verification/dp6/run_dp6_static_verification.py"),
     ("python", "verification/dp7/run_dp7_allocation_verification.py"),
     ("python", "verification/dp7/run_dp7_static_verification.py"),
-    ("python", "verification/data-platform-closure/run_data_platform_closure_verification.py"),
+    ("python", str(DATA_CLOSURE_WRAPPER)),
 )
 
 
@@ -47,55 +48,15 @@ def active() -> bool:
         return False
 
 
-def git_output(*args: str, cwd: Path) -> str | None:
-    result = subprocess.run(
-        ["git", *args],
-        cwd=cwd,
-        check=False,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
-    )
-    value = result.stdout.strip()
-    return value if result.returncode == 0 and value else None
-
-
-def run_data_closure_verifier(command: tuple[str, ...], worktree: Path, temp_root: Path) -> None:
-    ref = "refs/remotes/origin/main"
-    original = git_output("rev-parse", "--verify", ref, cwd=worktree)
-    subprocess.run(
-        ["git", "cat-file", "-e", f"{DATA_CLOSURE_MAIN}^{{commit}}"],
-        cwd=worktree,
-        check=True,
-    )
-    subprocess.run(
-        ["git", "update-ref", ref, DATA_CLOSURE_MAIN],
-        cwd=worktree,
-        check=True,
-    )
+def run_data_closure_verifier(command: tuple[str, ...], worktree: Path) -> None:
+    current_wrapper = ROOT / DATA_CLOSURE_WRAPPER
+    historical_wrapper = worktree / DATA_CLOSURE_WRAPPER
+    if not current_wrapper.is_file() or not historical_wrapper.is_file():
+        raise RuntimeError("Data closure compatibility wrapper is absent")
+    shutil.copyfile(current_wrapper, historical_wrapper)
     env = os.environ.copy()
-    env.update(
-        {
-            "GIT_CONFIG_COUNT": "1",
-            "GIT_CONFIG_KEY_0": "remote.origin.url",
-            "GIT_CONFIG_VALUE_0": str(temp_root / "historical-verifier-no-remote"),
-        }
-    )
-    try:
-        subprocess.run(command, cwd=worktree, check=True, env=env)
-    finally:
-        if original:
-            subprocess.run(
-                ["git", "update-ref", ref, original],
-                cwd=worktree,
-                check=False,
-            )
-        else:
-            subprocess.run(
-                ["git", "update-ref", "-d", ref],
-                cwd=worktree,
-                check=False,
-            )
+    env["JC_DATA_CLOSURE_DIFF_BASE"] = DATA_CLOSURE_MAIN
+    subprocess.run(command, cwd=worktree, check=True, env=env)
 
 
 def run() -> None:
@@ -110,8 +71,8 @@ def run() -> None:
             check=True,
         )
         for command in COMMANDS:
-            if command[-1].endswith("run_data_platform_closure_verification.py"):
-                run_data_closure_verifier(command, worktree, temp_root)
+            if command[-1] == str(DATA_CLOSURE_WRAPPER):
+                run_data_closure_verifier(command, worktree)
             else:
                 subprocess.run(command, cwd=worktree, check=True)
     finally:
