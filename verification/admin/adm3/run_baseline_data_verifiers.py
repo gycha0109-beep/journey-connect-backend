@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import shutil
 import subprocess
 import tempfile
@@ -48,15 +47,25 @@ def active() -> bool:
         return False
 
 
-def run_data_closure_verifier(command: tuple[str, ...], worktree: Path) -> None:
-    current_wrapper = ROOT / DATA_CLOSURE_WRAPPER
-    historical_wrapper = worktree / DATA_CLOSURE_WRAPPER
-    if not current_wrapper.is_file() or not historical_wrapper.is_file():
-        raise RuntimeError("Data closure compatibility wrapper is absent")
-    shutil.copyfile(current_wrapper, historical_wrapper)
-    env = os.environ.copy()
-    env["JC_DATA_CLOSURE_DIFF_BASE"] = DATA_CLOSURE_MAIN
-    subprocess.run(command, cwd=worktree, check=True, env=env)
+def patch_historical_data_closure_wrapper(worktree: Path) -> None:
+    wrapper = worktree / DATA_CLOSURE_WRAPPER
+    if not wrapper.is_file():
+        raise RuntimeError("historical Data closure wrapper is absent")
+    source = wrapper.read_text(encoding="utf-8")
+    insert_anchor = "namespace = {\n"
+    if source.count(insert_anchor) != 1:
+        raise RuntimeError("historical Data closure namespace anchor mismatch")
+    compatibility = f'''historical_diff_anchor = '"origin/main...HEAD"'
+if source.count(historical_diff_anchor) != 1:
+    raise SystemExit("FAIL: authoritative Data closure diff anchor mismatch")
+source = source.replace(
+    historical_diff_anchor,
+    '"{DATA_CLOSURE_MAIN}...HEAD"',
+    1,
+)
+
+'''
+    wrapper.write_text(source.replace(insert_anchor, compatibility + insert_anchor, 1), encoding="utf-8")
 
 
 def run() -> None:
@@ -70,11 +79,9 @@ def run() -> None:
             cwd=ROOT,
             check=True,
         )
+        patch_historical_data_closure_wrapper(worktree)
         for command in COMMANDS:
-            if command[-1] == str(DATA_CLOSURE_WRAPPER):
-                run_data_closure_verifier(command, worktree)
-            else:
-                subprocess.run(command, cwd=worktree, check=True)
+            subprocess.run(command, cwd=worktree, check=True)
     finally:
         subprocess.run(
             ["git", "worktree", "remove", "--force", str(worktree)],
