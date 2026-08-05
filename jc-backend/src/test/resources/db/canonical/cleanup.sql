@@ -1,4 +1,8 @@
 TRUNCATE TABLE
+  public.search_exposure_event_v1,
+  public.platform_identity_mapping_access_audit_v1,
+  public.platform_identity_mapping_invalidation_v1,
+  public.platform_identity_mapping_v1,
   public.recommendation_p2_release_decision,
   public.recommendation_p2_gate_result,
   public.recommendation_p2_metric_result,

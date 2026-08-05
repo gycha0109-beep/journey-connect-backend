@@ -12,7 +12,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
+@Component
 public final class SearchExposureValidator {
 
     private static final Pattern IDENTIFIER =
@@ -57,9 +59,7 @@ public final class SearchExposureValidator {
         SearchContextCodec.ResultContext context;
         try {
             context = contextCodec.decodeResultContext(
-                    request.resultContextToken(),
-                    actor.userId(),
-                    now);
+                    request.resultContextToken(), actor.userId(), now);
         } catch (DomainException exception) {
             throw new DomainException(
                     HttpStatus.FORBIDDEN,
@@ -130,7 +130,8 @@ public final class SearchExposureValidator {
                     item.pagePosition(),
                     item.visibleRatioBasisPoints(),
                     item.dwellMilliseconds(),
-                    exposedAt));
+                    exposedAt,
+                    exposedAt.plus(SearchExposureContract.RAW_RETENTION)));
         }
 
         items.sort(Comparator
@@ -143,6 +144,7 @@ public final class SearchExposureValidator {
                 SearchExposureContract.SCHEMA_VERSION,
                 actor.subjectRef(),
                 actor.identityScheme(),
+                actor.identityMappingVersion(),
                 actor.sessionId(),
                 context.runId(),
                 context.snapshotFingerprint(),
@@ -150,6 +152,7 @@ public final class SearchExposureValidator {
                 context.policyVersion(),
                 request.pageOccurrenceId(),
                 request.visibilityRuleVersion(),
+                SearchExposureContract.RETENTION_POLICY_VERSION,
                 request.producerBuildId(),
                 items);
     }
@@ -157,6 +160,7 @@ public final class SearchExposureValidator {
     private static void validateActor(SearchExposureActor actor) {
         if (actor.userId() <= 0
                 || !SearchExposureContract.IDENTITY_SCHEME.equals(actor.identityScheme())
+                || !SearchExposureContract.IDENTITY_MAPPING_VERSION.equals(actor.identityMappingVersion())
                 || actor.subjectRef() == null
                 || !SUBJECT_REF.matcher(actor.subjectRef()).matches()
                 || actor.sessionId() == null

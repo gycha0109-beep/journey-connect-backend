@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import tempfile
@@ -10,6 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 CONTRACT = ROOT / "verification/admin/adm3/adm3-contract.json"
+DATA_CLOSURE_WRAPPER = Path("verification/data-platform-closure/run_data_platform_closure_verification.py")
 EXPECTED_SQL = {
     "database/journey-connect-db-v2.7/53_admin_control_plane_hardening.sql",
     "database/journey-connect-db-v2.7/54_admin_control_plane_hardening_smoke_test.sql",
@@ -20,7 +22,7 @@ COMMANDS = (
     ("python", "verification/dp6/run_dp6_static_verification.py"),
     ("python", "verification/dp7/run_dp7_allocation_verification.py"),
     ("python", "verification/dp7/run_dp7_static_verification.py"),
-    ("python", "verification/data-platform-closure/run_data_platform_closure_verification.py"),
+    ("python", str(DATA_CLOSURE_WRAPPER)),
 )
 
 
@@ -45,6 +47,29 @@ def active() -> bool:
         return False
 
 
+def patch_historical_data_closure_wrapper(worktree: Path, baseline: str) -> None:
+    if not re.fullmatch(r"[0-9a-f]{40}", baseline):
+        raise RuntimeError("invalid ADM-3 historical baseline SHA")
+    wrapper = worktree / DATA_CLOSURE_WRAPPER
+    if not wrapper.is_file():
+        raise RuntimeError("historical Data closure wrapper is absent")
+    source = wrapper.read_text(encoding="utf-8")
+    insert_anchor = "namespace = {\n"
+    if source.count(insert_anchor) != 1:
+        raise RuntimeError("historical Data closure namespace anchor mismatch")
+    compatibility = f'''historical_diff_anchor = '"origin/main...HEAD"'
+if source.count(historical_diff_anchor) != 1:
+    raise SystemExit("FAIL: authoritative Data closure diff anchor mismatch")
+source = source.replace(
+    historical_diff_anchor,
+    '"{baseline}...HEAD"',
+    1,
+)
+
+'''
+    wrapper.write_text(source.replace(insert_anchor, compatibility + insert_anchor, 1), encoding="utf-8")
+
+
 def run() -> None:
     data = contract()
     baseline = data["work_start_sha"]
@@ -56,6 +81,7 @@ def run() -> None:
             cwd=ROOT,
             check=True,
         )
+        patch_historical_data_closure_wrapper(worktree, baseline)
         for command in COMMANDS:
             subprocess.run(command, cwd=worktree, check=True)
     finally:
