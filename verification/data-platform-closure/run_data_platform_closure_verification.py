@@ -1,16 +1,12 @@
 #!/usr/bin/env python3
-"""Execute the authoritative Data closure verifier with approved compatibility adjustments.
+"""Execute the authoritative Data closure verifier with the SC-6 workflow allowed.
 
 The closure verification logic is loaded byte-for-byte from authoritative
-pre-SC-6 main. The governance-only SC-6 workflow path is inserted into its
-successor allowlist. ADM-3 historical verification may additionally bind the
-existing changed-file check to an explicit ancestor SHA; Data evidence and
-protected-state semantics remain unchanged.
+pre-SC-6 main. Only the governance-only SC-6 workflow path is inserted into
+its successor allowlist; Data evidence and protected-state semantics remain unchanged.
 """
 from __future__ import annotations
 
-import os
-import re
 import subprocess
 from pathlib import Path
 
@@ -35,15 +31,6 @@ source = source.replace(
     + '        ".github/workflows/sc6-rca2-nonzero-nonprod-stage1-governance-ci.yml",\n',
     1,
 )
-
-historical_diff_base = os.environ.get("JC_DATA_CLOSURE_DIFF_BASE", "")
-if historical_diff_base:
-    if not re.fullmatch(r"[0-9a-f]{40}", historical_diff_base):
-        raise SystemExit("FAIL: invalid explicit Data closure diff base")
-    diff_anchor = '"origin/main...HEAD"'
-    if source.count(diff_anchor) != 1:
-        raise SystemExit("FAIL: authoritative Data closure diff anchor mismatch")
-    source = source.replace(diff_anchor, f'"{historical_diff_base}...HEAD"', 1)
 
 namespace = {
     "__name__": "__main__",
