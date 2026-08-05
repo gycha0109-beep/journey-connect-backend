@@ -1,11 +1,14 @@
 package com.jc.backend.intelligence.search;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 
 class SearchExposureSqlContractTest {
@@ -43,6 +46,23 @@ class SearchExposureSqlContractTest {
     }
 
     @Test
+    void databaseV28PackageMatchesCanonicalTestBootstrap() throws IOException {
+        Path root = repositoryRoot();
+        assertEquals(
+                normalized(Files.readString(root.resolve(
+                        "database/journey-connect-db-v2.8/01_search_exposure_persistence.sql"))),
+                resource("/db/canonical/55_search_exposure_persistence.sql"));
+        assertEquals(
+                normalized(Files.readString(root.resolve(
+                        "database/journey-connect-db-v2.8/02_search_exposure_digest_privilege.sql"))),
+                resource("/db/canonical/55a_search_exposure_digest_privilege.sql"));
+        assertEquals(
+                normalized(Files.readString(root.resolve(
+                        "database/journey-connect-db-v2.8/03_search_exposure_persistence_smoke_test.sql"))),
+                resource("/db/canonical/56_search_exposure_persistence_smoke_test.sql"));
+    }
+
+    @Test
     void noFlywayAutodiscoveryMigrationIsIntroduced() {
         assertTrue(getClass().getResource("/db/migration/V55__search_exposure_persistence.sql") == null);
     }
@@ -50,7 +70,22 @@ class SearchExposureSqlContractTest {
     private String resource(String path) throws IOException {
         try (InputStream input = getClass().getResourceAsStream(path)) {
             if (input == null) throw new IOException("Missing SQL resource: " + path);
-            return new String(input.readAllBytes(), StandardCharsets.UTF_8).replace("\r\n", "\n");
+            return normalized(new String(input.readAllBytes(), StandardCharsets.UTF_8));
         }
+    }
+
+    private static String normalized(String value) {
+        return value.replace("\r\n", "\n").replace('\r', '\n');
+    }
+
+    private static Path repositoryRoot() {
+        Path current = Path.of("").toAbsolutePath().normalize();
+        for (Path candidate = current; candidate != null; candidate = candidate.getParent()) {
+            if (Files.isDirectory(candidate.resolve("database/journey-connect-db-v2.8"))
+                    && Files.isRegularFile(candidate.resolve("jc-backend/build.gradle.kts"))) {
+                return candidate;
+            }
+        }
+        throw new IllegalStateException("repository root not found from " + current);
     }
 }
