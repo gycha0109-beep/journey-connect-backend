@@ -33,7 +33,7 @@ class Rca2StaticBoundaryTest {
                     .sorted(Comparator.comparingInt(Rca2StaticBoundaryTest::sqlNumber))
                     .toList();
         }
-        assertThat(scripts).hasSize(54);
+        assertThat(scripts).hasSize(56);
         for (int index = 0; index < scripts.size(); index++) {
             assertThat(sqlNumber(scripts.get(index))).isEqualTo(index + 1);
         }
@@ -41,6 +41,10 @@ class Rca2StaticBoundaryTest {
                 .isEqualTo("53_admin_control_plane_hardening.sql");
         assertThat(scripts.get(53).getFileName().toString())
                 .isEqualTo("54_admin_control_plane_hardening_smoke_test.sql");
+        assertThat(scripts.get(54).getFileName().toString())
+                .isEqualTo("55_search_exposure_persistence.sql");
+        assertThat(scripts.get(55).getFileName().toString())
+                .isEqualTo("56_search_exposure_persistence_smoke_test.sql");
         assertThat(scripts).noneMatch(path -> path.getFileName().toString().toLowerCase().contains("rca2"));
 
         try (Stream<Path> files = Files.walk(ROOT.resolve("jc-backend/src/main/java/com/jc/backend/recommendation/rca2"))) {
