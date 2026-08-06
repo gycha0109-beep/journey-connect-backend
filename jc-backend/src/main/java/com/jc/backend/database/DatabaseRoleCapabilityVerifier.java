@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,6 +26,14 @@ public final class DatabaseRoleCapabilityVerifier implements SmartInitializingSi
     private final boolean requireRestrictedLogin;
     private final boolean requireReliability;
 
+    public DatabaseRoleCapabilityVerifier(
+            PlatformTransactionManager transactionManager,
+            JdbcTemplate jdbcTemplate,
+            boolean requireRestrictedLogin) {
+        this(transactionManager, jdbcTemplate, requireRestrictedLogin, false);
+    }
+
+    @Autowired
     public DatabaseRoleCapabilityVerifier(
             PlatformTransactionManager transactionManager,
             JdbcTemplate jdbcTemplate,
