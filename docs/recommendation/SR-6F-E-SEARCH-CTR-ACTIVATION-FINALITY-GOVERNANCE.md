@@ -6,11 +6,13 @@
 Stage: SR-6F-E
 Metric: search-click-through-rate-v1
 Policy: search-ctr-activation-finality-v1
-Governance contract: IMPLEMENTED
+Governance contract: VERIFIED
+Verified implementation head: 20022a39d740cee8052e2b5c113d99a759e343d6
 Runtime mode: DISABLED
 Finality write: DISABLED
 Endpoint/scheduler/dashboard: NOT_IMPLEMENTED
 Merge/deploy/production activation: NOT_PERFORMED
+Overall: VERIFIED_GOVERNANCE_HOLD_ACTIVATION_AND_FINALITY
 ```
 
 ## 목적
@@ -188,8 +190,57 @@ UPDATE, DELETE, TRUNCATE 또는 projection history 재작성은 허용하지 않
 - `SearchCtrActivationPolicy.Window`
 - `SearchCtrActivationPolicy.RuntimeMode`
 - `SearchCtrActivationPolicyTest`
+- `SearchCtrActivationGovernanceContractTest`
 
 Search 행동의 30일 replay age와 5분 future skew를 서비스 내부 중복 상수가 아니라 공유 계약으로 추출했다. API 의미는 변경하지 않는다.
+
+## CI 검증
+
+Verified implementation head:
+
+```text
+20022a39d740cee8052e2b5c113d99a759e343d6
+```
+
+### SR Search Recommendation — run `31073477449`
+
+```text
+focused Search/PostgreSQL: SUCCESS
+protected recommendation contracts: SUCCESS
+full backend regression: SUCCESS
+focused: 22 suites / 84 tests / failures 0 / errors 0 / skipped 0
+full: 101 suites / 358 tests / failures 0 / errors 0 / skipped 0
+```
+
+Evidence:
+
+```text
+focused artifact: 8956598614
+focused digest: sha256:ef0b1aeb624fc14309cbda3298e5bce6958e168d2e62d5b0e10c8566a8467f76
+full artifact: 8956688017
+full digest: sha256:94232145215371fd729f41f8d2ff50abf6da69009963e5ab15a069497adeb187
+```
+
+### Recommendation P0 Database CI — run `31073477384`
+
+```text
+PostgreSQL 15: SUCCESS
+PostgreSQL 18: SUCCESS
+Java/SQL integrity: SUCCESS
+canonical PostgreSQL integration: SUCCESS
+PG15 artifact: 8956602439
+PG15 digest: sha256:48941f0d983d8b463ca789c6e176c6cd6fa0e9768bff6695d83a30d645f03676
+PG18 artifact: 8956607489
+PG18 digest: sha256:ab6e863c913664cfb2e27dae885bc44d2e69200586f2923a6642502c9c12239f
+```
+
+### Backend PR CI — run `31073478653`
+
+```text
+IP-12.5 full protected readiness: SUCCESS
+artifact: 8956632443
+digest: sha256:99f0cabb7a4798bac2d5f6d73950bc3dd5fc0b6d24996e9ab8a4d7645233c448
+```
 
 ## 다음 단계
 
