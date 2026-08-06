@@ -95,7 +95,7 @@ class SearchCtrManualActivationRunnerTest {
                 "a".repeat(64),
                 null,
                 SearchCtrContract.METRIC_ID,
-                SearchCtrContract.PROJECTION_VERSION,
+                SearchCtrContract.METRIC_VERSION,
                 command.windowStart(),
                 command.windowEnd(),
                 SearchCtrContract.PROVISIONAL_STATUS,
