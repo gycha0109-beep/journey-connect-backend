@@ -23,15 +23,19 @@ public final class DatabaseRoleCapabilityVerifier implements SmartInitializingSi
     private final PlatformTransactionManager transactionManager;
     private final JdbcTemplate jdbcTemplate;
     private final boolean requireRestrictedLogin;
+    private final boolean requireReliability;
 
     public DatabaseRoleCapabilityVerifier(
             PlatformTransactionManager transactionManager,
             JdbcTemplate jdbcTemplate,
             @Value("${app.database.role-routing.require-restricted-login:true}")
-                    boolean requireRestrictedLogin) {
+                    boolean requireRestrictedLogin,
+            @Value("${app.database.role-routing.require-reliability:false}")
+                    boolean requireReliability) {
         this.transactionManager = transactionManager;
         this.jdbcTemplate = jdbcTemplate;
         this.requireRestrictedLogin = requireRestrictedLogin;
+        this.requireReliability = requireReliability;
     }
 
     @Override
@@ -42,7 +46,8 @@ public final class DatabaseRoleCapabilityVerifier implements SmartInitializingSi
             verifySessionLoginHasNoDirectDataPrivilegesOrOwnership();
         }
         for (DatabaseRole role : DatabaseRole.values()) {
-            if (role.requiredAtStartup()) {
+            if (role.requiredAtStartup()
+                    || (role == DatabaseRole.RELIABILITY && requireReliability)) {
                 verifyRoleAssumption(role);
             }
         }
