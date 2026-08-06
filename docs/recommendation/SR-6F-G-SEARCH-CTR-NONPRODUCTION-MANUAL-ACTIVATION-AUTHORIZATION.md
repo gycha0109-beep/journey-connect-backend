@@ -7,6 +7,8 @@ Stage: SR-6F-G
 Metric: search-click-through-rate-v1
 Policy: search-ctr-activation-finality-v1
 Decision: APPROVED_BY_PROJECT_OWNER
+Implementation: VERIFIED
+Verified implementation head: 9ba2db4a11bc0415652e3e7b1c20577a300615fe
 Authorized runtime mode: NONPRODUCTION_MANUAL
 Authorized environment: stage
 Authorized login role: jc_backend
@@ -21,7 +23,7 @@ Membership grant: NOT_PERFORMED
 Manual execution: NOT_PERFORMED
 Finality write: DISABLED
 Merge/deploy: NOT_PERFORMED
-Overall: AUTHORIZED_BOUNDED_STAGE_WINDOW_HOLD_EXECUTION
+Overall: VERIFIED_BOUNDED_STAGE_AUTHORIZATION_HOLD_EXECUTION
 ```
 
 ## 결정
@@ -171,6 +173,41 @@ SEARCH_CTR_MANUAL_APPROVAL_REF=approval:sr6fg-stage-20260806t0800z
 ```
 
 rollback은 신규 write capability 제거다. 기존 append-only projection과 audit를 UPDATE, DELETE, TRUNCATE하지 않는다.
+
+## 검증 증거
+
+```text
+Verified implementation head:
+9ba2db4a11bc0415652e3e7b1c20577a300615fe
+
+SR Search Recommendation:
+31092362305 — SUCCESS
+
+Recommendation P0 Database CI:
+31092363499 — SUCCESS
+
+Backend PR CI:
+31092362603 — SUCCESS
+
+Focused:
+27 suites / 99 tests / failures 0 / errors 0 / skipped 0
+
+Protected recommendation contracts:
+P1 17 scenarios / P2 23 scenarios — SUCCESS
+
+Full backend:
+106 suites / 373 tests / failures 0 / errors 0 / skipped 0
+
+PostgreSQL 15 canonical integration: SUCCESS
+PostgreSQL 18 canonical integration: SUCCESS
+IP-12.5 protected readiness: SUCCESS
+
+Focused artifact:
+sha256:e1ea873ab87492206952f774d239514a8c28b25c2bdc6bd9b9d9b33b8e296b94
+
+Full regression artifact:
+sha256:f28067c104051c1c6dacf4d3584f980f01ec442ade010d37a4117a44cf708768
+```
 
 ## 이번 단계에서 수행하지 않는 것
 
