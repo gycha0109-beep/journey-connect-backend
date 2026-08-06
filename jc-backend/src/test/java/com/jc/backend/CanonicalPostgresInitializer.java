@@ -33,6 +33,7 @@ public final class CanonicalPostgresInitializer
             "57_search_ctr_aggregate_boundary.sql",
             "58_search_ctr_aggregate_boundary_smoke_test.sql",
             "59_search_ctr_projection_writer.sql",
+            "59a_search_ctr_writer_owner_dependency.sql",
             "60_search_ctr_projection_writer_smoke_test.sql");
 
     private static final String EXTERNAL_URL = setting("jc.test.db.url", "JC_TEST_DB_URL", "");
