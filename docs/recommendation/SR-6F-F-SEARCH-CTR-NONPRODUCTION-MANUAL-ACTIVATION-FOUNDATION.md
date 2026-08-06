@@ -6,14 +6,15 @@
 Stage: SR-6F-F
 Metric: search-click-through-rate-v1
 Policy: search-ctr-activation-finality-v1
-Implementation: IMPLEMENTED_PENDING_CI
+Implementation: VERIFIED
+Verified implementation head: 349aef3f489cddb9190856dac734be41a3086afc
 Runtime mode: DISABLED
 Runner default: OFF
 Reliability startup requirement default: false
 Finality write: DISABLED
 HTTP/scheduler/dashboard: NOT_IMPLEMENTED
 Merge/deploy/production activation: NOT_PERFORMED
-Overall: IMPLEMENTED_FOUNDATION_HOLD_ACTIVATION_AND_FINALITY
+Overall: VERIFIED_FOUNDATION_HOLD_ACTIVATION_AND_FINALITY
 ```
 
 ## 목적
@@ -220,24 +221,31 @@ restricted login의 jc_reliability membership 제거
 - `SearchCtrManualActivationStoreIntegrationTest`
 - `SearchCtrManualActivationSqlContractTest`
 
-## 검증 범위
+## 검증 결과
 
-- identity-free current-head boundary
-- `jc_reliability` execute-only grants
-- projection/audit direct table denial
-- zero-denominator one-shot write
-- semantic duplicate
-- append-only manual-run audit
-- production environment rejection
-- current policy `DISABLED` fail-closed
-- kill switch fail-closed
-- production profile fail-closed
-- explicit Reliability capability requirement
-- one call per runner execution
-- conflict no-retry
-- canonical source/bootstrap byte equality
-- PostgreSQL 15·18 canonical bootstrap
-- Search focused 및 full backend regression
+| 검증 | 결과 |
+|---|---|
+| Search focused PostgreSQL | SUCCESS — 26 suites / 96 tests / failures 0 / errors 0 / skipped 0 |
+| Protected recommendation contracts | SUCCESS — P1 17 scenarios / P2 23 scenarios |
+| Full backend regression | SUCCESS — 105 suites / 370 tests / failures 0 / errors 0 / skipped 0 |
+| PostgreSQL 15 canonical integration | SUCCESS |
+| PostgreSQL 18 canonical integration | SUCCESS |
+| Backend IP-12.5 protected readiness | SUCCESS |
+
+Exact implementation-head CI:
+
+```text
+SR Search Recommendation: 31089405826
+Recommendation P0 Database CI: 31089402997
+Backend PR CI: 31089403711
+```
+
+Evidence digests:
+
+```text
+Focused: sha256:a5dbd11c951973fc3900be925bf929fe8da6dd99eb4856d95c3bf991081a4fe3
+Full regression: sha256:c9d80cabab98e1ba2f9e545da90bfe8cb15f1215b09ea4a3e8f0f7a2d7317e85
+```
 
 ## 계속 금지
 
