@@ -46,11 +46,19 @@ class SearchCtrActivationPolicyTest {
     }
 
     @Test
-    void currentStageKeepsRuntimeAndFinalityWritesDisabled() {
+    void currentStageAuthorizesOneBoundedManualWindowAndKeepsFinalityDisabled() {
         assertEquals(
-                SearchCtrActivationPolicy.RuntimeMode.DISABLED,
+                SearchCtrActivationPolicy.RuntimeMode.NONPRODUCTION_MANUAL,
                 SearchCtrActivationPolicy.AUTHORIZED_RUNTIME_MODE);
-        assertFalse(SearchCtrActivationPolicy.isRuntimeWriteAuthorized());
+        assertEquals("stage", SearchCtrActivationPolicy.AUTHORIZED_MANUAL_ENVIRONMENT);
+        assertEquals("jc_backend", SearchCtrActivationPolicy.AUTHORIZED_MANUAL_LOGIN_ROLE);
+        assertEquals(
+                Instant.parse("2026-08-06T08:00:00Z"),
+                SearchCtrActivationPolicy.AUTHORIZED_MANUAL_WINDOW_START);
+        assertEquals(
+                "approval:sr6fg-stage-20260806t0800z",
+                SearchCtrActivationPolicy.AUTHORIZED_MANUAL_APPROVAL_REF);
+        assertTrue(SearchCtrActivationPolicy.isRuntimeWriteAuthorized());
         assertFalse(SearchCtrActivationPolicy.isFinalityWriteAuthorized());
     }
 
