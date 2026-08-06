@@ -43,7 +43,7 @@ INSERT INTO public.recommendation_snapshot(
 )
 SELECT
   fixture.snapshot_id, fixture.snapshot_kind, fixture.schema_version,
-  'recommendation-canonical-json-v1',
+  'search-ctr-writer-canonical-json-v1',
   public.recommendation_snapshot_sha256_hex(
     fixture.snapshot_kind, fixture.schema_version, fixture.payload
   ),
