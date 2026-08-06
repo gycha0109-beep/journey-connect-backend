@@ -6,10 +6,11 @@
 Stage: SR-6F-C
 Metric: search-click-through-rate-v1
 Authorization: GRANTED_2026-08-06
-Implementation: IMPLEMENTED_PENDING_CI
+Implementation: VERIFIED
 Boundary: AGGREGATE_ONLY_SECURITY_DEFINER
 Projection writer/endpoint: NOT_IMPLEMENTED
 Merge/deploy/production activation: NOT_PERFORMED
+Overall: VERIFIED_AGGREGATE_BOUNDARY_HOLD_PROJECTION_WRITER
 ```
 
 ## 목적
@@ -134,7 +135,56 @@ Testcontainers bootstrap:
 
 source package와 bootstrap SQL의 byte equality를 계약 테스트로 검증한다. Flyway auto-discovery migration은 추가하지 않는다.
 
-## 검증 시나리오
+## 검증
+
+Implementation head:
+
+```text
+6dc519263df67455b3d37fa6813bd6dae75855ee
+```
+
+SR Search Recommendation run `31059853966`:
+
+```text
+focused Search/PostgreSQL: SUCCESS
+protected recommendation contracts: SUCCESS
+full backend regression: SUCCESS
+focused: 18 suites / 67 tests / failures 0 / errors 0 / skipped 0
+SR-6F-C SQL contracts: 5 PASS
+full: 97 suites / 341 tests / failures 0 / errors 0 / skipped 0
+```
+
+Evidence:
+
+```text
+focused artifact: 8951697788
+focused digest: sha256:f90a81654eadbddb30c3eb6997e3e21a318edfbb34684660a7cfd982ddb76e1e
+full artifact: 8951776783
+full digest: sha256:8811d16055860bb9c9a1a6abeb19291a976598657aacad9639cb713dce00e11b
+```
+
+Recommendation P0 Database CI run `31059853959`:
+
+```text
+PostgreSQL 15: SUCCESS
+PostgreSQL 18: SUCCESS
+Java/SQL integrity: SUCCESS
+canonical PostgreSQL integration: SUCCESS
+PG15 artifact: 8951708778
+PG15 digest: sha256:c3eaecabbaa2c7449e6802634ab49a04996db8074c4149d74a124464b2a25142
+PG18 artifact: 8951733930
+PG18 digest: sha256:c2de3bb620bcbd814a329f0e2dd2bfef2809b579eddc0c4fdda0083c19e0af8a
+```
+
+Backend PR CI run `31059854016`:
+
+```text
+IP-12.5 full protected readiness: SUCCESS
+artifact: 8951756815
+digest: sha256:54acd6300e7df3b990e679f9743e7a987362d9c88198d76aa0c506525b85e089
+```
+
+검증 시나리오:
 
 - 3 exposure / 1 attributed exposure → 3333 basis points
 - exactly 30 minutes CLICK은 upper-exclusive로 제외
