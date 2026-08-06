@@ -6,13 +6,17 @@
 Initial decision date: 2026-08-05 KST
 SR-6F-C authorization date: 2026-08-06 KST
 SR-6F-D authorization date: 2026-08-06 KST
+SR-6F-E governance date: 2026-08-06 KST
 Decision: APPROVED_BY_PROJECT_OWNER
 Metric: search-click-through-rate-v1
 SR-6F-A design: APPROVED
 SR-6F-B Java contracts: VERIFIED
 SR-6F-C aggregate-only DB boundary: VERIFIED
 SR-6F-D projection snapshot/single writer: VERIFIED
-Endpoint/finality: NOT_AUTHORIZED_IN_THIS_STAGE
+SR-6F-E activation/finality governance: VERIFIED
+Verified SR-6F-E implementation head: 20022a39d740cee8052e2b5c113d99a759e343d6
+Runtime mode: DISABLED
+Finality write: NOT_AUTHORIZED
 Merge/deploy/production activation: NOT_AUTHORIZED
 ```
 
@@ -58,12 +62,39 @@ Merge/deploy/production activation: NOT_AUTHORIZED
 - `jc_reliability`는 허용된 routed role이지만 writer 활성화 전에는 startup 필수 capability가 아니다.
 - 실제 writer 사용 전 restricted backend login에 대한 `jc_reliability` membership은 별도 운영 승인으로 활성화해야 한다.
 
+## SR-6F-E 승인값
+
+- projection window는 정확히 1시간이고 UTC 정각에 정렬한다.
+- provisional 검토 가능 시각은 `windowEnd + 35분`이다.
+- 35분은 30분 attribution window와 5분 future-skew 계약의 합이다.
+- settlement 검토 threshold는 `windowEnd + 30일 35분`이다.
+- threshold와 같은 시각에는 settlement를 허용하지 않고 그 이후만 후보로 본다.
+- 현재 runtime mode는 `DISABLED`다.
+- 다음에 승인 가능한 최초 mode는 `NONPRODUCTION_MANUAL`뿐이다.
+- 최초 activation 경로로 HTTP endpoint를 허용하지 않는다.
+- scheduler, production mode, dashboard, alert로 직접 건너뛰지 않는다.
+- `SUPERSEDED` 상태를 추가하지 않고 predecessor lineage를 current-head 교체 근거로 사용한다.
+- 향후 `SETTLED`는 기존 row UPDATE가 아니라 별도 승인된 append-only finality writer로만 생성한다.
+- settlement threshold 이후 최소 1시간 간격의 두 평가가 동일 fingerprint를 가져야 finality 후보가 된다.
+- Search 행동 replay age, attribution window, future-skew가 변경되면 activation policy version을 재검토한다.
+- rollback은 new write 중단과 capability 제거이며 기존 append-only evidence를 삭제하지 않는다.
+
+## SR-6F-F 진입 전 필수 항목
+
+- identity-free projection head read boundary
+- append-only operational run audit
+- explicit `jc_reliability` startup capability flag
+- default-off non-production one-shot runner
+- environment allowlist와 kill switch
+- writer result별 운영 분기와 negative tests
+
 ## 계속 금지
 
-- public/internal evaluation endpoint
+- public/internal HTTP evaluation endpoint
 - scheduler/cron activation
+- production writer activation
 - dashboard, alert
-- `SETTLED`·`SUPERSEDED` finality state
+- `SETTLED` finality writer
 - user/subject/session/raw query segment
 - Reliability의 raw identity/evidence/projection table 직접 접근
 - merge, deploy, production activation
