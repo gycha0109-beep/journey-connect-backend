@@ -7,7 +7,6 @@ import com.jc.backend.recommendation.persistence.RecommendationBehaviorStore.Beh
 import com.jc.backend.recommendation.persistence.RecommendationBehaviorStore.BehaviorIdempotencyConflictException;
 import com.jc.backend.recommendation.persistence.RecommendationBehaviorStore.BehaviorWrite;
 import com.jc.backend.recommendation.persistence.RecommendationBehaviorStore.StoreResult;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
@@ -18,9 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 public final class SearchBehaviorService {
 
-    public static final String SCHEMA_VERSION = "search-behavior-event-v1";
-    private static final Duration MAX_FUTURE_SKEW = Duration.ofMinutes(5);
-    private static final Duration MAX_EVENT_AGE = Duration.ofDays(30);
+    public static final String SCHEMA_VERSION = SearchBehaviorContract.SCHEMA_VERSION;
 
     private final SearchContextCodec contextCodec;
     private final RecommendationCanonicalPayload canonicalPayload;
@@ -112,8 +109,8 @@ public final class SearchBehaviorService {
 
     private void validateOccurredAt(Instant occurredAt) {
         Instant now = Instant.now();
-        if (occurredAt.isAfter(now.plus(MAX_FUTURE_SKEW))
-                || occurredAt.isBefore(now.minus(MAX_EVENT_AGE))) {
+        if (occurredAt.isAfter(now.plus(SearchBehaviorContract.MAX_FUTURE_SKEW))
+                || occurredAt.isBefore(now.minus(SearchBehaviorContract.MAX_EVENT_AGE))) {
             throw badRequest(
                     "SEARCH_BEHAVIOR_TIME_INVALID",
                     "탐색 행동 발생 시각이 허용 범위를 벗어났습니다.");
