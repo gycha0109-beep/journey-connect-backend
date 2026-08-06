@@ -42,7 +42,9 @@ public final class DatabaseRoleCapabilityVerifier implements SmartInitializingSi
             verifySessionLoginHasNoDirectDataPrivilegesOrOwnership();
         }
         for (DatabaseRole role : DatabaseRole.values()) {
-            verifyRoleAssumption(role);
+            if (role.requiredAtStartup()) {
+                verifyRoleAssumption(role);
+            }
         }
     }
 
