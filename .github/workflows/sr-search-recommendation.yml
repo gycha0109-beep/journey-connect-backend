@@ -25,6 +25,7 @@ on:
       - "jc-backend/src/test/resources/db/canonical/57_search_ctr_aggregate_boundary.sql"
       - "jc-backend/src/test/resources/db/canonical/58_search_ctr_aggregate_boundary_smoke_test.sql"
       - "jc-backend/src/test/resources/db/canonical/59_search_ctr_projection_writer.sql"
+      - "jc-backend/src/test/resources/db/canonical/59a_search_ctr_writer_owner_dependency.sql"
       - "jc-backend/src/test/resources/db/canonical/60_search_ctr_projection_writer_smoke_test.sql"
       - "jc-backend/src/test/resources/db/canonical/cleanup.sql"
       - "jc-backend/src/test/resources/intelligence/search/**"
