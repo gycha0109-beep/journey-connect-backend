@@ -31,43 +31,43 @@ class SearchCtrManualActivationGateTest {
     @Test
     void environmentWindowApprovalAndBuildAreBoundToTheAuthorization() {
         SearchCtrManualActivationGate gate = SearchCtrManualActivationGate.current();
-        SearchCtrManualActivationProperties properties = authorizedProperties();
 
-        properties.setEnvironment("test");
+        SearchCtrManualActivationProperties wrongEnvironment = authorizedProperties();
+        wrongEnvironment.setEnvironment("test");
         assertThrows(
                 IllegalStateException.class,
                 () -> gate.approve(
-                        properties,
+                        wrongEnvironment,
                         new String[] {"test"},
                         Instant.parse("2026-08-06T10:00:00Z"),
                         true));
 
-        properties = authorizedProperties();
-        properties.setWindowStart("2026-08-06T07:00:00Z");
+        SearchCtrManualActivationProperties wrongWindow = authorizedProperties();
+        wrongWindow.setWindowStart("2026-08-06T07:00:00Z");
         assertThrows(
                 IllegalStateException.class,
                 () -> gate.approve(
-                        properties,
+                        wrongWindow,
                         new String[] {"stage"},
                         Instant.parse("2026-08-06T10:00:00Z"),
                         true));
 
-        properties = authorizedProperties();
-        properties.setApprovalRef("approval:sr6fg-other-window");
+        SearchCtrManualActivationProperties wrongApproval = authorizedProperties();
+        wrongApproval.setApprovalRef("approval:sr6fg-other-window");
         assertThrows(
                 IllegalStateException.class,
                 () -> gate.approve(
-                        properties,
+                        wrongApproval,
                         new String[] {"stage"},
                         Instant.parse("2026-08-06T10:00:00Z"),
                         true));
 
-        properties = authorizedProperties();
-        properties.setProducerBuildId("unapproved-build-v1");
+        SearchCtrManualActivationProperties wrongBuild = authorizedProperties();
+        wrongBuild.setProducerBuildId("unapproved-build-v1");
         assertThrows(
                 IllegalStateException.class,
                 () -> gate.approve(
-                        properties,
+                        wrongBuild,
                         new String[] {"stage"},
                         Instant.parse("2026-08-06T10:00:00Z"),
                         true));
@@ -107,21 +107,22 @@ class SearchCtrManualActivationGateTest {
     @Test
     void provisionalThresholdAndUtcHourAlignmentRemainExact() {
         SearchCtrManualActivationGate gate = SearchCtrManualActivationGate.current();
-        SearchCtrManualActivationProperties properties = authorizedProperties();
+        SearchCtrManualActivationProperties beforeThreshold = authorizedProperties();
 
         assertThrows(
                 IllegalStateException.class,
                 () -> gate.approve(
-                        properties,
+                        beforeThreshold,
                         new String[] {"stage"},
                         Instant.parse("2026-08-06T09:34:59Z"),
                         true));
 
-        properties.setWindowStart("2026-08-06T08:00:00.001Z");
+        SearchCtrManualActivationProperties misaligned = authorizedProperties();
+        misaligned.setWindowStart("2026-08-06T08:00:00.001Z");
         assertThrows(
                 IllegalStateException.class,
                 () -> gate.approve(
-                        properties,
+                        misaligned,
                         new String[] {"stage"},
                         Instant.parse("2026-08-06T10:00:00Z"),
                         true));
