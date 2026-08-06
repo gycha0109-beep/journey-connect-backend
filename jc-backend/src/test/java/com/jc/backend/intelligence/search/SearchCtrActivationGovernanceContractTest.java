@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 class SearchCtrActivationGovernanceContractTest {
 
     @Test
-    void governanceDocumentKeepsActivationAndFinalityDisabled() throws IOException {
+    void governanceDocumentPreservesThePreAuthorizationDecisionHistory() throws IOException {
         String document = read("docs/recommendation/SR-6F-E-SEARCH-CTR-ACTIVATION-FINALITY-GOVERNANCE.md");
 
         for (String required : new String[] {
@@ -30,11 +30,17 @@ class SearchCtrActivationGovernanceContractTest {
     }
 
     @Test
-    void activationPolicyIsPureAndDoesNotExposeRuntimeEntryPoints() throws IOException {
+    void authorizationPolicyIsBoundedAndStillDoesNotExposeRuntimeEntryPoints() throws IOException {
         String policy = read(
                 "jc-backend/src/main/java/com/jc/backend/intelligence/search/SearchCtrActivationPolicy.java");
 
-        assertTrue(policy.contains("AUTHORIZED_RUNTIME_MODE = RuntimeMode.DISABLED"));
+        assertTrue(policy.contains(
+                "AUTHORIZED_RUNTIME_MODE = RuntimeMode.NONPRODUCTION_MANUAL"));
+        assertTrue(policy.contains("AUTHORIZED_MANUAL_ENVIRONMENT = \"stage\""));
+        assertTrue(policy.contains(
+                "Instant.parse(\"2026-08-06T08:00:00Z\")"));
+        assertTrue(policy.contains(
+                "approval:sr6fg-stage-20260806t0800z"));
         assertTrue(policy.contains("return false;"));
         assertFalse(policy.contains("@Scheduled"));
         assertFalse(policy.contains("@RestController"));
@@ -54,12 +60,13 @@ class SearchCtrActivationGovernanceContractTest {
     }
 
     @Test
-    void workflowCoversTheStackedGovernanceAndFoundationBranches() throws IOException {
+    void workflowCoversTheStackedGovernanceFoundationAndAuthorizationBranches() throws IOException {
         String workflow = read(".github/workflows/sr-search-recommendation.yml");
 
         assertTrue(workflow.contains("agent/sr6fd-search-ctr-projection-writer"));
         assertTrue(workflow.contains("agent/sr6fe-search-ctr-activation-finality-governance"));
-        assertTrue(workflow.contains("Run SR-0 to SR-6F-F focused tests"));
+        assertTrue(workflow.contains("agent/sr6ff-search-ctr-nonprod-manual-foundation"));
+        assertTrue(workflow.contains("Run SR-0 to SR-6F-G focused tests"));
     }
 
     private static String read(String relativePath) throws IOException {

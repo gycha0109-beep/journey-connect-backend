@@ -12,8 +12,10 @@ on:
       - agent/sr6fc-search-ctr-aggregate-boundary
       - agent/sr6fd-search-ctr-projection-writer
       - agent/sr6fe-search-ctr-activation-finality-governance
+      - agent/sr6ff-search-ctr-nonprod-manual-foundation
     paths:
       - "database/journey-connect-db-v2.8/**"
+      - "operations/search-ctr/**"
       - "jc-backend/src/main/java/com/jc/backend/database/**"
       - "jc-backend/src/main/java/com/jc/backend/intelligence/search/**"
       - "jc-backend/src/main/java/com/jc/backend/post/PostController.java"
@@ -67,7 +69,7 @@ jobs:
       - name: Grant Gradle wrapper execution
         working-directory: jc-backend
         run: chmod +x ./gradlew
-      - name: Run SR-0 to SR-6F-F focused tests
+      - name: Run SR-0 to SR-6F-G focused tests
         working-directory: jc-backend
         env:
           JC_TEST_POSTGRES_IMAGE: postgres:15-alpine

@@ -8,6 +8,7 @@ SR-6F-C authorization date: 2026-08-06 KST
 SR-6F-D authorization date: 2026-08-06 KST
 SR-6F-E governance date: 2026-08-06 KST
 SR-6F-F foundation date: 2026-08-06 KST
+SR-6F-G authorization date: 2026-08-06 KST
 Decision: APPROVED_BY_PROJECT_OWNER
 Metric: search-click-through-rate-v1
 SR-6F-A design: APPROVED
@@ -18,8 +19,14 @@ SR-6F-E activation/finality governance: VERIFIED
 Verified SR-6F-E implementation head: 20022a39d740cee8052e2b5c113d99a759e343d6
 SR-6F-F non-production manual foundation: VERIFIED
 Verified SR-6F-F implementation head: 349aef3f489cddb9190856dac734be41a3086afc
-Runtime mode: DISABLED
+SR-6F-G bounded stage authorization: VERIFIED
+Verified SR-6F-G implementation head: 9ba2db4a11bc0415652e3e7b1c20577a300615fe
+Runtime mode: NONPRODUCTION_MANUAL
+Authorized environment: stage
+Authorized window: 2026-08-06T08:00:00Z/2026-08-06T09:00:00Z
 Manual runner: DEFAULT_OFF
+Membership grant: NOT_PERFORMED
+Manual execution: NOT_PERFORMED
 Finality write: NOT_AUTHORIZED
 Merge/deploy/production activation: NOT_AUTHORIZED
 ```
@@ -73,7 +80,7 @@ Merge/deploy/production activation: NOT_AUTHORIZED
 - 35분은 30분 attribution window와 5분 future-skew 계약의 합이다.
 - settlement 검토 threshold는 `windowEnd + 30일 35분`이다.
 - threshold와 같은 시각에는 settlement를 허용하지 않고 그 이후만 후보로 본다.
-- 현재 runtime mode는 `DISABLED`다.
+- SR-6F-E 시점 runtime mode는 `DISABLED`였다.
 - 다음에 승인 가능한 최초 mode는 `NONPRODUCTION_MANUAL`뿐이다.
 - 최초 activation 경로로 HTTP endpoint를 허용하지 않는다.
 - scheduler, production mode, dashboard, alert로 직접 건너뛰지 않는다.
@@ -91,7 +98,7 @@ Merge/deploy/production activation: NOT_AUTHORIZED
 - operational authority는 append-only `search_ctr_manual_run_audit_v1`이다.
 - manual audit에는 user, subject, session, exposure, click, raw query를 저장하지 않는다.
 - `finality_write_attempted`는 항상 `false`다.
-- 허용 environment는 `local`, `dev`, `test`, `stage`다.
+- foundation environment allowlist는 `local`, `dev`, `test`, `stage`다.
 - `prod`, `production` 및 기타 environment는 거절한다.
 - 한 실행은 정확히 하나의 UTC 정렬 1시간 window만 처리한다.
 - provisional eligibility 이전 호출은 거절한다.
@@ -99,7 +106,7 @@ Merge/deploy/production activation: NOT_AUTHORIZED
 - one-shot runner는 `enabled=false`, kill switch `true`가 기본이다.
 - runner는 HTTP endpoint나 scheduler를 제공하지 않는다.
 - `STORED`와 `DUPLICATE`만 정상 종료하고 conflict는 자동 재시도 없이 중단한다.
-- current authorized runtime mode가 `DISABLED`이므로 foundation 구현만으로 실제 write가 활성화되지 않는다.
+- SR-6F-F 시점 runtime mode는 `DISABLED`였으며 foundation만으로 실제 write가 활성화되지 않았다.
 - canonical package는 `journey-connect-db-v2.8/08..09`, Testcontainers global labels는 `61..62`다.
 
 ## SR-6F-F 검증 증거
@@ -117,14 +124,46 @@ Focused artifact: sha256:a5dbd11c951973fc3900be925bf929fe8da6dd99eb4856d95c3bf99
 Full artifact: sha256:c9d80cabab98e1ba2f9e545da90bfe8cb15f1215b09ea4a3e8f0f7a2d7317e85
 ```
 
-## SR-6F-G 진입 전 필수 항목
+## SR-6F-G 승인값
 
-- exact non-production environment 승인
-- restricted login `jc_reliability` membership grant/revoke 절차
-- 실행 window와 operator approval reference
-- 실행 전/후 evidence checklist
-- disable drill
-- runtime mode `NONPRODUCTION_MANUAL` 승인 commit
+- 승인 runtime mode는 `NONPRODUCTION_MANUAL`이다.
+- 승인 environment는 `stage` 하나뿐이다.
+- 승인 restricted login은 `jc_backend`다.
+- 승인 window는 `[2026-08-06T08:00:00Z, 2026-08-06T09:00:00Z)` 하나뿐이다.
+- 승인 reference는 `approval:sr6fg-stage-20260806t0800z`다.
+- producer build ID는 `sr6fg-stage-` prefix와 exact deployed build evidence를 모두 요구한다.
+- `SearchCtrManualActivationGate`가 environment, window, approval reference, build prefix를 fail-closed로 검증한다.
+- membership grant, capability verify, revoke는 `operations/search-ctr/sr6fg/01..03`으로 고정한다.
+- grant 전 제한 로그인과 NOLOGIN Reliability role 속성을 재검증한다.
+- 실행 전후 evidence checklist와 disable drill은 `SR-6F-G-SEARCH-CTR-NONPRODUCTION-MANUAL-ACTIVATION-AUTHORIZATION.md`를 authority로 사용한다.
+- runner 기본 OFF, kill switch 기본 ON, Reliability startup requirement 기본 false는 유지한다.
+- authorization commit만으로 membership, deploy, 실행 또는 projection write를 수행하지 않는다.
+- finality write는 계속 승인하지 않는다.
+
+## SR-6F-G 검증 증거
+
+```text
+Verified implementation head: 9ba2db4a11bc0415652e3e7b1c20577a300615fe
+SR Search Recommendation: 31092362305 — SUCCESS
+Recommendation P0 Database CI: 31092363499 — SUCCESS
+Backend PR CI: 31092362603 — SUCCESS
+Focused: 27 suites / 99 tests / failures 0 / errors 0 / skipped 0
+Protected recommendation contracts: P1 17 / P2 23 scenarios — SUCCESS
+Full backend: 106 suites / 373 tests / failures 0 / errors 0 / skipped 0
+PostgreSQL 15: SUCCESS
+PostgreSQL 18: SUCCESS
+IP-12.5 protected readiness: SUCCESS
+Focused artifact: sha256:e1ea873ab87492206952f774d239514a8c28b25c2bdc6bd9b9d9b33b8e296b94
+Full artifact: sha256:f28067c104051c1c6dacf4d3584f980f01ec442ade010d37a4117a44cf708768
+```
+
+## SR-6F-H 진입 전 필수 항목
+
+- 실제 stage DB endpoint와 접근 권한
+- exact deployed build와 producer build ID 결속
+- stage profile·기본 OFF·kill switch ON 사전 증거
+- grant 및 capability verify 로그를 보존할 실행 환경
+- one-shot 종료 후 즉시 revoke 가능한 operator
 
 ## 계속 금지
 
@@ -135,4 +174,5 @@ Full artifact: sha256:c9d80cabab98e1ba2f9e545da90bfe8cb15f1215b09ea4a3e8f0f7a2d7
 - `SETTLED` finality writer
 - user/subject/session/raw query segment
 - Reliability의 raw identity/evidence/projection/audit table 직접 접근
+- 승인 window 외 manual execution
 - merge, deploy, production activation

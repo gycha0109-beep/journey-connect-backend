@@ -15,7 +15,7 @@ import org.springframework.mock.env.MockEnvironment;
 class SearchCtrManualActivationRunnerTest {
 
     @Test
-    void oneShotRunnerExecutesExactlyOneApprovedUtcWindow() {
+    void oneShotRunnerExecutesExactlyTheAuthorizedStageWindow() {
         AtomicInteger calls = new AtomicInteger();
         AtomicReference<SearchCtrManualActivationPort.Command> captured = new AtomicReference<>();
         SearchCtrManualActivationPort port = command -> {
@@ -28,10 +28,10 @@ class SearchCtrManualActivationRunnerTest {
 
         assertEquals(SearchCtrProjectionPort.WriteStatus.STORED, result.writeStatus());
         assertEquals(1, calls.get());
-        assertEquals(Instant.parse("2026-08-06T00:00:00Z"), captured.get().windowStart());
-        assertEquals(Instant.parse("2026-08-06T01:00:00Z"), captured.get().windowEnd());
+        assertEquals(Instant.parse("2026-08-06T08:00:00Z"), captured.get().windowStart());
+        assertEquals(Instant.parse("2026-08-06T09:00:00Z"), captured.get().windowEnd());
         assertTrue(captured.get().operationId().matches("^search-ctr-manual-run:[0-9a-f]{32}$"));
-        assertTrue(captured.get().idempotencyKey().contains("sr6ff-runner-test-v1"));
+        assertTrue(captured.get().idempotencyKey().contains("sr6fg-stage-runner-test-v1"));
     }
 
     @Test
@@ -69,19 +69,19 @@ class SearchCtrManualActivationRunnerTest {
         SearchCtrManualActivationProperties properties = new SearchCtrManualActivationProperties();
         properties.setEnabled(true);
         properties.setKillSwitch(false);
-        properties.setEnvironment("stage");
-        properties.setWindowStart("2026-08-06T00:00:00Z");
-        properties.setProducerBuildId("sr6ff-runner-test-v1");
-        properties.setApprovalRef("approval:sr6ff-runner-test-v1");
+        properties.setEnvironment(SearchCtrActivationPolicy.AUTHORIZED_MANUAL_ENVIRONMENT);
+        properties.setWindowStart(
+                SearchCtrActivationPolicy.AUTHORIZED_MANUAL_WINDOW_START.toString());
+        properties.setProducerBuildId("sr6fg-stage-runner-test-v1");
+        properties.setApprovalRef(SearchCtrActivationPolicy.AUTHORIZED_MANUAL_APPROVAL_REF);
         MockEnvironment environment = new MockEnvironment();
-        environment.setActiveProfiles("stage");
+        environment.setActiveProfiles(SearchCtrActivationPolicy.AUTHORIZED_MANUAL_ENVIRONMENT);
         return new SearchCtrManualActivationRunner(
                 properties,
-                new SearchCtrManualActivationGate(
-                        SearchCtrActivationPolicy.RuntimeMode.NONPRODUCTION_MANUAL),
+                SearchCtrManualActivationGate.current(),
                 port,
                 environment,
-                Clock.fixed(Instant.parse("2026-08-06T02:00:00Z"), ZoneOffset.UTC),
+                Clock.fixed(Instant.parse("2026-08-06T10:00:00Z"), ZoneOffset.UTC),
                 true);
     }
 
