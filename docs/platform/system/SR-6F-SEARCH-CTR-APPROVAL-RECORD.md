@@ -16,7 +16,8 @@ SR-6F-C aggregate-only DB boundary: VERIFIED
 SR-6F-D projection snapshot/single writer: VERIFIED
 SR-6F-E activation/finality governance: VERIFIED
 Verified SR-6F-E implementation head: 20022a39d740cee8052e2b5c113d99a759e343d6
-SR-6F-F non-production manual foundation: IMPLEMENTED_PENDING_CI
+SR-6F-F non-production manual foundation: VERIFIED
+Verified SR-6F-F implementation head: 349aef3f489cddb9190856dac734be41a3086afc
 Runtime mode: DISABLED
 Manual runner: DEFAULT_OFF
 Finality write: NOT_AUTHORIZED
@@ -101,9 +102,23 @@ Merge/deploy/production activation: NOT_AUTHORIZED
 - current authorized runtime mode가 `DISABLED`이므로 foundation 구현만으로 실제 write가 활성화되지 않는다.
 - canonical package는 `journey-connect-db-v2.8/08..09`, Testcontainers global labels는 `61..62`다.
 
+## SR-6F-F 검증 증거
+
+```text
+SR Search Recommendation: 31089405826 — SUCCESS
+Recommendation P0 Database CI: 31089402997 — SUCCESS
+Backend PR CI: 31089403711 — SUCCESS
+Focused: 26 suites / 96 tests / failures 0 / errors 0 / skipped 0
+Full backend: 105 suites / 370 tests / failures 0 / errors 0 / skipped 0
+PostgreSQL 15: SUCCESS
+PostgreSQL 18: SUCCESS
+IP-12.5 protected readiness: SUCCESS
+Focused artifact: sha256:a5dbd11c951973fc3900be925bf929fe8da6dd99eb4856d95c3bf991081a4fe3
+Full artifact: sha256:c9d80cabab98e1ba2f9e545da90bfe8cb15f1215b09ea4a3e8f0f7a2d7317e85
+```
+
 ## SR-6F-G 진입 전 필수 항목
 
-- SR-6F-F exact-head CI 및 PostgreSQL 15·18 검증
 - exact non-production environment 승인
 - restricted login `jc_reliability` membership grant/revoke 절차
 - 실행 window와 operator approval reference
