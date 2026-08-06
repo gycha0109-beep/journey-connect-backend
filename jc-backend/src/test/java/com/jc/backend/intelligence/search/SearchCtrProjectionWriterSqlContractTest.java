@@ -75,12 +75,34 @@ class SearchCtrProjectionWriterSqlContractTest {
     }
 
     @Test
+    void ownerDependencyIsNarrowAndRuntimeRolesStayDenied() throws IOException {
+        String sql = resource("/db/canonical/59a_search_ctr_writer_owner_dependency.sql");
+
+        assertTrue(sql.contains("TO jc_security_owner"));
+        assertTrue(sql.contains("'jc_security_owner'"));
+        assertTrue(sql.contains("'jc_reliability'"));
+        for (String denied : new String[] {
+                "'jc_app'", "'jc_auth'", "'jc_admin'", "'jc_recommendation'"
+        }) {
+            assertTrue(sql.contains(denied), "dependency verifier missing denied role: " + denied);
+        }
+        assertFalse(sql.contains("GRANT SELECT"));
+        assertFalse(sql.contains("GRANT INSERT"));
+        assertFalse(sql.contains("GRANT UPDATE"));
+        assertFalse(sql.contains("GRANT DELETE"));
+    }
+
+    @Test
     void sourcePackageMatchesCanonicalBootstrap() throws IOException {
         Path root = repositoryRoot();
         assertEquals(
                 normalized(Files.readString(root.resolve(
                         "database/journey-connect-db-v2.8/06_search_ctr_projection_writer.sql"))),
                 resource("/db/canonical/59_search_ctr_projection_writer.sql"));
+        assertEquals(
+                normalized(Files.readString(root.resolve(
+                        "database/journey-connect-db-v2.8/06a_search_ctr_writer_owner_dependency.sql"))),
+                resource("/db/canonical/59a_search_ctr_writer_owner_dependency.sql"));
         assertEquals(
                 normalized(Files.readString(root.resolve(
                         "database/journey-connect-db-v2.8/07_search_ctr_projection_writer_smoke_test.sql"))),
@@ -90,6 +112,7 @@ class SearchCtrProjectionWriterSqlContractTest {
     @Test
     void noFlywayAutodiscoveryMigrationIsIntroduced() {
         assertTrue(getClass().getResource("/db/migration/V59__search_ctr_projection_writer.sql") == null);
+        assertTrue(getClass().getResource("/db/migration/V59a__search_ctr_writer_owner_dependency.sql") == null);
         assertTrue(getClass().getResource("/db/migration/V60__search_ctr_projection_writer_smoke_test.sql") == null);
     }
 
