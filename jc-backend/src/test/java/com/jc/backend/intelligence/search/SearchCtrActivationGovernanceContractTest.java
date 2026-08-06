@@ -54,11 +54,12 @@ class SearchCtrActivationGovernanceContractTest {
     }
 
     @Test
-    void workflowCoversTheStackedGovernanceBranch() throws IOException {
+    void workflowCoversTheStackedGovernanceAndFoundationBranches() throws IOException {
         String workflow = read(".github/workflows/sr-search-recommendation.yml");
 
         assertTrue(workflow.contains("agent/sr6fd-search-ctr-projection-writer"));
-        assertTrue(workflow.contains("Run SR-0 to SR-6F-E focused tests"));
+        assertTrue(workflow.contains("agent/sr6fe-search-ctr-activation-finality-governance"));
+        assertTrue(workflow.contains("Run SR-0 to SR-6F-F focused tests"));
     }
 
     private static String read(String relativePath) throws IOException {

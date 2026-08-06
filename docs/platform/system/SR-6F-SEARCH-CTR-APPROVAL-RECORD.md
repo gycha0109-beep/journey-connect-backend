@@ -7,6 +7,7 @@ Initial decision date: 2026-08-05 KST
 SR-6F-C authorization date: 2026-08-06 KST
 SR-6F-D authorization date: 2026-08-06 KST
 SR-6F-E governance date: 2026-08-06 KST
+SR-6F-F foundation date: 2026-08-06 KST
 Decision: APPROVED_BY_PROJECT_OWNER
 Metric: search-click-through-rate-v1
 SR-6F-A design: APPROVED
@@ -15,7 +16,10 @@ SR-6F-C aggregate-only DB boundary: VERIFIED
 SR-6F-D projection snapshot/single writer: VERIFIED
 SR-6F-E activation/finality governance: VERIFIED
 Verified SR-6F-E implementation head: 20022a39d740cee8052e2b5c113d99a759e343d6
+SR-6F-F non-production manual foundation: VERIFIED
+Verified SR-6F-F implementation head: 349aef3f489cddb9190856dac734be41a3086afc
 Runtime mode: DISABLED
+Manual runner: DEFAULT_OFF
 Finality write: NOT_AUTHORIZED
 Merge/deploy/production activation: NOT_AUTHORIZED
 ```
@@ -79,14 +83,48 @@ Merge/deploy/production activation: NOT_AUTHORIZED
 - Search 행동 replay age, attribution window, future-skew가 변경되면 activation policy version을 재검토한다.
 - rollback은 new write 중단과 capability 제거이며 기존 append-only evidence를 삭제하지 않는다.
 
-## SR-6F-F 진입 전 필수 항목
+## SR-6F-F 승인값
 
-- identity-free projection head read boundary
-- append-only operational run audit
-- explicit `jc_reliability` startup capability flag
-- default-off non-production one-shot runner
-- environment allowlist와 kill switch
-- writer result별 운영 분기와 negative tests
+- identity-free current-head read boundary는 `read_search_ctr_projection_head_v1`이다.
+- `jc_reliability`는 projection table을 직접 읽지 않고 함수 결과만 소비한다.
+- manual 실행과 audit는 `execute_search_ctr_manual_v1` 단일 transaction으로 결속한다.
+- operational authority는 append-only `search_ctr_manual_run_audit_v1`이다.
+- manual audit에는 user, subject, session, exposure, click, raw query를 저장하지 않는다.
+- `finality_write_attempted`는 항상 `false`다.
+- 허용 environment는 `local`, `dev`, `test`, `stage`다.
+- `prod`, `production` 및 기타 environment는 거절한다.
+- 한 실행은 정확히 하나의 UTC 정렬 1시간 window만 처리한다.
+- provisional eligibility 이전 호출은 거절한다.
+- explicit startup flag는 `app.database.role-routing.require-reliability=false`가 기본이다.
+- one-shot runner는 `enabled=false`, kill switch `true`가 기본이다.
+- runner는 HTTP endpoint나 scheduler를 제공하지 않는다.
+- `STORED`와 `DUPLICATE`만 정상 종료하고 conflict는 자동 재시도 없이 중단한다.
+- current authorized runtime mode가 `DISABLED`이므로 foundation 구현만으로 실제 write가 활성화되지 않는다.
+- canonical package는 `journey-connect-db-v2.8/08..09`, Testcontainers global labels는 `61..62`다.
+
+## SR-6F-F 검증 증거
+
+```text
+SR Search Recommendation: 31089405826 — SUCCESS
+Recommendation P0 Database CI: 31089402997 — SUCCESS
+Backend PR CI: 31089403711 — SUCCESS
+Focused: 26 suites / 96 tests / failures 0 / errors 0 / skipped 0
+Full backend: 105 suites / 370 tests / failures 0 / errors 0 / skipped 0
+PostgreSQL 15: SUCCESS
+PostgreSQL 18: SUCCESS
+IP-12.5 protected readiness: SUCCESS
+Focused artifact: sha256:a5dbd11c951973fc3900be925bf929fe8da6dd99eb4856d95c3bf991081a4fe3
+Full artifact: sha256:c9d80cabab98e1ba2f9e545da90bfe8cb15f1215b09ea4a3e8f0f7a2d7317e85
+```
+
+## SR-6F-G 진입 전 필수 항목
+
+- exact non-production environment 승인
+- restricted login `jc_reliability` membership grant/revoke 절차
+- 실행 window와 operator approval reference
+- 실행 전/후 evidence checklist
+- disable drill
+- runtime mode `NONPRODUCTION_MANUAL` 승인 commit
 
 ## 계속 금지
 
@@ -96,5 +134,5 @@ Merge/deploy/production activation: NOT_AUTHORIZED
 - dashboard, alert
 - `SETTLED` finality writer
 - user/subject/session/raw query segment
-- Reliability의 raw identity/evidence/projection table 직접 접근
+- Reliability의 raw identity/evidence/projection/audit table 직접 접근
 - merge, deploy, production activation

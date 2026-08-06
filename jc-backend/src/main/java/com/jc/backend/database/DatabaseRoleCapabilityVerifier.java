@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,15 +24,27 @@ public final class DatabaseRoleCapabilityVerifier implements SmartInitializingSi
     private final PlatformTransactionManager transactionManager;
     private final JdbcTemplate jdbcTemplate;
     private final boolean requireRestrictedLogin;
+    private final boolean requireReliability;
 
     public DatabaseRoleCapabilityVerifier(
             PlatformTransactionManager transactionManager,
             JdbcTemplate jdbcTemplate,
+            boolean requireRestrictedLogin) {
+        this(transactionManager, jdbcTemplate, requireRestrictedLogin, false);
+    }
+
+    @Autowired
+    public DatabaseRoleCapabilityVerifier(
+            PlatformTransactionManager transactionManager,
+            JdbcTemplate jdbcTemplate,
             @Value("${app.database.role-routing.require-restricted-login:true}")
-                    boolean requireRestrictedLogin) {
+                    boolean requireRestrictedLogin,
+            @Value("${app.database.role-routing.require-reliability:false}")
+                    boolean requireReliability) {
         this.transactionManager = transactionManager;
         this.jdbcTemplate = jdbcTemplate;
         this.requireRestrictedLogin = requireRestrictedLogin;
+        this.requireReliability = requireReliability;
     }
 
     @Override
@@ -42,7 +55,8 @@ public final class DatabaseRoleCapabilityVerifier implements SmartInitializingSi
             verifySessionLoginHasNoDirectDataPrivilegesOrOwnership();
         }
         for (DatabaseRole role : DatabaseRole.values()) {
-            if (role.requiredAtStartup()) {
+            if (role.requiredAtStartup()
+                    || (role == DatabaseRole.RELIABILITY && requireReliability)) {
                 verifyRoleAssumption(role);
             }
         }

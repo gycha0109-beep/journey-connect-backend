@@ -1,4 +1,5 @@
 TRUNCATE TABLE
+  public.search_ctr_manual_run_audit_v1,
   public.search_ctr_projection_snapshot_v1,
   public.search_ctr_evaluation_access_audit_v1,
   public.search_exposure_event_v1,
