@@ -5,7 +5,8 @@ public enum DatabaseRole {
     APP("jc_app"),
     AUTH("jc_auth"),
     ADMIN("jc_admin"),
-    RECOMMENDATION("jc_recommendation");
+    RECOMMENDATION("jc_recommendation"),
+    RELIABILITY("jc_reliability");
 
     private final String sqlName;
 
