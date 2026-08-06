@@ -11,6 +11,7 @@ on:
       - agent/sr6fb-search-ctr-java-contracts
       - agent/sr6fc-search-ctr-aggregate-boundary
       - agent/sr6fd-search-ctr-projection-writer
+      - agent/sr6fe-search-ctr-activation-finality-governance
     paths:
       - "database/journey-connect-db-v2.8/**"
       - "jc-backend/src/main/java/com/jc/backend/database/**"
@@ -28,6 +29,8 @@ on:
       - "jc-backend/src/test/resources/db/canonical/59_search_ctr_projection_writer.sql"
       - "jc-backend/src/test/resources/db/canonical/59a_search_ctr_writer_owner_dependency.sql"
       - "jc-backend/src/test/resources/db/canonical/60_search_ctr_projection_writer_smoke_test.sql"
+      - "jc-backend/src/test/resources/db/canonical/61_search_ctr_nonprod_manual_activation_foundation.sql"
+      - "jc-backend/src/test/resources/db/canonical/62_search_ctr_nonprod_manual_activation_smoke_test.sql"
       - "jc-backend/src/test/resources/db/canonical/cleanup.sql"
       - "jc-backend/src/test/resources/intelligence/search/**"
       - "jc-backend/src/test/java/com/jc/backend/post/PostControllerSearchShadowHookTest.java"
@@ -64,7 +67,7 @@ jobs:
       - name: Grant Gradle wrapper execution
         working-directory: jc-backend
         run: chmod +x ./gradlew
-      - name: Run SR-0 to SR-6F-E focused tests
+      - name: Run SR-0 to SR-6F-F focused tests
         working-directory: jc-backend
         env:
           JC_TEST_POSTGRES_IMAGE: postgres:15-alpine
