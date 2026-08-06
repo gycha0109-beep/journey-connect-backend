@@ -34,7 +34,9 @@ public final class CanonicalPostgresInitializer
             "58_search_ctr_aggregate_boundary_smoke_test.sql",
             "59_search_ctr_projection_writer.sql",
             "59a_search_ctr_writer_owner_dependency.sql",
-            "60_search_ctr_projection_writer_smoke_test.sql");
+            "60_search_ctr_projection_writer_smoke_test.sql",
+            "61_search_ctr_nonprod_manual_activation_foundation.sql",
+            "62_search_ctr_nonprod_manual_activation_smoke_test.sql");
 
     private static final String EXTERNAL_URL = setting("jc.test.db.url", "JC_TEST_DB_URL", "");
     private static final String EXTERNAL_USERNAME = setting("jc.test.db.username", "JC_TEST_DB_USERNAME", "postgres");
@@ -60,6 +62,8 @@ public final class CanonicalPostgresInitializer
                 "spring.datasource.username=" + username, "spring.datasource.password=" + password,
                 "spring.datasource.driver-class-name=org.postgresql.Driver",
                 "app.database.role-routing.verify-on-startup=false",
+                "app.database.role-routing.require-reliability=false",
+                "app.intelligence.search-ctr.manual.enabled=false",
                 "app.security.jwt-secret=ip125-test-only-jwt-secret-0123456789abcdef0123456789abcdef",
                 "app.security.access-token-minutes=120", "app.security.refresh-token-days=14",
                 "app.cors.allowed-origins=http://localhost:5173").applyTo(context.getEnvironment());
