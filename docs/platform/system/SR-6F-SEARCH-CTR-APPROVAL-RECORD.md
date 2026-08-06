@@ -19,7 +19,8 @@ SR-6F-E activation/finality governance: VERIFIED
 Verified SR-6F-E implementation head: 20022a39d740cee8052e2b5c113d99a759e343d6
 SR-6F-F non-production manual foundation: VERIFIED
 Verified SR-6F-F implementation head: 349aef3f489cddb9190856dac734be41a3086afc
-SR-6F-G bounded stage authorization: IMPLEMENTED_PENDING_CI
+SR-6F-G bounded stage authorization: VERIFIED
+Verified SR-6F-G implementation head: 9ba2db4a11bc0415652e3e7b1c20577a300615fe
 Runtime mode: NONPRODUCTION_MANUAL
 Authorized environment: stage
 Authorized window: 2026-08-06T08:00:00Z/2026-08-06T09:00:00Z
@@ -139,9 +140,25 @@ Full artifact: sha256:c9d80cabab98e1ba2f9e545da90bfe8cb15f1215b09ea4a3e8f0f7a2d7
 - authorization commit만으로 membership, deploy, 실행 또는 projection write를 수행하지 않는다.
 - finality write는 계속 승인하지 않는다.
 
+## SR-6F-G 검증 증거
+
+```text
+Verified implementation head: 9ba2db4a11bc0415652e3e7b1c20577a300615fe
+SR Search Recommendation: 31092362305 — SUCCESS
+Recommendation P0 Database CI: 31092363499 — SUCCESS
+Backend PR CI: 31092362603 — SUCCESS
+Focused: 27 suites / 99 tests / failures 0 / errors 0 / skipped 0
+Protected recommendation contracts: P1 17 / P2 23 scenarios — SUCCESS
+Full backend: 106 suites / 373 tests / failures 0 / errors 0 / skipped 0
+PostgreSQL 15: SUCCESS
+PostgreSQL 18: SUCCESS
+IP-12.5 protected readiness: SUCCESS
+Focused artifact: sha256:e1ea873ab87492206952f774d239514a8c28b25c2bdc6bd9b9d9b33b8e296b94
+Full artifact: sha256:f28067c104051c1c6dacf4d3584f980f01ec442ade010d37a4117a44cf708768
+```
+
 ## SR-6F-H 진입 전 필수 항목
 
-- SR-6F-G exact-head CI와 PostgreSQL 15·18 검증
 - 실제 stage DB endpoint와 접근 권한
 - exact deployed build와 producer build ID 결속
 - stage profile·기본 OFF·kill switch ON 사전 증거
