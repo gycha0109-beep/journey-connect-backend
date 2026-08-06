@@ -46,6 +46,8 @@ public final class SearchCtrManualActivationGate {
         String environment = normalized(properties.getEnvironment());
         require(ALLOWED_ENVIRONMENTS.contains(environment),
                 "manual Search CTR environment is not allowlisted");
+        require(environment.equals(SearchCtrActivationPolicy.AUTHORIZED_MANUAL_ENVIRONMENT),
+                "manual Search CTR environment is outside the SR-6F-G authorization");
 
         Set<String> profiles = Arrays.stream(activeProfiles == null ? new String[0] : activeProfiles)
                 .filter(Objects::nonNull)
@@ -60,14 +62,21 @@ public final class SearchCtrManualActivationGate {
         String approvalRef = normalized(properties.getApprovalRef());
         require(approvalRef.matches(OPERATIONAL_REF_PATTERN),
                 "manual Search CTR approval reference is invalid");
+        require(approvalRef.equals(SearchCtrActivationPolicy.AUTHORIZED_MANUAL_APPROVAL_REF),
+                "manual Search CTR approval reference is outside the SR-6F-G authorization");
 
         String producerBuildId = properties.getProducerBuildId() == null
                 ? ""
                 : properties.getProducerBuildId().trim();
         require(producerBuildId.matches("^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"),
                 "manual Search CTR producer build is invalid");
+        require(producerBuildId.startsWith(
+                        SearchCtrActivationPolicy.AUTHORIZED_MANUAL_PRODUCER_BUILD_PREFIX),
+                "manual Search CTR producer build is outside the SR-6F-G authorization");
 
         Instant windowStart = parseInstant(properties.getWindowStart());
+        require(windowStart.equals(SearchCtrActivationPolicy.AUTHORIZED_MANUAL_WINDOW_START),
+                "manual Search CTR window is outside the SR-6F-G authorization");
         SearchCtrActivationPolicy.Window window = new SearchCtrActivationPolicy.Window(
                 windowStart,
                 windowStart.plus(SearchCtrActivationPolicy.PROJECTION_WINDOW));
