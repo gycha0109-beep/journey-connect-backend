@@ -29,7 +29,9 @@ public final class CanonicalPostgresInitializer
             "27_search_document_projection.sql", "28_search_document_projection_smoke_test.sql",
             "53_admin_control_plane_hardening.sql", "54_admin_control_plane_hardening_smoke_test.sql",
             "55_search_exposure_persistence.sql", "55a_search_exposure_digest_privilege.sql",
-            "56_search_exposure_persistence_smoke_test.sql");
+            "56_search_exposure_persistence_smoke_test.sql",
+            "57_search_ctr_aggregate_boundary.sql",
+            "58_search_ctr_aggregate_boundary_smoke_test.sql");
 
     private static final String EXTERNAL_URL = setting("jc.test.db.url", "JC_TEST_DB_URL", "");
     private static final String EXTERNAL_USERNAME = setting("jc.test.db.username", "JC_TEST_DB_USERNAME", "postgres");

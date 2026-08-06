@@ -3,12 +3,14 @@
 ## 상태
 
 ```text
-Decision date: 2026-08-05 KST
+Initial decision date: 2026-08-05 KST
+SR-6F-C authorization date: 2026-08-06 KST
 Decision: APPROVED_BY_PROJECT_OWNER
 Metric: search-click-through-rate-v1
 SR-6F-A design: APPROVED
-SR-6F-B Java contracts: AUTHORIZED
-Database/SQL/identity bridge: NOT_AUTHORIZED_IN_THIS_STAGE
+SR-6F-B Java contracts: VERIFIED
+SR-6F-C aggregate-only DB boundary: AUTHORIZED
+Projection writer/endpoint/finality: NOT_AUTHORIZED_IN_THIS_STAGE
 Merge/deploy/production activation: NOT_AUTHORIZED
 ```
 
@@ -24,19 +26,24 @@ Merge/deploy/production activation: NOT_AUTHORIZED
 - V1 상태는 `PROVISIONAL`만 허용하며 finality 승인 전 `SETTLED`를 생성하지 않는다.
 - Reliability는 identity mapping table이나 numeric user ID ↔ subject pair를 직접 읽지 않는다.
 
-## SR-6F-B 허용 범위
+## SR-6F-C 승인값
 
-- Java metric contract
-- deterministic in-memory attribution engine
-- canonical projection payload와 SHA-256 fingerprint
-- disabled projection port
-- golden fixture와 단위 테스트
-- DB/Flyway/canonical SQL 비변경
+- identity bridge 방식은 attribution ledger가 아닌 aggregate-only `SECURITY DEFINER` 함수다.
+- 함수 physical owner는 System Coordination의 `jc_security_owner`다.
+- 전용 consumer role은 `jc_reliability`이며 NOLOGIN·무상속·무우회 속성을 사용한다.
+- `jc_reliability`에는 mapping, raw exposure, raw behavior, access-audit table 권한을 부여하지 않는다.
+- 함수 반환은 metric/window/status/count/basis-points/watermark로 제한하고 identity-bearing key를 반환하지 않는다.
+- 평가 window에 invalidated mapping exposure가 있으면 부분 집계하지 않고 fail-closed한다.
+- aggregate 접근 감사는 identity 없이 30일 보존한다.
+- 신규 raw attribution ledger는 만들지 않는다.
+- canonical package는 `journey-connect-db-v2.8/04..05`, Testcontainers global labels는 `57..58`이다.
+- Flyway auto-discovery migration은 추가하지 않는다.
 
 ## 계속 금지
 
-- SQL sequence 또는 DB version 자체 배정
-- identity bridge function/ledger 구현
-- projection writer/store 활성화
+- projection snapshot table·writer/store 활성화
+- endpoint, dashboard, alert
+- `SETTLED`·`SUPERSEDED` finality
 - user/subject/session/raw query segment
-- production dashboard, alert, merge, deploy
+- Reliability의 raw identity/evidence table 직접 접근
+- merge, deploy, production activation

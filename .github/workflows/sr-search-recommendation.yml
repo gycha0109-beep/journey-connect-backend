@@ -8,6 +8,7 @@ on:
       - agent/sr6-search-exposure-contract-design
       - agent/sr6b-search-exposure-java-contracts
       - agent/sr6f-search-ctr-metric-design
+      - agent/sr6fb-search-ctr-java-contracts
     paths:
       - "database/journey-connect-db-v2.8/**"
       - "jc-backend/src/main/java/com/jc/backend/intelligence/search/**"
@@ -19,6 +20,8 @@ on:
       - "jc-backend/src/test/resources/db/canonical/55_search_exposure_persistence.sql"
       - "jc-backend/src/test/resources/db/canonical/55a_search_exposure_digest_privilege.sql"
       - "jc-backend/src/test/resources/db/canonical/56_search_exposure_persistence_smoke_test.sql"
+      - "jc-backend/src/test/resources/db/canonical/57_search_ctr_aggregate_boundary.sql"
+      - "jc-backend/src/test/resources/db/canonical/58_search_ctr_aggregate_boundary_smoke_test.sql"
       - "jc-backend/src/test/resources/db/canonical/cleanup.sql"
       - "jc-backend/src/test/resources/intelligence/search/**"
       - "jc-backend/src/test/java/com/jc/backend/post/PostControllerSearchShadowHookTest.java"
@@ -55,7 +58,7 @@ jobs:
       - name: Grant Gradle wrapper execution
         working-directory: jc-backend
         run: chmod +x ./gradlew
-      - name: Run SR-0 to SR-6F-B focused tests
+      - name: Run SR-0 to SR-6F-C focused tests
         working-directory: jc-backend
         env:
           JC_TEST_POSTGRES_IMAGE: postgres:15-alpine
