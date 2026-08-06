@@ -12,7 +12,15 @@ public final class SearchCtrActivationPolicy {
             SearchCtrContract.ATTRIBUTION_WINDOW.plus(SearchBehaviorContract.MAX_FUTURE_SKEW);
     public static final Duration SETTLEMENT_GRACE =
             SearchBehaviorContract.MAX_EVENT_AGE.plus(PROVISIONAL_GRACE);
-    public static final RuntimeMode AUTHORIZED_RUNTIME_MODE = RuntimeMode.DISABLED;
+
+    public static final RuntimeMode AUTHORIZED_RUNTIME_MODE = RuntimeMode.NONPRODUCTION_MANUAL;
+    public static final String AUTHORIZED_MANUAL_ENVIRONMENT = "stage";
+    public static final String AUTHORIZED_MANUAL_LOGIN_ROLE = "jc_backend";
+    public static final Instant AUTHORIZED_MANUAL_WINDOW_START =
+            Instant.parse("2026-08-06T08:00:00Z");
+    public static final String AUTHORIZED_MANUAL_APPROVAL_REF =
+            "approval:sr6fg-stage-20260806t0800z";
+    public static final String AUTHORIZED_MANUAL_PRODUCER_BUILD_PREFIX = "sr6fg-stage-";
 
     private SearchCtrActivationPolicy() {}
 
@@ -35,7 +43,7 @@ public final class SearchCtrActivationPolicy {
     }
 
     public static boolean isRuntimeWriteAuthorized() {
-        return AUTHORIZED_RUNTIME_MODE != RuntimeMode.DISABLED;
+        return AUTHORIZED_RUNTIME_MODE == RuntimeMode.NONPRODUCTION_MANUAL;
     }
 
     public static boolean isFinalityWriteAuthorized() {
