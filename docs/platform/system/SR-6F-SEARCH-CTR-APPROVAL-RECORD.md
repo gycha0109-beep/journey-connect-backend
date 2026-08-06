@@ -13,7 +13,8 @@ SR-6F-A design: APPROVED
 SR-6F-B Java contracts: VERIFIED
 SR-6F-C aggregate-only DB boundary: VERIFIED
 SR-6F-D projection snapshot/single writer: VERIFIED
-SR-6F-E activation/finality governance: IMPLEMENTED_PENDING_CI
+SR-6F-E activation/finality governance: VERIFIED
+Verified SR-6F-E implementation head: 20022a39d740cee8052e2b5c113d99a759e343d6
 Runtime mode: DISABLED
 Finality write: NOT_AUTHORIZED
 Merge/deploy/production activation: NOT_AUTHORIZED
