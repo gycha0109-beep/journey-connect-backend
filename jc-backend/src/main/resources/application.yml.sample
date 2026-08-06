@@ -7,8 +7,8 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   flyway:
-    # Canonical DB v2.5 is applied as the reviewed 01-22 package. Keep disabled
-    # until the baseline is converted to one Flyway-owned history.
+    # Canonical DB v2.8 is applied as a reviewed package. Keep disabled until
+    # the baseline is converted to one Flyway-owned history.
     enabled: ${FLYWAY_ENABLED:false}
   jpa:
     hibernate:
@@ -29,6 +29,20 @@ app:
     role-routing:
       verify-on-startup: ${DB_ROLE_ROUTING_VERIFY:true}
       require-restricted-login: ${DB_ROLE_ROUTING_REQUIRE_RESTRICTED_LOGIN:true}
+      # Keep false until a separately approved non-production login receives
+      # jc_reliability membership for an explicit one-shot execution.
+      require-reliability: ${DB_ROLE_ROUTING_REQUIRE_RELIABILITY:false}
+  intelligence:
+    search-ctr:
+      manual:
+        # SR-6F-F foundation remains default-off. Enabling while the policy
+        # runtime mode is DISABLED fails closed before any DB write.
+        enabled: ${SEARCH_CTR_MANUAL_ENABLED:false}
+        kill-switch: ${SEARCH_CTR_MANUAL_KILL_SWITCH:true}
+        environment: ${SEARCH_CTR_MANUAL_ENVIRONMENT:}
+        window-start: ${SEARCH_CTR_MANUAL_WINDOW_START:}
+        producer-build-id: ${SEARCH_CTR_MANUAL_PRODUCER_BUILD_ID:}
+        approval-ref: ${SEARCH_CTR_MANUAL_APPROVAL_REF:}
   security:
     jwt-secret: ${JWT_SECRET}
     access-token-minutes: ${JWT_ACCESS_TOKEN_MINUTES:120}
