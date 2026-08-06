@@ -42,7 +42,9 @@ public final class DatabaseRoleCapabilityVerifier implements SmartInitializingSi
             verifySessionLoginHasNoDirectDataPrivilegesOrOwnership();
         }
         for (DatabaseRole role : DatabaseRole.values()) {
-            verifyRoleAssumption(role);
+            if (role.requiredAtStartup()) {
+                verifyRoleAssumption(role);
+            }
         }
     }
 
@@ -62,7 +64,6 @@ public final class DatabaseRoleCapabilityVerifier implements SmartInitializingSi
         }
     }
 
-
     private void verifySessionLoginMemberships() {
         List<String> memberships = jdbcTemplate.queryForList(
                 "with recursive inherited(roleid) as ("
@@ -80,7 +81,8 @@ public final class DatabaseRoleCapabilityVerifier implements SmartInitializingSi
                 DatabaseRole.APP.sqlName(),
                 DatabaseRole.AUTH.sqlName(),
                 DatabaseRole.ADMIN.sqlName(),
-                DatabaseRole.RECOMMENDATION.sqlName());
+                DatabaseRole.RECOMMENDATION.sqlName(),
+                DatabaseRole.RELIABILITY.sqlName());
         List<String> unexpected = memberships.stream()
                 .filter(role -> !allowed.contains(role))
                 .sorted()

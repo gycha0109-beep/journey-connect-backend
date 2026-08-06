@@ -5,12 +5,14 @@
 ```text
 Initial decision date: 2026-08-05 KST
 SR-6F-C authorization date: 2026-08-06 KST
+SR-6F-D authorization date: 2026-08-06 KST
 Decision: APPROVED_BY_PROJECT_OWNER
 Metric: search-click-through-rate-v1
 SR-6F-A design: APPROVED
 SR-6F-B Java contracts: VERIFIED
-SR-6F-C aggregate-only DB boundary: AUTHORIZED
-Projection writer/endpoint/finality: NOT_AUTHORIZED_IN_THIS_STAGE
+SR-6F-C aggregate-only DB boundary: VERIFIED
+SR-6F-D projection snapshot/single writer: VERIFIED
+Endpoint/finality: NOT_AUTHORIZED_IN_THIS_STAGE
 Merge/deploy/production activation: NOT_AUTHORIZED
 ```
 
@@ -39,11 +41,29 @@ Merge/deploy/production activation: NOT_AUTHORIZED
 - canonical package는 `journey-connect-db-v2.8/04..05`, Testcontainers global labels는 `57..58`이다.
 - Flyway auto-discovery migration은 추가하지 않는다.
 
+## SR-6F-D 승인값
+
+- projection authority는 append-only `search_ctr_projection_snapshot_v1`이다.
+- 유일한 write 경로는 `jc_security_owner` 소유 `write_search_ctr_projection_v1`이다.
+- 애플리케이션은 window, idempotency key, expected predecessor, producer build만 전달한다.
+- denominator, numerator, CTR, canonical payload, fingerprint, projection ID는 writer 내부에서 계산한다.
+- 동일 semantic payload는 새 row를 만들지 않고 `DUPLICATE`를 반환한다.
+- 동일 idempotency key와 다른 semantic payload는 `IDEMPOTENCY_CONFLICT`다.
+- 변경된 payload는 현재 head와 expected predecessor가 정확히 일치할 때만 새 append-only row로 저장한다.
+- predecessor 불일치는 `PREDECESSOR_CONFLICT`다.
+- predecessor lineage는 replacement 계보일 뿐 `SUPERSEDED` finality 상태를 생성하지 않는다.
+- projection payload와 writer 반환에는 user/subject/session/exposure/click/raw-query 식별자를 넣지 않는다.
+- `jc_security_owner`에는 aggregate 함수 내부 호출을 위한 최소 `EXECUTE`만 부여하며 raw table 권한은 추가하지 않는다.
+- canonical package는 `journey-connect-db-v2.8/06`, `06a`, `07`, Testcontainers global labels는 `59`, `59a`, `60`이다.
+- `jc_reliability`는 허용된 routed role이지만 writer 활성화 전에는 startup 필수 capability가 아니다.
+- 실제 writer 사용 전 restricted backend login에 대한 `jc_reliability` membership은 별도 운영 승인으로 활성화해야 한다.
+
 ## 계속 금지
 
-- projection snapshot table·writer/store 활성화
-- endpoint, dashboard, alert
-- `SETTLED`·`SUPERSEDED` finality
+- public/internal evaluation endpoint
+- scheduler/cron activation
+- dashboard, alert
+- `SETTLED`·`SUPERSEDED` finality state
 - user/subject/session/raw query segment
-- Reliability의 raw identity/evidence table 직접 접근
+- Reliability의 raw identity/evidence/projection table 직접 접근
 - merge, deploy, production activation
