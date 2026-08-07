@@ -34,6 +34,8 @@ on:
       - "jc-backend/src/test/resources/db/canonical/60_search_ctr_projection_writer_smoke_test.sql"
       - "jc-backend/src/test/resources/db/canonical/61_search_ctr_nonprod_manual_activation_foundation.sql"
       - "jc-backend/src/test/resources/db/canonical/62_search_ctr_nonprod_manual_activation_smoke_test.sql"
+      - "jc-backend/src/test/resources/db/canonical/63_search_ctr_reliability_role_noinherit_convergence.sql"
+      - "jc-backend/src/test/resources/db/canonical/64_search_ctr_reliability_role_noinherit_smoke_test.sql"
       - "jc-backend/src/test/resources/db/canonical/cleanup.sql"
       - "jc-backend/src/test/resources/intelligence/search/**"
       - "jc-backend/src/test/java/com/jc/backend/post/PostControllerSearchShadowHookTest.java"
