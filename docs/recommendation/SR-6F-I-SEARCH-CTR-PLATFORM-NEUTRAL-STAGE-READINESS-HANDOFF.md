@@ -7,6 +7,8 @@ Stage: SR-6F-I
 Metric: search-click-through-rate-v1
 Predecessor: SR-6F-H
 H execution-control implementation: VERIFIED
+Readiness-handoff implementation: VERIFIED
+Verified implementation head: 3c04b72dadde0931b68154d86c82d5b71add9958
 Actual stage execution: NOT_PERFORMED
 Readiness contract: search-ctr-stage-readiness-handoff-v1
 Readiness status: BLOCKED_PLATFORM_UNDECIDED
@@ -17,7 +19,7 @@ IAM mutation authorization: NO
 SR-6F-H execution status: BLOCKED_EXTERNAL_STAGE_ACCESS
 Finality write: DISABLED
 Merge/deploy: NOT_PERFORMED
-Overall: IMPLEMENTED_READINESS_HANDOFF_HOLD_PLATFORM_SELECTION
+Overall: VERIFIED_READINESS_HANDOFF_HOLD_PLATFORM_SELECTION
 ```
 
 ## 목적
@@ -132,7 +134,11 @@ SR6FH_STAGE_BACKEND_PASSWORD
 SR6FH_STAGE_JWT_SECRET
 ```
 
-값은 읽거나 기록하지 않는다. 파일 digest만 manifest integrity에 사용한다.
+값은 읽거나 기록하지 않는다. names-only inventory digest는 다음으로 고정됐다.
+
+```text
+sha256:5bd0848027faacefc1b3b4763616b7aefbf025e99b3a49ca93c7de9978994aad
+```
 
 ## Review-only H binding
 
@@ -151,11 +157,40 @@ SR6FH_BINDING_REVIEW_STATUS=PROPOSED_NOT_AUTHORIZED
 
 이 도구는 authoritative H contract를 수정하지 않는다. proposal 출력은 execution authorization이 아니다.
 
-## 검증 범위
+## 검증
 
-Python regression은 current blocked template success, undecided matrix에서 ready rejection, raw endpoint rejection, 별도 authorized fixture에서 review-only binding rendering을 검증한다.
+| Gate | Result |
+|---|---|
+| Python syntax | SUCCESS |
+| Python readiness regression | SUCCESS — 4 tests |
+| Current blocked template verification | SUCCESS |
+| Raw endpoint/secret rejection | SUCCESS |
+| Review-only future-ready fixture | SUCCESS |
+| Operations-only Java entry point compile | SUCCESS |
+| Search focused PostgreSQL | SUCCESS — 31 suites / 116 tests / failures 0 / errors 0 / skipped 0 |
+| Disposable PostgreSQL H round-trip | SUCCESS |
+| Protected recommendation contracts | SUCCESS — P1 17 / P2 23 scenarios |
+| Full backend regression | SUCCESS — 110 suites / 390 tests / failures 0 / errors 0 / skipped 0 |
+| PostgreSQL 15 canonical integration | SUCCESS |
+| PostgreSQL 18 canonical integration | SUCCESS |
+| Backend IP-12.5 protected readiness | SUCCESS |
 
-SR Search CI는 Python syntax·unit tests·template verification과 기존 H compile·disposable PostgreSQL round-trip·full backend regression을 함께 실행한다.
+Verified implementation-head CI:
+
+```text
+SR Search Recommendation: 31137267367
+Recommendation P0 Database CI: 31137268018
+Backend PR CI: 31137267557
+```
+
+Implementation-head evidence digests:
+
+```text
+Focused: sha256:bf3b3fa3d9c57c17f48e2804c73ea1729ff2cd781235c4903aa0e9213f9dde4a
+Full regression: sha256:0abd5b3dc8761a570f75719c7b4c401c09ea33f287c42869865676e09e0b9b54
+```
+
+초기 implementation head `af73712e6c560818613c08c142410a17127a765d`에서는 기존 governance test가 H 단계의 workflow step 이름을 고정해 focused suite 1건이 실패했다. 권한 경계를 완화하지 않고 H base·I readiness verifier·I focused step까지 확인하도록 contract를 갱신한 뒤 `3c04b72dadde0931b68154d86c82d5b71add9958`에서 전체 검증에 성공했다.
 
 ## 수행하지 않은 것
 
