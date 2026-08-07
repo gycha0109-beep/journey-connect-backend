@@ -36,7 +36,9 @@ public final class CanonicalPostgresInitializer
             "59a_search_ctr_writer_owner_dependency.sql",
             "60_search_ctr_projection_writer_smoke_test.sql",
             "61_search_ctr_nonprod_manual_activation_foundation.sql",
-            "62_search_ctr_nonprod_manual_activation_smoke_test.sql");
+            "62_search_ctr_nonprod_manual_activation_smoke_test.sql",
+            "63_search_ctr_reliability_role_noinherit_convergence.sql",
+            "64_search_ctr_reliability_role_noinherit_smoke_test.sql");
 
     private static final String EXTERNAL_URL = setting("jc.test.db.url", "JC_TEST_DB_URL", "");
     private static final String EXTERNAL_USERNAME = setting("jc.test.db.username", "JC_TEST_DB_USERNAME", "postgres");

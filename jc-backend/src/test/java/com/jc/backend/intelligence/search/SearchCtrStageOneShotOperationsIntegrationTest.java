@@ -38,6 +38,7 @@ class SearchCtrStageOneShotOperationsIntegrationTest {
         }
 
         try {
+            assertThat(roleInherits("jc_reliability")).isFalse();
             executePsqlScript(
                     "operations/search-ctr/sr6fh/01_preflight_stage.sql",
                     hVariables());
@@ -75,6 +76,7 @@ class SearchCtrStageOneShotOperationsIntegrationTest {
                     "operations/search-ctr/sr6fh/05_verify_stage_revoked.sql",
                     Map.of());
         } finally {
+            rollbackQuietly();
             jdbcTemplate.execute("REVOKE jc_reliability FROM jc_backend");
             if (createdBackendRole) {
                 jdbcTemplate.execute("DROP ROLE jc_backend");
@@ -110,7 +112,20 @@ class SearchCtrStageOneShotOperationsIntegrationTest {
         sql = sql.lines()
                 .filter(line -> !line.stripLeading().startsWith("\\"))
                 .reduce("", (left, right) -> left + right + "\n");
-        jdbcTemplate.execute(sql);
+        try {
+            jdbcTemplate.execute(sql);
+        } catch (RuntimeException failure) {
+            rollbackQuietly();
+            throw failure;
+        }
+    }
+
+    private void rollbackQuietly() {
+        try {
+            jdbcTemplate.execute("ROLLBACK");
+        } catch (RuntimeException ignored) {
+            // Best-effort recovery for a psql-style script that failed inside BEGIN.
+        }
     }
 
     private boolean roleExists(String role) {
@@ -119,6 +134,14 @@ class SearchCtrStageOneShotOperationsIntegrationTest {
                 Boolean.class,
                 role);
         return Boolean.TRUE.equals(exists);
+    }
+
+    private boolean roleInherits(String role) {
+        Boolean inherits = jdbcTemplate.queryForObject(
+                "select rolinherit from pg_catalog.pg_roles where rolname = ?",
+                Boolean.class,
+                role);
+        return Boolean.TRUE.equals(inherits);
     }
 
     private boolean hasReliabilityMembership() {
