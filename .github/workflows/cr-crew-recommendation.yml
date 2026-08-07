@@ -1,0 +1,143 @@
+name: CR Crew Recommendation
+
+on:
+  pull_request:
+    branches:
+      - main
+      - agent/sr6fi-search-ctr-stage-readiness-handoff
+      - agent/cr0-crew-recommendation-contract-design
+    paths:
+      - "jc-backend/src/main/java/com/jc/backend/intelligence/crew/**"
+      - "jc-backend/src/test/java/com/jc/backend/intelligence/crew/**"
+      - "docs/recommendation/CR-*.md"
+      - "docs/platform/system/CR-*.md"
+      - ".github/workflows/cr-crew-recommendation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cr-crew-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  crew-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout exact pull request head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Enforce CR-0 contract-only scope
+        if: github.event_name == 'pull_request' && github.head_ref == 'agent/cr0-crew-recommendation-contract-design'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          invalid=0
+          while IFS= read -r path; do
+            case "$path" in
+              .github/workflows/cr-crew-recommendation.yml) ;;
+              docs/recommendation/CR-0-*.md) ;;
+              docs/platform/system/CR-0-*.md) ;;
+              jc-backend/src/main/java/com/jc/backend/intelligence/crew/CrewRecommendationContract.java) ;;
+              jc-backend/src/test/java/com/jc/backend/intelligence/crew/*.java) ;;
+              *)
+                echo "::error::CR-0 out-of-scope mutation: $path"
+                invalid=1
+                ;;
+            esac
+          done < <(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          test "$invalid" -eq 0
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Grant Gradle wrapper execution
+        working-directory: jc-backend
+        run: chmod +x ./gradlew
+
+      - name: Run CR-0 focused contract tests
+        working-directory: jc-backend
+        env:
+          JC_TEST_POSTGRES_IMAGE: postgres:15-alpine
+        run: |
+          ./gradlew :test --no-build-cache --no-daemon \
+            --tests 'com.jc.backend.intelligence.crew.*'
+
+      - name: Run protected recommendation contracts
+        working-directory: jc-backend
+        run: |
+          ./gradlew \
+            :jc-recommendation-core:coreFoundationContractTest \
+            :jc-recommendation-core:javaCoreGoldenFixtureContractTest \
+            :jc-recommendation-core:p1CoreContractTest \
+            :jc-recommendation-core:p2CoreContractTest \
+            :p1ContractVerification \
+            :p2ContractVerification \
+            --no-build-cache --no-daemon
+
+      - name: Upload CR-0 focused evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: cr0-crew-contract-evidence
+          path: |
+            jc-backend/build/test-results/test
+            jc-backend/build/reports/tests/test
+          if-no-files-found: warn
+          retention-days: 30
+
+  full-backend-regression:
+    needs: crew-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact pull request head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Grant Gradle wrapper execution
+        working-directory: jc-backend
+        run: chmod +x ./gradlew
+
+      - name: Run full backend regression
+        working-directory: jc-backend
+        env:
+          JC_TEST_POSTGRES_IMAGE: postgres:15-alpine
+        run: ./gradlew :clean :test --no-build-cache --no-daemon
+
+      - name: Upload CR-0 full regression evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: cr0-full-backend-regression-evidence
+          path: |
+            jc-backend/build/test-results/test
+            jc-backend/build/reports/tests/test
+          if-no-files-found: warn
+          retention-days: 30
