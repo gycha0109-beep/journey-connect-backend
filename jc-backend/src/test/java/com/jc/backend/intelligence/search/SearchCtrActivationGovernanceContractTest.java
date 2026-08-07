@@ -70,6 +70,8 @@ class SearchCtrActivationGovernanceContractTest {
         assertTrue(workflow.contains("agent/sr6fg-search-ctr-nonprod-manual-authorization"));
         assertTrue(workflow.contains("Run SR-0 to SR-6F-H focused tests"));
         assertTrue(workflow.contains("Validate SR-6F-H execution package syntax"));
+        assertTrue(workflow.contains("Compile SR-6F-H operations-only entry point"));
+        assertTrue(workflow.contains("compileSearchCtrStageOneShot"));
         assertTrue(workflow.contains("sr-search-ctr-stage-one-shot.yml"));
     }
 

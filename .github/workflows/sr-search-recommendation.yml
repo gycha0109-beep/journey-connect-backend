@@ -77,6 +77,13 @@ jobs:
           python3 -m py_compile \
             operations/search-ctr/sr6fh/validate_stage_endpoints.py \
             operations/search-ctr/sr6fh/sanitize_stage_evidence.py
+      - name: Compile SR-6F-H operations-only entry point
+        working-directory: jc-backend
+        run: |
+          ./gradlew \
+            --init-script ../operations/search-ctr/sr6fh/stage-one-shot.init.gradle \
+            compileSearchCtrStageOneShot \
+            --no-build-cache --no-daemon
       - name: Run SR-0 to SR-6F-H focused tests
         working-directory: jc-backend
         env:
