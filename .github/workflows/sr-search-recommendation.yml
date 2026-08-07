@@ -13,6 +13,7 @@ on:
       - agent/sr6fd-search-ctr-projection-writer
       - agent/sr6fe-search-ctr-activation-finality-governance
       - agent/sr6ff-search-ctr-nonprod-manual-foundation
+      - agent/sr6fg-search-ctr-nonprod-manual-authorization
     paths:
       - "database/journey-connect-db-v2.8/**"
       - "operations/search-ctr/**"
@@ -33,12 +34,15 @@ on:
       - "jc-backend/src/test/resources/db/canonical/60_search_ctr_projection_writer_smoke_test.sql"
       - "jc-backend/src/test/resources/db/canonical/61_search_ctr_nonprod_manual_activation_foundation.sql"
       - "jc-backend/src/test/resources/db/canonical/62_search_ctr_nonprod_manual_activation_smoke_test.sql"
+      - "jc-backend/src/test/resources/db/canonical/63_search_ctr_reliability_role_noinherit_convergence.sql"
+      - "jc-backend/src/test/resources/db/canonical/64_search_ctr_reliability_role_noinherit_smoke_test.sql"
       - "jc-backend/src/test/resources/db/canonical/cleanup.sql"
       - "jc-backend/src/test/resources/intelligence/search/**"
       - "jc-backend/src/test/java/com/jc/backend/post/PostControllerSearchShadowHookTest.java"
       - "docs/recommendation/SR-*.md"
       - "docs/platform/system/SR-*.md"
       - ".github/workflows/sr-search-recommendation.yml"
+      - ".github/workflows/sr-search-ctr-stage-one-shot.yml"
   workflow_dispatch:
 
 permissions:
@@ -69,7 +73,20 @@ jobs:
       - name: Grant Gradle wrapper execution
         working-directory: jc-backend
         run: chmod +x ./gradlew
-      - name: Run SR-0 to SR-6F-G focused tests
+      - name: Validate SR-6F-H execution package syntax
+        run: |
+          bash -n operations/search-ctr/sr6fh/execute_stage_one_shot.sh
+          python3 -m py_compile \
+            operations/search-ctr/sr6fh/validate_stage_endpoints.py \
+            operations/search-ctr/sr6fh/sanitize_stage_evidence.py
+      - name: Compile SR-6F-H operations-only entry point
+        working-directory: jc-backend
+        run: |
+          ./gradlew \
+            --init-script ../operations/search-ctr/sr6fh/stage-one-shot.init.gradle \
+            compileSearchCtrStageOneShot \
+            --no-build-cache --no-daemon
+      - name: Run SR-0 to SR-6F-H focused tests
         working-directory: jc-backend
         env:
           JC_TEST_POSTGRES_IMAGE: postgres:15-alpine

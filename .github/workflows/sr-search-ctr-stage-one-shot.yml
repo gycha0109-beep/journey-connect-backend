@@ -1,0 +1,117 @@
+name: SR Search CTR Stage One-shot
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type EXECUTE_SR6FH_STAGE_ONE_SHOT
+        required: true
+        type: string
+      expected_source_sha:
+        description: Exact 40-character SR-6F-H source commit SHA
+        required: true
+        type: string
+      approval_ref:
+        description: Exact approved SR-6F-G approval reference
+        required: true
+        type: string
+      window_start:
+        description: Exact approved UTC window start
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  SR6FH_SAFE_EVIDENCE_DIR: ${{ github.workspace }}/build/sr6fh/safe
+  SR6FH_RAW_EVIDENCE_DIR: ${{ github.workspace }}/build/sr6fh/raw
+
+concurrency:
+  group: sr6fh-stage-one-shot
+  cancel-in-progress: false
+
+jobs:
+  controlled-stage-one-shot:
+    name: Controlled stage grant, execute, revoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment: stage
+    steps:
+      - name: Validate non-secret dispatch inputs
+        shell: bash
+        env:
+          SR6FH_CONFIRMATION: ${{ inputs.confirmation }}
+          SR6FH_EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+          SR6FH_REQUESTED_APPROVAL_REF: ${{ inputs.approval_ref }}
+          SR6FH_REQUESTED_WINDOW_START: ${{ inputs.window_start }}
+        run: |
+          set -Eeuo pipefail
+          [[ "$SR6FH_CONFIRMATION" == "EXECUTE_SR6FH_STAGE_ONE_SHOT" ]]
+          [[ "$SR6FH_EXPECTED_SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$SR6FH_REQUESTED_APPROVAL_REF" == "approval:sr6fg-stage-20260806t0800z" ]]
+          [[ "$SR6FH_REQUESTED_WINDOW_START" == "2026-08-06T08:00:00Z" ]]
+
+      - name: Checkout exact approved source
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.expected_source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact checkout
+        shell: bash
+        env:
+          SR6FH_EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+        run: |
+          set -Eeuo pipefail
+          [[ "$(git rev-parse HEAD)" == "$SR6FH_EXPECTED_SOURCE_SHA" ]]
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Verify execution tooling
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          command -v psql
+          command -v python3
+          command -v timeout
+          chmod +x jc-backend/gradlew
+          chmod +x operations/search-ctr/sr6fh/execute_stage_one_shot.sh
+          bash -n operations/search-ctr/sr6fh/execute_stage_one_shot.sh
+          python3 -m py_compile \
+            operations/search-ctr/sr6fh/validate_stage_endpoints.py \
+            operations/search-ctr/sr6fh/sanitize_stage_evidence.py
+
+      - name: Execute bounded stage one-shot
+        shell: bash
+        env:
+          SR6FH_CONFIRMATION: ${{ inputs.confirmation }}
+          SR6FH_EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+          SR6FH_REQUESTED_APPROVAL_REF: ${{ inputs.approval_ref }}
+          SR6FH_REQUESTED_WINDOW_START: ${{ inputs.window_start }}
+          SR6FH_PRODUCER_BUILD_ID: sr6fg-stage-${{ inputs.expected_source_sha }}
+          SR6FH_STAGE_ADMIN_DATABASE_URL: ${{ secrets.SR6FH_STAGE_ADMIN_DATABASE_URL }}
+          SR6FH_STAGE_ADMIN_USERNAME: ${{ secrets.SR6FH_STAGE_ADMIN_USERNAME }}
+          SR6FH_STAGE_ADMIN_PASSWORD: ${{ secrets.SR6FH_STAGE_ADMIN_PASSWORD }}
+          SPRING_DATASOURCE_URL: ${{ secrets.SR6FH_STAGE_BACKEND_JDBC_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.SR6FH_STAGE_BACKEND_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SR6FH_STAGE_BACKEND_PASSWORD }}
+          APP_SECURITY_JWT_SECRET: ${{ secrets.SR6FH_STAGE_JWT_SECRET }}
+        run: operations/search-ctr/sr6fh/execute_stage_one_shot.sh
+
+      - name: Upload identity-free stage evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: sr6fh-stage-one-shot-${{ inputs.expected_source_sha }}
+          path: build/sr6fh/safe
+          if-no-files-found: warn
+          retention-days: 30

@@ -1,6 +1,6 @@
 # Journey Connect DB v2.8
 
-SR-6C authoritative Search exposure persistence, SR-6F-C aggregate-only Search CTR boundary, SR-6F-D append-only projection writer, and SR-6F-F non-production manual activation foundation package.
+SR-6C authoritative Search exposure persistence, SR-6F-C aggregate-only Search CTR boundary, SR-6F-D append-only projection writer, SR-6F-F non-production manual activation foundation, and SR-6F-H Reliability-role convergence package.
 
 ## Prerequisite
 
@@ -19,6 +19,8 @@ Apply the frozen `journey-connect-db-v2.7` canonical baseline `01..54` first.
 07_search_ctr_projection_writer_smoke_test.sql
 08_search_ctr_nonprod_manual_activation_foundation.sql
 09_search_ctr_nonprod_manual_activation_smoke_test.sql
+10_search_ctr_reliability_role_noinherit_convergence.sql
+11_search_ctr_reliability_role_noinherit_smoke_test.sql
 ```
 
 `04` creates the identity-safe, aggregate-only `evaluate_search_ctr_v1` boundary and the isolated `jc_reliability` role. That role receives no direct access to identity mappings, raw Search exposure, Search behavior, or access-audit rows.
@@ -35,7 +37,11 @@ Apply the frozen `journey-connect-db-v2.7` canonical baseline `01..54` first.
 
 `09` verifies the manual execution boundary, zero-denominator one-shot write, current-head read, append-only audit, direct table denial, identity-free results, and production-environment rejection. All fixtures are rolled back.
 
-The backend Testcontainers bootstrap mirrors these reviewed bytes under the historical global execution labels `55`, `55a`, `56`, `57`, `58`, `59`, `59a`, `60`, `61`, and `62` so existing bootstrap ordering remains deterministic without extending the frozen v2.7 inventory.
+`10` converges both newly created and previously applied v2.8 databases to the approved `jc_reliability NOLOGIN NOINHERIT` role contract. It refuses convergence if the role has elevated attributes or any inbound/outbound membership, then changes only the `INHERIT` attribute.
+
+`11` verifies the final isolated role attributes, absence of memberships, and preservation of the approved manual execution-function capability. Test fixtures are rolled back.
+
+The backend Testcontainers bootstrap mirrors these reviewed bytes under the historical global execution labels `55`, `55a`, `56`, `57`, `58`, `59`, `59a`, `60`, `61`, `62`, `63`, and `64` so existing bootstrap ordering remains deterministic without extending the frozen v2.7 inventory.
 
 The application login is not required to hold `jc_reliability` by default. SR-6F-F adds an explicit `app.database.role-routing.require-reliability` startup flag, but both that flag and the one-shot runner remain disabled until a separately approved non-production activation decision.
 

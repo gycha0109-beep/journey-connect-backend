@@ -1,0 +1,37 @@
+import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.compile.JavaCompile
+
+// Operations-only task injection. The production build script and normal boot main class remain unchanged.
+gradle.afterProject { project, state ->
+    if (project != gradle.rootProject || state.failure != null) {
+        return
+    }
+    def sourceSets = project.extensions.findByName("sourceSets")
+    if (sourceSets == null) {
+        throw new GradleException("SR-6F-H requires the Java sourceSets extension")
+    }
+    def mainSourceSet = sourceSets.getByName("main")
+    def outputDir = project.layout.buildDirectory.dir("sr6fh/one-shot-classes")
+    def sourceFile = project.file(
+        "../operations/search-ctr/sr6fh/java/com/jc/backend/intelligence/search/" +
+        "SearchCtrStageOneShotApplication.java"
+    )
+
+    def compileTask = project.tasks.register("compileSearchCtrStageOneShot", JavaCompile) {
+        group = "operations"
+        description = "Compiles the reviewed SR-6F-H operations-only one-shot entry point."
+        dependsOn(project.tasks.named("classes"))
+        source(sourceFile)
+        classpath = mainSourceSet.runtimeClasspath
+        destinationDirectory.set(outputDir)
+        options.release.set(21)
+    }
+
+    project.tasks.register("searchCtrStageOneShot", JavaExec) {
+        group = "operations"
+        description = "Runs the bounded SR-6F-H non-web one-shot process."
+        dependsOn(compileTask)
+        classpath(project.files(outputDir), mainSourceSet.runtimeClasspath)
+        mainClass.set("com.jc.backend.intelligence.search.SearchCtrStageOneShotApplication")
+    }
+}
