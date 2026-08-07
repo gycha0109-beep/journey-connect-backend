@@ -129,6 +129,25 @@ class CrewRecommendationContractTest {
     }
 
     @Test
+    void regionCodePreservesApiCompatibilityWhileSlugIsCanonicalizedSeparately() {
+        CandidateFacts candidate = new CandidateFacts(
+                11,
+                7,
+                "KR-11",
+                "Seoul_Central",
+                REFERENCE_DATE.plusDays(14),
+                10,
+                3,
+                true,
+                Instant.parse("2026-08-01T00:00:00Z"),
+                TagFeatureState.EMPTY,
+                List.of());
+
+        assertEquals("KR-11", candidate.regionCode());
+        assertEquals("seoul-central", candidate.regionSlug());
+    }
+
+    @Test
     void candidateFactsRejectAmbiguousTagCoverageAndInvalidIdentity() {
         assertThrows(
                 IllegalArgumentException.class,
@@ -141,6 +160,7 @@ class CrewRecommendationContractTest {
                 () -> new CandidateFacts(
                         0,
                         7,
+                        "KR-11",
                         "kr-11",
                         null,
                         10,
@@ -162,6 +182,7 @@ class CrewRecommendationContractTest {
                 11,
                 7,
                 "KR-11",
+                "kr-11",
                 REFERENCE_DATE.plusDays(14),
                 10,
                 3,
@@ -176,6 +197,7 @@ class CrewRecommendationContractTest {
                 source.crewId(),
                 source.ownerId(),
                 source.regionCode(),
+                source.regionSlug(),
                 source.travelDate(),
                 source.capacity(),
                 source.activeMemberCount(),
@@ -190,6 +212,7 @@ class CrewRecommendationContractTest {
                 source.crewId(),
                 source.ownerId(),
                 source.regionCode(),
+                source.regionSlug(),
                 travelDate,
                 source.capacity(),
                 source.activeMemberCount(),
@@ -204,6 +227,7 @@ class CrewRecommendationContractTest {
                 source.crewId(),
                 source.ownerId(),
                 source.regionCode(),
+                source.regionSlug(),
                 source.travelDate(),
                 source.capacity(),
                 activeMemberCount,
