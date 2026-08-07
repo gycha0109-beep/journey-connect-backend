@@ -144,6 +144,7 @@ public final class CrewRecommendationContract {
             long crewId,
             long ownerId,
             String regionCode,
+            String regionSlug,
             LocalDate travelDate,
             int capacity,
             long activeMemberCount,
@@ -159,7 +160,11 @@ public final class CrewRecommendationContract {
             if (regionCode == null || regionCode.isBlank()) {
                 throw new IllegalArgumentException("regionCode is required");
             }
-            regionCode = regionCode.trim().toLowerCase(Locale.ROOT);
+            if (regionSlug == null || regionSlug.isBlank()) {
+                throw new IllegalArgumentException("regionSlug is required");
+            }
+            regionCode = regionCode.trim();
+            regionSlug = regionSlug.trim().toLowerCase(Locale.ROOT).replace('_', '-');
             if (capacity < 2) {
                 throw new IllegalArgumentException("capacity must be at least two");
             }
