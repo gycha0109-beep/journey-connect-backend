@@ -60,13 +60,17 @@ class SearchCtrActivationGovernanceContractTest {
     }
 
     @Test
-    void workflowCoversTheStackedGovernanceFoundationAndAuthorizationBranches() throws IOException {
+    void workflowCoversTheStackedGovernanceFoundationAuthorizationAndExecutionGate()
+            throws IOException {
         String workflow = read(".github/workflows/sr-search-recommendation.yml");
 
         assertTrue(workflow.contains("agent/sr6fd-search-ctr-projection-writer"));
         assertTrue(workflow.contains("agent/sr6fe-search-ctr-activation-finality-governance"));
         assertTrue(workflow.contains("agent/sr6ff-search-ctr-nonprod-manual-foundation"));
-        assertTrue(workflow.contains("Run SR-0 to SR-6F-G focused tests"));
+        assertTrue(workflow.contains("agent/sr6fg-search-ctr-nonprod-manual-authorization"));
+        assertTrue(workflow.contains("Run SR-0 to SR-6F-H focused tests"));
+        assertTrue(workflow.contains("Validate SR-6F-H execution package syntax"));
+        assertTrue(workflow.contains("sr-search-ctr-stage-one-shot.yml"));
     }
 
     private static String read(String relativePath) throws IOException {
