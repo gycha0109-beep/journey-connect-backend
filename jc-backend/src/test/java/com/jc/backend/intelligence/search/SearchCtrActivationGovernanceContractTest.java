@@ -60,7 +60,7 @@ class SearchCtrActivationGovernanceContractTest {
     }
 
     @Test
-    void workflowCoversTheStackedGovernanceFoundationAuthorizationAndExecutionGate()
+    void workflowCoversTheStackedGovernanceExecutionAndReadinessGates()
             throws IOException {
         String workflow = read(".github/workflows/sr-search-recommendation.yml");
 
@@ -68,8 +68,12 @@ class SearchCtrActivationGovernanceContractTest {
         assertTrue(workflow.contains("agent/sr6fe-search-ctr-activation-finality-governance"));
         assertTrue(workflow.contains("agent/sr6ff-search-ctr-nonprod-manual-foundation"));
         assertTrue(workflow.contains("agent/sr6fg-search-ctr-nonprod-manual-authorization"));
-        assertTrue(workflow.contains("Run SR-0 to SR-6F-H focused tests"));
-        assertTrue(workflow.contains("Validate SR-6F-H execution package syntax"));
+        assertTrue(workflow.contains("agent/sr6fh-search-ctr-stage-one-shot-execution"));
+        assertTrue(workflow.contains("Run SR-0 to SR-6F-I focused tests"));
+        assertTrue(workflow.contains(
+                "Validate SR-6F-H/I operations package syntax and readiness contract"));
+        assertTrue(workflow.contains("verify_stage_readiness.py"));
+        assertTrue(workflow.contains("--mode template"));
         assertTrue(workflow.contains("Compile SR-6F-H operations-only entry point"));
         assertTrue(workflow.contains("compileSearchCtrStageOneShot"));
         assertTrue(workflow.contains("sr-search-ctr-stage-one-shot.yml"));

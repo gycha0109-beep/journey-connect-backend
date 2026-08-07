@@ -14,6 +14,7 @@ on:
       - agent/sr6fe-search-ctr-activation-finality-governance
       - agent/sr6ff-search-ctr-nonprod-manual-foundation
       - agent/sr6fg-search-ctr-nonprod-manual-authorization
+      - agent/sr6fh-search-ctr-stage-one-shot-execution
     paths:
       - "database/journey-connect-db-v2.8/**"
       - "operations/search-ctr/**"
@@ -73,12 +74,20 @@ jobs:
       - name: Grant Gradle wrapper execution
         working-directory: jc-backend
         run: chmod +x ./gradlew
-      - name: Validate SR-6F-H execution package syntax
+      - name: Validate SR-6F-H/I operations package syntax and readiness contract
         run: |
           bash -n operations/search-ctr/sr6fh/execute_stage_one_shot.sh
           python3 -m py_compile \
             operations/search-ctr/sr6fh/validate_stage_endpoints.py \
-            operations/search-ctr/sr6fh/sanitize_stage_evidence.py
+            operations/search-ctr/sr6fh/sanitize_stage_evidence.py \
+            operations/search-ctr/sr6fi/verify_stage_readiness.py \
+            operations/search-ctr/sr6fi/render_sr6fh_binding.py \
+            operations/search-ctr/sr6fi/test_verify_stage_readiness.py
+          python3 operations/search-ctr/sr6fi/test_verify_stage_readiness.py
+          python3 operations/search-ctr/sr6fi/verify_stage_readiness.py \
+            --manifest operations/search-ctr/sr6fi/stage-readiness-manifest.env.example \
+            --mode template \
+            --output build/sr6fi/template-verification.json
       - name: Compile SR-6F-H operations-only entry point
         working-directory: jc-backend
         run: |
@@ -86,7 +95,7 @@ jobs:
             --init-script ../operations/search-ctr/sr6fh/stage-one-shot.init.gradle \
             compileSearchCtrStageOneShot \
             --no-build-cache --no-daemon
-      - name: Run SR-0 to SR-6F-H focused tests
+      - name: Run SR-0 to SR-6F-I focused tests
         working-directory: jc-backend
         env:
           JC_TEST_POSTGRES_IMAGE: postgres:15-alpine
@@ -101,6 +110,7 @@ jobs:
         with:
           name: sr-search-focused-test-evidence
           path: |
+            build/sr6fi/template-verification.json
             jc-backend/build/test-results/test
             jc-backend/build/reports/tests/test
           if-no-files-found: warn
