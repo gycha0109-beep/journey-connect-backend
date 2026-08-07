@@ -43,6 +43,8 @@ pending application count
 
 현재 `CrewDtos.CreateRequest`와 `CrewDtos.View`에는 tag field가 없다. 따라서 CR-0에서 crew tag를 존재한다고 추정하거나 title/description에서 자동 추출하지 않는다.
 
+Region은 기존 API 호환용 `regionCode`와 canonical DB lookup용 lowercase `regionSlug`를 구분한다. Crew recommendation candidate contract도 둘을 분리하며 하나를 다른 하나로 덮어쓰지 않는다.
+
 ## 보호 원칙
 
 1. 기존 Crew API response와 newest-first list 동작을 변경하지 않는다.
@@ -53,6 +55,7 @@ pending application count
 6. 태그 없는 기존 Crew를 `tagMatch=0`인 완전한 feature candidate로 취급하지 않는다.
 7. 사용자 profile source는 기존 P1/profile semantics를 read-only로 재사용할 수 있지만 Search 내부 service/repository에 직접 결합하지 않는다.
 8. 현재 Search/P0/P1/P2 run, exposure, metric, finality 의미를 Crew recommendation에 재사용하지 않는다.
+9. 기존 API `regionCode`와 canonical `regionSlug` 의미를 혼합하지 않는다.
 
 ## 미래 실행 흐름
 
@@ -106,6 +109,7 @@ Operations crew visibility port가 아직 연결되지 않은 상태는 `NOT_INT
 crewId
 ownerId
 regionCode
+regionSlug
 travelDate
 capacity
 activeMemberCount
@@ -117,6 +121,8 @@ tagSlugs
 viewerRelation
 visibilityState
 ```
+
+`regionCode`는 기존 Crew API와 동일한 호환 값을 보존한다. `regionSlug`는 canonical region lookup과 deterministic feature comparison에 사용한다.
 
 `capacityRemaining`은 `max(0, capacity - activeMemberCount)`로 계산한다.
 
@@ -267,6 +273,7 @@ CR-0 Contract Design
 
 - [x] current Crew list fallback 보호
 - [x] hard eligibility contract
+- [x] region code/slug separation
 - [x] tag coverage state 분리
 - [x] full-featured component weight 고정
 - [x] legacy tagless compatibility path 고정
