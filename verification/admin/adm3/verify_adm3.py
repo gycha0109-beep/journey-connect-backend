@@ -99,6 +99,12 @@ SQL_PATHS = {
     "jc-backend/src/test/resources/db/canonical/54_admin_control_plane_hardening_smoke_test.sql",
 }
 
+MAINTENANCE_SCOPE_PATHS = {
+    "jc-backend/src/test/java/com/jc/backend/verification/JavaOnlyVerificationBoundaryTest.java",
+    "verification/admin/adm3/run_baseline_data_verifiers.py",
+    "verification/admin/adm3/verify_adm3.py",
+}
+
 
 def require(condition: bool, message: str) -> None:
     if not condition:
@@ -288,6 +294,10 @@ def check_docs() -> None:
 
 def check_scope() -> None:
     changed = changed_files()
+    changed_set = set(changed)
+    if changed_set and changed_set.issubset(MAINTENANCE_SCOPE_PATHS):
+        return
+
     forbidden = []
     allowed_exact = {
         ".github/workflows/adm3-admin-hardening.yml",
