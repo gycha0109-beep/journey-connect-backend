@@ -72,6 +72,27 @@ public class Crew extends BaseTimeEntity {
         this.approvalRequired = approvalRequired;
     }
 
+    public void updateDetails(
+            Region region,
+            String title,
+            String description,
+            LocalDate travelDate,
+            int capacity) {
+        this.region = region;
+        this.title = title;
+        this.description = description;
+        this.travelDate = travelDate;
+        this.capacity = capacity;
+    }
+
+    public void closeRecruitment() {
+        recruiting = false;
+    }
+
+    public void reopenRecruitment() {
+        recruiting = true;
+    }
+
     public Long getId() {
         return id;
     }
