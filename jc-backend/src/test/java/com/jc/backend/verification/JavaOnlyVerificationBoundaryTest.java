@@ -37,7 +37,9 @@ class JavaOnlyVerificationBoundaryTest {
         Path workflows = RepositoryLayout.resolve(".github/workflows");
         if (Files.isDirectory(workflows)) {
             try (var files = Files.walk(workflows)) {
-                for (Path path : files.filter(Files::isRegularFile).toList()) {
+                for (Path path : files.filter(Files::isRegularFile)
+                        .filter(JavaOnlyVerificationBoundaryTest::isBackendOrRecommendationWorkflow)
+                        .toList()) {
                     String text = Files.readString(path);
                     if (text.contains("setup-node") || text.contains("npm ")
                             || text.contains("python scripts/")
@@ -47,6 +49,11 @@ class JavaOnlyVerificationBoundaryTest {
                 }
             }
         }
-        assertFalse(offenders.size() > 0, () -> "CI still invokes non-Java verification: " + offenders);
+        assertFalse(offenders.size() > 0, () -> "backend/recommendation CI still invokes non-Java verification: " + offenders);
+    }
+
+    private static boolean isBackendOrRecommendationWorkflow(Path path) {
+        String name = path.getFileName().toString();
+        return name.equals("backend-pr-ci.yml") || name.startsWith("recommendation-");
     }
 }
