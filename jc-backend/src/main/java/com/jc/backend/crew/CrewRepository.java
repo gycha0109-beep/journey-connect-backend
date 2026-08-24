@@ -22,13 +22,21 @@ public interface CrewRepository extends JpaRepository<Crew, Long> {
                     from Crew c
                     where c.recruiting = true
                       and (
-                          lower(c.title) like concat('%', :keyword, '%')
-                          or lower(c.description) like concat('%', :keyword, '%')
-                          or lower(c.owner.displayName) like concat('%', :keyword, '%')
-                          or lower(c.region.slug) like concat('%', :keyword, '%')
-                          or lower(c.region.nameLocal) like concat('%', :keyword, '%')
-                          or lower(c.region.nameKo) like concat('%', :keyword, '%')
-                          or lower(c.region.nameEn) like concat('%', :keyword, '%')
+                          cast(:region as string) is null
+                          or lower(c.region.slug) = cast(:region as string)
+                          or lower(c.region.nameLocal) = cast(:region as string)
+                          or lower(c.region.nameKo) = cast(:region as string)
+                          or lower(c.region.nameEn) = cast(:region as string)
+                      )
+                      and (
+                          cast(:keyword as string) is null
+                          or lower(c.title) like concat('%', cast(:keyword as string), '%')
+                          or lower(c.description) like concat('%', cast(:keyword as string), '%')
+                          or lower(c.owner.displayName) like concat('%', cast(:keyword as string), '%')
+                          or lower(c.region.slug) like concat('%', cast(:keyword as string), '%')
+                          or lower(c.region.nameLocal) like concat('%', cast(:keyword as string), '%')
+                          or lower(c.region.nameKo) like concat('%', cast(:keyword as string), '%')
+                          or lower(c.region.nameEn) like concat('%', cast(:keyword as string), '%')
                       )
                     order by c.createdAt desc, c.id desc
                     """,
@@ -37,92 +45,24 @@ public interface CrewRepository extends JpaRepository<Crew, Long> {
                     from Crew c
                     where c.recruiting = true
                       and (
-                          lower(c.title) like concat('%', :keyword, '%')
-                          or lower(c.description) like concat('%', :keyword, '%')
-                          or lower(c.owner.displayName) like concat('%', :keyword, '%')
-                          or lower(c.region.slug) like concat('%', :keyword, '%')
-                          or lower(c.region.nameLocal) like concat('%', :keyword, '%')
-                          or lower(c.region.nameKo) like concat('%', :keyword, '%')
-                          or lower(c.region.nameEn) like concat('%', :keyword, '%')
+                          cast(:region as string) is null
+                          or lower(c.region.slug) = cast(:region as string)
+                          or lower(c.region.nameLocal) = cast(:region as string)
+                          or lower(c.region.nameKo) = cast(:region as string)
+                          or lower(c.region.nameEn) = cast(:region as string)
+                      )
+                      and (
+                          cast(:keyword as string) is null
+                          or lower(c.title) like concat('%', cast(:keyword as string), '%')
+                          or lower(c.description) like concat('%', cast(:keyword as string), '%')
+                          or lower(c.owner.displayName) like concat('%', cast(:keyword as string), '%')
+                          or lower(c.region.slug) like concat('%', cast(:keyword as string), '%')
+                          or lower(c.region.nameLocal) like concat('%', cast(:keyword as string), '%')
+                          or lower(c.region.nameKo) like concat('%', cast(:keyword as string), '%')
+                          or lower(c.region.nameEn) like concat('%', cast(:keyword as string), '%')
                       )
                     """)
-    Page<Crew> searchRecruitingByKeyword(
-            @Param("keyword") String keyword,
-            Pageable pageable);
-
-    @EntityGraph(attributePaths = {"owner", "region"})
-    @Query(
-            value = """
-                    select c
-                    from Crew c
-                    where c.recruiting = true
-                      and (
-                          lower(c.region.slug) = :region
-                          or lower(c.region.nameLocal) = :region
-                          or lower(c.region.nameKo) = :region
-                          or lower(c.region.nameEn) = :region
-                      )
-                    order by c.createdAt desc, c.id desc
-                    """,
-            countQuery = """
-                    select count(c)
-                    from Crew c
-                    where c.recruiting = true
-                      and (
-                          lower(c.region.slug) = :region
-                          or lower(c.region.nameLocal) = :region
-                          or lower(c.region.nameKo) = :region
-                          or lower(c.region.nameEn) = :region
-                      )
-                    """)
-    Page<Crew> searchRecruitingByRegion(
-            @Param("region") String region,
-            Pageable pageable);
-
-    @EntityGraph(attributePaths = {"owner", "region"})
-    @Query(
-            value = """
-                    select c
-                    from Crew c
-                    where c.recruiting = true
-                      and (
-                          lower(c.region.slug) = :region
-                          or lower(c.region.nameLocal) = :region
-                          or lower(c.region.nameKo) = :region
-                          or lower(c.region.nameEn) = :region
-                      )
-                      and (
-                          lower(c.title) like concat('%', :keyword, '%')
-                          or lower(c.description) like concat('%', :keyword, '%')
-                          or lower(c.owner.displayName) like concat('%', :keyword, '%')
-                          or lower(c.region.slug) like concat('%', :keyword, '%')
-                          or lower(c.region.nameLocal) like concat('%', :keyword, '%')
-                          or lower(c.region.nameKo) like concat('%', :keyword, '%')
-                          or lower(c.region.nameEn) like concat('%', :keyword, '%')
-                      )
-                    order by c.createdAt desc, c.id desc
-                    """,
-            countQuery = """
-                    select count(c)
-                    from Crew c
-                    where c.recruiting = true
-                      and (
-                          lower(c.region.slug) = :region
-                          or lower(c.region.nameLocal) = :region
-                          or lower(c.region.nameKo) = :region
-                          or lower(c.region.nameEn) = :region
-                      )
-                      and (
-                          lower(c.title) like concat('%', :keyword, '%')
-                          or lower(c.description) like concat('%', :keyword, '%')
-                          or lower(c.owner.displayName) like concat('%', :keyword, '%')
-                          or lower(c.region.slug) like concat('%', :keyword, '%')
-                          or lower(c.region.nameLocal) like concat('%', :keyword, '%')
-                          or lower(c.region.nameKo) like concat('%', :keyword, '%')
-                          or lower(c.region.nameEn) like concat('%', :keyword, '%')
-                      )
-                    """)
-    Page<Crew> searchRecruitingByKeywordAndRegion(
+    Page<Crew> searchRecruiting(
             @Param("keyword") String keyword,
             @Param("region") String region,
             Pageable pageable);
