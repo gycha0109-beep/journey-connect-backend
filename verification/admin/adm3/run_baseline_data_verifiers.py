@@ -22,6 +22,12 @@ COMMANDS = (
     ("python", "verification/dp7/run_dp7_static_verification.py"),
     ("python", "verification/data-platform-closure/run_data_platform_closure_verification.py"),
 )
+HISTORICAL_DATA_CLOSURE = Path(
+    "verification/data-platform-closure/run_data_platform_closure_verification.py"
+)
+HISTORICAL_FETCH_BLOCK = '''subprocess.run(\n    ["git", "fetch", "origin", "main", "--depth=1"],\n    cwd=ROOT,\n    check=False,\n    stdout=subprocess.DEVNULL,\n    stderr=subprocess.DEVNULL,\n)\n'''
+HISTORICAL_NAMESPACE_ANCHOR = "namespace = {\n"
+HISTORICAL_DIFF_PATCH = '''fetch_block = \'\'\'subprocess.run(\\n    ["git", "fetch", "origin", "main", "--depth=1"],\\n    cwd=ROOT,\\n    check=False,\\n    stdout=subprocess.DEVNULL,\\n    stderr=subprocess.DEVNULL,\\n)\\n\'\'\'\nif fetch_block not in source or '\"origin/main...HEAD\"' not in source:\n    raise SystemExit("FAIL: authoritative Data closure historical diff anchor missing")\nsource = source.replace(fetch_block, "", 1)\nsource = source.replace('\"origin/main...HEAD\"', 'f\"{MAIN}...HEAD\"', 1)\n\n'''
 
 
 def contract() -> dict:
@@ -45,6 +51,21 @@ def active() -> bool:
         return False
 
 
+def patch_historical_data_closure(worktree: Path) -> None:
+    wrapper = worktree / HISTORICAL_DATA_CLOSURE
+    source = wrapper.read_text(encoding="utf-8")
+    if HISTORICAL_NAMESPACE_ANCHOR not in source:
+        raise RuntimeError("historical Data closure namespace anchor missing")
+    if HISTORICAL_FETCH_BLOCK in source:
+        raise RuntimeError("historical Data closure wrapper unexpectedly owns fetch block")
+    patched = source.replace(
+        HISTORICAL_NAMESPACE_ANCHOR,
+        HISTORICAL_DIFF_PATCH + HISTORICAL_NAMESPACE_ANCHOR,
+        1,
+    )
+    wrapper.write_text(patched, encoding="utf-8")
+
+
 def run() -> None:
     data = contract()
     baseline = data["work_start_sha"]
@@ -56,6 +77,7 @@ def run() -> None:
             cwd=ROOT,
             check=True,
         )
+        patch_historical_data_closure(worktree)
         for command in COMMANDS:
             subprocess.run(command, cwd=worktree, check=True)
     finally:
