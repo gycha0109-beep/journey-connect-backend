@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import org.hibernate.annotations.DynamicUpdate;
 
 /**
  * 크루의 기본 정보와 모집 상태를 관리하는 엔티티입니다.
@@ -21,6 +22,7 @@ import java.time.LocalDate;
  * <p>region_id는 실제 식별자로 사용하고, region_name은 기존 응답 호환과 표시용으로 함께 유지합니다.
  */
 @Entity
+@DynamicUpdate
 @Table(name = "crews", indexes = @Index(name = "crews_region_feed_idx", columnList = "region_id, recruiting, travel_date"))
 public class Crew extends BaseTimeEntity {
 
