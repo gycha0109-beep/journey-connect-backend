@@ -32,6 +32,28 @@ public interface CrewMemberRepository extends JpaRepository<CrewMember, Long> {
             @Param("crewIds") List<Long> crewIds,
             @Param("statuses") Collection<CrewMemberStatus> statuses);
 
+    @Query("""
+            select m.crew.id as crewId, m.status as status
+            from CrewMember m
+            where m.crew.id in :crewIds
+              and m.user.id = :userId
+            """)
+    List<CrewViewerMembershipProjection> findViewerMemberships(
+            @Param("crewIds") List<Long> crewIds,
+            @Param("userId") Long userId);
+
+    @EntityGraph(attributePaths = {"crew", "crew.owner", "crew.region"})
+    Page<CrewMember> findByUserIdAndStatusInOrderByUpdatedAtDescIdDesc(
+            Long userId,
+            Collection<CrewMemberStatus> statuses,
+            Pageable pageable);
+
+    @EntityGraph(attributePaths = {"user"})
+    Page<CrewMember> findByCrewIdAndStatusInOrderByCreatedAtAscIdAsc(
+            Long crewId,
+            Collection<CrewMemberStatus> statuses,
+            Pageable pageable);
+
     @EntityGraph(attributePaths = {"crew", "user", "reviewedBy"})
     Page<CrewMember> findByCrewIdAndStatusOrderByCreatedAtAsc(
             Long crewId,
