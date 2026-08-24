@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
-"""Execute the authoritative Data closure verifier with compatibility patches.
+"""Execute the authoritative Data closure verifier with the SC-6 workflow allowed.
 
 The closure verification logic is loaded byte-for-byte from authoritative
-pre-SC-6 main. Compatibility patches are limited to:
-- allowing the governance-only SC-6 workflow path in the successor allowlist;
-- replaying historical diff checks against the verifier's own immutable MAIN
-  authority instead of shallow-fetching the repository's current main branch.
-
-Data evidence and protected-state semantics remain unchanged.
+pre-SC-6 main. Only the governance-only SC-6 workflow path is inserted into
+its successor allowlist; Data evidence and protected-state semantics remain unchanged.
 """
 from __future__ import annotations
 
@@ -26,21 +22,15 @@ source = subprocess.run(
     stdout=subprocess.PIPE,
 ).stdout
 
-workflow_anchor = '        ".github/workflows/rca2-controlled-runtime-dark-read-ci.yml",\n'
-if workflow_anchor not in source:
+anchor = '        ".github/workflows/rca2-controlled-runtime-dark-read-ci.yml",\n'
+if anchor not in source:
     raise SystemExit("FAIL: authoritative Data closure verifier compatibility anchor missing")
 source = source.replace(
-    workflow_anchor,
-    workflow_anchor
+    anchor,
+    anchor
     + '        ".github/workflows/sc6-rca2-nonzero-nonprod-stage1-governance-ci.yml",\n',
     1,
 )
-
-fetch_block = '''subprocess.run(\n    ["git", "fetch", "origin", "main", "--depth=1"],\n    cwd=ROOT,\n    check=False,\n    stdout=subprocess.DEVNULL,\n    stderr=subprocess.DEVNULL,\n)\n'''
-if fetch_block not in source or '"origin/main...HEAD"' not in source:
-    raise SystemExit("FAIL: authoritative Data closure historical diff anchor missing")
-source = source.replace(fetch_block, "", 1)
-source = source.replace('"origin/main...HEAD"', 'f"{MAIN}...HEAD"', 1)
 
 namespace = {
     "__name__": "__main__",
