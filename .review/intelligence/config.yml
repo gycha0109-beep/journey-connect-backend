@@ -1,0 +1,31 @@
+schema_version: "1.0"
+graph:
+  max_file_size_bytes: 1000000
+components:
+  - id: backend
+    name: Journey Connect Backend
+    paths: ["jc-backend/**"]
+  - id: data-contracts
+    name: Data Contracts
+    paths: ["jc-data-contracts/**", "database/**"]
+  - id: intelligence
+    name: Intelligence Contracts
+    paths: ["jc-intelligence-contracts/**"]
+  - id: recommendation
+    name: Recommendation Core
+    paths: ["jc-recommendation-core/**"]
+  - id: search-platform
+    name: Search Platform
+    paths: ["jc-search-*/**"]
+  - id: verification
+    name: Verification and Tools
+    paths: ["verification/**", "tools/**"]
+  - id: documentation
+    name: Documentation
+    paths: ["docs/**", "*.md"]
+  - id: pie-config
+    name: PIE Project Configuration
+    paths: [".review/**"]
+  - id: github-workflows
+    name: GitHub Workflows
+    paths: [".github/workflows/**"]
