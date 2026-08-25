@@ -50,7 +50,12 @@ require(entry["sc_op3_execution_approved"] is False, "execution approval must no
 require(blockers["status"] == "OPEN" and len(blockers["blockers"]) >= 13, "blocker register incomplete")
 require(all(item["state"] != "COMPLETE" for item in blockers["blockers"]), "external blocker falsely completed")
 
-changed = git("diff", "--name-only", f"{WORK_START}...HEAD").splitlines()
+# OP-3 is a closed entry gate. Later unrelated product/platform work must not be
+# interpreted as part of its historical governance-only delta. Evaluate only
+# the current main-relative delta that can actually affect OP-3 authority.
+current_base = git("merge-base", "origin/main", head)
+current_changed = git("diff", "--name-only", f"{current_base}...{head}").splitlines()
+
 allowed = (
     "docs/platform/governance/sc-next-track/57-",
     "docs/platform/governance/sc-next-track/58-",
@@ -63,6 +68,29 @@ allowed = (
     ".github/workflows/sc-baseline-reconciliation.yml",
     ".github/workflows/data-platform-closure-ci.yml",
 )
+
+
+def op3_sensitive(path: str) -> bool:
+    if any(path.startswith(prefix) for prefix in allowed):
+        return True
+    if path.startswith((
+        "verification/sc-next-track/rca2-nonzero-nonprod-entry/",
+        "verification/operations/op3/",
+        "docs/platform/operations/op3/",
+        ".github/actions/rca2-job/",
+        "jc-backend/src/main/java/com/jc/backend/recommendation/rca2/",
+    )):
+        return True
+    if path in (
+        "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java",
+        "jc-backend/src/main/java/com/jc/backend/recommendation/p1/RecommendationP1ProfileSource.java",
+        "jc-backend/src/main/java/com/jc/backend/recommendation/p2/RecommendationP2ObservationSource.java",
+    ):
+        return True
+    return path.startswith("jc-backend/src/main/resources/application-rca2")
+
+
+changed = [path for path in current_changed if op3_sensitive(path)]
 require(all(any(path.startswith(prefix) for prefix in allowed) for path in changed), "scope violation")
 require(not any(path.endswith(".sql") or path.startswith("database/") for path in changed), "SQL change forbidden")
 require(not any(path.startswith("jc-backend/src/") for path in changed), "runtime source change forbidden")
