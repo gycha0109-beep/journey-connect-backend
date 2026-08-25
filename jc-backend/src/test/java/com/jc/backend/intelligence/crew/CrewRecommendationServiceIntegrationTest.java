@@ -7,6 +7,9 @@ import com.jc.backend.crew.CrewDtos;
 import com.jc.backend.crew.CrewService;
 import com.jc.backend.crew.CrewTagDtos;
 import com.jc.backend.crew.CrewTagService;
+import com.jc.backend.database.DatabaseRequestIdentity;
+import com.jc.backend.recommendation.api.RecommendationPreferenceDtos;
+import com.jc.backend.recommendation.application.RecommendationPreferenceService;
 import com.jc.backend.user.UserAccount;
 import com.jc.backend.user.UserRepository;
 import java.time.Instant;
@@ -15,18 +18,16 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
 
 @CanonicalPostgresTest
-@Transactional
 class CrewRecommendationServiceIntegrationTest {
 
     @Autowired private UserRepository users;
     @Autowired private CrewService crewService;
     @Autowired private CrewTagService crewTags;
     @Autowired private CrewRecommendationService recommendations;
-    @Autowired private JdbcTemplate jdbc;
+    @Autowired private DatabaseRequestIdentity requestIdentity;
+    @Autowired private RecommendationPreferenceService preferenceService;
 
     @Test
     void explicitP1SignalsRankMatchingCrewAheadWithoutChangingLegacyCrewList() {
@@ -55,8 +56,11 @@ class CrewRecommendationServiceIntegrationTest {
         crewTags.replace(seoulOwner.getId(), seoul.id(), new CrewTagDtos.ReplaceRequest(List.of("food")));
         crewTags.replace(busanOwner.getId(), busan.id(), new CrewTagDtos.ReplaceRequest(List.of("nature")));
 
-        preference(viewer.getId(), "region:seoul", "prefer", 1.0d);
-        preference(viewer.getId(), "theme:food", "prefer", 1.0d);
+        try (DatabaseRequestIdentity.Scope ignored = requestIdentity.open(viewer.getId())) {
+            preferenceService.replace(viewer.getId(), List.of(
+                    preference("region:seoul", RecommendationPreferenceDtos.PreferenceKind.PREFER, 1.0d),
+                    preference("theme:food", RecommendationPreferenceDtos.PreferenceKind.PREFER, 1.0d)));
+        }
 
         Instant referenceTime = Instant.now().plusSeconds(1);
         CrewRecommendationService.RecommendationResult result =
@@ -87,22 +91,11 @@ class CrewRecommendationServiceIntegrationTest {
                 .contains(seoul.id(), busan.id());
     }
 
-    private void preference(long userId, String featureId, String kind, double strength) {
-        jdbc.update(
-                """
-                insert into public.recommendation_user_preference
-                    (user_id, feature_id, preference_kind, strength, active)
-                values (?, ?, ?, ?, true)
-                on conflict (user_id, feature_id) do update
-                set preference_kind = excluded.preference_kind,
-                    strength = excluded.strength,
-                    active = true,
-                    updated_at = current_timestamp
-                """,
-                userId,
-                featureId,
-                kind,
-                strength);
+    private static RecommendationPreferenceDtos.PreferenceRequest preference(
+            String featureId,
+            RecommendationPreferenceDtos.PreferenceKind kind,
+            double strength) {
+        return new RecommendationPreferenceDtos.PreferenceRequest(featureId, kind, strength);
     }
 
     private UserAccount user(String emailPrefix, String nickname) {
