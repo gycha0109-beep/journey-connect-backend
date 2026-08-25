@@ -78,8 +78,8 @@ class CrewRecommendationApiServiceTest {
         CrewRecommendationService.RecommendationResult ranking =
                 mock(CrewRecommendationService.RecommendationResult.class);
         CrewRecommendationRanker.RankedCrew ranked = mock(CrewRecommendationRanker.RankedCrew.class);
-        CrewRecommendationRanker.CandidateFacts facts =
-                mock(CrewRecommendationRanker.CandidateFacts.class);
+        CrewRecommendationContract.CandidateFacts facts =
+                mock(CrewRecommendationContract.CandidateFacts.class);
         CrewRecommendationRanker.ScoreBreakdown breakdown =
                 mock(CrewRecommendationRanker.ScoreBreakdown.class);
 
