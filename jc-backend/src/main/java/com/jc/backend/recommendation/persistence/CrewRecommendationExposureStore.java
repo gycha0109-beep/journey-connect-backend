@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 /** Persists the Crew-specific server-delivery exposure authority. */
 @Component
-public final class CrewRecommendationExposureStore {
+public class CrewRecommendationExposureStore {
 
     private static final String INSERT_EVENT = """
             insert into public.crew_recommendation_exposure_event (
