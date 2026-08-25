@@ -56,10 +56,7 @@ public class RecommendationP1ProfileSource {
                   from public.recommendation_behavior_event b
                   left join public.posts p
                     on p.id = b.source_entity_id and b.entity_type = 'post'
-                  left join public.crews c
-                    on c.id = b.source_entity_id and b.entity_type = 'crew'
-                  left join public.regions r
-                    on r.id = coalesce(p.main_region_id, c.region_id)
+                  left join public.regions r on r.id = p.main_region_id
                   left join public.post_tags pt on pt.post_id = p.id
                   left join public.tags t on t.id = pt.tag_id and t.is_active = true
                   where b.user_id = ?
