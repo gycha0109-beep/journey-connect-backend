@@ -1,0 +1,249 @@
+schema_version: "1.0"
+contract_version: PIE_OPERATIONAL_POLICY_V1
+project_id: journey-connect-backend
+policy_authority: PR_BASE_REVISION
+
+operational_classes:
+  backend-runtime:
+    paths:
+      - jc-backend/**
+    trust_task_class: routine_code
+    required_scenarios:
+      - request-contract
+      - transactionality
+      - retry-idempotency
+      - error-mapping
+    required_evidence:
+      - repository-ci
+    readiness_policy:
+      policy_id: journey-backend-runtime
+      policy_version: 1.0.0
+      min_ledger_runs: 1
+      min_ledger_decisions: 1
+      min_defects: 1
+      min_closed_defects: 0
+      min_reground_observations: 1
+      min_reground_coverage: 1.0
+      min_reground_precision: 1.0
+      min_reground_recall: 1.0
+      max_reground_false_positive_rate: 0.0
+      require_active_policy: true
+      require_pass_evaluation: true
+      require_holdout: true
+      require_repeatability: true
+      require_zero_protected_negative_regressions: true
+
+  authorization-boundary:
+    paths:
+      - jc-backend/**/auth/**
+      - jc-backend/**/security/**
+      - jc-backend/**/*Security*
+    trust_task_class: authorization
+    required_scenarios:
+      - unauthorized-denial
+      - identity-boundary
+      - cross-user-isolation
+      - authorization-regression
+    required_evidence:
+      - repository-ci
+      - authorization-verification
+    readiness_policy:
+      policy_id: journey-authorization-boundary
+      policy_version: 1.0.0
+      min_ledger_runs: 1
+      min_ledger_decisions: 1
+      min_defects: 1
+      min_closed_defects: 0
+      min_reground_observations: 1
+      min_reground_coverage: 1.0
+      min_reground_precision: 1.0
+      min_reground_recall: 1.0
+      max_reground_false_positive_rate: 0.0
+      require_active_policy: true
+      require_pass_evaluation: true
+      require_holdout: true
+      require_repeatability: true
+      require_zero_protected_negative_regressions: true
+
+  data-contract-runtime:
+    paths:
+      - jc-data-contracts/**
+    trust_task_class: verifier
+    required_scenarios:
+      - schema-compatibility
+      - contract-rejection
+      - deterministic-validation
+      - backward-compatibility
+    required_evidence:
+      - data-contract-ci
+    readiness_policy:
+      policy_id: journey-data-contract-runtime
+      policy_version: 1.0.0
+      min_ledger_runs: 1
+      min_ledger_decisions: 1
+      min_defects: 1
+      min_closed_defects: 0
+      min_reground_observations: 1
+      min_reground_coverage: 1.0
+      min_reground_precision: 1.0
+      min_reground_recall: 1.0
+      max_reground_false_positive_rate: 0.0
+      require_active_policy: true
+      require_pass_evaluation: true
+      require_holdout: true
+      require_repeatability: true
+      require_zero_protected_negative_regressions: true
+
+  intelligence-contract-runtime:
+    paths:
+      - jc-intelligence-contracts/**
+    trust_task_class: verifier
+    required_scenarios:
+      - contract-compatibility
+      - provenance-preservation
+      - deterministic-validation
+      - negative-control
+    required_evidence:
+      - repository-ci
+      - verifier-evidence
+    readiness_policy:
+      policy_id: journey-intelligence-contract-runtime
+      policy_version: 1.0.0
+      min_ledger_runs: 1
+      min_ledger_decisions: 1
+      min_defects: 1
+      min_closed_defects: 0
+      min_reground_observations: 1
+      min_reground_coverage: 1.0
+      min_reground_precision: 1.0
+      min_reground_recall: 1.0
+      max_reground_false_positive_rate: 0.0
+      require_active_policy: true
+      require_pass_evaluation: true
+      require_holdout: true
+      require_repeatability: true
+      require_zero_protected_negative_regressions: true
+
+  recommendation-runtime:
+    paths:
+      - jc-recommendation-core/**
+    trust_task_class: routine_code
+    required_scenarios:
+      - recommendation-determinism
+      - allocation-boundary
+      - snapshot-replay
+      - recommendation-regression
+    required_evidence:
+      - recommendation-ci
+    readiness_policy:
+      policy_id: journey-recommendation-runtime
+      policy_version: 1.0.0
+      min_ledger_runs: 1
+      min_ledger_decisions: 1
+      min_defects: 1
+      min_closed_defects: 0
+      min_reground_observations: 1
+      min_reground_coverage: 1.0
+      min_reground_precision: 1.0
+      min_reground_recall: 1.0
+      max_reground_false_positive_rate: 0.0
+      require_active_policy: true
+      require_pass_evaluation: true
+      require_holdout: true
+      require_repeatability: true
+      require_zero_protected_negative_regressions: true
+
+  search-runtime:
+    paths:
+      - jc-search-compatibility/**
+      - jc-search-contracts/**
+      - jc-search-integration/**
+      - jc-search-production-controls/**
+      - jc-search-readiness/**
+      - jc-search-runtime/**
+      - jc-search-shadow-wiring/**
+    trust_task_class: routine_code
+    required_scenarios:
+      - query-contract
+      - compatibility
+      - shadow-parity
+      - production-control-failclosed
+    required_evidence:
+      - search-ci
+    readiness_policy:
+      policy_id: journey-search-runtime
+      policy_version: 1.0.0
+      min_ledger_runs: 1
+      min_ledger_decisions: 1
+      min_defects: 1
+      min_closed_defects: 0
+      min_reground_observations: 1
+      min_reground_coverage: 1.0
+      min_reground_precision: 1.0
+      min_reground_recall: 1.0
+      max_reground_false_positive_rate: 0.0
+      require_active_policy: true
+      require_pass_evaluation: true
+      require_holdout: true
+      require_repeatability: true
+      require_zero_protected_negative_regressions: true
+
+  verification-runtime:
+    paths:
+      - verification/**
+      - tools/**
+    trust_task_class: verifier
+    required_scenarios:
+      - deterministic-replay
+      - tamper-rejection
+      - negative-control
+      - evidence-integrity
+    required_evidence:
+      - verifier-evidence
+    readiness_policy:
+      policy_id: journey-verification-runtime
+      policy_version: 1.0.0
+      min_ledger_runs: 1
+      min_ledger_decisions: 1
+      min_defects: 1
+      min_closed_defects: 0
+      min_reground_observations: 1
+      min_reground_coverage: 1.0
+      min_reground_precision: 1.0
+      min_reground_recall: 1.0
+      max_reground_false_positive_rate: 0.0
+      require_active_policy: true
+      require_pass_evaluation: true
+      require_holdout: true
+      require_repeatability: true
+      require_zero_protected_negative_regressions: true
+
+  database-contract:
+    paths:
+      - database/**
+    trust_task_class: database_migration
+    required_scenarios:
+      - migration-forward
+      - migration-rollback
+      - data-integrity
+      - transactionality
+    required_evidence:
+      - database-ci
+      - migration-verification
+    readiness_policy:
+      policy_id: journey-database-contract
+      policy_version: 1.0.0
+      min_ledger_runs: 1
+      min_ledger_decisions: 1
+      min_defects: 1
+      min_closed_defects: 0
+      min_reground_observations: 1
+      min_reground_coverage: 1.0
+      min_reground_precision: 1.0
+      min_reground_recall: 1.0
+      max_reground_false_positive_rate: 0.0
+      require_active_policy: true
+      require_pass_evaluation: true
+      require_holdout: true
+      require_repeatability: true
+      require_zero_protected_negative_regressions: true
