@@ -35,8 +35,8 @@ TARGETS = {
         "indent": "                ",
     },
     "rca1b": {
-        "path": "verification/rca1b/run_rca1b_verification.py",
-        "blob": "184508bca63483a1811086d3720e72f02f8e70c0",
+        "path": "verification/rca1b/run_rca1b_verification_closed_baseline.py",
+        "blob": "0d3cff8b73ad73339cc35232f991bfd6fa25b4d2",
         "anchor": '            ".github/actions/rca2-job/",\n',
         "indent": "            ",
     },
@@ -106,6 +106,84 @@ def adapt_rca1(source: str) -> str:
     return source
 
 
+def adapt_rca1b(source: str) -> str:
+    sql_anchor = '        need(set(scripts) == set(range(1, 55)), "SQL 01..54 inventory")\n'
+    if source.count(sql_anchor) != 1:
+        raise SystemExit("FAIL: RCA-1B canonical SQL compatibility anchor mismatch")
+    source = source.replace(
+        sql_anchor,
+        '        need(set(range(1, 55)) <= set(scripts), "closed SQL 01..54 baseline missing")\n'
+        '        need(set(scripts) == set(range(1, max(scripts) + 1)), "canonical SQL successor sequence gap")\n',
+        1,
+    )
+
+    diff_anchor = '        changed = sh("git", "diff", "--name-only", f"{WORK_START}..{head}").splitlines()\n'
+    if source.count(diff_anchor) != 1:
+        raise SystemExit("FAIL: RCA-1B changed-file compatibility anchor mismatch")
+    source = source.replace(
+        diff_anchor,
+        '''        current_base = sh("git", "merge-base", "origin/main", head)
+        current_changed = sh("git", "diff", "--name-only", f"{current_base}...{head}").splitlines()
+
+        def canonical_sql_number(path: str) -> int | None:
+            for prefix in (
+                "database/journey-connect-db-v2.7/",
+                "jc-backend/src/test/resources/db/canonical/",
+            ):
+                if path.startswith(prefix):
+                    name = path[len(prefix):]
+                    if len(name) >= 4 and name[:2].isdigit() and name[2] == "_" and name.endswith(".sql"):
+                        return int(name[:2])
+            return None
+
+        relevant_prefixes = (
+            ".github/actions/rca2-job/",
+            ".github/workflows/rca1b-nonproduction-readonly-reconciliation-ci.yml",
+            ".github/workflows/rca2-controlled-runtime-dark-read-ci.yml",
+            ".github/workflows/sc-baseline-reconciliation.yml",
+            "docs/platform/governance/",
+            "docs/platform/recommendation/RCA-1B-",
+            "docs/platform/recommendation/rca2/",
+            "jc-backend/build.gradle.kts",
+            "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java",
+            "jc-backend/src/main/java/com/jc/backend/recommendation/rca2/",
+            "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml",
+            "jc-backend/src/test/java/com/jc/backend/recommendation/dataadoption/reconciliation/database/",
+            "jc-backend/src/test/java/com/jc/backend/recommendation/rca2/",
+            "jc-backend/src/test/java/com/jc/backend/verification/IP9ControlledBackendHookStaticTest.java",
+            "jc-backend/src/test/resources/recommendation-data-adoption/rca1b/",
+            "jc-search-readiness/src/test/java/com/jc/intelligence/readiness/search/SearchShadowReadinessContractTest.java",
+            "verification/rca0/run_rca0_verification.py",
+            "verification/rca1/run_rca1_verification.py",
+            "verification/rca1b/",
+            "verification/rca2/",
+            "verification/data-platform-closure/run_data_platform_closure_verification.py",
+            "verification/dp5/run_dp5_static_verification.py",
+            "verification/dp6/run_dp6_allocation_verification.py",
+            "verification/dp6/run_dp6_static_verification.py",
+            "verification/dp7/run_dp7_allocation_verification.py",
+            "verification/dp7/run_dp7_static_verification.py",
+            "verification/sc-dp1-baseline-reconciliation/",
+            "verification/sc-next-track/",
+            "jc-recommendation-core/",
+            "jc-backend/src/main/java/com/jc/backend/recommendation/p1/RecommendationP1ProfileSource.java",
+            "jc-backend/src/main/java/com/jc/backend/recommendation/p2/RecommendationP2ObservationSource.java",
+        )
+        changed = []
+        for item in current_changed:
+            sql_number = canonical_sql_number(item)
+            if sql_number is not None:
+                if sql_number <= 54:
+                    changed.append(item)
+                continue
+            if item.startswith(relevant_prefixes):
+                changed.append(item)
+''',
+        1,
+    )
+    return source
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("target", choices=sorted(TARGETS))
@@ -128,6 +206,8 @@ def main() -> int:
 
     if args.target == "rca1":
         source = adapt_rca1(source)
+    elif args.target == "rca1b":
+        source = adapt_rca1b(source)
 
     current_head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     subprocess.run(
