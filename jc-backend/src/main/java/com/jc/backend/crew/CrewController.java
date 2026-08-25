@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,13 +31,22 @@ public class CrewController {
 
     @GetMapping
     ApiResponse<PageResponse<CrewDtos.View>> list(
+            @AuthenticationPrincipal Jwt token,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String region,
             @PageableDefault(size = 20) Pageable pageable) {
-        return ApiResponse.ok(crewService.list(pageable));
+        return ApiResponse.ok(crewService.list(
+                userIdOrNull(token),
+                keyword,
+                region,
+                pageable));
     }
 
     @GetMapping("/{crewId}")
-    ApiResponse<CrewDtos.View> detail(@PathVariable Long crewId) {
-        return ApiResponse.ok(crewService.detail(crewId));
+    ApiResponse<CrewDtos.View> detail(
+            @AuthenticationPrincipal Jwt token,
+            @PathVariable Long crewId) {
+        return ApiResponse.ok(crewService.detail(userIdOrNull(token), crewId));
     }
 
     @PostMapping
@@ -45,6 +55,28 @@ public class CrewController {
             @AuthenticationPrincipal Jwt token,
             @Valid @RequestBody CrewDtos.CreateRequest request) {
         return ApiResponse.created(crewService.create(userId(token), request));
+    }
+
+    @PatchMapping("/{crewId}")
+    ApiResponse<CrewDtos.View> update(
+            @AuthenticationPrincipal Jwt token,
+            @PathVariable Long crewId,
+            @Valid @RequestBody CrewDtos.UpdateRequest request) {
+        return ApiResponse.ok(crewService.update(userId(token), crewId, request));
+    }
+
+    @PostMapping("/{crewId}/close")
+    ApiResponse<CrewDtos.View> closeRecruitment(
+            @AuthenticationPrincipal Jwt token,
+            @PathVariable Long crewId) {
+        return ApiResponse.ok(crewService.closeRecruitment(userId(token), crewId));
+    }
+
+    @PostMapping("/{crewId}/reopen")
+    ApiResponse<CrewDtos.View> reopenRecruitment(
+            @AuthenticationPrincipal Jwt token,
+            @PathVariable Long crewId) {
+        return ApiResponse.ok(crewService.reopenRecruitment(userId(token), crewId));
     }
 
     @PostMapping("/{crewId}/join")
@@ -59,6 +91,13 @@ public class CrewController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void cancelJoin(@AuthenticationPrincipal Jwt token, @PathVariable Long crewId) {
         crewService.cancelJoin(userId(token), crewId);
+    }
+
+    @GetMapping("/{crewId}/members")
+    ApiResponse<PageResponse<CrewDtos.MemberView>> members(
+            @PathVariable Long crewId,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ApiResponse.ok(crewService.members(crewId, pageable));
     }
 
     @GetMapping("/{crewId}/applications")
@@ -84,5 +123,9 @@ public class CrewController {
 
     private long userId(Jwt token) {
         return Long.parseLong(token.getSubject());
+    }
+
+    private Long userIdOrNull(Jwt token) {
+        return token == null ? null : userId(token);
     }
 }
