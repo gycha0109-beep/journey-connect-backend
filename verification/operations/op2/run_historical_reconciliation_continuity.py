@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Run protected RCA-1/RCA-1B verifiers with authorised OP-2 successor paths.
+"""Run protected RCA-1/RCA-1B verifiers with authorised successor compatibility.
 
-Historical verifier source is executed unchanged except for a narrow extension
-of the cross-phase diff allowlist. Historical documents, fixtures, expected
-classifications, SQL protections and runtime regression checks remain intact.
+Historical verifier sources are blob-pinned and executed unchanged except for
+narrow in-memory transport adaptations. Historical documents, fixtures,
+expected classifications, protected authority, runtime regressions and closed
+SQL baselines remain intact while later governed repository history is not
+misclassified as part of the original RCA phase diff.
 """
 from __future__ import annotations
 
@@ -41,6 +43,38 @@ TARGETS = {
 }
 
 
+def adapt_rca1(source: str) -> str:
+    changed_anchor = '            changed=sh(["git","diff","--name-only",f"{START}..{head}"]).splitlines()\n'
+    if source.count(changed_anchor) != 2:
+        raise SystemExit("FAIL: RCA-1 current-delta compatibility anchor mismatch")
+    source = source.replace(
+        changed_anchor,
+        '            merge_base=sh(["git","merge-base","origin/main",head]).strip()\n'
+        '            changed=sh(["git","diff","--name-only",f"{merge_base}..{head}"]).splitlines()\n',
+    )
+
+    sql_anchor = '            nums=[int(m.group(1)) for path in (ROOT/"database/journey-connect-db-v2.7").glob("*.sql") if (m:=re.match(r"(\\d+)_",path.name))]\n            need(set(nums)==set(range(1,53)) and len(nums)==52,"SQL inventory")\n            return f"authorized RCA1B/SC/RCA2 phase diff {len(changed)} files; source/core/SQL/production config protected"\n'
+    if source.count(sql_anchor) != 1:
+        raise SystemExit("FAIL: RCA-1 SQL inventory compatibility anchor mismatch")
+    source = source.replace(
+        sql_anchor,
+        '            nums=[int(m.group(1)) for path in (ROOT/"database/journey-connect-db-v2.7").glob("*.sql") if (m:=re.match(r"(\\d+)_",path.name))]\n'
+        '            need(nums and set(range(1,53))<=set(nums) and set(nums)==set(range(1,max(nums)+1)) and len(nums)==max(nums),"SQL inventory")\n'
+        '            return f"authorized current successor diff {len(changed)} files; RCA1 source/core/SQL 01..52/production config protected; canonical SQL contiguous through {max(nums):02d}"\n',
+        1,
+    )
+
+    regression_anchor = '                command=[sys.executable,str(ROOT/"verification/rca0/run_rca0_verification.py"),"--execute-regressions"]\n'
+    if source.count(regression_anchor) != 1:
+        raise SystemExit("FAIL: RCA-1 RCA-0 regression compatibility anchor mismatch")
+    source = source.replace(
+        regression_anchor,
+        '                command=[sys.executable,str(ROOT/"verification/operations/op2/run_rca0_successor_continuity.py"),"--execute-regressions"]\n',
+        1,
+    )
+    return source
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("target", choices=sorted(TARGETS))
@@ -60,6 +94,9 @@ def main() -> int:
         raise SystemExit(f"FAIL: historical verifier compatibility anchor mismatch: {target['path']}")
     addition = "".join(f'{target["indent"]}"{path}",\n' for path in APPROVED_LATER_PHASE_PATHS)
     source = source.replace(anchor, anchor + addition, 1)
+
+    if args.target == "rca1":
+        source = adapt_rca1(source)
 
     current_head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     subprocess.run(
