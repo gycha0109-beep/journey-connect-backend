@@ -46,8 +46,14 @@ source = source.replace(
                     return int(name[:2])
         return None
 
+    successor_compatibility_maintenance_paths = {
+        "verification/rca2/run_rca2_verification.py",
+        "verification/rca2/run_rca2_verification_closed_baseline.py",
+    }
     changed = []
     for path in current_changed:
+        if path in successor_compatibility_maintenance_paths:
+            continue
         sql_number = canonical_sql_number(path)
         if sql_number is not None and sql_number >= 55:
             continue
