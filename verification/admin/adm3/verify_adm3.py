@@ -30,6 +30,8 @@ ADM3_OWNED_SCOPE_PATHS = {
     *baseline.SQL_PATHS,
 }
 
+CLOSED_CHECK_SCOPE = baseline.check_scope
+
 
 def touches_adm3_owned_scope(path: str) -> bool:
     return (
@@ -162,7 +164,7 @@ def check_scope() -> None:
     if changed_set and not any(touches_adm3_owned_scope(path) for path in changed_set):
         return
 
-    baseline.check_scope()
+    CLOSED_CHECK_SCOPE()
 
 
 baseline.check_migration = check_migration
