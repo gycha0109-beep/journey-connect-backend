@@ -20,6 +20,8 @@ SUCCESSOR_COMPATIBILITY_SCOPE_PATHS = MAINTENANCE_SCOPE_PATHS | {
     "verification/admin/adm1/verify_adm1.py",
     "verification/admin/adm1/verify_adm1_closed_baseline.py",
     "verification/operations/op2/run_op1_successor_continuity.py",
+    "verification/operations/op2/run_op2_verification.py",
+    "verification/operations/op2/run_op2_verification_closed_baseline.py",
     "verification/rca1b/run_rca1b_verification.py",
     "verification/rca1b/run_rca1b_verification_closed_baseline.py",
     "jc-backend/src/test/java/com/jc/backend/recommendation/dataadoption/reconciliation/database/Rca1bDatabaseReconciliationTest.java",
