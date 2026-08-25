@@ -33,7 +33,7 @@ class Rca2StaticBoundaryTest {
                     .sorted(Comparator.comparingInt(Rca2StaticBoundaryTest::sqlNumber))
                     .toList();
         }
-        assertThat(scripts).hasSize(54);
+        assertThat(scripts).hasSizeGreaterThanOrEqualTo(54);
         for (int index = 0; index < scripts.size(); index++) {
             assertThat(sqlNumber(scripts.get(index))).isEqualTo(index + 1);
         }

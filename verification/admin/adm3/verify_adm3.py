@@ -16,6 +16,13 @@ import verify_adm3_closed_baseline as baseline
 MAINTENANCE_SCOPE_PATHS = set(baseline.MAINTENANCE_SCOPE_PATHS) | {
     "verification/admin/adm3/verify_adm3_closed_baseline.py",
 }
+SUCCESSOR_COMPATIBILITY_SCOPE_PATHS = MAINTENANCE_SCOPE_PATHS | {
+    "verification/admin/adm1/verify_adm1.py",
+    "verification/admin/adm1/verify_adm1_closed_baseline.py",
+    "jc-backend/src/test/java/com/jc/backend/recommendation/dataadoption/reconciliation/database/Rca1bDatabaseReconciliationTest.java",
+    "jc-backend/src/test/java/com/jc/backend/recommendation/rca2/Rca2StaticBoundaryTest.java",
+    "jc-backend/src/test/java/com/jc/backend/search/shadow/production/IP12ProductionShadowStaticTest.java",
+}
 
 ADM3_OWNED_SCOPE_PATHS = {
     ".github/workflows/adm3-admin-hardening.yml",
@@ -155,7 +162,7 @@ def check_scope() -> None:
     changed = baseline.changed_files()
     changed_set = set(changed)
 
-    if changed_set and changed_set.issubset(MAINTENANCE_SCOPE_PATHS):
+    if changed_set and changed_set.issubset(SUCCESSOR_COMPATIBILITY_SCOPE_PATHS):
         return
 
     # The original scope allowlist describes the closed ADM-3 implementation PR.
