@@ -75,6 +75,10 @@ source = source.replace(
                 )
         return False
 
+    successor_compatibility_maintenance_paths = {
+        "verification/rca2/run_rca2_verification.py",
+        "verification/rca2/run_rca2_verification_closed_baseline.py",
+    }
     successor_relevant_prefixes = (
         "docs/platform/recommendation/rca2/",
         "docs/platform/governance/sc-next-track/",
@@ -96,7 +100,8 @@ source = source.replace(
     changed = [
         path
         for path in current_changed
-        if not is_canonical_successor_sql(path)
+        if path not in successor_compatibility_maintenance_paths
+        and not is_canonical_successor_sql(path)
         and (
             path.endswith(".sql")
             or path.startswith("database/")
