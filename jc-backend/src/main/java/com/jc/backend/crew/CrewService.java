@@ -4,6 +4,7 @@ import com.jc.backend.common.DomainException;
 import com.jc.backend.common.PageResponse;
 import com.jc.backend.database.DatabaseRole;
 import com.jc.backend.database.DatabaseTransactional;
+import com.jc.backend.notification.NotificationService;
 import com.jc.backend.region.Region;
 import com.jc.backend.region.RegionService;
 import com.jc.backend.user.UserAccount;
@@ -45,16 +46,19 @@ public class CrewService {
     private final CrewMemberRepository members;
     private final UserRepository users;
     private final RegionService regionService;
+    private final NotificationService notifications;
 
     public CrewService(
             CrewRepository crews,
             CrewMemberRepository members,
             UserRepository users,
-            RegionService regionService) {
+            RegionService regionService,
+            NotificationService notifications) {
         this.crews = crews;
         this.members = members;
         this.users = users;
         this.regionService = regionService;
+        this.notifications = notifications;
     }
 
     public PageResponse<CrewDtos.View> list(Pageable pageable) {
@@ -279,7 +283,17 @@ public class CrewService {
         if (!crew.isApprovalRequired()) {
             application.approve(crew.getOwner());
         }
-        return applicationView(members.save(application));
+
+        CrewMember persisted = members.save(application);
+        if (persisted.getStatus() == CrewMemberStatus.PENDING) {
+            notifications.crewApplication(
+                    userId,
+                    crew.getOwner().getId(),
+                    crewId,
+                    persisted.getId(),
+                    Instant.now());
+        }
+        return applicationView(persisted);
     }
 
     @DatabaseTransactional(role = DatabaseRole.APP)
@@ -351,8 +365,20 @@ public class CrewService {
                         "크루 정원이 가득 찼습니다.");
             }
             application.approve(owner);
+            notifications.crewApproved(
+                    ownerId,
+                    application.getUser().getId(),
+                    crewId,
+                    applicationId,
+                    application.getReviewedAt());
         } else {
             application.reject(owner);
+            notifications.crewRejected(
+                    ownerId,
+                    application.getUser().getId(),
+                    crewId,
+                    applicationId,
+                    application.getReviewedAt());
         }
         return applicationView(application);
     }
