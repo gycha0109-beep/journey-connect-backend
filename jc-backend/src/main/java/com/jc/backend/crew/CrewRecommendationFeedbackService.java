@@ -1,5 +1,7 @@
 package com.jc.backend.crew;
 
+import com.jc.backend.database.DatabaseRole;
+import com.jc.backend.database.DatabaseTransactional;
 import com.jc.backend.recommendation.application.RecommendationCanonicalPayload;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -26,6 +28,7 @@ public class CrewRecommendationFeedbackService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @DatabaseTransactional(role = DatabaseRole.APP)
     public void recordApprovedJoin(long userId, long crewId, Instant approvedAt) {
         if (userId <= 0 || crewId <= 0) {
             throw new IllegalArgumentException("crew recommendation feedback IDs must be positive");
