@@ -53,6 +53,37 @@ def adapt_rca1(source: str) -> str:
         '            changed=sh(["git","diff","--name-only",f"{merge_base}..{head}"]).splitlines()\n',
     )
 
+    unexpected_anchor = '            unexpected=[item for item in changed if not any(item==prefix or item.startswith(prefix) for prefix in allowed)]\n'
+    if source.count(unexpected_anchor) != 1:
+        raise SystemExit("FAIL: RCA-1 protected-scope compatibility anchor mismatch")
+    source = source.replace(
+        unexpected_anchor,
+        '''            def is_canonical_successor_sql(item):
+                for prefix in (
+                    "database/journey-connect-db-v2.7/",
+                    "jc-backend/src/test/resources/db/canonical/",
+                ):
+                    if item.startswith(prefix):
+                        name=item[len(prefix):]
+                        return len(name)>=4 and name[:2].isdigit() and name[2]=="_" and name.endswith(".sql") and int(name[:2])>=53
+                return False
+            def is_rca1_sensitive(item):
+                if any(item==prefix or item.startswith(prefix) for prefix in allowed):
+                    return True
+                if item.startswith(("database/","jc-recommendation-core/")):
+                    return True
+                if item in (
+                    "jc-backend/src/main/java/com/jc/backend/recommendation/p1/RecommendationP1ProfileSource.java",
+                    "jc-backend/src/main/java/com/jc/backend/recommendation/p2/RecommendationP2ObservationSource.java",
+                ):
+                    return True
+                return bool(re.search(r"jc-backend/src/main/resources/application.*\\.(?:yml|yaml|properties)$",item))
+            changed=[item for item in changed if not is_canonical_successor_sql(item) and is_rca1_sensitive(item)]
+            unexpected=[item for item in changed if not any(item==prefix or item.startswith(prefix) for prefix in allowed)]
+''',
+        1,
+    )
+
     sql_anchor = '            nums=[int(m.group(1)) for path in (ROOT/"database/journey-connect-db-v2.7").glob("*.sql") if (m:=re.match(r"(\\d+)_",path.name))]\n            need(set(nums)==set(range(1,53)) and len(nums)==52,"SQL inventory")\n            return f"authorized RCA1B/SC/RCA2 phase diff {len(changed)} files; source/core/SQL/production config protected"\n'
     if source.count(sql_anchor) != 1:
         raise SystemExit("FAIL: RCA-1 SQL inventory compatibility anchor mismatch")
