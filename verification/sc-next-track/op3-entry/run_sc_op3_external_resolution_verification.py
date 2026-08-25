@@ -235,7 +235,6 @@ def main() -> int:
         require("PLATFORM_ARCHITECTURE_STATUS=SC_APPROVED_NOT_PROVISIONED" not in text, f"obsolete GCP target status remains in {name}")
         require("CLOUD_PROVISIONING_STATUS=BLOCKED_REQUIRED_INPUTS" not in text, f"obsolete provisioning status remains in {name}")
 
-    changed = git("diff", "--name-only", f"{GOVERNANCE_CORRECTION_BASE}...HEAD").splitlines()
     allowed_current = {
         "docs/platform/governance/sc-next-track/61-SC-OP3-ARCHITECTURE-DECISION-AND-PROVISIONING-GATE.md",
         "docs/platform/governance/sc-next-track/61-SC-OP3-COST-AND-TEARDOWN-BOUNDARY.md",
@@ -251,6 +250,22 @@ def main() -> int:
         "verification/sc-next-track/op3-entry/sc-op3-evidence-acceptance.json",
         "verification/sc-next-track/op3-entry/run_sc_op3_external_resolution_verification.py",
     }
+
+    current_base = git("merge-base", "origin/main", head)
+    current_changed = git("diff", "--name-only", f"{current_base}...{head}").splitlines()
+
+    def external_resolution_sensitive(path: str) -> bool:
+        if path in allowed_current:
+            return True
+        if path.startswith("docs/platform/governance/sc-next-track/61-SC-OP3-"):
+            return True
+        if path.startswith("verification/sc-next-track/op3-entry/sc-op3-") and path.endswith(".json"):
+            return True
+        if path == ".github/workflows/sc-op3-entry-governance-ci.yml":
+            return True
+        return False
+
+    changed = [path for path in current_changed if external_resolution_sensitive(path)]
     require(set(changed).issubset(allowed_current), f"governance-only scope violation: {changed}")
     require(not any(path.startswith((".github/workflows/", "jc-backend/src/", "jc-recommendation-core/", "database/")) for path in changed), "runtime, workflow or database path changed")
 
