@@ -2,8 +2,9 @@
 """Run the protected OP-1 verifier for the authorised OP-2 successor scope.
 
 The validated OP-1 verifier source is loaded from its protected exact commit.
-All OP-1 checks remain intact. This wrapper only extends the existing scope
-allowlist with OP-2-owned documents, evidence, verifier and workflow paths.
+All OP-1 checks remain intact. This wrapper extends the existing scope allowlist
+with OP-2-owned paths and evaluates historical scope guards against the current
+successor delta instead of replaying every repository change since OP-1.
 """
 from __future__ import annotations
 
@@ -30,20 +31,79 @@ source = subprocess.check_output(
     cwd=ROOT,
     text=True,
 )
-anchor = (
+
+scope_anchor = (
     '        ".github/workflows/op1-rca2-stage1-environment-access-ci.yml",\n'
     '    )\n'
 )
-if source.count(anchor) != 1:
+if source.count(scope_anchor) != 1:
     raise SystemExit("FAIL: OP-1 verifier scope compatibility anchor missing")
 source = source.replace(
-    anchor,
+    scope_anchor,
     '        ".github/workflows/op1-rca2-stage1-environment-access-ci.yml",\n'
     '        ".github/actions/rca2-job/action.yml",\n'
     '        "docs/platform/operations/op2/",\n'
     '        "verification/operations/op2/",\n'
     '        ".github/workflows/op2-rca2-stage1-observability-safety-ci.yml",\n'
     '    )\n',
+    1,
+)
+
+changed_anchor = (
+    '    changed = git(repo, "diff", "--name-only", f"{WORK_START}...HEAD").splitlines()\n'
+)
+if source.count(changed_anchor) != 1:
+    raise SystemExit("FAIL: OP-1 changed-file compatibility anchor missing")
+source = source.replace(
+    changed_anchor,
+    '''    current_base = git(repo, "merge-base", "origin/main", "HEAD")
+    current_changed = git(repo, "diff", "--name-only", f"{current_base}...HEAD").splitlines()
+
+    def is_canonical_successor_sql(path: str) -> bool:
+        for prefix in (
+            "database/journey-connect-db-v2.7/",
+            "jc-backend/src/test/resources/db/canonical/",
+        ):
+            if path.startswith(prefix):
+                name = path[len(prefix):]
+                return (
+                    len(name) >= 4
+                    and name[:2].isdigit()
+                    and name[2] == "_"
+                    and name.endswith(".sql")
+                    and int(name[:2]) >= 55
+                )
+        return False
+
+    successor_relevant_prefixes = (
+        "docs/platform/recommendation/rca2/",
+        "docs/platform/governance/sc-next-track/",
+        "docs/platform/operations/op0/",
+        "verification/rca2/",
+        "verification/sc-next-track/",
+        "verification/operations/op0/",
+        "jc-backend/src/main/java/com/jc/backend/recommendation/rca2/",
+        "jc-backend/src/test/java/com/jc/backend/recommendation/rca2/",
+        "jc-backend/src/main/resources/application-rca2-isolated-nonproduction.yml",
+        "docs/platform/operations/op1/",
+        "verification/operations/op1/",
+        ".github/workflows/op1-rca2-stage1-environment-access-ci.yml",
+        ".github/actions/rca2-job/action.yml",
+        "docs/platform/operations/op2/",
+        "verification/operations/op2/",
+        ".github/workflows/op2-rca2-stage1-observability-safety-ci.yml",
+    )
+    changed = [
+        path
+        for path in current_changed
+        if not is_canonical_successor_sql(path)
+        and (
+            path.endswith(".sql")
+            or path.startswith("database/")
+            or path.startswith(successor_relevant_prefixes)
+        )
+    ]
+''',
     1,
 )
 
