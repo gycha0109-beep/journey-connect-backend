@@ -11,30 +11,29 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
-/**
- * Builds the authenticated Crew recommendation response without spanning APP and RECOMMENDATION
- * database roles in one transaction.
- */
 @Service
 public final class CrewRecommendationApiService {
     public static final int MAX_LIMIT = 20;
 
     private final CrewRecommendationService recommendationService;
     private final CrewService crewService;
+    private final CrewRecommendationExposureService exposureService;
 
     public CrewRecommendationApiService(
             CrewRecommendationService recommendationService,
-            CrewService crewService) {
+            CrewService crewService,
+            CrewRecommendationExposureService exposureService) {
         this.recommendationService = recommendationService;
         this.crewService = crewService;
+        this.exposureService = exposureService;
     }
 
     public CrewRecommendationDtos.Response find(long userId, int limit) {
         if (userId <= 0) {
-            throw new IllegalArgumentException("userId must be positive");
+            throw new IllegalArgumentException("Crew recommendation user ID must be positive.");
         }
         if (limit < 1 || limit > MAX_LIMIT) {
-            throw new IllegalArgumentException("crew recommendation limit must be 1.." + MAX_LIMIT);
+            throw new IllegalArgumentException("Crew recommendation limit must be in 1.." + MAX_LIMIT + ".");
         }
 
         Instant referenceTime = Instant.now();
@@ -50,11 +49,15 @@ public final class CrewRecommendationApiService {
                     ranked.breakdown().coverageMode().wireValue(),
                     CrewRecommendationReasonMapper.reasons(ranked.breakdown())));
         }
-        return new CrewRecommendationDtos.Response(
+
+        CrewRecommendationDtos.Response response = new CrewRecommendationDtos.Response(
                 ranking.contractVersion(),
                 ranking.rankingPolicyVersion(),
                 ranking.scorePolicyVersion(),
                 ranking.referenceTime(),
                 items);
+
+        exposureService.commit(userId, limit, ranking, response, Instant.now());
+        return response;
     }
 }
