@@ -44,7 +44,9 @@ public final class CanonicalPostgresInitializer
             "53_admin_control_plane_hardening.sql",
             "54_admin_control_plane_hardening_smoke_test.sql",
             "55_user_notifications.sql",
-            "56_user_notifications_smoke_test.sql");
+            "56_user_notifications_smoke_test.sql",
+            "57_crew_recommendation_feedback.sql",
+            "58_crew_recommendation_feedback_smoke_test.sql");
 
     private static final String EXTERNAL_URL = setting("jc.test.db.url", "JC_TEST_DB_URL", "");
     private static final String EXTERNAL_USERNAME = setting(
