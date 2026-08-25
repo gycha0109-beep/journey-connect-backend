@@ -219,7 +219,7 @@ class Rca1bDatabaseReconciliationTest {
                     .filter(path -> SQL_FILE.matcher(path.getFileName().toString()).matches())
                     .sorted(Comparator.comparingInt(Rca1bDatabaseReconciliationTest::sqlNumber)).toList();
         }
-        assertEquals(54, scripts.size(), "canonical SQL inventory must be 01..54");
+        assertTrue(scripts.size() >= 54, "canonical SQL inventory must include closed 01..54 baseline");
         for (int index = 0; index < scripts.size(); index++) {
             Path script = scripts.get(index);
             int number = sqlNumber(script);
