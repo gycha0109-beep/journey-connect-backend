@@ -10,6 +10,16 @@ BASELINE = "b57c344c9b4e332966fe9f6d36a5da66a5faae71"
 SOURCE_PATH = "verification/data-platform-closure/run_data_platform_closure_verification.py"
 source = subprocess.check_output(["git", "show", f"{BASELINE}:{SOURCE_PATH}"], cwd=ROOT, text=True)
 
+# Resolve the current PR delta before the historical verifier can mutate the
+# remote-tracking ref with its old shallow fetch. The closed verifier is then
+# executed against this frozen successor delta.
+current_base = subprocess.check_output(
+    ["git", "merge-base", "origin/main", "HEAD"], cwd=ROOT, text=True
+).strip()
+successor_current_changed = subprocess.check_output(
+    ["git", "diff", "--name-only", f"{current_base}...HEAD"], cwd=ROOT, text=True
+).splitlines()
+
 sql_anchor = '''if list(sql.glob("5[3-9]_*.sql")) or list(sql.glob("[6-9][0-9]_*.sql")):
     fail("SQL 53+ present")
 '''
@@ -50,7 +60,14 @@ source = source.replace(
     1,
 )
 
-changed_anchor = '''changed = subprocess.run(
+historical_delta_anchor = '''subprocess.run(
+    ["git", "fetch", "origin", "main", "--depth=1"],
+    cwd=ROOT,
+    check=False,
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
+)
+changed = subprocess.run(
     ["git", "diff", "--name-only", "origin/main...HEAD"],
     cwd=ROOT,
     check=True,
@@ -58,17 +75,11 @@ changed_anchor = '''changed = subprocess.run(
     capture_output=True,
 ).stdout.splitlines()
 '''
-if source.count(changed_anchor) != 1:
-    raise SystemExit("FAIL: Data closure current-delta compatibility anchor missing")
+if source.count(historical_delta_anchor) != 1:
+    raise SystemExit("FAIL: Data closure historical delta compatibility anchor missing")
 source = source.replace(
-    changed_anchor,
-    '''current_changed = subprocess.run(
-    ["git", "diff", "--name-only", "origin/main...HEAD"],
-    cwd=ROOT,
-    check=True,
-    text=True,
-    capture_output=True,
-).stdout.splitlines()
+    historical_delta_anchor,
+    '''current_changed = list(successor_current_changed)
 
 
 def canonical_sql_number(rel: str) -> int | None:
@@ -107,5 +118,10 @@ changed = [
     1,
 )
 
-namespace = {"__name__": "__main__", "__file__": str(ROOT / SOURCE_PATH), "__package__": None}
+namespace = {
+    "__name__": "__main__",
+    "__file__": str(ROOT / SOURCE_PATH),
+    "__package__": None,
+    "successor_current_changed": successor_current_changed,
+}
 exec(compile(source, str(ROOT / SOURCE_PATH), "exec"), namespace)
