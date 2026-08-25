@@ -98,9 +98,10 @@ class CrewRecommendationServiceIntegrationTest {
                 .findFirst()
                 .orElseThrow();
         assertThat(seoulItem.crew().title()).isEqualTo("Seoul food crew");
+        assertThat(seoulItem.reasons()).hasSizeLessThanOrEqualTo(3);
         assertThat(seoulItem.reasons()).extracting(CrewRecommendationDtos.Reason::code)
-                .contains(CrewRecommendationDtos.ReasonCode.TAG_INTEREST,
-                        CrewRecommendationDtos.ReasonCode.REGION_INTEREST);
+                .contains(CrewRecommendationDtos.ReasonCode.TAG_INTEREST);
+        assertThat(seoulItem.reasons()).allMatch(reason -> reason.contribution() > 0.0d);
 
         assertThat(crewService.list(null, null, null, org.springframework.data.domain.PageRequest.of(0, 20))
                 .items())
