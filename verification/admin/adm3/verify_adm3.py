@@ -19,6 +19,7 @@ MAINTENANCE_SCOPE_PATHS = set(baseline.MAINTENANCE_SCOPE_PATHS) | {
 SUCCESSOR_COMPATIBILITY_SCOPE_PATHS = MAINTENANCE_SCOPE_PATHS | {
     "verification/admin/adm1/verify_adm1.py",
     "verification/admin/adm1/verify_adm1_closed_baseline.py",
+    "verification/operations/op2/run_historical_reconciliation_continuity.py",
     "verification/operations/op2/run_rca0_successor_continuity.py",
     "verification/operations/op2/run_rca2_protected_regression_continuity.sh",
     "verification/operations/op2/run_op1_successor_continuity.py",
