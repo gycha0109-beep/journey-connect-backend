@@ -8,7 +8,9 @@ import com.jc.backend.crew.CrewService;
 import com.jc.backend.crew.CrewTagDtos;
 import com.jc.backend.crew.CrewTagService;
 import com.jc.backend.database.DatabaseRequestIdentity;
+import com.jc.backend.recommendation.api.CrewRecommendationDtos;
 import com.jc.backend.recommendation.api.RecommendationPreferenceDtos;
+import com.jc.backend.recommendation.application.CrewRecommendationApiService;
 import com.jc.backend.recommendation.application.RecommendationPreferenceService;
 import com.jc.backend.user.UserAccount;
 import com.jc.backend.user.UserRepository;
@@ -26,6 +28,7 @@ class CrewRecommendationServiceIntegrationTest {
     @Autowired private CrewService crewService;
     @Autowired private CrewTagService crewTags;
     @Autowired private CrewRecommendationService recommendations;
+    @Autowired private CrewRecommendationApiService recommendationApi;
     @Autowired private DatabaseRequestIdentity requestIdentity;
     @Autowired private RecommendationPreferenceService preferenceService;
 
@@ -84,6 +87,20 @@ class CrewRecommendationServiceIntegrationTest {
         assertThat(seoulRanked.breakdown().regionInterest()).isPositive();
         assertThat(seoulRanked.breakdown().totalScore())
                 .isGreaterThan(busanRanked.breakdown().totalScore());
+
+        CrewRecommendationDtos.Response apiResult = recommendationApi.find(viewer.getId(), 10);
+        assertThat(apiResult.contractVersion()).isEqualTo("crew-recommendation-contract-v1");
+        assertThat(apiResult.rankingPolicyVersion()).isEqualTo("crew-ranking-policy-v1");
+        assertThat(apiResult.items()).extracting(item -> item.crew().id())
+                .containsSubsequence(seoul.id(), busan.id());
+        CrewRecommendationDtos.Item seoulItem = apiResult.items().stream()
+                .filter(item -> item.crew().id().equals(seoul.id()))
+                .findFirst()
+                .orElseThrow();
+        assertThat(seoulItem.crew().title()).isEqualTo("Seoul food crew");
+        assertThat(seoulItem.reasons()).extracting(CrewRecommendationDtos.Reason::code)
+                .contains(CrewRecommendationDtos.ReasonCode.TAG_INTEREST,
+                        CrewRecommendationDtos.ReasonCode.REGION_INTEREST);
 
         assertThat(crewService.list(null, null, null, org.springframework.data.domain.PageRequest.of(0, 20))
                 .items())
