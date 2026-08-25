@@ -25,6 +25,8 @@ SUCCESSOR_COMPATIBILITY_SCOPE_PATHS = MAINTENANCE_SCOPE_PATHS | {
     "verification/operations/op2/run_op1_successor_continuity.py",
     "verification/operations/op2/run_op2_verification.py",
     "verification/operations/op2/run_op2_verification_closed_baseline.py",
+    "verification/operations/op2/run_sc_baseline_reconciliation_continuity.py",
+    "verification/operations/op2/run_sc_rca2_entry_continuity.py",
     "verification/rca1b/run_rca1b_verification.py",
     "verification/rca1b/run_rca1b_verification_closed_baseline.py",
     "verification/rca2/run_rca2_verification.py",
