@@ -59,19 +59,9 @@ BEGIN
     RAISE EXCEPTION 'jc_app must not receive direct recommendation behavior table authority.';
   END IF;
 
-  IF NOT has_column_privilege('jc_recommendation', 'public.crews', 'id', 'SELECT')
-     OR NOT has_column_privilege('jc_recommendation', 'public.crews', 'region_id', 'SELECT')
-     OR NOT has_column_privilege('jc_recommendation', 'public.crew_members', 'crew_id', 'SELECT')
-     OR NOT has_column_privilege('jc_recommendation', 'public.crew_members', 'user_id', 'SELECT')
-     OR NOT has_column_privilege('jc_recommendation', 'public.crew_members', 'status', 'SELECT') THEN
-    RAISE EXCEPTION 'jc_recommendation PF3 read columns are incomplete.';
-  END IF;
-
-  IF has_table_privilege('jc_recommendation', 'public.crews', 'SELECT')
-     OR has_table_privilege('jc_recommendation', 'public.crew_members', 'SELECT')
-     OR has_column_privilege('jc_recommendation', 'public.crew_members', 'reviewed_by', 'SELECT')
-     OR has_column_privilege('jc_recommendation', 'public.crew_members', 'reviewed_at', 'SELECT') THEN
-    RAISE EXCEPTION 'jc_recommendation crew read authority is broader than PF3 requires.';
+  IF NOT has_table_privilege('jc_recommendation', 'public.crews', 'SELECT')
+     OR NOT has_table_privilege('jc_recommendation', 'public.crew_members', 'SELECT') THEN
+    RAISE EXCEPTION 'PF3 baseline recommendation crew read authority is missing.';
   END IF;
 END;
 $$;

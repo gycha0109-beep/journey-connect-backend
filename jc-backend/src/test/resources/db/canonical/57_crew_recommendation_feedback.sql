@@ -1,6 +1,6 @@
 -- Journey Connect DB v2.7 - PF3 crew recommendation feedback bridge
 -- Target: PostgreSQL 15+
--- Prerequisite: recommendation behavior storage, canonical crews and crew_members
+-- Prerequisite: recommendation behavior storage and backend runtime crew authorization
 
 BEGIN;
 
@@ -27,13 +27,13 @@ BEGIN
      OR NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'jc_recommendation') THEN
     RAISE EXCEPTION 'PF3 prerequisite runtime roles are missing.';
   END IF;
+
+  IF NOT has_table_privilege('jc_recommendation', 'public.crews', 'SELECT')
+     OR NOT has_table_privilege('jc_recommendation', 'public.crew_members', 'SELECT') THEN
+    RAISE EXCEPTION 'PF3 requires the baseline jc_recommendation crew read authority from 11_backend_runtime_security_roles.sql.';
+  END IF;
 END;
 $$;
-
--- The recommendation role receives only the crew columns required for feedback
--- authorization and P1 region enrichment. It does not receive whole-table SELECT.
-GRANT SELECT (id, region_id) ON public.crews TO jc_recommendation;
-GRANT SELECT (crew_id, user_id, status) ON public.crew_members TO jc_recommendation;
 
 CREATE OR REPLACE FUNCTION public.record_crew_join_recommendation_feedback(
   p_user_id bigint,
@@ -113,7 +113,7 @@ BEGIN
       USING ERRCODE = '23514';
   END IF;
 
-  -- Match RecommendationBehaviorStore lock namespaces so the cross-role command
+  -- Match RecommendationBehaviorStore lock namespaces so this cross-role command
   -- serializes with the existing recommendation writer for the same identities.
   PERFORM pg_advisory_xact_lock(hashtextextended(
       'recommendation_behavior_event:event:' || v_event_id, 0));
@@ -188,9 +188,9 @@ BEGIN
 END;
 $$;
 
--- The function must execute with recommendation storage authority while callers
--- remain inside the existing jc_app transaction. Ownership is transferred without
--- granting jc_app direct recommendation table privileges.
+-- The function executes with existing recommendation storage authority while callers
+-- remain inside the APP transaction. jc_app receives only this command entry point,
+-- never direct recommendation behavior table privileges.
 GRANT jc_recommendation TO CURRENT_USER;
 GRANT CREATE ON SCHEMA public TO jc_recommendation;
 ALTER FUNCTION public.record_crew_join_recommendation_feedback(bigint, bigint, timestamptz, bytea)
