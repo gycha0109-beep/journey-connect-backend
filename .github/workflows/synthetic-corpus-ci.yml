@@ -1,0 +1,36 @@
+name: Synthetic Corpus CI
+
+on:
+  push:
+    paths:
+      - 'tools/synthetic-corpus/**'
+      - '.github/workflows/synthetic-corpus-ci.yml'
+  pull_request:
+    paths:
+      - 'tools/synthetic-corpus/**'
+      - '.github/workflows/synthetic-corpus-ci.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Unit tests
+        run: python -m unittest discover -s tools/synthetic-corpus/tests -p 'test_*.py' -v
+      - name: Generate smoke corpus
+        run: >-
+          python tools/synthetic-corpus/generate.py
+          --users 20
+          --posts 50
+          --crews 10
+          --batch-id ci-smoke
+          --output-dir build/synthetic-smoke
+      - name: Verify outputs
+        run: |
+          test -s build/synthetic-smoke/seed.sql
+          test -s build/synthetic-smoke/purge.sql
+          test -s build/synthetic-smoke/manifest.json
+          grep -q "synthetic.ci-smoke" build/synthetic-smoke/seed.sql
