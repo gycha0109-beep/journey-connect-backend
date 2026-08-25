@@ -108,6 +108,18 @@ class CrewRecommendationFeedbackIntegrationTest {
             assertThat(signal.direction()).isEqualTo(PreferenceKind.PREFER);
             assertThat(signal.signedWeight()).isPositive();
         });
+
+        crewService.cancelJoin(applicant.getId(), crew.id());
+        CrewDtos.ApplicationView reapplied = crewService.join(applicant.getId(), crew.id());
+        assertThat(reapplied.status()).isEqualTo(CrewMemberStatus.PENDING);
+        CrewDtos.ApplicationView reapproved = crewService.review(
+                owner.getId(),
+                crew.id(),
+                reapplied.id(),
+                new CrewDtos.ReviewRequest(CrewMemberStatus.APPROVED));
+        assertThat(reapproved.status()).isEqualTo(CrewMemberStatus.APPROVED);
+        assertThat(reapproved.reviewedAt()).isAfterOrEqualTo(approved.reviewedAt());
+        assertThat(eventCount(applicant.getId(), crew.id())).isEqualTo(1L);
     }
 
     @Test

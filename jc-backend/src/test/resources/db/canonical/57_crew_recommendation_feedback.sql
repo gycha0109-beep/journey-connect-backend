@@ -130,12 +130,12 @@ BEGIN
   LIMIT 1;
 
   IF FOUND THEN
+    -- The v1 feedback policy intentionally contributes at most one positive crew signal
+    -- per user+crew pair. A later cancel/rejoin/re-approval is therefore a duplicate,
+    -- not an idempotency conflict, as long as the stored domain identity is the same.
     IF v_existing.event_id IS DISTINCT FROM v_event_id
        OR v_existing.idempotency_key IS DISTINCT FROM v_event_id
        OR v_existing.schema_version IS DISTINCT FROM v_schema_version
-       OR v_existing.payload_fingerprint IS DISTINCT FROM v_fingerprint
-       OR v_existing.canonical_payload IS DISTINCT FROM p_canonical_payload
-       OR v_existing.payload_size_bytes IS DISTINCT FROM octet_length(p_canonical_payload)
        OR v_existing.user_id IS DISTINCT FROM p_user_id
        OR v_existing.session_id IS DISTINCT FROM v_session_id
        OR v_existing.run_id IS NOT NULL
@@ -143,9 +143,8 @@ BEGIN
        OR v_existing.entity_type IS DISTINCT FROM 'crew'
        OR v_existing.entity_key IS DISTINCT FROM ('crew:' || p_crew_id::text)
        OR v_existing.source_entity_id IS DISTINCT FROM p_crew_id
-       OR v_existing.occurred_at IS DISTINCT FROM p_occurred_at
        OR v_existing.metadata IS DISTINCT FROM v_metadata THEN
-      RAISE EXCEPTION 'Crew recommendation feedback idempotency conflict for %.', v_event_id
+      RAISE EXCEPTION 'Crew recommendation feedback identity conflict for %.', v_event_id
         USING ERRCODE = '23505';
     END IF;
     RETURN 'duplicate';
