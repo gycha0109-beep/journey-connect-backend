@@ -8,6 +8,7 @@ import com.jc.backend.common.DomainException;
 import com.jc.backend.common.PageResponse;
 import com.jc.backend.database.DatabaseRole;
 import com.jc.backend.database.DatabaseTransactional;
+import com.jc.backend.post.JourneyPostRepository;
 import com.jc.backend.post.PostDtos;
 import com.jc.backend.post.PostService;
 import org.springframework.data.domain.Pageable;
@@ -19,10 +20,18 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final AuthAccountRepository authUsers;
+    private final UserRepository publicUsers;
+    private final JourneyPostRepository postRepository;
     private final PostService posts;
 
-    public UserService(AuthAccountRepository authUsers, PostService posts) {
+    public UserService(
+            AuthAccountRepository authUsers,
+            UserRepository publicUsers,
+            JourneyPostRepository postRepository,
+            PostService posts) {
         this.authUsers = authUsers;
+        this.publicUsers = publicUsers;
+        this.postRepository = postRepository;
         this.posts = posts;
     }
 
@@ -52,7 +61,22 @@ public class UserService {
     }
 
     @DatabaseTransactional(role = DatabaseRole.APP, readOnly = true)
+    public UserDtos.PublicProfile publicProfile(long userId, Long viewerId) {
+        UserAccount target = publicUser(userId);
+        return new UserDtos.PublicProfile(
+                target.getId(),
+                target.getNickname(),
+                target.getBio(),
+                target.getProfileImageUrl(),
+                postRepository.countPublicPostsByAuthorId(userId),
+                viewerId == null
+                        ? null
+                        : new UserDtos.PublicProfileViewer(target.getId().equals(viewerId)));
+    }
+
+    @DatabaseTransactional(role = DatabaseRole.APP, readOnly = true)
     public PageResponse<PostDtos.Summary> publicPosts(long userId, Pageable pageable) {
+        publicUser(userId);
         return posts.publicUserPosts(userId, pageable);
     }
 
@@ -66,12 +90,18 @@ public class UserService {
         return posts.myBookmarks(userId, pageable);
     }
 
+    private UserAccount publicUser(long userId) {
+        UserAccount user = publicUsers.findById(userId)
+                .orElseThrow(this::userNotFound);
+        if (!user.isActive()) {
+            throw userNotFound();
+        }
+        return user;
+    }
+
     private AuthAccount authUser(long userId) {
         AuthAccount user = authUsers.findById(userId)
-                .orElseThrow(() -> new DomainException(
-                        HttpStatus.NOT_FOUND,
-                        "USER_NOT_FOUND",
-                        "사용자를 찾을 수 없습니다."));
+                .orElseThrow(this::userNotFound);
         if (!user.isActive()) {
             throw new DomainException(
                     HttpStatus.FORBIDDEN,
@@ -79,6 +109,13 @@ public class UserService {
                     "비활성 계정은 프로필 작업을 수행할 수 없습니다.");
         }
         return user;
+    }
+
+    private DomainException userNotFound() {
+        return new DomainException(
+                HttpStatus.NOT_FOUND,
+                "USER_NOT_FOUND",
+                "사용자를 찾을 수 없습니다.");
     }
 
     private String normalizeNullableNickname(String nickname) {
