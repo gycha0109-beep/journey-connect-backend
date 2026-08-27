@@ -5,18 +5,23 @@
 | Field | Value |
 |---|---|
 | decision ID | `sc-pf8-comment-conversation-notifications-v1` |
-| status | `APPROVED / IMPLEMENTATION_AUTHORITY_GRANTED` |
-| prerequisite main | `922cd571322f29d8f4239db320a66f9dac29d638` |
+| status | `AMENDED / IMPLEMENTATION_AUTHORITY_GRANTED` |
+| original prerequisite main | `922cd571322f29d8f4239db320a66f9dac29d638` |
+| original allocation merge main | `32af43135c35414f40c97b9b01afe23343529f78` |
+| amendment | `SC-PF8-COMMENT-CONVERSATION-NOTIFICATIONS-SQL-AMENDMENT.md` |
 | product slice | `JC-PF8 Comment Conversation Notifications` |
 | donor references | `YTAK99/Journey-Connect PR #19`, `YTAK99/Journey-Connect PR #22` |
-| canonical SQL tail | `66` |
+| canonical SQL tail before PF8 amendment | `66` |
+| PF8 allocated SQL tail | `68` |
 | runtime owner | `APP` |
 
 ## Decision
 
 PF8 allocates one bounded notification extension on top of the already-merged PF2 notification inbox and PF7 one-depth comment reply model.
 
-The product contract is:
+The original allocation incorrectly assumed the PF2 notification schema already admitted post-target notification types. Canonical SQL55 actually constrains notification types to Crew events and `target_type` to `crew`. The SQL amendment therefore allocates SQL67/68 solely to widen the existing notification CHECK domain while preserving the same table and privileges.
+
+The authoritative product contract is:
 
 ```text
 CONTRACT_ID=comment-conversation-notification-v1
@@ -31,15 +36,15 @@ TOP_LEVEL_DEDUPE_KEY=post_comment:{commentId}
 REPLY_DEDUPE_KEY=comment_reply:{replyCommentId}
 WRITE_ROLE=APP
 COMMENT_NOTIFICATION_CONSISTENCY=SAME_APP_TRANSACTION
-NEW_SQL=NONE
-SQL_67_PLUS=UNALLOCATED
+NEW_SQL=67_comment_conversation_notification_types.sql,68_comment_conversation_notification_types_smoke_test.sql
+SQL_69_PLUS=UNALLOCATED
 ```
 
 PF8 does not allocate post-like notifications, bookmark notifications, report-result notifications, push notifications, email, WebSocket, SSE, arbitrary thread subscriptions, mention parsing, recommendation feedback, ranking signals, search signals, or deployment.
 
 ## Existing authority reused
 
-PF8 reuses the existing canonical `public.user_notifications` storage and APP-role notification write/read authority established by PF2. It does not allocate a second notification table, a second inbox, or additional database grants.
+PF8 reuses the existing canonical `public.user_notifications` table, indexes, identity sequence, dedupe uniqueness, read state and APP-role notification write/read authority established by PF2. It does not allocate a second notification table, a second inbox, or additional database grants.
 
 The existing notification APIs remain authoritative and unchanged:
 
@@ -50,7 +55,7 @@ PATCH /api/v1/notifications/{notificationId}/read
 PATCH /api/v1/notifications/read-all
 ```
 
-PF8 adds producer behavior only. It does not alter notification pagination, read ownership, unread-count semantics, actor projection, target projection, or mark-read authorization.
+PF8 adds producer behavior and the minimum CHECK-domain extension needed to persist those producer events. It does not alter notification pagination, read ownership, unread-count semantics, actor projection, target projection, mark-read authorization, or APP privilege scope.
 
 ## Top-level comment notification
 
@@ -101,7 +106,9 @@ The successor implementation may change only the narrow runtime surfaces needed 
 
 - `jc-backend/src/main/java/com/jc/backend/notification/NotificationService.java`
 - `jc-backend/src/main/java/com/jc/backend/post/CommentReplyService.java`
-- dedicated PF8 tests
+- canonical bootstrap registration for SQL67/68;
+- canonical test-resource mirrors for SQL67/68;
+- dedicated PF8 tests and exact-delta verifier registration if an existing protected hash gate covers an allocated file.
 
 Changes to `PostController`, `PostDtos`, `RecommendationPostInteractionService`, Recommendation persistence, Search runtime, Admin runtime, SecurityConfig, or PF7 SQL are not allocated by this decision.
 
@@ -109,13 +116,31 @@ If implementation discovers that one of those protected surfaces is genuinely re
 
 ## Database / SQL boundary
 
-PF8 allocates no migration and no canonical SQL file.
+### SQL 67 — `67_comment_conversation_notification_types.sql`
 
-- SQL `65` and `66` remain the PF7 comment-reply files already merged.
-- SQL `67+` remains unallocated.
-- existing `user_notifications` schema and APP grants remain unchanged.
-- no role grant widening is permitted.
-- no trigger or stored procedure is allocated.
+Allocated responsibility:
+
+- alter only CHECK constraints on existing `public.user_notifications` needed to admit PF8 producer events;
+- preserve existing Crew types: `crew_application`, `crew_approved`, `crew_rejected`;
+- add only `post_comment` and `comment_reply`;
+- preserve Crew events as `target_type = 'crew'`;
+- require PF8 comment events to use `target_type = 'post'`;
+- reject mismatched type/target pairs;
+- do not alter columns, indexes, sequence ownership, unique dedupe semantics, RLS, roles, or grants;
+- do not create a new table, trigger, function, or procedure.
+
+### SQL 68 — `68_comment_conversation_notification_types_smoke_test.sql`
+
+Allocated responsibility:
+
+- PostgreSQL 15/18 verification that all three legacy Crew event pairs remain accepted;
+- verification that `post_comment/post` and `comment_reply/post` are accepted;
+- verification that cross-domain pairs such as `post_comment/crew` and `crew_application/post` are rejected;
+- verification that unallocated notification types remain rejected;
+- verification that the PF2 APP/AUTH/ADMIN/RECOMMENDATION privilege boundary remains unchanged;
+- rollback-only smoke data.
+
+SQL `69+` remains unallocated.
 
 ## Recommendation / Search boundary
 
@@ -150,7 +175,8 @@ The successor implementation must cover at minimum:
 7. notification `target_type`, `target_id`, actor, and dedupe identity are exact;
 8. existing Crew notification producer behavior remains unchanged;
 9. notification inbox/read/unread ownership remains unchanged;
-10. no SQL67+ file, DB grant expansion, Recommendation mutation, Search mutation, or deployment claim appears.
+10. SQL67/68 canonical and test mirrors are byte-identical and SQL69+ is absent;
+11. no DB grant expansion, Recommendation mutation, Search mutation, or deployment claim appears.
 
 The implementation must pass the repository's canonical PostgreSQL 15/18 integration gates and inherited Backend/P0/Admin/PIE protected regression gates on one exact head before merge.
 
@@ -170,4 +196,4 @@ PF8 does not authorize:
 - Recommendation/Search feedback;
 - frontend work;
 - deployment or production traffic changes;
-- SQL `67+`.
+- SQL `69+`.
