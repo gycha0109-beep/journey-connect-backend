@@ -63,12 +63,15 @@ public class UserService {
     @DatabaseTransactional(role = DatabaseRole.APP, readOnly = true)
     public UserDtos.PublicProfile publicProfile(long userId, Long viewerId) {
         UserAccount target = publicUser(userId);
+        long publicPostCount = postRepository
+                .findByAuthorIdAndPublishedTrueOrderByCreatedAtDescIdDesc(userId, Pageable.ofSize(1))
+                .getTotalElements();
         return new UserDtos.PublicProfile(
                 target.getId(),
                 target.getNickname(),
                 target.getBio(),
                 target.getProfileImageUrl(),
-                postRepository.countPublicPostsByAuthorId(userId),
+                publicPostCount,
                 viewerId == null
                         ? null
                         : new UserDtos.PublicProfileViewer(target.getId().equals(viewerId)));

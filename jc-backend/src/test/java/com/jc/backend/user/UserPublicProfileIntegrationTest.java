@@ -1,5 +1,6 @@
 package com.jc.backend.user;
 
+import static com.jc.backend.CanonicalTestData.publishedPost;
 import static com.jc.backend.CanonicalTestData.region;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
@@ -10,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.jc.backend.CanonicalPostgresTest;
 import com.jc.backend.post.JourneyPost;
 import com.jc.backend.post.JourneyPostRepository;
+import com.jc.backend.post.PlaceRepository;
 import com.jc.backend.post.PostStatus;
 import com.jc.backend.region.Region;
 import com.jc.backend.region.RegionRepository;
@@ -28,6 +30,7 @@ class UserPublicProfileIntegrationTest {
     @Autowired private UserRepository users;
     @Autowired private RegionRepository regions;
     @Autowired private JourneyPostRepository posts;
+    @Autowired private PlaceRepository places;
     @Autowired private JdbcTemplate jdbc;
 
     @Test
@@ -48,8 +51,8 @@ class UserPublicProfileIntegrationTest {
                 "public-viewer-" + suffix));
         Region seoul = region(regions, "KR-SEOUL");
 
-        posts.save(new JourneyPost(target, seoul, "public-1-" + suffix, "content"));
-        posts.save(new JourneyPost(target, seoul, "public-2-" + suffix, "content"));
+        posts.save(publishedPost(places, target, seoul, "public-1-" + suffix, "content"));
+        posts.save(publishedPost(places, target, seoul, "public-2-" + suffix, "content"));
         posts.save(new JourneyPost(
                 target,
                 seoul,

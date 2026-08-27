@@ -37,16 +37,6 @@ public interface JourneyPostRepository extends JpaRepository<JourneyPost, Long> 
             @Param("authorId") Long authorId,
             Pageable pageable);
 
-    @Query("""
-            select count(p) from JourneyPost p
-            where p.author.id = :authorId
-              and p.status = com.jc.backend.post.PostStatus.PUBLISHED
-              and p.visibility = com.jc.backend.post.PostVisibility.PUBLIC
-              and p.moderationStatus = com.jc.backend.post.PostModerationStatus.VISIBLE
-              and p.author.accountStatus = 'active'
-            """)
-    long countPublicPostsByAuthorId(@Param("authorId") Long authorId);
-
     @EntityGraph(attributePaths = {"author", "region"})
     @Query("""
             select p from JourneyPost p
