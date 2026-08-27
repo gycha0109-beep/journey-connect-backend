@@ -4,13 +4,14 @@ import com.jc.backend.common.DomainException;
 import com.jc.backend.common.PageResponse;
 import com.jc.backend.database.DatabaseRole;
 import com.jc.backend.database.DatabaseTransactional;
+import com.jc.backend.notification.NotificationService;
 import com.jc.backend.user.UserAccount;
 import com.jc.backend.user.UserRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-/** PF7 bounded extension for one-depth comment replies. */
+/** PF7 bounded extension for one-depth comment replies with PF8 conversation notifications. */
 @Service
 @DatabaseTransactional(role = DatabaseRole.APP, readOnly = true)
 public class CommentReplyService {
@@ -19,16 +20,19 @@ public class CommentReplyService {
     private final CommentRepository comments;
     private final UserRepository users;
     private final PostAccessPolicy accessPolicy;
+    private final NotificationService notifications;
 
     public CommentReplyService(
             JourneyPostRepository posts,
             CommentRepository comments,
             UserRepository users,
-            PostAccessPolicy accessPolicy) {
+            PostAccessPolicy accessPolicy,
+            NotificationService notifications) {
         this.posts = posts;
         this.comments = comments;
         this.users = users;
         this.accessPolicy = accessPolicy;
+        this.notifications = notifications;
     }
 
     public PageResponse<PostDtos.CommentView> comments(
@@ -47,6 +51,19 @@ public class CommentReplyService {
                 : comments.findVisibleTopLevelParent(parentCommentId, postId)
                         .orElseThrow(this::invalidParent);
         Comment comment = comments.save(new Comment(post, author, content.trim(), parent));
+        if (parent == null) {
+            notifications.postCommented(
+                    userId,
+                    post.getAuthor().getId(),
+                    postId,
+                    comment.getId());
+        } else {
+            notifications.commentReplied(
+                    userId,
+                    parent.getAuthor().getId(),
+                    postId,
+                    comment.getId());
+        }
         return commentView(comment);
     }
 
