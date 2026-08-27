@@ -36,7 +36,7 @@ public class Comment extends BaseTimeEntity {
     @Column(nullable = false, length = 1000)
     private String content;
 
-    @Column(name = "deleted_at")
+    @Column(name = "deleted_at", insertable = false)
     private Instant deletedAt;
 
     @Column(name = "moderation_deleted_at", insertable = false, updatable = false)
