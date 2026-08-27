@@ -52,7 +52,9 @@ public final class CanonicalPostgresInitializer
             "61_crew_recommendation_exposure.sql",
             "62_crew_recommendation_exposure_smoke_test.sql",
             "63_crew_open_chat.sql",
-            "64_crew_open_chat_smoke_test.sql");
+            "64_crew_open_chat_smoke_test.sql",
+            "65_comment_replies.sql",
+            "66_comment_replies_smoke_test.sql");
 
     private static final String EXTERNAL_URL = setting("jc.test.db.url", "JC_TEST_DB_URL", "");
     private static final String EXTERNAL_USERNAME = setting(
