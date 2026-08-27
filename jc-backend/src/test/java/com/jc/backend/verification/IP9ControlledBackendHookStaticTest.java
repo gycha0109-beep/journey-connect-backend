@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Test;
 class IP9ControlledBackendHookStaticTest {
     private static final String CONTROLLER =
             "jc-backend/src/main/java/com/jc/backend/post/PostController.java";
+    private static final String POST_DTOS =
+            "jc-backend/src/main/java/com/jc/backend/post/PostDtos.java";
     private static final String RCA2_FEED_SERVICE =
             "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java";
     private static final String ADM1_SECURITY_CONFIG =
@@ -100,29 +102,37 @@ class IP9ControlledBackendHookStaticTest {
     }
 
     @Test
-    void backendProtectedDeltaAllowsApprovedControllerAndAdm1SecurityBoundary() throws Exception {
+    void backendProtectedDeltaAllowsApprovedControllerPf7DtoAndAdm1SecurityBoundary() throws Exception {
         Path manifest = RepositoryLayout.resolve("verification/ip9/IP9_PRECHANGE_BACKEND_PROTECTED_SHA256.txt");
         List<String> lines = Files.readAllLines(manifest, StandardCharsets.UTF_8).stream()
                 .filter(line -> !line.isBlank())
                 .toList();
         int approvedControllerDeltas = 0;
+        int approvedPf7DtoDeltas = 0;
         int approvedAdm1SecurityDeltas = 0;
         for (String line : lines) {
             String[] parts = line.trim().split("\\s+", 2);
             assertThat(parts).hasSize(2);
-            String current = sha256(RepositoryLayout.resolve(parts[1]));
+            Path path = RepositoryLayout.resolve(parts[1]);
+            String current = sha256(path);
             if (CONTROLLER.equals(parts[1])) {
                 assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
+                assertApprovedPf7ControllerBoundary(Files.readString(path));
                 approvedControllerDeltas++;
+            } else if (POST_DTOS.equals(parts[1])) {
+                assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
+                assertApprovedPf7DtoBoundary(Files.readString(path));
+                approvedPf7DtoDeltas++;
             } else if (ADM1_SECURITY_CONFIG.equals(parts[1])) {
                 assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
-                assertApprovedAdm1SecurityBoundary(Files.readString(RepositoryLayout.resolve(parts[1])));
+                assertApprovedAdm1SecurityBoundary(Files.readString(path));
                 approvedAdm1SecurityDeltas++;
             } else {
                 assertThat(current).as(parts[1]).isEqualTo(parts[0]);
             }
         }
         assertThat(approvedControllerDeltas).isEqualTo(1);
+        assertThat(approvedPf7DtoDeltas).isEqualTo(1);
         assertThat(approvedAdm1SecurityDeltas).isEqualTo(1);
     }
 
@@ -138,6 +148,31 @@ class IP9ControlledBackendHookStaticTest {
             assertThat(sha256(RepositoryLayout.resolve(parts[1]))).as(parts[1]).isEqualTo(parts[0]);
         }
         assertThat(lines).hasSize(26);
+    }
+
+    private static void assertApprovedPf7ControllerBoundary(String source) {
+        assertThat(source).contains(
+                "private final CommentReplyService commentReplyService;",
+                "commentReplyService.comments(postId, userIdOrNull(token), pageable)",
+                "commentReplyService.addComment(",
+                "request.content(), request.parentCommentId()",
+                "postService.deleteComment(userId(token), commentId)");
+        assertThat(source).doesNotContain(
+                "replyRecommendation",
+                "replyExposure",
+                "replySearch",
+                "replyNotification");
+    }
+
+    private static void assertApprovedPf7DtoBoundary(String source) {
+        assertThat(source).contains(
+                "public record CommentRequest(",
+                "Long parentCommentId",
+                "public CommentRequest(String content)",
+                "this(content, null);",
+                "public record CommentView(",
+                "this(id, content, author, createdAt, null);");
+        assertThat(count(source, "Long parentCommentId")).isEqualTo(2);
     }
 
     private static void assertApprovedRca2FeedRegistrationBoundary(String source) {
