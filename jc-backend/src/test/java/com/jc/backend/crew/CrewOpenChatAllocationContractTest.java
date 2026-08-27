@@ -30,7 +30,10 @@ class CrewOpenChatAllocationContractTest {
                 "64_crew_open_chat_smoke_test.sql",
                 "SQL `65+` remains unallocated",
                 "crew_recommendation_exposure_v1",
-                "open_chat_url VARCHAR(500)"
+                "open_chat_url VARCHAR(500)",
+                "RECOMMENDATION_CREW_COLUMNS=id,owner_id,region_id,travel_date,capacity,recruiting,created_at",
+                "revoke table-level `SELECT` on `public.crews` from `jc_recommendation`",
+                "`jc_recommendation` cannot select `open_chat_url`"
         }) {
             assertTrue(allocation.contains(required), "PF6 allocation missing: " + required);
         }
@@ -42,6 +45,7 @@ class CrewOpenChatAllocationContractTest {
 
         assertTrue(allocation.contains("does not implement chat, messaging, presence, WebSocket, SSE"));
         assertTrue(allocation.contains("`open_chat_url` is presentation-only gated data and is not a ranking feature"));
+        assertTrue(allocation.contains("Recommendation code must not select, map, rank, filter, log or expose `open_chat_url`"));
         assertTrue(allocation.contains("accepting `http`, scheme-relative, hostless, or user-info URLs"));
         assertTrue(allocation.contains("server-side HTTP requests to the configured URL"));
         assertTrue(allocation.contains("deployment or production activation"));
