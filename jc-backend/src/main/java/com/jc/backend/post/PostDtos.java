@@ -59,7 +59,14 @@ public final class PostDtos {
         }
     }
 
-    public record CommentRequest(@NotBlank @Size(max = 1000) String content) {}
+    public record CommentRequest(
+            @NotBlank @Size(max = 1000) String content,
+            Long parentCommentId) {
+
+        public CommentRequest(String content) {
+            this(content, null);
+        }
+    }
 
     public record Author(Long id, String nickname, String profileImageUrl) {}
 
@@ -94,5 +101,15 @@ public final class PostDtos {
             Instant createdAt,
             Instant updatedAt) {}
 
-    public record CommentView(Long id, String content, Author author, Instant createdAt) {}
+    public record CommentView(
+            Long id,
+            String content,
+            Author author,
+            Instant createdAt,
+            Long parentCommentId) {
+
+        public CommentView(Long id, String content, Author author, Instant createdAt) {
+            this(id, content, author, createdAt, null);
+        }
+    }
 }

@@ -11,6 +11,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class IP10TestStageShadowStaticTest {
+    private static final String CONTROLLER =
+            "jc-backend/src/main/java/com/jc/backend/post/PostController.java";
+    private static final String POST_DTOS =
+            "jc-backend/src/main/java/com/jc/backend/post/PostDtos.java";
     private static final String ADM1_SECURITY_CONFIG =
             "jc-backend/src/main/kotlin/com/jc/backend/config/SecurityConfig.kt";
 
@@ -19,13 +23,23 @@ class IP10TestStageShadowStaticTest {
         Path manifest = RepositoryLayout.resolve("verification/ip9/IP9_POSTCHANGE_BACKEND_PROTECTED_SHA256.txt");
         List<String> lines = Files.readAllLines(manifest, StandardCharsets.UTF_8).stream()
                 .filter(line -> !line.isBlank()).toList();
+        int approvedPf7ControllerDeltas = 0;
+        int approvedPf7DtoDeltas = 0;
         int approvedAdm1SecurityDeltas = 0;
         for (String line : lines) {
             String[] parts = line.trim().split("\\s+", 2);
             assertThat(parts).hasSize(2);
             Path path = RepositoryLayout.resolve(parts[1]);
             String current = sha256(path);
-            if (ADM1_SECURITY_CONFIG.equals(parts[1])) {
+            if (CONTROLLER.equals(parts[1])) {
+                assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
+                assertApprovedPf7ControllerBoundary(Files.readString(path));
+                approvedPf7ControllerDeltas++;
+            } else if (POST_DTOS.equals(parts[1])) {
+                assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
+                assertApprovedPf7DtoBoundary(Files.readString(path));
+                approvedPf7DtoDeltas++;
+            } else if (ADM1_SECURITY_CONFIG.equals(parts[1])) {
                 assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
                 assertApprovedAdm1SecurityBoundary(Files.readString(path));
                 approvedAdm1SecurityDeltas++;
@@ -33,6 +47,8 @@ class IP10TestStageShadowStaticTest {
                 assertThat(current).as(parts[1]).isEqualTo(parts[0]);
             }
         }
+        assertThat(approvedPf7ControllerDeltas).isEqualTo(1);
+        assertThat(approvedPf7DtoDeltas).isEqualTo(1);
         assertThat(approvedAdm1SecurityDeltas).isEqualTo(1);
         Path resources = RepositoryLayout.resolve("jc-backend/src/main/resources");
         try (var stream = Files.walk(resources)) {
@@ -51,8 +67,7 @@ class IP10TestStageShadowStaticTest {
                 "jc-backend/src/main/java/com/jc/backend/search/shadow/stage/StageSearchShadowActivationCondition.java");
         String properties = RepositoryLayout.read(
                 "jc-backend/src/main/java/com/jc/backend/search/shadow/stage/StageSearchShadowProperties.java");
-        String controller = RepositoryLayout.read(
-                "jc-backend/src/main/java/com/jc/backend/post/PostController.java");
+        String controller = RepositoryLayout.read(CONTROLLER);
         assertThat(config).contains("StageSearchShadowActivationCondition", "DefaultExploreSearchShadowBridge")
                 .doesNotContain("@Profile(\"prod\")", "Repository", "EntityManager", "SearchRunRepository");
         assertThat(condition).contains("activationAllowed");
@@ -90,6 +105,31 @@ class IP10TestStageShadowStaticTest {
         assertThat(build).doesNotContain("ignoreFailures", "isIgnoreFailures");
     }
 
+    private static void assertApprovedPf7ControllerBoundary(String source) {
+        assertThat(source).contains(
+                "private final CommentReplyService commentReplyService;",
+                "commentReplyService.comments(postId, userIdOrNull(token), pageable)",
+                "commentReplyService.addComment(",
+                "request.content(), request.parentCommentId()",
+                "postService.deleteComment(userId(token), commentId)");
+        assertThat(source).doesNotContain(
+                "replyRecommendation",
+                "replyExposure",
+                "replySearch",
+                "replyNotification");
+    }
+
+    private static void assertApprovedPf7DtoBoundary(String source) {
+        assertThat(source).contains(
+                "public record CommentRequest(",
+                "Long parentCommentId",
+                "public CommentRequest(String content)",
+                "this(content, null);",
+                "public record CommentView(",
+                "this(id, content, author, createdAt, null);");
+        assertThat(count(source, "Long parentCommentId")).isEqualTo(2);
+    }
+
     private static void assertApprovedAdm1SecurityBoundary(String source) {
         assertThat(source).contains(
                 "\"/api/admin\"",
@@ -102,6 +142,16 @@ class IP10TestStageShadowStaticTest {
                 ".requestMatchers(\"/api/admin/**\").permitAll()",
                 "search.shadow.stage",
                 "SearchShadowDispatchReceiptV1");
+    }
+
+    private static int count(String value, String token) {
+        int count = 0;
+        int offset = 0;
+        while ((offset = value.indexOf(token, offset)) >= 0) {
+            count++;
+            offset += token.length();
+        }
+        return count;
     }
 
     private static String sha256(Path path) throws Exception {

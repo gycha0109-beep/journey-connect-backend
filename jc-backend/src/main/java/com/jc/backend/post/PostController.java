@@ -36,16 +36,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostController {
 
     private final PostService postService;
+    private final CommentReplyService commentReplyService;
     private final RecommendationFeedService recommendationFeedService;
     private final RecommendationPostInteractionService recommendationPostInteractionService;
     private final ExploreSearchShadowBridge exploreSearchShadowBridge;
 
     public PostController(
             PostService postService,
+            CommentReplyService commentReplyService,
             RecommendationFeedService recommendationFeedService,
             RecommendationPostInteractionService recommendationPostInteractionService,
             ExploreSearchShadowBridge exploreSearchShadowBridge) {
         this.postService = postService;
+        this.commentReplyService = commentReplyService;
         this.recommendationFeedService = recommendationFeedService;
         this.recommendationPostInteractionService = recommendationPostInteractionService;
         this.exploreSearchShadowBridge = exploreSearchShadowBridge;
@@ -182,7 +185,7 @@ public class PostController {
             @PathVariable Long postId,
             @AuthenticationPrincipal Jwt token,
             @PageableDefault(size = 50) Pageable pageable) {
-        return ApiResponse.ok(postService.comments(postId, userIdOrNull(token), pageable));
+        return ApiResponse.ok(commentReplyService.comments(postId, userIdOrNull(token), pageable));
     }
 
     @PostMapping("/posts/{postId}/comments")
@@ -191,8 +194,8 @@ public class PostController {
             @AuthenticationPrincipal Jwt token,
             @PathVariable Long postId,
             @Valid @RequestBody PostDtos.CommentRequest request) {
-        return ApiResponse.created(
-                postService.addComment(userId(token), postId, request.content()));
+        return ApiResponse.created(commentReplyService.addComment(
+                userId(token), postId, request.content(), request.parentCommentId()));
     }
 
     @DeleteMapping("/comments/{commentId}")

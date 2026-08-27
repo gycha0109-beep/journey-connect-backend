@@ -1,5 +1,6 @@
 package com.jc.backend.post;
 
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -19,4 +20,18 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             order by c.createdAt asc, c.id asc
             """)
     Page<Comment> findVisibleByPostId(@Param("postId") Long postId, Pageable pageable);
+
+    @EntityGraph(attributePaths = "author")
+    @Query("""
+            select c from Comment c
+            where c.id = :parentCommentId
+              and c.post.id = :postId
+              and c.parent is null
+              and c.deletedAt is null
+              and c.moderationDeletedAt is null
+              and c.author.accountStatus = 'active'
+            """)
+    Optional<Comment> findVisibleTopLevelParent(
+            @Param("parentCommentId") Long parentCommentId,
+            @Param("postId") Long postId);
 }
