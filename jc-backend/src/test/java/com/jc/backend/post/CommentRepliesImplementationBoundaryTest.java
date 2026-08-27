@@ -42,7 +42,8 @@ class CommentRepliesImplementationBoundaryTest {
         assertFalse(runtime.contains("Recommendation"));
         assertFalse(runtime.contains("Exposure"));
         assertFalse(runtime.contains("Search"));
-        assertFalse(runtime.contains("Notification"));
+        assertTrue(service.contains("NotificationService"),
+                "PF8 successor notification extension must remain inside the PF7 APP service boundary");
     }
 
     @Test
