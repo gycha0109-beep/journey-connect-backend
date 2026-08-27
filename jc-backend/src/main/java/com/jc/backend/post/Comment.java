@@ -29,6 +29,10 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "author_id", nullable = false)
     private UserAccount author;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_comment_id")
+    private Comment parent;
+
     @Column(nullable = false, length = 1000)
     private String content;
 
@@ -41,9 +45,14 @@ public class Comment extends BaseTimeEntity {
     protected Comment() {}
 
     public Comment(JourneyPost post, UserAccount author, String content) {
+        this(post, author, content, null);
+    }
+
+    public Comment(JourneyPost post, UserAccount author, String content, Comment parent) {
         this.post = post;
         this.author = author;
         this.content = content;
+        this.parent = parent;
     }
 
     public void deleteByAuthor() {
@@ -66,5 +75,9 @@ public class Comment extends BaseTimeEntity {
 
     public String getContent() {
         return content;
+    }
+
+    public Long getParentCommentId() {
+        return parent == null ? null : parent.getId();
     }
 }
