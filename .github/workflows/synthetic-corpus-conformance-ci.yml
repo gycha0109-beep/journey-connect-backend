@@ -1,0 +1,33 @@
+name: Synthetic Corpus Conformance CI
+
+on:
+  push:
+    paths:
+      - 'tools/synthetic-corpus/**'
+      - '.github/workflows/synthetic-corpus-conformance-ci.yml'
+  pull_request:
+    paths:
+      - 'tools/synthetic-corpus/**'
+      - '.github/workflows/synthetic-corpus-conformance-ci.yml'
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Compile tooling
+        run: python -m py_compile tools/synthetic-corpus/generate.py
+      - name: Unit conformance tests
+        run: python -m unittest discover -s tools/synthetic-corpus/tests -p 'test_*.py' -v
+      - name: Deterministic generation smoke test
+        run: |
+          python tools/synthetic-corpus/generate.py --seed 20260827 --users 20 --crews 4 --social-edges 20 --output build/synthetic-a.json
+          python tools/synthetic-corpus/generate.py --seed 20260827 --users 20 --crews 4 --social-edges 20 --output build/synthetic-b.json
+          cmp build/synthetic-a.json build/synthetic-b.json
+          python tools/synthetic-corpus/generate.py --validate-only build/synthetic-a.json
