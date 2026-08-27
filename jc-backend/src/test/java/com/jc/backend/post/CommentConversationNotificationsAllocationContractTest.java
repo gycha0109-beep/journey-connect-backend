@@ -12,14 +12,16 @@ class CommentConversationNotificationsAllocationContractTest {
 
     private static final String DOCUMENT =
             "docs/platform/governance/SC-PF8-COMMENT-CONVERSATION-NOTIFICATIONS-ALLOCATION.md";
+    private static final String AMENDMENT =
+            "docs/platform/governance/SC-PF8-COMMENT-CONVERSATION-NOTIFICATIONS-SQL-AMENDMENT.md";
 
     @Test
-    void allocationLocksRecipientsDedupeTransactionAndNoSqlBoundary() throws IOException {
+    void allocationLocksRecipientsDedupeTransactionAndSql67To68Boundary() throws IOException {
         String allocation = read(DOCUMENT);
 
         for (String required : new String[] {
                 "sc-pf8-comment-conversation-notifications-v1",
-                "APPROVED / IMPLEMENTATION_AUTHORITY_GRANTED",
+                "AMENDED / IMPLEMENTATION_AUTHORITY_GRANTED",
                 "CONTRACT_ID=comment-conversation-notification-v1",
                 "TOP_LEVEL_COMMENT_EVENT=post_comment",
                 "TOP_LEVEL_COMMENT_RECIPIENT=post.author_id",
@@ -29,8 +31,9 @@ class CommentConversationNotificationsAllocationContractTest {
                 "TOP_LEVEL_DEDUPE_KEY=post_comment:{commentId}",
                 "REPLY_DEDUPE_KEY=comment_reply:{replyCommentId}",
                 "COMMENT_NOTIFICATION_CONSISTENCY=SAME_APP_TRANSACTION",
-                "NEW_SQL=NONE",
-                "SQL_67_PLUS=UNALLOCATED",
+                "67_comment_conversation_notification_types.sql",
+                "68_comment_conversation_notification_types_smoke_test.sql",
+                "SQL_69_PLUS=UNALLOCATED",
                 "public.user_notifications",
                 "One successful comment write produces at most one PF8 notification event"
         }) {
@@ -39,7 +42,22 @@ class CommentConversationNotificationsAllocationContractTest {
     }
 
     @Test
-    void allocationDoesNotGrantLikeReportRealtimeRecommendationSearchOrSql67() throws IOException {
+    void sqlAmendmentIsExplicitAndDoesNotWidenStorageOrRoles() throws IOException {
+        String allocation = read(DOCUMENT);
+        String amendment = read(AMENDMENT);
+
+        assertTrue(amendment.contains("sc-pf8-comment-notification-sql-amendment-v1"));
+        assertTrue(amendment.contains("canonical SQL55"));
+        assertTrue(amendment.contains("user_notifications_type_check"));
+        assertTrue(amendment.contains("user_notifications_target_type_check"));
+        assertTrue(amendment.contains("SQL67/68"));
+        assertTrue(amendment.contains("SQL69+ remains unallocated"));
+        assertTrue(allocation.contains("do not alter columns, indexes, sequence ownership, unique dedupe semantics, RLS, roles, or grants"));
+        assertTrue(allocation.contains("reject mismatched type/target pairs"));
+    }
+
+    @Test
+    void allocationDoesNotGrantLikeReportRealtimeRecommendationSearchOrSql69() throws IOException {
         String allocation = read(DOCUMENT);
 
         for (String prohibitedAuthority : new String[] {
@@ -47,7 +65,7 @@ class CommentConversationNotificationsAllocationContractTest {
                 "report-created or report-result notification",
                 "WebSocket/SSE",
                 "Recommendation/Search feedback",
-                "SQL `67+`"
+                "SQL `69+`"
         }) {
             assertTrue(allocation.contains(prohibitedAuthority),
                     "PF8 non-goal must remain explicit: " + prohibitedAuthority);
@@ -57,7 +75,7 @@ class CommentConversationNotificationsAllocationContractTest {
         assertFalse(allocation.contains("REPORT_NOTIFICATION=YES"));
         assertFalse(allocation.contains("RECOMMENDATION_FEEDBACK=YES"));
         assertFalse(allocation.contains("SEARCH_SIGNAL=YES"));
-        assertFalse(allocation.contains("SQL_67_PLUS=ALLOCATED"));
+        assertFalse(allocation.contains("SQL_69_PLUS=ALLOCATED"));
     }
 
     @Test
@@ -70,7 +88,7 @@ class CommentConversationNotificationsAllocationContractTest {
                 "jc-backend/src/main/java/com/jc/backend/post/CommentReplyService.java"));
         assertTrue(allocation.contains(
                 "Changes to `PostController`, `PostDtos`, `RecommendationPostInteractionService`"));
-        assertTrue(allocation.contains("no role grant widening is permitted"));
+        assertTrue(allocation.contains("no DB grant expansion"));
     }
 
     private static String read(String relativePath) throws IOException {
