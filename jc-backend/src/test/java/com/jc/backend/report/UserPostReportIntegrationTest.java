@@ -131,12 +131,18 @@ class UserPostReportIntegrationTest {
                 "update public.posts set moderation_status = 'hidden' where id = ?",
                 hidden.getId());
 
-        assertReportTargetNotFound(Long.MAX_VALUE, reporter.getId());
-        assertReportTargetNotFound(selfPost.getId(), reporter.getId());
-        assertReportTargetNotFound(draft.getId(), reporter.getId());
-        assertReportTargetNotFound(hidden.getId(), reporter.getId());
+        try {
+            assertReportTargetNotFound(Long.MAX_VALUE, reporter.getId());
+            assertReportTargetNotFound(selfPost.getId(), reporter.getId());
+            assertReportTargetNotFound(draft.getId(), reporter.getId());
+            assertReportTargetNotFound(hidden.getId(), reporter.getId());
 
-        assertThat(reportCount()).isZero();
+            assertThat(reportCount()).isZero();
+        } finally {
+            jdbcTemplate.update(
+                    "update public.posts set moderation_status = 'visible' where id = ?",
+                    hidden.getId());
+        }
     }
 
     @Test
