@@ -38,6 +38,8 @@ RECOMMENDATION_FEATURE=NO
 DEPLOYMENT=NOT_CLAIMED
 ```
 
+`READ_AUTHORITY` above is the product/API disclosure authority. Internal database roles remain separately governed by the canonical role model, and PF6 must not allow the recommendation runtime role to acquire the new protected URL column merely because it already reads Crew recommendation facts.
+
 ## URL contract
 
 A non-empty value must:
@@ -89,10 +91,19 @@ Membership transitions do not mutate the URL. Approval changes only whether a vi
 Allocated responsibility:
 
 - add nullable `open_chat_url VARCHAR(500)` to canonical `crews`;
+- grant APP runtime update authority for `open_chat_url` without widening unrelated writes;
 - preserve all existing Crew columns, constraints and indexes;
 - no new table;
 - no recommendation/search/intelligence schema mutation;
-- no role expansion beyond the existing APP ownership of Crew runtime.
+- replace the existing table-wide `jc_recommendation` SELECT grant on `crews` with the exact Crew fact columns used by `CrewRecommendationCandidateSource`:
+
+```text
+RECOMMENDATION_CREW_COLUMNS=id,owner_id,region_id,travel_date,capacity,recruiting,created_at
+```
+
+The SQL implementation therefore must revoke table-level `SELECT` on `public.crews` from `jc_recommendation` and grant column-level SELECT only on those seven columns. `open_chat_url` must not be selectable by `jc_recommendation`.
+
+This is a privilege narrowing, not a recommendation feature or ranking change. The existing `jc_admin` read authority is an internal administrative database authority and is not a product/API disclosure path; PF6 does not expand it.
 
 ### SQL 64
 
@@ -101,7 +112,9 @@ Allocated responsibility:
 Allocated responsibility:
 
 - PostgreSQL 15/18 column/type/nullability verification;
-- verification that the existing Crew table remains available to the APP runtime;
+- verification that APP can read and owner-controlled application code can update the field;
+- verification that `jc_recommendation` can still select the seven existing Crew candidate fact columns;
+- verification that `jc_recommendation` cannot select `open_chat_url`;
 - verification that no unrelated recommendation/search exposure authority is changed.
 
 SQL `65+` remains unallocated by this decision.
@@ -119,6 +132,8 @@ PF6 must not alter Crew recommendation candidate retrieval, eligibility, score, 
 - public legacy `/api/v1/crews` ordering remains unchanged;
 - no client re-ranking or recommendation fallback semantics are introduced.
 
+Current `CrewRecommendationCandidateSource` uses an explicit SQL projection rather than `SELECT c.*`, and its Crew projection is limited to `id`, `owner_id`, `region_id`, `travel_date`, `capacity`, `recruiting` and `created_at`. PF6 locks that boundary in both application regression and database privilege verification. Recommendation code must not select, map, rank, filter, log or expose `open_chat_url`.
+
 Recommended Crew candidates already exclude owner/pending/approved relations under the current recommendation contract, so personalized recommendation presentation must not use open-chat availability as a score or eligibility signal.
 
 ## Security boundary
@@ -127,6 +142,8 @@ PF6 explicitly forbids:
 
 - exposing a stored URL to PENDING applicants;
 - exposing a stored URL to anonymous or unrelated users;
+- allowing `jc_recommendation` to select `open_chat_url`;
+- selecting or mapping `open_chat_url` in Crew recommendation candidate code;
 - accepting `http`, scheme-relative, hostless, or user-info URLs;
 - server-side HTTP requests to the configured URL;
 - treating the URL as trusted content;
@@ -149,6 +166,8 @@ Implementation is complete only after a successor implementation PR from the mer
 - APPROVED member receives the URL;
 - PENDING/REJECTED/CANCELLED/outsider/anonymous callers do not receive the URL;
 - list/detail/My Crews presentation preserves the disclosure rule;
+- `jc_recommendation` retains its seven required Crew fact reads but cannot read `open_chat_url`;
+- Crew recommendation candidate SQL does not select or map `open_chat_url`;
 - canonical SQL 63/64 copies are byte-identical where required;
 - PostgreSQL 15/18 canonical integration passes;
 - Backend protected regression passes;
