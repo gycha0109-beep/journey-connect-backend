@@ -87,6 +87,7 @@ class SecurityConfig(
                         "/api/v1/explore",
                         "/api/v1/posts/**",
                         "/api/v1/crews/**",
+                        "/api/v1/users/*",
                         "/api/v1/users/*/posts",
                         "/api/v1/regions",
                         "/api/v1/regions/**",

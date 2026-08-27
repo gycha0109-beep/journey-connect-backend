@@ -38,6 +38,13 @@ public class UserController {
         return ApiResponse.ok(userService.updateProfile(userId(token), request));
     }
 
+    @GetMapping("/{userId}")
+    ApiResponse<UserDtos.PublicProfile> publicProfile(
+            @PathVariable long userId,
+            @AuthenticationPrincipal Jwt token) {
+        return ApiResponse.ok(userService.publicProfile(userId, userIdOrNull(token)));
+    }
+
     @GetMapping("/{userId}/posts")
     ApiResponse<PageResponse<PostDtos.Summary>> userPosts(
             @PathVariable long userId,
@@ -61,5 +68,9 @@ public class UserController {
 
     private long userId(Jwt token) {
         return Long.parseLong(token.getSubject());
+    }
+
+    private Long userIdOrNull(Jwt token) {
+        return token == null ? null : userId(token);
     }
 }
