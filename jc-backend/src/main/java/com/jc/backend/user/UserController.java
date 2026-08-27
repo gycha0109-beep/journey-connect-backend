@@ -66,6 +66,13 @@ public class UserController {
         return ApiResponse.ok(userService.myBookmarks(userId(token), pageable));
     }
 
+    @GetMapping("/me/likes")
+    ApiResponse<PageResponse<PostDtos.Summary>> likes(
+            @AuthenticationPrincipal Jwt token,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ApiResponse.ok(userService.myLikes(userId(token), pageable));
+    }
+
     private long userId(Jwt token) {
         return Long.parseLong(token.getSubject());
     }
