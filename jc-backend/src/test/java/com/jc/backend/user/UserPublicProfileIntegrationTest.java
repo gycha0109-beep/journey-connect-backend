@@ -33,15 +33,15 @@ class UserPublicProfileIntegrationTest {
     @Test
     void publicProfileExposesOnlyPublicFieldsCanonicalPostCountAndViewerState() throws Exception {
         String suffix = UUID.randomUUID().toString().substring(0, 8);
-        UserAccount target = new UserAccount(
+        UserAccount unsavedTarget = new UserAccount(
                 "public-profile-target-" + suffix + "@example.com",
                 "hash",
                 "public-target-" + suffix);
-        target.updateProfile(
-                target.getNickname(),
+        unsavedTarget.updateProfile(
+                unsavedTarget.getNickname(),
                 "public bio " + suffix,
                 "https://example.com/profile/" + suffix + ".jpg");
-        target = users.save(target);
+        UserAccount target = users.save(unsavedTarget);
         UserAccount viewer = users.save(new UserAccount(
                 "public-profile-viewer-" + suffix + "@example.com",
                 "hash",
