@@ -107,6 +107,16 @@ public class NotificationService {
     }
 
     @DatabaseTransactional(role = DatabaseRole.APP)
+    public void postCommented(long actorId, long recipientId, long postId, long commentId) {
+        insertPostEvent(actorId, recipientId, postId, "post_comment", "post_comment:" + commentId);
+    }
+
+    @DatabaseTransactional(role = DatabaseRole.APP)
+    public void commentReplied(long actorId, long recipientId, long postId, long replyCommentId) {
+        insertPostEvent(actorId, recipientId, postId, "comment_reply", "comment_reply:" + replyCommentId);
+    }
+
+    @DatabaseTransactional(role = DatabaseRole.APP)
     public void crewApplication(
             long actorId,
             long recipientId,
@@ -152,6 +162,34 @@ public class NotificationService {
                 applicationId,
                 eventAt,
                 "crew_rejected");
+    }
+
+    private void insertPostEvent(
+            long actorId,
+            long recipientId,
+            long postId,
+            String type,
+            String dedupeKey) {
+        if (actorId == recipientId) {
+            return;
+        }
+        jdbc.update(
+                """
+                insert into public.user_notifications(
+                    recipient_id,
+                    actor_id,
+                    type,
+                    target_type,
+                    target_id,
+                    dedupe_key
+                ) values (?, ?, ?, 'post', ?, ?)
+                on conflict (dedupe_key) do nothing
+                """,
+                recipientId,
+                actorId,
+                type,
+                postId,
+                dedupeKey);
     }
 
     private void insertCrewEvent(
