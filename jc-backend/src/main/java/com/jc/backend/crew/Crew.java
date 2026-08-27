@@ -55,6 +55,9 @@ public class Crew extends BaseTimeEntity {
     @Column(name = "approval_required", nullable = false)
     private boolean approvalRequired = true;
 
+    @Column(name = "open_chat_url", length = 500)
+    private String openChatUrl;
+
     protected Crew() {}
 
     public Crew(
@@ -85,6 +88,10 @@ public class Crew extends BaseTimeEntity {
         this.description = description;
         this.travelDate = travelDate;
         this.capacity = capacity;
+    }
+
+    public void updateOpenChatUrl(String openChatUrl) {
+        this.openChatUrl = openChatUrl;
     }
 
     public void closeRecruitment() {
@@ -133,5 +140,9 @@ public class Crew extends BaseTimeEntity {
 
     public boolean isApprovalRequired() {
         return approvalRequired;
+    }
+
+    public String getOpenChatUrl() {
+        return openChatUrl;
     }
 }
