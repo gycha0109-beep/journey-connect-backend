@@ -66,36 +66,48 @@ class UserLikedPostsIntegrationTest {
         like(viewer, inactiveAuthorPost);
         like(viewer, privatePost);
 
-        jdbc.update(
-                "update public.posts set moderation_status = 'hidden' where id = ?",
-                hidden.getId());
-        jdbc.update(
-                "update public.app_users set account_status = 'suspended' where id = ?",
-                inactiveAuthor.getId());
-        jdbc.update(
-                "update public.posts set visibility = 'private' where id = ?",
-                privatePost.getId());
+        try {
+            jdbc.update(
+                    "update public.posts set moderation_status = 'hidden' where id = ?",
+                    hidden.getId());
+            jdbc.update(
+                    "update public.app_users set account_status = 'suspended' where id = ?",
+                    inactiveAuthor.getId());
+            jdbc.update(
+                    "update public.posts set visibility = 'private' where id = ?",
+                    privatePost.getId());
 
-        mockMvc.perform(get("/api/v1/users/me/likes")
-                        .param("page", "0")
-                        .param("size", "1")
-                        .with(jwt().jwt(token -> token.subject(viewer.getId().toString()))))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.items.length()").value(1))
-                .andExpect(jsonPath("$.data.items[0].id").value(visibleNew.getId()))
-                .andExpect(jsonPath("$.data.totalElements").value(2))
-                .andExpect(jsonPath("$.data.totalPages").value(2))
-                .andExpect(jsonPath("$.data.last").value(false));
+            mockMvc.perform(get("/api/v1/users/me/likes")
+                            .param("page", "0")
+                            .param("size", "1")
+                            .with(jwt().jwt(token -> token.subject(viewer.getId().toString()))))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.items.length()").value(1))
+                    .andExpect(jsonPath("$.data.items[0].id").value(visibleNew.getId()))
+                    .andExpect(jsonPath("$.data.totalElements").value(2))
+                    .andExpect(jsonPath("$.data.totalPages").value(2))
+                    .andExpect(jsonPath("$.data.last").value(false));
 
-        mockMvc.perform(get("/api/v1/users/me/likes")
-                        .param("page", "1")
-                        .param("size", "1")
-                        .with(jwt().jwt(token -> token.subject(viewer.getId().toString()))))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.items.length()").value(1))
-                .andExpect(jsonPath("$.data.items[0].id").value(visibleOld.getId()))
-                .andExpect(jsonPath("$.data.totalElements").value(2))
-                .andExpect(jsonPath("$.data.last").value(true));
+            mockMvc.perform(get("/api/v1/users/me/likes")
+                            .param("page", "1")
+                            .param("size", "1")
+                            .with(jwt().jwt(token -> token.subject(viewer.getId().toString()))))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.items.length()").value(1))
+                    .andExpect(jsonPath("$.data.items[0].id").value(visibleOld.getId()))
+                    .andExpect(jsonPath("$.data.totalElements").value(2))
+                    .andExpect(jsonPath("$.data.last").value(true));
+        } finally {
+            jdbc.update(
+                    "update public.posts set moderation_status = 'visible' where id = ?",
+                    hidden.getId());
+            jdbc.update(
+                    "update public.app_users set account_status = 'active' where id = ?",
+                    inactiveAuthor.getId());
+            jdbc.update(
+                    "update public.posts set visibility = 'public' where id = ?",
+                    privatePost.getId());
+        }
     }
 
     @Test
