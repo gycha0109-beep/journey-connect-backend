@@ -18,7 +18,20 @@ public final class CrewDtos {
             @NotBlank String description,
             LocalDate travelDate,
             @Min(2) @Max(20) int capacity,
-            Boolean approvalRequired) {}
+            Boolean approvalRequired,
+            @Size(max = 500) String openChatUrl) {
+
+        public CreateRequest(
+                String title,
+                String regionCode,
+                String regionName,
+                String description,
+                LocalDate travelDate,
+                int capacity,
+                Boolean approvalRequired) {
+            this(title, regionCode, regionName, description, travelDate, capacity, approvalRequired, null);
+        }
+    }
 
     public record UpdateRequest(
             @Size(max = 120) String title,
@@ -26,7 +39,19 @@ public final class CrewDtos {
             @Size(max = 100) String regionName,
             String description,
             LocalDate travelDate,
-            @Min(2) @Max(20) Integer capacity) {}
+            @Min(2) @Max(20) Integer capacity,
+            @Size(max = 500) String openChatUrl) {
+
+        public UpdateRequest(
+                String title,
+                String regionCode,
+                String regionName,
+                String description,
+                LocalDate travelDate,
+                Integer capacity) {
+            this(title, regionCode, regionName, description, travelDate, capacity, null);
+        }
+    }
 
     public record ReviewRequest(CrewMemberStatus status) {}
 
@@ -45,14 +70,62 @@ public final class CrewDtos {
             Long ownerId,
             String ownerNickname,
             Instant createdAt,
-            Viewer viewer) {}
+            String openChatUrl,
+            Viewer viewer) {
+
+        public View(
+                Long id,
+                String title,
+                String regionCode,
+                String regionName,
+                String description,
+                LocalDate travelDate,
+                int capacity,
+                long memberCount,
+                long pendingApplicationCount,
+                boolean recruiting,
+                boolean approvalRequired,
+                Long ownerId,
+                String ownerNickname,
+                Instant createdAt,
+                Viewer viewer) {
+            this(
+                    id,
+                    title,
+                    regionCode,
+                    regionName,
+                    description,
+                    travelDate,
+                    capacity,
+                    memberCount,
+                    pendingApplicationCount,
+                    recruiting,
+                    approvalRequired,
+                    ownerId,
+                    ownerNickname,
+                    createdAt,
+                    null,
+                    viewer);
+        }
+    }
 
     public record Viewer(
             CrewMemberStatus membershipStatus,
             boolean owner,
             boolean canJoin,
             boolean canCancel,
-            boolean canManageApplications) {}
+            boolean canManageApplications,
+            boolean canAccessOpenChat) {
+
+        public Viewer(
+                CrewMemberStatus membershipStatus,
+                boolean owner,
+                boolean canJoin,
+                boolean canCancel,
+                boolean canManageApplications) {
+            this(membershipStatus, owner, canJoin, canCancel, canManageApplications, false);
+        }
+    }
 
     public record MyCrewItem(
             View crew,

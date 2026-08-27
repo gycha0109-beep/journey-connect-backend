@@ -9,6 +9,8 @@ import com.jc.backend.region.Region;
 import com.jc.backend.region.RegionService;
 import com.jc.backend.user.UserAccount;
 import com.jc.backend.user.UserRepository;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -41,6 +43,7 @@ public class CrewService {
     private static final int MAX_RECRUITING_OWNED_CREWS = 3;
     private static final int MIN_CAPACITY = 2;
     private static final int MAX_CAPACITY = 20;
+    private static final int MAX_OPEN_CHAT_URL_LENGTH = 500;
 
     private final CrewRepository crews;
     private final CrewMemberRepository members;
@@ -158,14 +161,16 @@ public class CrewService {
         Region region = regionService.require(request.regionCode(), request.regionName());
         boolean approvalRequired = request.approvalRequired() == null
                 || request.approvalRequired();
-        Crew crew = crews.save(new Crew(
+        Crew crew = new Crew(
                 owner,
                 region,
                 request.title().trim(),
                 request.description().trim(),
                 request.travelDate(),
                 request.capacity(),
-                approvalRequired));
+                approvalRequired);
+        crew.updateOpenChatUrl(normalizeOpenChatUrl(request.openChatUrl()));
+        crew = crews.save(crew);
         members.save(new CrewMember(crew, owner, CrewMemberStatus.OWNER));
         return view(
                 crew,
@@ -213,6 +218,9 @@ public class CrewService {
         if (crew.isRecruiting()) {
             ensureTravelDateNotPassed(nextTravelDate);
         }
+        String nextOpenChatUrl = request.openChatUrl() == null
+                ? crew.getOpenChatUrl()
+                : normalizeOpenChatUrl(request.openChatUrl());
 
         crew.updateDetails(
                 nextRegion,
@@ -220,6 +228,7 @@ public class CrewService {
                 nextDescription,
                 nextTravelDate,
                 nextCapacity);
+        crew.updateOpenChatUrl(nextOpenChatUrl);
         return managementView(crew, ownerId, memberCount);
     }
 
@@ -406,6 +415,39 @@ public class CrewService {
         return value;
     }
 
+    private String normalizeOpenChatUrl(String requested) {
+        if (requested == null) {
+            return null;
+        }
+        String value = requested.trim();
+        if (value.isBlank()) {
+            return null;
+        }
+        if (value.length() > MAX_OPEN_CHAT_URL_LENGTH) {
+            throw invalidOpenChatUrl();
+        }
+        try {
+            URI uri = new URI(value);
+            if (!uri.isAbsolute()
+                    || !"https".equalsIgnoreCase(uri.getScheme())
+                    || uri.getHost() == null
+                    || uri.getHost().isBlank()
+                    || uri.getUserInfo() != null) {
+                throw invalidOpenChatUrl();
+            }
+            return value;
+        } catch (URISyntaxException exception) {
+            throw invalidOpenChatUrl();
+        }
+    }
+
+    private DomainException invalidOpenChatUrl() {
+        return new DomainException(
+                HttpStatus.BAD_REQUEST,
+                "INVALID_CREW_OPEN_CHAT_URL",
+                "오픈채팅 URL은 사용자 정보가 없는 유효한 HTTPS 주소여야 합니다.");
+    }
+
     private boolean travelDatePassed(LocalDate travelDate) {
         return travelDate != null && travelDate.isBefore(LocalDate.now());
     }
@@ -556,13 +598,17 @@ public class CrewService {
                 && memberCount < crew.getCapacity();
         boolean canCancel = effectiveStatus == CrewMemberStatus.PENDING
                 || effectiveStatus == CrewMemberStatus.APPROVED;
+        boolean canAccessOpenChat = crew.getOpenChatUrl() != null
+                && (effectiveStatus == CrewMemberStatus.OWNER
+                        || effectiveStatus == CrewMemberStatus.APPROVED);
 
         return new CrewDtos.Viewer(
                 effectiveStatus,
                 owner,
                 canJoin,
                 canCancel,
-                owner);
+                owner,
+                canAccessOpenChat);
     }
 
     private Instant joinedOrAppliedAt(CrewMember member) {
@@ -581,6 +627,9 @@ public class CrewService {
             long memberCount,
             long pendingCount,
             CrewDtos.Viewer viewer) {
+        String openChatUrl = viewer != null && viewer.canAccessOpenChat()
+                ? crew.getOpenChatUrl()
+                : null;
         return new CrewDtos.View(
                 crew.getId(),
                 crew.getTitle(),
@@ -596,6 +645,7 @@ public class CrewService {
                 crew.getOwner().getId(),
                 crew.getOwner().getNickname(),
                 crew.getCreatedAt(),
+                openChatUrl,
                 viewer);
     }
 
