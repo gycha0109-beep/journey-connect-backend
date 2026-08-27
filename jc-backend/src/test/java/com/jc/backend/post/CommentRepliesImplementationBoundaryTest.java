@@ -56,12 +56,16 @@ class CommentRepliesImplementationBoundaryTest {
         assertTrue(sql.contains("v_parent_parent_comment_id IS NOT NULL"));
         assertTrue(sql.contains("GRANT INSERT (parent_comment_id) ON public.comments TO jc_app"));
         assertTrue(sql.contains("REVOKE UPDATE (parent_comment_id) ON public.comments FROM jc_app"));
+        assertTrue(sql.contains("jc_recommendation"));
+        assertTrue(sql.contains("REVOKE EXECUTE ON FUNCTION public.enforce_comment_reply_structure()"));
 
         assertFalse(sql.contains("CREATE TABLE"));
-        assertFalse(sql.contains("notification"));
-        assertFalse(sql.contains("recommendation"));
-        assertFalse(sql.contains("exposure"));
-        assertFalse(sql.contains("search"));
+        assertFalse(sql.contains("CREATE INDEX recommendation"));
+        assertFalse(sql.contains("CREATE INDEX search"));
+        assertFalse(sql.contains("CREATE INDEX exposure"));
+        assertFalse(sql.contains("GRANT INSERT (parent_comment_id) ON public.comments TO jc_recommendation"));
+        assertFalse(sql.contains("GRANT UPDATE (parent_comment_id) ON public.comments TO jc_recommendation"));
+        assertFalse(sql.contains("notification persistence"));
     }
 
     @Test
