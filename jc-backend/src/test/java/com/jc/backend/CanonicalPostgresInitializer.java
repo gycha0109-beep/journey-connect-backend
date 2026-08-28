@@ -56,7 +56,9 @@ public final class CanonicalPostgresInitializer
             "65_comment_replies.sql",
             "66_comment_replies_smoke_test.sql",
             "67_comment_conversation_notification_types.sql",
-            "68_comment_conversation_notification_types_smoke_test.sql");
+            "68_comment_conversation_notification_types_smoke_test.sql",
+            "69_post_like_notification_type.sql",
+            "70_post_like_notification_type_smoke_test.sql");
 
     private static final String EXTERNAL_URL = setting("jc.test.db.url", "JC_TEST_DB_URL", "");
     private static final String EXTERNAL_USERNAME = setting(
