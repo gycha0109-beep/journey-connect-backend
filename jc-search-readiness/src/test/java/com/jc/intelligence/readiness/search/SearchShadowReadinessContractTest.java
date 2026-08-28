@@ -532,6 +532,21 @@ public final class SearchShadowReadinessContractTest {
                                 && !feedService.contains("return rca2Registrar")
                                 && !feedService.contains("SHADOW_RESULT_SERVING"),
                         "RCA-2 feed hook cannot become response authority");
+            } else if (entry.relativePath().equals(
+                    "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationPostInteractionService.java")) {
+                String interactionService = Files.readString(file);
+                check(!sha256(file).equals(entry.sha256()), "approved PF10 recommendation interaction delta exists");
+                check(interactionService.contains("public void apply(")
+                                && interactionService.contains("applyWithResult(userId, tokenId, postId, action, tracking);")
+                                && interactionService.contains("public Result applyWithResult(")
+                                && interactionService.contains("Result result = interactionStore.apply(new InteractionWrite(")
+                                && interactionService.contains("return result;"),
+                        "approved PF10 delta only exposes the canonical interaction result");
+                check(!interactionService.contains("SearchShadow")
+                                && !interactionService.contains("SHADOW_RESULT_SERVING")
+                                && !interactionService.contains("RecommendationFeedService")
+                                && !interactionService.contains("NotificationService"),
+                        "PF10 result exposure cannot acquire search, serving, feed or notification authority");
             } else {
                 check(sha256(file).equals(entry.sha256()), "protected file exact " + entry.relativePath());
             }

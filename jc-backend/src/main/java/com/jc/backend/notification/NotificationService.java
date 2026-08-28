@@ -107,6 +107,35 @@ public class NotificationService {
     }
 
     @DatabaseTransactional(role = DatabaseRole.APP)
+    public void postLiked(long actorId, long postId) {
+        jdbc.update(
+                """
+                insert into public.user_notifications(
+                    recipient_id,
+                    actor_id,
+                    type,
+                    target_type,
+                    target_id,
+                    dedupe_key
+                )
+                select p.author_id,
+                       ?,
+                       'post_like',
+                       'post',
+                       p.id,
+                       ?
+                from public.posts p
+                where p.id = ?
+                  and p.author_id <> ?
+                on conflict (dedupe_key) do nothing
+                """,
+                actorId,
+                "post_like:" + postId + ":" + actorId,
+                postId,
+                actorId);
+    }
+
+    @DatabaseTransactional(role = DatabaseRole.APP)
     public void postCommented(long actorId, long recipientId, long postId, long commentId) {
         insertPostEvent(actorId, recipientId, postId, "post_comment", "post_comment:" + commentId);
     }

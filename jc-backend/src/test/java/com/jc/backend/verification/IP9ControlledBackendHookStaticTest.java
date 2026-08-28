@@ -19,6 +19,10 @@ class IP9ControlledBackendHookStaticTest {
             "jc-backend/src/main/java/com/jc/backend/post/PostDtos.java";
     private static final String RCA2_FEED_SERVICE =
             "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationFeedService.java";
+    private static final String PF10_INTERACTION_SERVICE =
+            "jc-backend/src/main/java/com/jc/backend/recommendation/application/RecommendationPostInteractionService.java";
+    private static final String PF10_ALLOCATION =
+            "docs/platform/governance/SC-PF10-POST-LIKE-NOTIFICATION-ALLOCATION.md";
     private static final String ADM1_SECURITY_CONFIG =
             "jc-backend/src/main/kotlin/com/jc/backend/config/SecurityConfig.kt";
 
@@ -75,13 +79,14 @@ class IP9ControlledBackendHookStaticTest {
     }
 
     @Test
-    void allPriorRecommendationAndSqlProtectedSourcesRemainExactExceptApprovedRca2Hook() throws Exception {
+    void allPriorRecommendationAndSqlProtectedSourcesRemainExactExceptApprovedSuccessors() throws Exception {
         Path manifest = RepositoryLayout.resolve("verification/ip8/IP8_PROTECTED_BASELINE_EXPECTED_SHA256.txt");
         List<String> lines = Files.readAllLines(manifest, StandardCharsets.UTF_8).stream()
                 .filter(line -> !line.isBlank())
                 .toList();
         int checked = 0;
         int approvedRca2Deltas = 0;
+        int approvedPf10Deltas = 0;
         for (String line : lines) {
             String[] parts = line.trim().split("\\s+", 2);
             assertThat(parts).hasSize(2);
@@ -91,6 +96,10 @@ class IP9ControlledBackendHookStaticTest {
                 assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
                 assertApprovedRca2FeedRegistrationBoundary(Files.readString(path));
                 approvedRca2Deltas++;
+            } else if (PF10_INTERACTION_SERVICE.equals(parts[1])) {
+                assertThat(current).as(parts[1]).isNotEqualTo(parts[0]);
+                assertApprovedPf10InteractionResultBoundary(Files.readString(path));
+                approvedPf10Deltas++;
             } else {
                 assertThat(current).as(parts[1]).isEqualTo(parts[0]);
             }
@@ -99,6 +108,7 @@ class IP9ControlledBackendHookStaticTest {
         assertThat(lines).hasSize(320);
         assertThat(checked).isEqualTo(320);
         assertThat(approvedRca2Deltas).isEqualTo(1);
+        assertThat(approvedPf10Deltas).isEqualTo(1);
     }
 
     @Test
@@ -188,6 +198,29 @@ class IP9ControlledBackendHookStaticTest {
                 "return rca2Registrar",
                 "return Rca2RequestRegistrar",
                 "SHADOW_RESULT_SERVING");
+    }
+
+    private static void assertApprovedPf10InteractionResultBoundary(String source) throws IOException {
+        String allocation = RepositoryLayout.read(PF10_ALLOCATION);
+        assertThat(allocation).contains(
+                "sc-pf10-post-like-notification-v1",
+                "APPROVED / IMPLEMENTATION_AUTHORITY_GRANTED",
+                "SOURCE_RESULT=APPLIED",
+                "RecommendationPostInteractionService",
+                "PostLikeNotificationCoordinator");
+        assertThat(source).contains(
+                "public void apply(",
+                "applyWithResult(userId, tokenId, postId, action, tracking);",
+                "public Result applyWithResult(",
+                "Result result = interactionStore.apply(",
+                "if (result == Result.IDEMPOTENCY_CONFLICT)",
+                "return result;");
+        assertThat(source).doesNotContain(
+                "NotificationService",
+                "user_notifications",
+                "post_like",
+                "WebSocket",
+                "SseEmitter");
     }
 
     private static void assertApprovedAdm1SecurityBoundary(String source) {

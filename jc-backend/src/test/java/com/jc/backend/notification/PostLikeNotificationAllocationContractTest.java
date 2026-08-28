@@ -71,11 +71,15 @@ class PostLikeNotificationAllocationContractTest {
 
         Path production = repositoryRoot().resolve("database/journey-connect-db-v2.7");
         Path mirror = repositoryRoot().resolve("jc-backend/src/test/resources/db/canonical");
+        assertTrue(Files.isRegularFile(production.resolve("69_post_like_notification_type.sql")));
+        assertTrue(Files.isRegularFile(production.resolve("70_post_like_notification_type_smoke_test.sql")));
+        assertTrue(Files.isRegularFile(mirror.resolve("69_post_like_notification_type.sql")));
+        assertTrue(Files.isRegularFile(mirror.resolve("70_post_like_notification_type_smoke_test.sql")));
         try (var files = Files.list(production)) {
-            assertFalse(files.anyMatch(path -> path.getFileName().toString().matches("^(69|70|71)_.*\\.sql$")));
+            assertFalse(files.anyMatch(path -> path.getFileName().toString().matches("^71_.*\\.sql$")));
         }
         try (var files = Files.list(mirror)) {
-            assertFalse(files.anyMatch(path -> path.getFileName().toString().matches("^(69|70|71)_.*\\.sql$")));
+            assertFalse(files.anyMatch(path -> path.getFileName().toString().matches("^71_.*\\.sql$")));
         }
     }
 
