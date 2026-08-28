@@ -39,6 +39,7 @@ public class PostController {
     private final CommentReplyService commentReplyService;
     private final RecommendationFeedService recommendationFeedService;
     private final RecommendationPostInteractionService recommendationPostInteractionService;
+    private final PostLikeNotificationCoordinator postLikeNotificationCoordinator;
     private final ExploreSearchShadowBridge exploreSearchShadowBridge;
 
     public PostController(
@@ -46,11 +47,13 @@ public class PostController {
             CommentReplyService commentReplyService,
             RecommendationFeedService recommendationFeedService,
             RecommendationPostInteractionService recommendationPostInteractionService,
+            PostLikeNotificationCoordinator postLikeNotificationCoordinator,
             ExploreSearchShadowBridge exploreSearchShadowBridge) {
         this.postService = postService;
         this.commentReplyService = commentReplyService;
         this.recommendationFeedService = recommendationFeedService;
         this.recommendationPostInteractionService = recommendationPostInteractionService;
+        this.postLikeNotificationCoordinator = postLikeNotificationCoordinator;
         this.exploreSearchShadowBridge = exploreSearchShadowBridge;
     }
 
@@ -121,11 +124,10 @@ public class PostController {
             @RequestHeader(name = "X-Recommendation-Event-Id", required = false) String eventId,
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestHeader(name = "X-Recommendation-Occurred-At", required = false) Instant occurredAt) {
-        recommendationPostInteractionService.apply(
+        postLikeNotificationCoordinator.like(
                 userId(token),
                 token.getId(),
                 postId,
-                Action.LIKE,
                 new TrackingContext(runId, eventId, idempotencyKey, occurredAt));
     }
 
