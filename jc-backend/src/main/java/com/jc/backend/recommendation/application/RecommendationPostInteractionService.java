@@ -42,6 +42,15 @@ public final class RecommendationPostInteractionService {
             long postId,
             Action action,
             TrackingContext tracking) {
+        applyWithResult(userId, tokenId, postId, action, tracking);
+    }
+
+    public Result applyWithResult(
+            long userId,
+            String tokenId,
+            long postId,
+            Action action,
+            TrackingContext tracking) {
         if (userId <= 0 || postId <= 0) {
             throw badRequest("RECOMMENDATION_INTERACTION_INVALID", "사용자 또는 게시물 정보가 올바르지 않습니다.");
         }
@@ -97,6 +106,7 @@ public final class RecommendationPostInteractionService {
                         "IDEMPOTENCY_CONFLICT",
                         "같은 멱등키가 다른 게시물 행동에 이미 사용되었습니다.");
             }
+            return result;
         } catch (InteractionBindingException exception) {
             throw new DomainException(
                     HttpStatus.FORBIDDEN,
