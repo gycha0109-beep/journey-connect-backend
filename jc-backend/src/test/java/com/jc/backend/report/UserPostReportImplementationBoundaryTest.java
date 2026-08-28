@@ -84,7 +84,7 @@ class UserPostReportImplementationBoundaryTest {
     }
 
     @Test
-    void protectedControllersAndSecurityConfigRemainUnmodifiedByPf9Shape() throws IOException {
+    void protectedControllersAndSecurityConfigRemainSeparatedFromPf9ReportRuntime() throws IOException {
         String postController = read("jc-backend/src/main/java/com/jc/backend/post/PostController.java");
         String securityConfig = read("jc-backend/src/main/kotlin/com/jc/backend/config/SecurityConfig.kt");
 
@@ -95,15 +95,25 @@ class UserPostReportImplementationBoundaryTest {
     }
 
     @Test
-    void sql69AndLaterPf9MigrationRemainUnallocated() throws IOException {
+    void pf9NoSqlBoundaryIsHistoricalAndPf10ExclusivelyOwnsSql69And70() throws IOException {
+        String pf9 = read("docs/platform/governance/SC-PF9-USER-POST-REPORT-ALLOCATION.md");
+        String pf10 = read("docs/platform/governance/SC-PF10-POST-LIKE-NOTIFICATION-ALLOCATION.md");
+        assertTrue(pf9.contains("SQL_69_PLUS=UNALLOCATED"));
+        assertTrue(pf10.contains("SQL_69=ALLOCATED"));
+        assertTrue(pf10.contains("SQL_70=ALLOCATED"));
+        assertTrue(pf10.contains("SQL_71_PLUS=UNALLOCATED"));
+
         Path production = repositoryRoot().resolve("database/journey-connect-db-v2.7");
         Path mirror = repositoryRoot().resolve("jc-backend/src/test/resources/db/canonical");
-
+        assertTrue(Files.isRegularFile(production.resolve("69_post_like_notification_type.sql")));
+        assertTrue(Files.isRegularFile(production.resolve("70_post_like_notification_type_smoke_test.sql")));
+        assertTrue(Files.isRegularFile(mirror.resolve("69_post_like_notification_type.sql")));
+        assertTrue(Files.isRegularFile(mirror.resolve("70_post_like_notification_type_smoke_test.sql")));
         try (var files = Files.list(production)) {
-            assertFalse(files.anyMatch(path -> path.getFileName().toString().matches("^69_.*\\.sql$")));
+            assertFalse(files.anyMatch(path -> path.getFileName().toString().matches("^71_.*\\.sql$")));
         }
         try (var files = Files.list(mirror)) {
-            assertFalse(files.anyMatch(path -> path.getFileName().toString().matches("^69_.*\\.sql$")));
+            assertFalse(files.anyMatch(path -> path.getFileName().toString().matches("^71_.*\\.sql$")));
         }
     }
 
