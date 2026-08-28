@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 /** Coordinates canonical LIKE state/event persistence with the PF10 inbox write. */
 @Service
-public final class PostLikeNotificationCoordinator {
+public class PostLikeNotificationCoordinator {
 
     private final RecommendationPostInteractionService interactions;
     private final NotificationService notifications;
