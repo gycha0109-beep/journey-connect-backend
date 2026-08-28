@@ -74,29 +74,33 @@ class CommentConversationNotificationsImplementationBoundaryTest {
 
         assertTrue(commentService.contains("if (parent == null)"));
         assertTrue(commentService.contains("} else {"));
-        assertFalse(runtime.contains("RecommendationPostInteractionService"));
-        assertFalse(runtime.contains("recommendation_behavior_event"));
-        assertFalse(runtime.contains("Search"));
-        assertFalse(runtime.contains("Exposure"));
-        assertFalse(runtime.contains("WebSocket"));
-        assertFalse(runtime.contains("SseEmitter"));
+        assertFalse(commentService.contains("RecommendationPostInteractionService"));
+        assertFalse(commentService.contains("recommendation_behavior_event"));
+        assertFalse(commentService.contains("Search"));
+        assertFalse(commentService.contains("Exposure"));
+        assertFalse(commentService.contains("WebSocket"));
+        assertFalse(commentService.contains("SseEmitter"));
     }
 
     @Test
-    void canonicalBootstrapIncludesPf8SqlAndSql69RemainsAbsent() throws IOException {
+    void pf8BootstrapRemainsIntactAndPf10OwnsSql69And70() throws IOException {
         String initializer = read("jc-backend/src/test/java/com/jc/backend/CanonicalPostgresInitializer.java");
+        String pf10 = read("docs/platform/governance/SC-PF10-POST-LIKE-NOTIFICATION-ALLOCATION.md");
         assertTrue(initializer.contains("67_comment_conversation_notification_types.sql"));
         assertTrue(initializer.contains("68_comment_conversation_notification_types_smoke_test.sql"));
+        assertTrue(initializer.contains("69_post_like_notification_type.sql"));
+        assertTrue(initializer.contains("70_post_like_notification_type_smoke_test.sql"));
+        assertTrue(pf10.contains("SQL_69=ALLOCATED"));
+        assertTrue(pf10.contains("SQL_70=ALLOCATED"));
+        assertTrue(pf10.contains("SQL_71_PLUS=UNALLOCATED"));
 
         Path production = repositoryRoot().resolve("database/journey-connect-db-v2.7");
         Path mirror = repositoryRoot().resolve("jc-backend/src/test/resources/db/canonical");
-        assertFalse(Files.exists(production.resolve("69_comment_conversation_notifications.sql")));
-        assertFalse(Files.exists(mirror.resolve("69_comment_conversation_notifications.sql")));
         try (var files = Files.list(production)) {
-            assertFalse(files.anyMatch(path -> path.getFileName().toString().matches("^69_.*\\.sql$")));
+            assertFalse(files.anyMatch(path -> path.getFileName().toString().matches("^71_.*\\.sql$")));
         }
         try (var files = Files.list(mirror)) {
-            assertFalse(files.anyMatch(path -> path.getFileName().toString().matches("^69_.*\\.sql$")));
+            assertFalse(files.anyMatch(path -> path.getFileName().toString().matches("^71_.*\\.sql$")));
         }
     }
 
