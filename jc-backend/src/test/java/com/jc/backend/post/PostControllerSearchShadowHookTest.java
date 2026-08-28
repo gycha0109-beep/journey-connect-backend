@@ -42,8 +42,10 @@ class PostControllerSearchShadowHookTest {
         CommentReplyService comments = mock(CommentReplyService.class);
         RecommendationFeedService feed = mock(RecommendationFeedService.class);
         RecommendationPostInteractionService interactions = mock(RecommendationPostInteractionService.class);
+        PostLikeNotificationCoordinator likeNotifications = mock(PostLikeNotificationCoordinator.class);
         ExploreSearchShadowBridge bridge = mock(ExploreSearchShadowBridge.class);
-        PostController controller = new PostController(service, comments, feed, interactions, bridge);
+        PostController controller = new PostController(
+                service, comments, feed, interactions, likeNotifications, bridge);
         Pageable pageable = org.springframework.data.domain.PageRequest.of(2, 5);
         PageResponse<PostDtos.Summary> legacy = pageResponse();
         when(service.explore("seoul", "KR-SEOUL", pageable)).thenReturn(legacy);
@@ -55,7 +57,7 @@ class PostControllerSearchShadowHookTest {
         assertEquals(ApiResponse.ok(legacy), response);
         verify(service).explore("seoul", "KR-SEOUL", pageable);
         verify(bridge).afterExplore("seoul", "KR-SEOUL", pageable, legacy);
-        verifyNoInteractions(comments, feed, interactions);
+        verifyNoInteractions(comments, feed, interactions, likeNotifications);
     }
 
     @Test
@@ -64,8 +66,10 @@ class PostControllerSearchShadowHookTest {
         CommentReplyService comments = mock(CommentReplyService.class);
         RecommendationFeedService feed = mock(RecommendationFeedService.class);
         RecommendationPostInteractionService interactions = mock(RecommendationPostInteractionService.class);
+        PostLikeNotificationCoordinator likeNotifications = mock(PostLikeNotificationCoordinator.class);
         ExploreSearchShadowBridge bridge = mock(ExploreSearchShadowBridge.class);
-        PostController controller = new PostController(service, comments, feed, interactions, bridge);
+        PostController controller = new PostController(
+                service, comments, feed, interactions, likeNotifications, bridge);
         PageResponse<PostDtos.Summary> legacy = pageResponse();
         when(service.explore(eq("서울"), eq("KR-SEOUL"), any(Pageable.class))).thenReturn(legacy);
 
@@ -98,6 +102,7 @@ class PostControllerSearchShadowHookTest {
         CommentReplyService comments = mock(CommentReplyService.class);
         RecommendationFeedService feed = mock(RecommendationFeedService.class);
         RecommendationPostInteractionService interactions = mock(RecommendationPostInteractionService.class);
+        PostLikeNotificationCoordinator likeNotifications = mock(PostLikeNotificationCoordinator.class);
         ExploreShadowHookRequestFactory failingFactory = (keyword, region, pageable, response) -> {
             throw new IllegalStateException("factory_failed");
         };
@@ -106,7 +111,8 @@ class PostControllerSearchShadowHookTest {
                 request -> {
                     throw new AssertionError("hook must not be reached");
                 });
-        PostController controller = new PostController(service, comments, feed, interactions, bridge);
+        PostController controller = new PostController(
+                service, comments, feed, interactions, likeNotifications, bridge);
         Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 20);
         PageResponse<PostDtos.Summary> legacy = pageResponse();
         when(service.explore(null, null, pageable)).thenReturn(legacy);
@@ -123,8 +129,10 @@ class PostControllerSearchShadowHookTest {
         CommentReplyService comments = mock(CommentReplyService.class);
         RecommendationFeedService feed = mock(RecommendationFeedService.class);
         RecommendationPostInteractionService interactions = mock(RecommendationPostInteractionService.class);
+        PostLikeNotificationCoordinator likeNotifications = mock(PostLikeNotificationCoordinator.class);
         ExploreSearchShadowBridge bridge = mock(ExploreSearchShadowBridge.class);
-        PostController controller = new PostController(service, comments, feed, interactions, bridge);
+        PostController controller = new PostController(
+                service, comments, feed, interactions, likeNotifications, bridge);
         Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 20);
         RuntimeException failure = new IllegalArgumentException("legacy_failure");
         when(service.explore("bad", null, pageable)).thenThrow(failure);
