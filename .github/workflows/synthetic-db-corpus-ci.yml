@@ -1,0 +1,42 @@
+name: Synthetic DB Corpus CI
+
+on:
+  push:
+    paths:
+      - 'tools/synthetic-db-corpus/**'
+      - '.github/workflows/synthetic-db-corpus-ci.yml'
+  pull_request:
+    paths:
+      - 'tools/synthetic-db-corpus/**'
+      - '.github/workflows/synthetic-db-corpus-ci.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Compile
+        run: python -m py_compile tools/synthetic-db-corpus/legacy_generate.py tools/synthetic-db-corpus/generate.py
+      - name: Unit tests
+        run: python -m unittest discover -s tools/synthetic-db-corpus/tests -p 'test_*.py' -v
+      - name: Generate smoke corpus
+        run: >-
+          python tools/synthetic-db-corpus/generate.py
+          --users 20
+          --posts 50
+          --crews 10
+          --batch-id ci-smoke
+          --output-dir build/synthetic-db-smoke
+      - name: Verify outputs
+        run: |
+          test -s build/synthetic-db-smoke/seed.sql
+          test -s build/synthetic-db-smoke/purge.sql
+          test -s build/synthetic-db-smoke/manifest.json
+          grep -q "INSERT INTO post_place" build/synthetic-db-smoke/seed.sql
+          grep -q '"code": "US-HNL"' build/synthetic-db-smoke/manifest.json
