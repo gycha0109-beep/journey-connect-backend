@@ -1,0 +1,4 @@
+Generate: python tools/synthetic-db-corpus/generate.py
+Default output: build/synthetic-db-corpus/seed.sql, purge.sql, manifest.json
+Target schema: YTAK99/Journey-Connect develop @ e05e6167de59c0eaf93fa466451c3fde0d43f14e
+Development PostgreSQL only. Do not run against production.
