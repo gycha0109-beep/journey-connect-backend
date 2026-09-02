@@ -15,7 +15,7 @@ function Invoke-Native {
     )
     & $File @Arguments
     if ($LASTEXITCODE -ne 0) {
-        throw "$File failed with exit code $LASTEXITCODE: $($Arguments -join ' ')"
+        throw "$File failed with exit code ${LASTEXITCODE}: $($Arguments -join ' ')"
     }
 }
 
