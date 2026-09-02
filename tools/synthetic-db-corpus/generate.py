@@ -16,6 +16,9 @@ TARGET_BRANCH = "develop"
 TARGET_SCHEMA_COMMIT = "e05e6167de59c0eaf93fa466451c3fde0d43f14e"
 DEFAULT_ANCHOR = datetime(2026, 9, 1, 10, 0, 0)
 CURRENT_CREW_STATUSES = {"OWNER", "PENDING", "APPROVED", "REJECTED", "CANCELLED"}
+SCHEMA_PROFILE_TEAM_V19 = "team-v19"
+SCHEMA_PROFILE_LOCAL_PRE_V19 = "local-pre-v19"
+SCHEMA_PROFILES = (SCHEMA_PROFILE_TEAM_V19, SCHEMA_PROFILE_LOCAL_PRE_V19)
 
 
 def _nickname_suffix(batch_id: str) -> str:
@@ -78,8 +81,22 @@ def _render_v19_post_places(posts: list[dict]) -> str:
     return "\n".join(out) + "\n"
 
 
-def render_sql(batch_id: str, users: list[dict], posts: list[dict], crews: list[dict], anchor: datetime) -> str:
+def render_sql(
+    batch_id: str,
+    users: list[dict],
+    posts: list[dict],
+    crews: list[dict],
+    anchor: datetime,
+    *,
+    schema_profile: str = SCHEMA_PROFILE_TEAM_V19,
+) -> str:
+    if schema_profile not in SCHEMA_PROFILES:
+        raise ValueError(f"unsupported schema profile: {schema_profile}")
+
     base = legacy.render_sql(batch_id, users, posts, crews, anchor)
+    if schema_profile == SCHEMA_PROFILE_LOCAL_PRE_V19:
+        return base
+
     marker = "COMMIT;\n"
     if not base.endswith(marker):
         raise ValueError("legacy SQL no longer ends in COMMIT")
@@ -95,7 +112,7 @@ def validate_current(users: list[dict], posts: list[dict], crews: list[dict]) ->
         if not statuses <= CURRENT_CREW_STATUSES:
             raise ValueError(f"unsupported Crew status: {statuses - CURRENT_CREW_STATUSES}")
     if any(not _places_for_post(post) for post in posts):
-        raise ValueError("every post must materialize at least one post_place")
+        raise ValueError("every post must have deterministic place source data")
 
 
 def generate_data(
@@ -116,6 +133,25 @@ def generate_data(
     return user_rows, post_rows, crew_rows
 
 
+def _target_for_profile(schema_profile: str) -> dict:
+    if schema_profile == SCHEMA_PROFILE_TEAM_V19:
+        return {
+            "repository": TARGET_REPOSITORY,
+            "branch": TARGET_BRANCH,
+            "schemaCommit": TARGET_SCHEMA_COMMIT,
+            "migrationRange": "V1..V19",
+            "postPlaceMaterialization": True,
+        }
+    if schema_profile == SCHEMA_PROFILE_LOCAL_PRE_V19:
+        return {
+            "schemaProfile": SCHEMA_PROFILE_LOCAL_PRE_V19,
+            "migrationRange": "V17..V18-compatible legacy product schema",
+            "postPlaceMaterialization": False,
+            "note": "For local PostgreSQL schemas that have the restored #79 tables but do not yet have V19 post_place.",
+        }
+    raise ValueError(f"unsupported schema profile: {schema_profile}")
+
+
 def write_outputs(
     output_dir: Path,
     *,
@@ -125,26 +161,32 @@ def write_outputs(
     posts: list[dict],
     crews: list[dict],
     anchor: datetime,
+    schema_profile: str = SCHEMA_PROFILE_TEAM_V19,
 ) -> dict:
     output_dir.mkdir(parents=True, exist_ok=True)
-    seed_sql = render_sql(batch_id, users, posts, crews, anchor)
+    seed_sql = render_sql(
+        batch_id,
+        users,
+        posts,
+        crews,
+        anchor,
+        schema_profile=schema_profile,
+    )
     purge_sql = legacy.purge(batch_id)
     manifest = {
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "batchId": batch_id,
         "seed": seed,
         "anchor": anchor.isoformat(),
-        "target": {
-            "repository": TARGET_REPOSITORY,
-            "branch": TARGET_BRANCH,
-            "schemaCommit": TARGET_SCHEMA_COMMIT,
-            "migrationRange": "V1..V19",
-        },
+        "schemaProfile": schema_profile,
+        "target": _target_for_profile(schema_profile),
         "counts": {
             "users": len(users),
             "posts": len(posts),
             "postImages": sum(len(post["images"]) for post in posts),
-            "postPlaces": post_place_count(posts),
+            "postPlaces": post_place_count(posts)
+            if schema_profile == SCHEMA_PROFILE_TEAM_V19
+            else 0,
             "crews": len(crews),
         },
         "destinations": [legacy.asdict(destination) for destination in legacy.DS],
@@ -162,7 +204,7 @@ def write_outputs(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Generate the restored Journey Connect synthetic DB corpus aligned to team develop V1..V19."
+        description="Generate the restored Journey Connect synthetic DB corpus for team V19 or a pre-V19 local DB."
     )
     parser.add_argument("--seed", type=int, default=20260825)
     parser.add_argument("--batch-id", default="demo-v2")
@@ -171,6 +213,12 @@ def main() -> int:
     parser.add_argument("--crews", type=int, default=120)
     parser.add_argument("--anchor", default=DEFAULT_ANCHOR.isoformat())
     parser.add_argument("--output-dir", default="build/synthetic-db-corpus")
+    parser.add_argument(
+        "--schema-profile",
+        choices=SCHEMA_PROFILES,
+        default=SCHEMA_PROFILE_TEAM_V19,
+        help="team-v19 materializes post_place; local-pre-v19 omits V19-only SQL.",
+    )
     args = parser.parse_args()
     if args.users < 10 or args.posts < 1 or args.crews < 0:
         parser.error("users>=10, posts>=1, crews>=0 required")
@@ -194,8 +242,11 @@ def main() -> int:
         posts=posts,
         crews=crews,
         anchor=anchor,
+        schema_profile=args.schema_profile,
     )
-    print(f"generated {manifest['counts']} -> {args.output_dir}")
+    print(
+        f"generated profile={args.schema_profile} {manifest['counts']} -> {args.output_dir}"
+    )
     return 0
 
 
